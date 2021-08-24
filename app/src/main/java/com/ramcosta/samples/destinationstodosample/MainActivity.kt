@@ -3,10 +3,12 @@ package com.ramcosta.samples.destinationstodosample
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
+import com.ramcosta.composedestinations.*
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,16 +17,27 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             DestinationsTodoSampleTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    Greeting("Android")
-                }
+                Screens.Scaffold(
+                    startDestination = GreetingDestination
+                )
             }
         }
     }
 }
 
+@Screen(route = "greeting")
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun Greeting(navController: NavController) {
+    Column {
+        Text(text = "Hello ${GreetingDestination.route}!")
+        Button(onClick = { navController.navigateTo(SettingsDestination, "arg1" to "cena") {} }) {
+            Text(text = "GO TO SETTINGS")
+        }
+    }
+}
+
+@Screen(route = "settings")
+@Composable
+fun Settings(navController: NavController, arg1: String? = "defaultArg") {
+    Text(text = "Settings ${SettingsDestination.route} + arg1= $arg1!")
 }
