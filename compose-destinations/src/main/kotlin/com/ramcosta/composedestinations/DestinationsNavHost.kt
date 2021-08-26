@@ -8,20 +8,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
 @Composable
-fun ScreensNavHost(
-    screens: Collection<ScreenDestination>,
+fun DestinationsNavHost(
+    destinations: Collection<Destination>,
     navController: NavHostController,
-    startDestination: ScreenDestination,
+    startDestination: Destination,
     modifier: Modifier = Modifier,
     route: String? = null,
     builder: NavGraphBuilder.() -> Unit = {}
 ) {
     NavHost(navController, startDestination.route, modifier, route) {
-        screens.forEach { screen ->
+        destinations.forEach { destination ->
             composable(
-                route = screen.route,
-                content = { screen.Content(navController, it) },
-                arguments = screen.arguments
+                route = destination.route,
+                content = { destination.Content(navController, it) },
+                arguments = destination.arguments
             )
         }
 

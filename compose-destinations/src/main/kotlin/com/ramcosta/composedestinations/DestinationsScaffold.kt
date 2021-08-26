@@ -15,9 +15,9 @@ import androidx.navigation.compose.rememberNavController
 
 
 @Composable
-fun ScreensScaffold(
-    screens: Map<String, ScreenDestination>,
-    startDestination: ScreenDestination,
+fun DestinationsScaffold(
+    destinations: Map<String, Destination>,
+    startDestination: Destination,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
@@ -42,7 +42,7 @@ fun ScreensScaffold(
     Scaffold(
         modifier,
         scaffoldState,
-        { topBar?.invoke() ?: ScreensTopBar(screens, currentBackStackEntryAsState, navController) },
+        { topBar?.invoke() ?: DestinationsTopBar(destinations, currentBackStackEntryAsState, navController) },
         bottomBar,
         snackbarHost,
         floatingActionButton,
@@ -58,8 +58,8 @@ fun ScreensScaffold(
         backgroundColor,
         contentColor,
     ) {
-        ScreensNavHost(
-            screens = screens.values,
+        DestinationsNavHost(
+            destinations = destinations.values,
             navController = navController,
             startDestination = startDestination
         )
@@ -67,14 +67,14 @@ fun ScreensScaffold(
 }
 
 @Composable
-private fun ScreensTopBar(
-    screens: Map<String, ScreenDestination>,
+private fun DestinationsTopBar(
+    destinations: Map<String, Destination>,
     currentBackStackEntry: NavBackStackEntry?,
     navController: NavHostController
 ) {
 
     if (currentBackStackEntry != null) {
-        screens[currentBackStackEntry.destination.route]!!.TopBar(
+        destinations[currentBackStackEntry.destination.route]!!.TopBar(
             navController = navController,
             navBackStackEntry = currentBackStackEntry
         )

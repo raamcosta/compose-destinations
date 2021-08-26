@@ -6,11 +6,11 @@ import androidx.navigation.PopUpToBuilder
 
 
 fun NavController.navigateTo(
-    screenDestination: ScreenDestination,
+    destination: Destination,
     vararg args : Pair<String, Any>,
     builder: NavOptionsBuilder.() -> Unit
 ) {
-    var route = screenDestination.route
+    var route = destination.route
 
     args.forEach {
         route = route.replace("{${it.first}}", it.second.toString())
@@ -19,8 +19,8 @@ fun NavController.navigateTo(
 }
 
 fun NavOptionsBuilder.popUpTo(
-    screenDestination: ScreenDestination,
+    destination: Destination,
     popUpToBuilder: PopUpToBuilder.() -> Unit = {}
 ) {
-    popUpTo(screenDestination.route, popUpToBuilder)
+    popUpTo(destination.route, popUpToBuilder)
 }

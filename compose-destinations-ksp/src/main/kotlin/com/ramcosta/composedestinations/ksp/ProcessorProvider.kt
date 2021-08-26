@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations
+package com.ramcosta.composedestinations.ksp
 
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment

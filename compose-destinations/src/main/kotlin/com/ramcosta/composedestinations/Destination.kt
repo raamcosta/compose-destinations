@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.*
 import androidx.navigation.compose.NamedNavArgument
 
-interface ScreenDestination {
+interface Destination {
 
     val route: String
 

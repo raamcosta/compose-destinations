@@ -9,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.*
+import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,7 +18,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             DestinationsTodoSampleTheme {
-                Screens.Scaffold(
+                Destinations.Scaffold(
                     startDestination = GreetingDestination
                 )
             }
@@ -25,19 +26,48 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Screen(route = "greeting")
+@Destination(route = "greeting")
 @Composable
 fun Greeting(navController: NavController) {
     Column {
         Text(text = "Hello ${GreetingDestination.route}!")
-        Button(onClick = { navController.navigateTo(SettingsDestination, "arg1" to "cena") {} }) {
+        Button(
+            onClick = {
+                navController.navigateTo(
+                    SettingsDestination,
+                    "arg1" to "cena",
+                    "arg0" to 7,
+                    "arg4" to "ARG4",
+                    "arg5" to "ARG5"
+                ) {
+
+                }
+            }
+        ) {
             Text(text = "GO TO SETTINGS")
         }
     }
 }
 
-@Screen(route = "settings")
+@Destination(route = "settings")
 @Composable
-fun Settings(navController: NavController, arg1: String? = "defaultArg") {
-    Text(text = "Settings ${SettingsDestination.route} + arg1= $arg1!")
+fun Settings(
+    navController: NavController,
+    arg1: String? = "defaultArg",
+    arg2: String = "lol",
+    arg0: Int,
+    arg5: String,
+    arg3: String?,
+    arg4: String? = null
+) {
+    Text(
+        text = "Settings ${SettingsDestination.route} " +
+                "\n\nARGS =" +
+                "\n arg1= $arg1!" +
+                " + arg2= $arg2!" +
+                " + arg0= $arg0!" +
+                " + arg3= $arg3!" +
+                " + arg4= $arg4!" +
+                " + arg5= $arg5!"
+    )
 }
