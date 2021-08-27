@@ -32,6 +32,7 @@ internal class DestinationsProcessor(
                 .replace(COMPOSED_ROUTE, destination.constructRoute())
                 .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode(destination))
                 .replace(CONTENT_FUNCION_CODE, callActualComposable(destination))
+                .replace(WITH_ARGS_METHOD, withArgsMethod(destination))
 
             outputStream.close()
         }
@@ -39,14 +40,75 @@ internal class DestinationsProcessor(
         return generatedFiles
     }
 
+    private fun withArgsMethod(destination: Destination): String {
+        if (destination.navParameters.isEmpty()) return ""
+
+        val args = StringBuilder()
+        val replaceNullableArgs = StringBuilder()
+        val replace = StringBuilder()
+
+        val template = """
+        |     
+        |    fun withArgs(
+        |%s1
+        |    ): String {
+        |        var route = route
+        |%s2
+        |        return route
+        |%s3
+        |    }
+        |    
+        """.trimMargin()
+
+        destination.navParameters.forEachIndexed { i, it ->
+            args += "\t\t${it.name}: ${it.type.simpleName}${if (it.type.isNullable) "?" else ""}${defaultValueWithArgs(it)},"
+
+            if (it.type.isNullable) {
+                replaceNullableArgs += """
+                   |        if (${it.name} != null) {
+                   |            route = route.replace("{${it.name}}", ${it.name}${if (it.type.simpleName == "String") "" else ".toString()"})
+                   |        }
+                    """.trimMargin()
+            } else {
+                replace += "\t\t\t.replace(\"{${it.name}}\", ${it.name}${if (it.type.simpleName == "String") "" else ".toString()"})"
+            }
+
+
+            if (i != destination.navParameters.lastIndex) {
+                args += "\n"
+                if (it.type.isNullable) {
+                    replaceNullableArgs += "\n"
+                } else {
+                    replace += "\n"
+                }
+            }
+        }
+
+        return template
+            .replace("%s1", args.toString())
+            .replace("%s2", replaceNullableArgs.toString())
+            .replace("%s3", replace.toString())
+    }
+
+    private fun defaultValueWithArgs(it: Parameter): String {
+        return when {
+            it.defaultValue is DefaultValue.Known -> {
+                " = ${it.defaultValue.srcCode}"
+            }
+
+            it.type.isNullable -> " = null"
+
+            else -> ""
+
+        }
+    }
+
 
     private fun Destination.constructRoute(): String {
         val mandatoryArgs = StringBuilder()
         val optionalArgs = StringBuilder()
         navParameters.forEach {
-            val isMandatory = !it.type.isNullable && it.defaultValue is DefaultValue.None
-
-            if (isMandatory) {
+            if (it.isMandatory) {
                 mandatoryArgs.append("/{${it.name}}")
             } else {
                 optionalArgs.append("?${it.name}={${it.name}}")
@@ -136,6 +198,9 @@ internal class DestinationsProcessor(
         return when (qualifiedName) {
             String::class.qualifiedName -> "getString(\"$argName\")"
             Int::class.qualifiedName -> "getInt(\"$argName\")"
+            Float::class.qualifiedName -> "getFloat(\"$argName\")"
+            Long::class.qualifiedName -> "getLong(\"$argName\")"
+            Boolean::class.qualifiedName -> "getBoolean(\"$argName\")"
             else -> throw RuntimeException("Unknown type $qualifiedName")
         }
     }
@@ -144,6 +209,9 @@ internal class DestinationsProcessor(
         return when (qualifiedName) {
             String::class.qualifiedName -> "NavType.StringType"
             Int::class.qualifiedName -> "NavType.IntType"
+            Float::class.qualifiedName -> "NavType.FloatType"
+            Long::class.qualifiedName -> "NavType.LongType"
+            Boolean::class.qualifiedName -> "NavType.BoolType"
             else -> throw RuntimeException("Unknown type $qualifiedName")
         }
     }

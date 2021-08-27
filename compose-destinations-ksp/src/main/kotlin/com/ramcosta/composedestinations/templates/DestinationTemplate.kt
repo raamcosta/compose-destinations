@@ -7,6 +7,7 @@ internal const val SYMBOL_QUALIFIED_NAME = "[SYMBOL_QUALIFIED_NAME]"
 internal const val DESTINATION_NAME = "[DESTINATION_NAME]"
 internal const val COMPOSED_ROUTE = "[COMPOSED_ROUTE]"
 internal const val NAV_ARGUMENTS = "[NAV_ARGUMENTS]"
+internal const val WITH_ARGS_METHOD = "[WITH_ARGS_METHOD]"
 internal const val CONTENT_FUNCION_CODE = "[CONTENT_FUNCION_CODE]"
 //endregion
 
@@ -31,5 +32,6 @@ object $DESTINATION_NAME: Destination {
     ) {
         $CONTENT_FUNCION_CODE
     }
+    $WITH_ARGS_METHOD
 }
 """.trimIndent()
