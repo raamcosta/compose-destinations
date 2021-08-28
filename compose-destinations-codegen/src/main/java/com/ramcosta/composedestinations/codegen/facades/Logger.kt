@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.facades
+package com.ramcosta.composedestinations.codegen.facades
 
 interface Logger {
     fun logging(message: String)

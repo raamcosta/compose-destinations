@@ -11,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.*
 import com.ramcosta.composedestinations.annotation.Destination
@@ -58,6 +59,7 @@ fun Greeting(navController: NavController) {
 @Composable
 fun Settings(
     navController: NavController,
+    navBackStackEntry: NavBackStackEntry,
     arg0: Long,
     arg1: String? = "defaultArg",
     arg2: String = "lol",

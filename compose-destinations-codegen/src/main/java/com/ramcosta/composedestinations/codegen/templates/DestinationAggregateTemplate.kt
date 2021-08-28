@@ -1,8 +1,8 @@
-package com.ramcosta.composedestinations.templates
+package com.ramcosta.composedestinations.codegen.templates
 
-import com.ramcosta.composedestinations.utils.DESTINATIONS_AGGREGATE_CLASS
-import com.ramcosta.composedestinations.utils.DESTINATION_DEFINITION
-import com.ramcosta.composedestinations.utils.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.DESTINATIONS_AGGREGATE_CLASS
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_DEFINITION
+import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 
 //region anchors
 internal const val IMPORTS_BLOCK = "[IMPORTS_BLOCK]"

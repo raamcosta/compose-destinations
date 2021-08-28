@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.model
+package com.ramcosta.composedestinations.codegen.model
 
 sealed class DefaultValue {
     object Unknown : DefaultValue()

@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
+    implementation(project(mapOf("path" to ":compose-destinations-codegen")))
+
     implementation(Deps.Ksp.api)
-    implementation("junit:junit:4.13.2")
+    implementation(Deps.Test.junit)
 }

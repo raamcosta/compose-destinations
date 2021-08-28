@@ -1,8 +1,8 @@
-package com.ramcosta.composedestinations.utils
+package com.ramcosta.composedestinations.commons
 
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSValueParameter
-import com.ramcosta.composedestinations.model.DefaultValue
+import com.ramcosta.composedestinations.codegen.model.DefaultValue
 import java.io.File
 
 internal class DefaultParameterValueReader {

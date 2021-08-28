@@ -14,6 +14,8 @@ object Versions {
     const val lifecycleRuntimeKtx = lifecycleKtx
 
     const val ksp = "1.5.21-1.0.0-beta07"
+
+    const val junit = "4.13.2"
 }
 
 object Deps {
@@ -40,5 +42,9 @@ object Deps {
 
     object Ksp {
         const val api = "com.google.devtools.ksp:symbol-processing-api:${Versions.ksp}"
+    }
+
+    object Test {
+        const val junit = "junit:junit:${Versions.junit}"
     }
 }

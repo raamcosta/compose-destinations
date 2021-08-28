@@ -9,18 +9,15 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.google.devtools.ksp.validate
-import com.ramcosta.composedestinations.model.Destination
-import com.ramcosta.composedestinations.model.Parameter
-import com.ramcosta.composedestinations.model.Type
-import com.ramcosta.composedestinations.processors.DestinationsAggregateProcessor
-import com.ramcosta.composedestinations.processors.DestinationsProcessor
-import com.ramcosta.composedestinations.utils.*
-import com.ramcosta.composedestinations.utils.DESTINATION_ANNOTATION
-import com.ramcosta.composedestinations.utils.DESTINATION_ANNOTATION_ROUTE_ARGUMENT
-import com.ramcosta.composedestinations.utils.DESTINATION_DEFINITION_SUFFIX
-import com.ramcosta.composedestinations.utils.PACKAGE_NAME
-import com.ramcosta.composedestinations.utils.findAnnotation
-import com.ramcosta.composedestinations.utils.findArgumentValue
+import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.model.Destination
+import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.processors.DestinationsAggregateProcessor
+import com.ramcosta.composedestinations.codegen.processors.DestinationsProcessor
+import com.ramcosta.composedestinations.commons.*
+import com.ramcosta.composedestinations.commons.findAnnotation
+import com.ramcosta.composedestinations.commons.findArgumentValue
 
 class Processor(
     private val codeGenerator: CodeGenerator,

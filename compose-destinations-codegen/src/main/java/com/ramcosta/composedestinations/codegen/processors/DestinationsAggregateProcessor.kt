@@ -1,15 +1,15 @@
-package com.ramcosta.composedestinations.processors
+package com.ramcosta.composedestinations.codegen.processors
 
-import com.ramcosta.composedestinations.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.facades.Logger
-import com.ramcosta.composedestinations.model.GeneratedDestinationFile
-import com.ramcosta.composedestinations.templates.DESTINATIONS_COUNT
-import com.ramcosta.composedestinations.templates.DESTINATIONS_INSIDE_MAP_OF
-import com.ramcosta.composedestinations.templates.IMPORTS_BLOCK
-import com.ramcosta.composedestinations.templates.destinationsTemplate
-import com.ramcosta.composedestinations.utils.DESTINATIONS_AGGREGATE_CLASS
-import com.ramcosta.composedestinations.utils.PACKAGE_NAME
-import com.ramcosta.composedestinations.utils.plusAssign
+import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
+import com.ramcosta.composedestinations.codegen.facades.Logger
+import com.ramcosta.composedestinations.codegen.model.GeneratedDestinationFile
+import com.ramcosta.composedestinations.codegen.templates.DESTINATIONS_COUNT
+import com.ramcosta.composedestinations.codegen.templates.DESTINATIONS_INSIDE_MAP_OF
+import com.ramcosta.composedestinations.codegen.templates.IMPORTS_BLOCK
+import com.ramcosta.composedestinations.codegen.templates.destinationsTemplate
+import com.ramcosta.composedestinations.codegen.commons.DESTINATIONS_AGGREGATE_CLASS
+import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import java.io.OutputStream
 
 class DestinationsAggregateProcessor(
@@ -34,9 +34,9 @@ class DestinationsAggregateProcessor(
     private fun importsCode(qualifiedNames: List<GeneratedDestinationFile>): String {
         val code = StringBuilder()
         qualifiedNames.forEachIndexed { i, it ->
-            code.append("import ${it.qualifiedName}")
+            code += "import ${it.qualifiedName}"
             if (i != qualifiedNames.lastIndex)
-                code.append("\n")
+                code += "\n"
         }
 
         return code.toString()
@@ -45,10 +45,10 @@ class DestinationsAggregateProcessor(
     private fun destinationsInsideMap(destinations: List<GeneratedDestinationFile>): String {
         val code = StringBuilder()
         destinations.forEachIndexed { i, it ->
-            code.append("${it.simpleName}.route to ${it.simpleName}")
+            code += "${it.simpleName}.route to ${it.simpleName}"
 
             if (i != destinations.lastIndex)
-                code.append(",\n\t\t")
+                code += ",\n\t\t"
         }
 
         return code.toString()

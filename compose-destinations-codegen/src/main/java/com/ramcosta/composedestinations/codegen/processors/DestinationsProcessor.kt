@@ -1,15 +1,15 @@
-package com.ramcosta.composedestinations.processors
+package com.ramcosta.composedestinations.codegen.processors
 
-import com.ramcosta.composedestinations.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.facades.Logger
-import com.ramcosta.composedestinations.model.*
-import com.ramcosta.composedestinations.templates.*
-import com.ramcosta.composedestinations.utils.NAV_BACK_STACK_ENTRY_QUALIFIED_NAME
-import com.ramcosta.composedestinations.utils.NAV_CONTROLLER_QUALIFIED_NAME
-import com.ramcosta.composedestinations.utils.PACKAGE_NAME
-import com.ramcosta.composedestinations.utils.plusAssign
+import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
+import com.ramcosta.composedestinations.codegen.facades.Logger
+import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.templates.*
+import com.ramcosta.composedestinations.codegen.commons.NAV_BACK_STACK_ENTRY_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.NAV_CONTROLLER_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
 
-internal class DestinationsProcessor(
+class DestinationsProcessor(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger
 ) {
@@ -29,7 +29,7 @@ internal class DestinationsProcessor(
             outputStream += destinationTemplate
                 .replace(SYMBOL_QUALIFIED_NAME, destination.composableQualifiedName)
                 .replace(DESTINATION_NAME, fileName)
-                .replace(COMPOSED_ROUTE, destination.constructRoute())
+                .replace(COMPOSED_ROUTE, constructRoute(destination))
                 .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode(destination))
                 .replace(CONTENT_FUNCION_CODE, callActualComposable(destination))
                 .replace(WITH_ARGS_METHOD, withArgsMethod(destination))
@@ -103,19 +103,18 @@ internal class DestinationsProcessor(
         }
     }
 
-
-    private fun Destination.constructRoute(): String {
+    private fun constructRoute(destination: Destination): String {
         val mandatoryArgs = StringBuilder()
         val optionalArgs = StringBuilder()
-        navParameters.forEach {
+        destination.navParameters.forEach {
             if (it.isMandatory) {
-                mandatoryArgs.append("/{${it.name}}")
+                mandatoryArgs += "/{${it.name}}"
             } else {
-                optionalArgs.append("?${it.name}={${it.name}}")
+                optionalArgs += "?${it.name}={${it.name}}"
             }
         }
 
-        return cleanRoute + mandatoryArgs.toString() + optionalArgs.toString()
+        return destination.cleanRoute + mandatoryArgs.toString() + optionalArgs.toString()
     }
 
     private fun callActualComposable(destination: Destination): String {
@@ -171,19 +170,19 @@ internal class DestinationsProcessor(
 
         destination.navParameters.forEachIndexed { i, it ->
             if (i == 0) {
-                code.append("\n\toverride val arguments = listOf(\n\t\t")
+                code += "\n\toverride val arguments = listOf(\n\t\t"
             }
 
-            code.append("navArgument(\"${it.name}\") {\n\t\t\t")
-            code.append("type = ${it.type.toNavTypeCode()}\n\t\t\t")
-            code.append("nullable = ${it.type.isNullable}\n\t\t")
-            code.append(navArgDefaultCode(it.defaultValue))
-            code.append("}")
+            code += "navArgument(\"${it.name}\") {\n\t\t\t"
+            code += "type = ${it.type.toNavTypeCode()}\n\t\t\t"
+            code += "nullable = ${it.type.isNullable}\n\t\t"
+            code += navArgDefaultCode(it.defaultValue)
+            code += "}"
 
-            if (i != destination.navParameters.lastIndex) {
-                code.append(",\n\t\t")
+            code += if (i != destination.navParameters.lastIndex) {
+                ",\n\t\t"
             } else {
-                code.append("\n\t)\n")
+                "\n\t)\n"
             }
         }
 

@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.facades
+package com.ramcosta.composedestinations.codegen.facades
 
 import java.io.OutputStream
 

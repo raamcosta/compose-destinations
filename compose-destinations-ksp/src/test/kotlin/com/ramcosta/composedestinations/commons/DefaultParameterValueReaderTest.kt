@@ -1,6 +1,6 @@
-package com.ramcosta.composedestinations.utils
+package com.ramcosta.composedestinations.commons
 
-import com.ramcosta.composedestinations.model.DefaultValue
+import com.ramcosta.composedestinations.codegen.model.DefaultValue
 import org.junit.Test
 
 class DefaultParameterValueReaderTest {

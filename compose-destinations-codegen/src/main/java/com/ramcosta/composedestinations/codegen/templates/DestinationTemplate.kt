@@ -1,6 +1,6 @@
-package com.ramcosta.composedestinations.templates
+package com.ramcosta.composedestinations.codegen.templates
 
-import com.ramcosta.composedestinations.utils.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 
 //region anchors
 internal const val SYMBOL_QUALIFIED_NAME = "[SYMBOL_QUALIFIED_NAME]"

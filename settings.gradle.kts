@@ -22,3 +22,4 @@ rootProject.name = "DestinationsTodoSample"
 include(":app")
 include(":compose-destinations")
 include(":compose-destinations-ksp")
+include(":compose-destinations-codegen")

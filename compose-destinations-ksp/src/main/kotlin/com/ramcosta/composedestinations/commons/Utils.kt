@@ -1,16 +1,8 @@
-package com.ramcosta.composedestinations.utils
+package com.ramcosta.composedestinations.commons
 
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import java.io.*
-
-internal operator fun OutputStream.plusAssign(str: String) {
-    this.write(str.toByteArray())
-}
-
-internal operator fun StringBuilder.plusAssign(str: String) {
-    append(str)
-}
 
 internal fun KSFunctionDeclaration.findAnnotation(name: String): KSAnnotation {
     return annotations.find { it.shortName.asString() == name }!!
