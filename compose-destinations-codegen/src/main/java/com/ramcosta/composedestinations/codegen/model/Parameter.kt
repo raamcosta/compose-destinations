@@ -5,5 +5,5 @@ class Parameter(
     val type: Type,
     val defaultValue: DefaultValue
 ) {
-    val isMandatory: Boolean get() = !type.isNullable && defaultValue is DefaultValue.None
+    val isMandatory: Boolean get() = !type.isNullable && defaultValue is None
 }

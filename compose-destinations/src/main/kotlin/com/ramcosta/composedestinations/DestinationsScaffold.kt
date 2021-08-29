@@ -61,7 +61,8 @@ fun DestinationsScaffold(
         DestinationsNavHost(
             destinations = destinations.values,
             navController = navController,
-            startDestination = startDestination
+            startDestination = startDestination,
+            scaffoldState = scaffoldState
         )
     }
 }

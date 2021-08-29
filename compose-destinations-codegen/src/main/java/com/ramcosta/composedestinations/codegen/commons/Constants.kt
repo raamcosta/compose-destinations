@@ -13,3 +13,4 @@ const val DESTINATIONS_AGGREGATE_CLASS = "Destinations"
 
 const val NAV_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavController"
 const val NAV_BACK_STACK_ENTRY_QUALIFIED_NAME = "androidx.navigation.NavBackStackEntry"
+const val SCAFFOLD_STATE_QUALIFIED_NAME = "androidx.compose.material.ScaffoldState"

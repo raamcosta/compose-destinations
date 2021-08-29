@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations
 
+import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.navigation.*
 import androidx.navigation.compose.NamedNavArgument
@@ -16,5 +17,9 @@ interface Destination {
     }
 
     @Composable
-    fun Content(navController: NavController, navBackStackEntry: NavBackStackEntry)
+    fun Content(
+        navController: NavController,
+        navBackStackEntry: NavBackStackEntry,
+        scaffoldState: ScaffoldState?
+    )
 }

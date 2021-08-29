@@ -6,7 +6,5 @@ class Destination(
     val composableName: String,
     val composableQualifiedName: String,
     val cleanRoute: String,
-    val navParameters: List<Parameter>,
-    val navController: Parameter?,
-    val navBackStackEntry: Parameter?
+    val parameters: List<Parameter>,
 )

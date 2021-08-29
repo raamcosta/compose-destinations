@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.commons
 
 import com.ramcosta.composedestinations.codegen.model.DefaultValue
+import com.ramcosta.composedestinations.codegen.model.Known
 import org.junit.Test
 
 class DefaultParameterValueReaderTest {
@@ -12,19 +13,19 @@ class DefaultParameterValueReaderTest {
             lineText = "    arg1: String? = \"defaultArg\") {",
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue.Known("\"defaultArg\"")
+            expected = Known("\"defaultArg\"")
         ),
         TestCase(
             lineText = "    arg1: String? = \"defaultArg\"",
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue.Known("\"defaultArg\"")
+            expected = Known("\"defaultArg\"")
         ),
         TestCase(
             lineText = "    arg1: String? = \"defaultArg\",",
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue.Known("\"defaultArg\"")
+            expected = Known("\"defaultArg\"")
         )
     )
 

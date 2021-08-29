@@ -47,6 +47,7 @@ object $DESTINATIONS_AGGREGATE_CLASS {
             navController,
             startDestination,
             modifier,
+            null,
             route,
             builder
         )

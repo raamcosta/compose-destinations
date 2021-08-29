@@ -54,54 +54,27 @@ class Processor(
         val name = composableName + DESTINATION_DEFINITION_SUFFIX
         val destinationAnnotation = findAnnotation(DESTINATION_ANNOTATION)
 
-        var navControllerParameter: Parameter? = null
-        var navBackStackEntryParameter: Parameter? = null
-        val otherParameters = mutableListOf<Parameter>()
-
-        parameters.forEach { param ->
-            val ksType = param.type.resolve()
-            if (navControllerParameter == null && ksType.isNavController()) {
-                navControllerParameter = param.toParameter(ksType)
-                return@forEach
-            }
-
-            if (navBackStackEntryParameter == null && ksType.isNavBackStackEntry()) {
-                navBackStackEntryParameter = param.toParameter(ksType)
-                return@forEach
-            }
-
-            otherParameters.add(param.toParameter(ksType))
-        }
-
         return Destination(
             name = name,
             qualifiedName = "$PACKAGE_NAME.$name",
             composableName = composableName,
             composableQualifiedName = qualifiedName!!.asString(),
             cleanRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT)!!,
-            navParameters = otherParameters,
-            navController = navControllerParameter,
-            navBackStackEntry = navBackStackEntryParameter,
+            parameters = parameters.map { it.toParameter() },
         )
     }
 
-    private fun KSValueParameter.toParameter(ksType: KSType): Parameter {
+    private fun KSValueParameter.toParameter(): Parameter {
         return Parameter(
             name!!.asString(),
-            Type(
-                ksType.declaration.simpleName.asString(),
-                ksType.declaration.qualifiedName!!.asString(),
-                ksType.isMarkedNullable
-            ),
+            type.resolve().toType(),
             getDefaultValue()
         )
     }
 
-    private fun KSType.isNavController(): Boolean {
-        return declaration.qualifiedName?.asString() == NAV_CONTROLLER_QUALIFIED_NAME
-    }
-
-    private fun KSType.isNavBackStackEntry(): Boolean {
-        return declaration.qualifiedName?.asString() == NAV_BACK_STACK_ENTRY_QUALIFIED_NAME
-    }
+    private fun KSType.toType() = Type(
+        declaration.simpleName.asString(),
+        declaration.qualifiedName!!.asString(),
+        isMarkedNullable
+    )
 }

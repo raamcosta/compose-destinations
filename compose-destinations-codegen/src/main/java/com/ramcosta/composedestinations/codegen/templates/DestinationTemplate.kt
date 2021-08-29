@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavType
+import androidx.compose.material.ScaffoldState
 import androidx.navigation.compose.navArgument
 import $SYMBOL_QUALIFIED_NAME
 
@@ -28,7 +29,8 @@ object $DESTINATION_NAME: Destination {
     @Composable
     override fun Content(
         navController: NavController,
-        navBackStackEntry: NavBackStackEntry
+        navBackStackEntry: NavBackStackEntry,
+        scaffoldState: ScaffoldState?
     ) {
         $CONTENT_FUNCION_CODE
     }

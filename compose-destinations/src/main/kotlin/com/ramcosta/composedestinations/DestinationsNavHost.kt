@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations
 
+import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -13,6 +14,7 @@ fun DestinationsNavHost(
     navController: NavHostController,
     startDestination: Destination,
     modifier: Modifier = Modifier,
+    scaffoldState: ScaffoldState?,
     route: String? = null,
     builder: NavGraphBuilder.() -> Unit = {}
 ) {
@@ -20,7 +22,7 @@ fun DestinationsNavHost(
         destinations.forEach { destination ->
             composable(
                 route = destination.route,
-                content = { destination.Content(navController, it) },
+                content = { destination.Content(navController, it, scaffoldState) },
                 arguments = destination.arguments
             )
         }
