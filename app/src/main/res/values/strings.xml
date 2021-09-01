@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">DestinationsTodoSample</string>
+    <string name="greeting_screen">Greeting Screen</string>
+    <string name="profile_screen">Profile Screen</string>
+    <string name="settings_screen">Settings Screen</string>
+    <string name="feed_screen">Feed Screen</string>
 </resources>

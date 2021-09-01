@@ -12,11 +12,6 @@ interface Destination {
     val arguments: List<NamedNavArgument> get() = emptyList()
 
     @Composable
-    fun TopBar(navController: NavController, navBackStackEntry: NavBackStackEntry) {
-
-    }
-
-    @Composable
     fun Content(
         navController: NavController,
         navBackStackEntry: NavBackStackEntry,

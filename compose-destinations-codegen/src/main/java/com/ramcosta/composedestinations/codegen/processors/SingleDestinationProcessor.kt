@@ -38,7 +38,7 @@ class SingleDestinationProcessor(
 
         outputStream.close()
 
-        return GeneratedDestinationFile(qualifiedName, name)
+        return GeneratedDestinationFile(qualifiedName, name, isStart)
     }
 
     private fun withArgsMethod(): String {

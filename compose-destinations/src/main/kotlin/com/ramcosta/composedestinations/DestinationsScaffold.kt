@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -8,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -21,8 +21,8 @@ fun DestinationsScaffold(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    topBar: (@Composable () -> Unit)? = null,
-    bottomBar: @Composable () -> Unit = {},
+    topBar: (@Composable (Destination) -> Unit) = {},
+    bottomBar: @Composable (Destination) -> Unit = {},
     snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) },
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
@@ -36,14 +36,16 @@ fun DestinationsScaffold(
     drawerScrimColor: Color = DrawerDefaults.scrimColor,
     backgroundColor: Color = MaterialTheme.colors.background,
     contentColor: Color = contentColorFor(backgroundColor),
+    modifierForPaddingValues: (Destination, PaddingValues) -> Modifier = { _, _ -> Modifier }
 ) {
     val currentBackStackEntryAsState by navController.currentBackStackEntryAsState()
+    val route = currentBackStackEntryAsState?.destination?.route
 
     Scaffold(
         modifier,
         scaffoldState,
-        { topBar?.invoke() ?: DestinationsTopBar(destinations, currentBackStackEntryAsState, navController) },
-        bottomBar,
+        route?.let { { topBar(destinations[route]!!) } } ?: {},
+        route?.let { { bottomBar(destinations[route]!!) } } ?: {},
         snackbarHost,
         floatingActionButton,
         floatingActionButtonPosition,
@@ -57,27 +59,13 @@ fun DestinationsScaffold(
         drawerScrimColor,
         backgroundColor,
         contentColor,
-    ) {
+    ) { paddingValues ->
         DestinationsNavHost(
+            modifier = route?.let { modifierForPaddingValues(destinations[route]!!, paddingValues) } ?: Modifier,
             destinations = destinations.values,
             navController = navController,
             startDestination = startDestination,
             scaffoldState = scaffoldState
-        )
-    }
-}
-
-@Composable
-private fun DestinationsTopBar(
-    destinations: Map<String, Destination>,
-    currentBackStackEntry: NavBackStackEntry?,
-    navController: NavHostController
-) {
-
-    if (currentBackStackEntry != null) {
-        destinations[currentBackStackEntry.destination.route]!!.TopBar(
-            navController = navController,
-            navBackStackEntry = currentBackStackEntry
         )
     }
 }

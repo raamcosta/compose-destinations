@@ -1,19 +1,21 @@
 package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.commons.DESTINATIONS_AGGREGATE_CLASS
-import com.ramcosta.composedestinations.codegen.commons.DESTINATION_DEFINITION
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 
 //region anchors
 internal const val IMPORTS_BLOCK = "[IMPORTS_BLOCK]"
 internal const val DESTINATIONS_COUNT = "[DESTINATIONS_COUNT]"
 internal const val DESTINATIONS_INSIDE_MAP_OF = "[DESTINATIONS_INSIDE_MAP_OF]"
+internal const val STARTING_DESTINATION = "[STARTING_DESTINATION]"
 //endregion
 
 internal val destinationsTemplate = """
 package $PACKAGE_NAME
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,19 +27,22 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 $IMPORTS_BLOCK
 
+sealed interface $DESTINATION_SPEC : Destination
+
 object $DESTINATIONS_AGGREGATE_CLASS {
 
-    val count = $DESTINATIONS_COUNT
+    val count: Int = $DESTINATIONS_COUNT
+    
+    val start: $DESTINATION_SPEC = $STARTING_DESTINATION
 
     // destinations by route
-    val all: Map<String, $DESTINATION_DEFINITION> = mapOf(
+    val all: Map<String, $DESTINATION_SPEC> = mapOf(
         $DESTINATIONS_INSIDE_MAP_OF
     )
 
     @Composable
     fun NavHost(
         navController: NavHostController,
-        startDestination: Destination,
         modifier: Modifier = Modifier,
         route: String? = null,
         builder: NavGraphBuilder.() -> Unit = {}
@@ -45,7 +50,7 @@ object $DESTINATIONS_AGGREGATE_CLASS {
         DestinationsNavHost(
             all.values,
             navController,
-            startDestination,
+            start,
             modifier,
             null,
             route,
@@ -55,12 +60,11 @@ object $DESTINATIONS_AGGREGATE_CLASS {
 
     @Composable
     fun Scaffold(
-        startDestination: Destination,
         modifier: Modifier = Modifier,
         navController: NavHostController = rememberNavController(),
         scaffoldState: ScaffoldState = rememberScaffoldState(),
-        topBar: (@Composable () -> Unit)? = null,
-        bottomBar: @Composable () -> Unit = {},
+        topBar: (@Composable ($DESTINATION_SPEC) -> Unit) = {},
+        bottomBar: @Composable ($DESTINATION_SPEC) -> Unit = {},
         snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) },
         floatingActionButton: @Composable () -> Unit = {},
         floatingActionButtonPosition: FabPosition = FabPosition.End,
@@ -74,15 +78,16 @@ object $DESTINATIONS_AGGREGATE_CLASS {
         drawerScrimColor: Color = DrawerDefaults.scrimColor,
         backgroundColor: Color = MaterialTheme.colors.background,
         contentColor: Color = contentColorFor(backgroundColor),
+        modifierForDestination: ($DESTINATION_SPEC, PaddingValues) -> Modifier = { _, _ -> Modifier }
     ) {
         DestinationsScaffold(
             all,
-            startDestination,
+            start,
             modifier,
             navController,
             scaffoldState,
-            topBar,
-            bottomBar,
+            { topBar(it as $DESTINATION_SPEC) },
+            { bottomBar(it as $DESTINATION_SPEC) },
             snackbarHost,
             floatingActionButton,
             floatingActionButtonPosition,
@@ -95,7 +100,8 @@ object $DESTINATIONS_AGGREGATE_CLASS {
             drawerContentColor,
             drawerScrimColor,
             backgroundColor,
-            contentColor
+            contentColor,
+            { dest, padding -> modifierForDestination(dest as $DESTINATION_SPEC, padding) }
         )
     }
 }
