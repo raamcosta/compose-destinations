@@ -39,13 +39,13 @@ fun DestinationsScaffold(
     modifierForPaddingValues: (Destination, PaddingValues) -> Modifier = { _, _ -> Modifier }
 ) {
     val currentBackStackEntryAsState by navController.currentBackStackEntryAsState()
-    val route = currentBackStackEntryAsState?.destination?.route
+    val destination = destinations[currentBackStackEntryAsState?.destination?.route] ?: startDestination
 
     Scaffold(
         modifier,
         scaffoldState,
-        route?.let { { topBar(destinations[route]!!) } } ?: {},
-        route?.let { { bottomBar(destinations[route]!!) } } ?: {},
+        { topBar(destination) },
+        { bottomBar(destination) },
         snackbarHost,
         floatingActionButton,
         floatingActionButtonPosition,
@@ -61,7 +61,7 @@ fun DestinationsScaffold(
         contentColor,
     ) { paddingValues ->
         DestinationsNavHost(
-            modifier = route?.let { modifierForPaddingValues(destinations[route]!!, paddingValues) } ?: Modifier,
+            modifier = modifierForPaddingValues(destination, paddingValues),
             destinations = destinations.values,
             navController = navController,
             startDestination = startDestination,
