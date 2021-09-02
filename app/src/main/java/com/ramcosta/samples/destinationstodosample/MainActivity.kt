@@ -32,11 +32,12 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         MyBottomBar(destination = it)
                     },
-                    drawerContent = {
+                    drawerContent = { currentDestination ->
                         Destinations.all.values
                             .sortedBy { if (it == Destinations.start) 0 else 1 }
                             .forEach {
                                 it.DrawerContent(
+                                    isSelected = it == currentDestination,
                                     onDestinationClick = { clickedDestination ->
                                         navController.navigate(clickedDestination.route)
                                         coroutineScope.launch { scaffoldState.drawerState.close() }

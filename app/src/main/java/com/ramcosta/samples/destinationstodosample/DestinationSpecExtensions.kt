@@ -8,11 +8,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.*
 
 @Composable
 fun DestinationSpec.DrawerContent(
+    isSelected: Boolean,
     onDestinationClick: (DestinationSpec) -> Unit
 ) {
     when (this) {
@@ -25,7 +27,8 @@ fun DestinationSpec.DrawerContent(
                     .padding(8.dp)
                     .clickable {
                         onDestinationClick(this)
-                    }
+                    },
+                fontWeight = if (isSelected) FontWeight.Bold else null
             )
         }
         ProfileDestination -> { }
