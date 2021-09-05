@@ -8,7 +8,6 @@ import com.ramcosta.composedestinations.codegen.commons.DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.templates.*
-import com.ramcosta.composedestinations.codegen.templates.DESTINATIONS_COUNT
 import com.ramcosta.composedestinations.codegen.templates.DESTINATIONS_INSIDE_MAP_OF
 import com.ramcosta.composedestinations.codegen.templates.IMPORTS_BLOCK
 import com.ramcosta.composedestinations.codegen.templates.STARTING_DESTINATION
@@ -28,7 +27,6 @@ class DestinationsAggregateProcessor(
 
         file += destinationsTemplate
             .replace(IMPORTS_BLOCK, importsCode(generatedDestinationFiles))
-            .replace(DESTINATIONS_COUNT, generatedDestinationFiles.size.toString())
             .replace(STARTING_DESTINATION, startingDestination(generatedDestinationFiles))
             .replace(DESTINATIONS_INSIDE_MAP_OF, destinationsInsideMap(generatedDestinationFiles))
 

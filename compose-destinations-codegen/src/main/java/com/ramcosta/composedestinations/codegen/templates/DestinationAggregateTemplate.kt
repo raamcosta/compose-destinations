@@ -1,12 +1,12 @@
 package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.commons.DESTINATIONS_AGGREGATE_CLASS
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 
 //region anchors
 internal const val IMPORTS_BLOCK = "[IMPORTS_BLOCK]"
-internal const val DESTINATIONS_COUNT = "[DESTINATIONS_COUNT]"
 internal const val DESTINATIONS_INSIDE_MAP_OF = "[DESTINATIONS_INSIDE_MAP_OF]"
 internal const val STARTING_DESTINATION = "[STARTING_DESTINATION]"
 //endregion
@@ -27,17 +27,34 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 $IMPORTS_BLOCK
 
+/**
+ * Class generated if any Composable is annotated with `@$DESTINATION_ANNOTATION`.
+ * It aggregates all [$DESTINATION_SPEC]s and has 
+ * [DestinationsNavHost]/[DestinationsScaffold] equivalent methods which
+ * will relay the destinations to be used in the navigation graph.
+ */
 object $DESTINATIONS_AGGREGATE_CLASS {
 
-    val count: Int = $DESTINATIONS_COUNT
-    
+    /**
+     * Start destination of the navigation graph deduced from
+     * the `@$DESTINATION_ANNOTATION` declared with `start = true`
+     */
     val start: $DESTINATION_SPEC = $STARTING_DESTINATION
 
-    // destinations by route
+    /**
+     * Available [$DESTINATION_SPEC]s generated form the
+     * `@$DESTINATION_ANNOTATION` annotation.
+     */
     val all: Map<String, $DESTINATION_SPEC> = mapOf(
         $DESTINATIONS_INSIDE_MAP_OF
     )
 
+    /**
+     * Like [DestinationsNavHost] but uses composables annotated with 
+     * `@$DESTINATION_ANNOTATION` to pass in as the destinations available.
+     * 
+     * @see [DestinationsNavHost]
+     */
     @Composable
     fun NavHost(
         navController: NavHostController,
@@ -56,6 +73,14 @@ object $DESTINATIONS_AGGREGATE_CLASS {
         )
     }
 
+    /**
+     * Like [DestinationsScaffold] but uses composables annotated with
+     * `@$DESTINATION_ANNOTATION` to pass in as the destinations available.
+     * It will also expose [Destination] as the generated sealed [$DESTINATION_SPEC]
+     * interface to allow for exhaustive when expressions.
+     * 
+     * @see [DestinationsScaffold]
+     */
     @Composable
     fun Scaffold(
         modifier: Modifier = Modifier,

@@ -8,6 +8,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
+/**
+ * Like [NavHost] but adds [destinations] to the nav graph, using
+ * the properties of each [Destination] to do so.
+ *
+ * Also, it can be passed a [ScaffoldState] if it should be available
+ * to each destination. Otherwise `null` can be used.
+ * Recommendation is to pass in the [ScaffoldState] always, if this
+ * is used inside a Scaffold.
+ *
+ * @see [NavHost]
+ */
 @Composable
 fun DestinationsNavHost(
     destinations: Collection<Destination>,

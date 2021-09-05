@@ -13,7 +13,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
-
+/**
+ * Like [Scaffold] but it adds a navigation graph using [DestinationsScaffold]
+ * with all [destinations] passed in as well as the [startDestination].
+ *
+ * Also, composables that can depend on the current [Destination] are
+ * passed the current [Destination] so that they can update when the user
+ * navigates through the app.
+ *
+ * Lastly, [modifierForPaddingValues] is used to let callers determine
+ * a [Modifier] to set on the [DestinationsNavHost] for a combination
+ * of [PaddingValues] (given from this [Scaffold]) and current [Destination].
+ *
+ * @see [Scaffold]
+ */
 @Composable
 fun DestinationsScaffold(
     destinations: Map<String, Destination>,
