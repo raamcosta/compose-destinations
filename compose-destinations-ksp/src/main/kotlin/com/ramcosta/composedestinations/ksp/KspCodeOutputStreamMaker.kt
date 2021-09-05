@@ -5,7 +5,7 @@ import com.google.devtools.ksp.processing.Dependencies
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import java.io.OutputStream
 
-class KspCodeOutputStreamMaker(
+internal class KspCodeOutputStreamMaker(
     private val codeGenerator: CodeGenerator
 ) : CodeOutputStreamMaker {
 

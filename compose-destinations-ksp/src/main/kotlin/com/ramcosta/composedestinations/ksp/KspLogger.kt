@@ -3,7 +3,7 @@ package com.ramcosta.composedestinations.ksp
 import com.google.devtools.ksp.processing.KSPLogger
 import com.ramcosta.composedestinations.codegen.facades.Logger
 
-class KspLogger(
+internal class KspLogger(
     private val kspLogger: KSPLogger
 ): Logger {
 

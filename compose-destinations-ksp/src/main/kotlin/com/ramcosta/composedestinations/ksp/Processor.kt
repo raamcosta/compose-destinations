@@ -19,7 +19,7 @@ import com.ramcosta.composedestinations.commons.*
 import com.ramcosta.composedestinations.commons.findAnnotation
 import com.ramcosta.composedestinations.commons.findArgumentValue
 
-class Processor(
+internal class Processor(
     private val codeGenerator: CodeGenerator,
     private val logger: KSPLogger,
     private val options: Map<String, String>

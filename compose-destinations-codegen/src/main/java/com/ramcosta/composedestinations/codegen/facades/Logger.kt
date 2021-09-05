@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.facades
 
 interface Logger {
+
     fun logging(message: String)
 
     fun info(message: String)
