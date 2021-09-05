@@ -27,8 +27,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 $IMPORTS_BLOCK
 
-sealed interface $DESTINATION_SPEC : Destination
-
 object $DESTINATIONS_AGGREGATE_CLASS {
 
     val count: Int = $DESTINATIONS_COUNT

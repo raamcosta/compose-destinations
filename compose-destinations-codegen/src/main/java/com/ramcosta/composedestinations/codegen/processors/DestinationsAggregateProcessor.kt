@@ -4,8 +4,10 @@ import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestinationFile
 import com.ramcosta.composedestinations.codegen.commons.DESTINATIONS_AGGREGATE_CLASS
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.templates.DESTINATIONS_COUNT
 import com.ramcosta.composedestinations.codegen.templates.DESTINATIONS_INSIDE_MAP_OF
 import com.ramcosta.composedestinations.codegen.templates.IMPORTS_BLOCK
@@ -31,6 +33,15 @@ class DestinationsAggregateProcessor(
             .replace(DESTINATIONS_INSIDE_MAP_OF, destinationsInsideMap(generatedDestinationFiles))
 
         file.close()
+
+        val sealedDestSpecFile: OutputStream = codeGenerator.makeFile(
+            packageName = PACKAGE_NAME,
+            name = DESTINATION_SPEC
+        )
+
+        sealedDestSpecFile += sealedDestinationTemplate
+
+        sealedDestSpecFile.close()
     }
 
     private fun importsCode(qualifiedNames: List<GeneratedDestinationFile>): String {
