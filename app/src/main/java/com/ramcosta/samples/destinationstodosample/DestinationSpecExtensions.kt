@@ -22,7 +22,7 @@ fun DestinationSpec.DrawerContent(
         GreetingDestination,
         SettingsDestination -> {
             Text(
-                text = stringResource(id = title()),
+                text = stringResource(id = title),
                 modifier = Modifier
                     .padding(8.dp)
                     .clickable {
@@ -49,8 +49,8 @@ fun DestinationSpec.destinationPadding(parentPadding: PaddingValues): Modifier {
     }
 }
 
-@StringRes
-fun DestinationSpec.title(): Int {
+@get:StringRes
+val DestinationSpec.title get(): Int {
     return when (this) {
         GreetingDestination -> R.string.greeting_screen
         ProfileDestination -> R.string.profile_screen

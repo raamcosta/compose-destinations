@@ -22,7 +22,7 @@ fun Settings() {
             .background(Color.Magenta)
     ) {
         Text(
-            text = stringResource(id = SettingsDestination.title()),
+            text = stringResource(id = SettingsDestination.title),
             modifier = Modifier.align(Alignment.Center)
         )
     }

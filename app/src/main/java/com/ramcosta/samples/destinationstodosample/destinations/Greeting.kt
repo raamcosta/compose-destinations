@@ -35,7 +35,7 @@ fun Greeting(
             modifier = Modifier.align(Alignment.Center)
         ) {
             Text(
-                text = stringResource(id = GreetingDestination.title()),
+                text = stringResource(id = GreetingDestination.title),
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 

@@ -22,7 +22,7 @@ fun Feed() {
             .background(Color.Red)
     ) {
         Text(
-            text = stringResource(id = FeedDestination.title()),
+            text = stringResource(id = FeedDestination.title),
             modifier = Modifier.align(Alignment.Center)
         )
     }
