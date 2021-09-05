@@ -1,16 +1,19 @@
 object Versions {
     const val minSdk = 21
-    const val compileSdk = 30
+    const val compileSdk = 31
     const val targetSdk = compileSdk
 
     const val kotlin = "1.5.21"
-    const val compose = "1.0.1"
-    const val composeNavigation = "2.4.0-alpha06"
+    const val dependencyCheckPlugin = "0.39.0"
+    const val gradlePluginVersion = "7.0.2"
+
+    const val compose = "1.0.2"
+    const val composeNavigation = "2.4.0-alpha08"
     const val composeViewModel = "1.0.0-alpha07"
+    const val activityCompose = "1.3.1"
 
     const val material = "1.4.0"
-    const val activityCompose = "1.3.0"
-    const val lifecycleKtx = "2.4.0-alpha01"
+    const val lifecycleKtx = "2.4.0-alpha03"
     const val lifecycleRuntimeKtx = lifecycleKtx
 
     const val ksp = "1.5.21-1.0.0-beta07"
@@ -22,6 +25,8 @@ object Deps {
 
     object Gradle {
         const val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+        const val dependencyCheckPlugin = "com.github.ben-manes.versions"
+        const val pluginVersion = "com.android.tools.build:gradle:${Versions.gradlePluginVersion}"
     }
 
     object Android {
