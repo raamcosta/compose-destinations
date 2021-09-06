@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    id("maven-publish")
 }
 
 dependencies {
@@ -7,4 +8,12 @@ dependencies {
 
     implementation(Deps.Ksp.api)
     implementation(Deps.Test.junit)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
+    }
 }

@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("com.vanniktech.maven.publish")
 }
 
 android {
@@ -46,4 +47,8 @@ dependencies {
         implementation(material)
         implementation(navigation)
     }
+}
+
+mavenPublish {
+    releaseSigningEnabled = false
 }
