@@ -10,10 +10,10 @@ dependencies {
     implementation(Deps.Test.junit)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-        }
-    }
+tasks.jar {
+    from(project(":compose-destinations-codegen").sourceSets.main.get().output)
+}
+
+apply {
+    from("publish.gradle")
 }

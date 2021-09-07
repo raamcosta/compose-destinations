@@ -1,0 +1,16 @@
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            pom.withXml {
+                asNode().dependencies.dependency.each { dep ->
+                    if(dep.artifactId.last().value().contains("compose-destinations-codegen")
+                            || dep.artifactId.last().value().contains("junit")) {
+                        assert dep.parent().remove(dep)
+                    }
+                }
+            }
+        }
+    }
+}
