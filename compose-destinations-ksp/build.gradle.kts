@@ -10,10 +10,13 @@ dependencies {
     implementation(Deps.Test.junit)
 }
 
-tasks.jar {
-    from(project(":compose-destinations-codegen").sourceSets.main.get().output)
-}
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            groupId = "com.github.raamcosta.compose-destinations"
+            artifactId = "ksp"
 
-apply {
-    from("publish.gradle")
+            from(components["java"])
+        }
+    }
 }
