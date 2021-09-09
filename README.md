@@ -1,8 +1,10 @@
+[![](https://jitpack.io/v/raamcosta/compose-destinations.svg)](https://jitpack.io/#raamcosta/compose-destinations)
+
 # Compose Destinations
 
 ### What?
 
-Compose destinations is a library to use alongside compose navigation. If you are already using compose navigation, then this will be a good and easy addition that
+Compose destinations is a KSP library to use alongside compose navigation. If you are already using compose navigation, then this will be a good and easy addition that
 will make adding new destinations have less boilerplate and be less error-prone, as well as enabling type-safe navigation.
 
 ### Why?
@@ -28,7 +30,7 @@ fun HomeScreen(
 ```
 
 2. Replace your `NavHost` call with `Destinations.NavHost` (or if using a `Scaffold`, then replace it with `Destinations.Scaffold`). 
-You can also remove the builder blocks.
+You can also remove the builder blocks, you won't be needing them anymore.
 
 ```kotlin
 Destinations.NavHost(
@@ -78,36 +80,63 @@ Now the IDE will even tell you the default arguments of the composable when call
 Notes about arguments:
 - They must be one of `String`, `Boolean`, `Int`, `Float`, `Long` to be considered navigation arguments.
   `NavController`, `NavBackStackEntry` or `ScaffoldState` (only if you are using `Scaffold`) can also be used by all destinations.
-- Navigation arguments with default values must be resolvable from the generated `DestinationSpec` class since the code written after the "`=`" 
-  will be copied into the generated classes. 
-Unfortunately, this means you won't be able to use a private constant as the default value. We'll be looking for ways to improve this.
+- Navigation arguments' default values must be resolvable from the generated `DestinationSpec` class since the code written after the "`=`" 
+  will be copied into it as is. 
+Unfortunately, this means you won't be able to use a constant or a function call as the default value of a nav argument. However, if the parameter 
+  type is not a navigation argument type, then everything is valid since it won't be considered a navigation argument of the destination.
+  For example:
+```kotlin
+@Destination(route = "greeting", start = true)
+@Composable
+fun Greeting(
+    navController: NavController,
+    coroutineScope: CoroutineScope = rememberCoroutineScope() //valid because CoroutineScope is not a navigation argument type
+)
+
+@Destination(route = "user")
+@Composable
+fun UserScreen(
+    navController: NavController,
+    id: Int = getDefaultUserId() //not valid because Int is a navigation argument type so we need to resolve the default value in the generated classes
+)
+
+//As a temporary workaround, you could define the argument as nullable (or lets say -1)
+@Destination(route = "user")
+@Composable
+fun UserScreen(
+  navController: NavController,
+  id: Int? = null
+) {
+  //then here do:
+  val actualId = id ?: getDefaultUserId()
+}
+```
+We'll be looking for ways to improve this.
 
 ### Dependencies
 
-For now, in order to try Compose Destinations, add jitpack repository and point to a specific commit. For the public releases, I may change it to maven central.
-
-Add it in your root build.gradle at the end of repositories:
+Add jitpack in your root build.gradle at the end of repositories:
 ```gradle
 allprojects {
-	repositories {
-		//...
-		maven { url 'https://jitpack.io' }
-	}
+    repositories {
+        //...
+        maven { url 'https://jitpack.io' }
+    }
 }
 ```
 
 Add the ksp plugin like this:
 ```gradle
 plugins {
-	//...
-	id("com.google.devtools.ksp") version "1.5.21-1.0.0-beta07" // This will change to the stable ksp version when compose allows us to use kotlin 1.5.30
+    //...
+    id("com.google.devtools.ksp") version "1.5.21-1.0.0-beta07" // This will change to the stable ksp version when compose allows us to use kotlin 1.5.30
 }
 ```
 
 Add the dependencies:
 ```gradle
-implementation 'com.github.raamcosta.compose-destinations:core:e5ff2ae7db'
-ksp 'com.github.raamcosta.compose-destinations:ksp:e5ff2ae7db'
+implementation 'com.github.raamcosta.compose-destinations:core:0.4.0-alpha01'
+ksp 'com.github.raamcosta.compose-destinations:ksp:0.4.0-alpha01'
 
 ```
 
