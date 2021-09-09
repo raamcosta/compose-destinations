@@ -2,9 +2,6 @@ package com.ramcosta.composedestinations.commons
 
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSValueParameter
-import com.ramcosta.composedestinations.codegen.model.DefaultValue
-import com.ramcosta.composedestinations.codegen.model.Known
-import com.ramcosta.composedestinations.codegen.model.None
 import java.io.File
 
 internal class DefaultParameterValueReader {
@@ -13,7 +10,7 @@ internal class DefaultParameterValueReader {
         lineText: String,
         argName: String,
         argType: String,
-    ): DefaultValue {
+    ): String? {
         var auxText = lineText
 
         val anchors = arrayOf(
@@ -37,14 +34,14 @@ internal class DefaultParameterValueReader {
         if (index != -1)
             auxText = auxText.removeRange(index, auxText.length)
 
-        return Known(auxText)
+        return auxText
     }
 }
 
 internal val reader = DefaultParameterValueReader()
 
-internal fun KSValueParameter.getDefaultValue(): DefaultValue {
-    if (!hasDefault) return None
+internal fun KSValueParameter.getDefaultValue(): String? {
+    if (!hasDefault) return null
 
     /*
         This is not ideal: having to read the first n lines of the file,

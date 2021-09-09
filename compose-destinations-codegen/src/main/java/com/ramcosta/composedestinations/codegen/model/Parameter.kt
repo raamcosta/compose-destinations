@@ -1,9 +1,11 @@
 package com.ramcosta.composedestinations.codegen.model
 
-class Parameter(
+data class Parameter(
     val name: String,
     val type: Type,
-    val defaultValue: DefaultValue
+    val defaultValueSrc: String?
 ) {
-    val isMandatory: Boolean get() = !type.isNullable && defaultValue is None
+    val hasDefault get() = defaultValueSrc != null
+
+    val isMandatory: Boolean get() = !type.isNullable && !hasDefault
 }

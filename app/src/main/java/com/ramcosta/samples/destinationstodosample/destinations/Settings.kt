@@ -31,7 +31,7 @@ fun Profile(
             .background(Color.Green)
     ) {
         Text(
-            text = "Profile ${ProfileDestination.route} " +
+            text = "Profile route: ${ProfileDestination.route} " +
                     "\n\nARGS =" +
                     "\n " +
                     "\n arg0= $arg0" +

@@ -17,15 +17,16 @@ import com.ramcosta.composedestinations.GreetingDestination
 import com.ramcosta.composedestinations.ProfileDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.samples.destinationstodosample.title
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Destination(route = "greeting", start = true)
 @Composable
 fun Greeting(
     navController: NavController,
-    scaffoldState: ScaffoldState
+    scaffoldState: ScaffoldState,
+    coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val coroutineScope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .fillMaxSize()

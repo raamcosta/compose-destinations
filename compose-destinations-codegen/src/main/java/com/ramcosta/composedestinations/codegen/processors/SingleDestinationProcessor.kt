@@ -11,6 +11,7 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_ARGUMENTS
 import com.ramcosta.composedestinations.codegen.templates.SYMBOL_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.templates.WITH_ARGS_METHOD
 import com.ramcosta.composedestinations.codegen.templates.destinationTemplate
+import java.lang.IllegalStateException
 
 class SingleDestinationProcessor(
     private val codeGenerator: CodeOutputStreamMaker,
@@ -33,7 +34,7 @@ class SingleDestinationProcessor(
             .replace(DESTINATION_NAME, fileName)
             .replace(COMPOSED_ROUTE, constructRoute())
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
-            .replace(CONTENT_FUNCION_CODE, callActualComposable())
+            .replace(CONTENT_FUNCION_CODE, contentFunctionCode())
             .replace(WITH_ARGS_METHOD, withArgsMethod())
 
         outputStream.close()
@@ -93,8 +94,8 @@ class SingleDestinationProcessor(
 
     private fun defaultValueWithArgs(it: Parameter): String {
         return when {
-            it.defaultValue is Known -> {
-                " = ${it.defaultValue.srcCode}"
+            it.hasDefault -> {
+                " = ${it.defaultValueSrc}"
             }
 
             it.type.isNullable -> " = null"
@@ -118,7 +119,7 @@ class SingleDestinationProcessor(
         return destination.cleanRoute + mandatoryArgs.toString() + optionalArgs.toString()
     }
 
-    private fun callActualComposable(): String = with(destination) {
+    private fun contentFunctionCode(): String = with(destination) {
         return "${composableName}(${prepareArguments(parameters)})"
     }
 
@@ -126,9 +127,16 @@ class SingleDestinationProcessor(
         var argsCode = ""
 
         parameters.forEachIndexed { i, it ->
-            if (i != 0) argsCode += ", "
+            val argumentResolver = resolveArgumentForTypeAndName(it)
 
-            argsCode += "\n\t\t\t${it.name} = ${resolveArgumentForTypeAndName(it)}"
+            if (argumentResolver != null) {
+                if (i != 0) argsCode += ", "
+
+                argsCode += "\n\t\t\t${it.name} = $argumentResolver"
+
+            } else if (!it.hasDefault) {
+                throw IllegalStateException("Unresolvable argument without default value: $it")
+            }
 
             if (i == parameters.lastIndex) argsCode += "\n\t\t"
         }
@@ -136,21 +144,25 @@ class SingleDestinationProcessor(
         return argsCode
     }
 
-    private fun resolveArgumentForTypeAndName(parameter: Parameter): String {
+    private fun resolveArgumentForTypeAndName(parameter: Parameter): String? {
         return when (parameter.type.qualifiedName) {
             NAV_CONTROLLER_QUALIFIED_NAME -> "navController"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
             SCAFFOLD_STATE_QUALIFIED_NAME -> "scaffoldState ?: throw RuntimeException(\"'scaffoldState' was requested but we don't have it. Is this screen a part of a Scaffold?\")"
-            else -> "navBackStackEntry.arguments?.${parameter.type.toNavBackStackEntryArgGetter(parameter.name)}${defaultCodeIfArgNotPresent(parameter)}"
+            else -> {
+                if (navArgs.contains(parameter)) {
+                    "navBackStackEntry.arguments?.${parameter.type.toNavBackStackEntryArgGetter(parameter.name)}${defaultCodeIfArgNotPresent(parameter)}"
+                } else null
+            }
         }
     }
 
     private fun defaultCodeIfArgNotPresent(parameter: Parameter): String {
 
-        if (parameter.defaultValue is Known) {
-            return if (parameter.defaultValue.srcCode == "null") {
+        if (parameter.hasDefault) {
+            return if (parameter.defaultValueSrc == "null") {
                 ""
-            } else " ?: ${parameter.defaultValue.srcCode}"
+            } else " ?: ${parameter.defaultValueSrc}"
         }
 
         if (parameter.type.isNullable) {
@@ -171,7 +183,7 @@ class SingleDestinationProcessor(
             code += "navArgument(\"${it.name}\") {\n\t\t\t"
             code += "type = ${it.type.toNavTypeCode()}\n\t\t\t"
             code += "nullable = ${it.type.isNullable}\n\t\t"
-            code += navArgDefaultCode(it.defaultValue)
+            code += navArgDefaultCode(it.defaultValueSrc)
             code += "}"
 
             code += if (i != navArgs.lastIndex) {
@@ -184,8 +196,8 @@ class SingleDestinationProcessor(
         return code.toString()
     }
 
-    private fun navArgDefaultCode(argDefault: DefaultValue): String {
-        return if (argDefault is Known) "\tdefaultValue = ${argDefault.srcCode}\n\t\t" else ""
+    private fun navArgDefaultCode(argDefault: String?): String {
+        return if (argDefault != null) "\tdefaultValue = ${argDefault}\n\t\t" else ""
     }
 
     private fun Type.toNavBackStackEntryArgGetter(argName: String): String {

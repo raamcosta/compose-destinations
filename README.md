@@ -8,10 +8,9 @@ will make adding new destinations have less boilerplate and be less error-prone,
 ### Why?
 
 Because:
-- How nice would it be if navigation compose did not rely as much on bundles, strings and other not type-safe stuff?
+- How nice would it be if navigation compose did not rely as much on bundles, strings and other "non-type-safe" stuff?
 - What if we could simply add parameters to the `Composable` function to define the destination arguments?
-- And what if we did not have to do anything else other than create the screen composable when we add a new screen? (Instead of remembering 
-to add a `composable` call in the `NavHost` and most likely adding the destination to some kind of `sealed class`)
+- And what if the navigation graph could be built/updated automatically when we add new or remove old screen composables?
 
 ### How?
 
@@ -76,29 +75,14 @@ fun UserScreen(
 
 Now the IDE will even tell you the default arguments of the composable when calling the `withArgs` method!
 
-NOTE: Currently, arguments do have some limitations:
-- They must be one of `String`, `Boolean`, `Int`, `Float`, `Long`, `NavController`, `NavBackStackEntry` or `ScaffoldState` (only if you are using `Scaffold`).
-- All `Composable` function arguments will be considered navigation arguments except for `NavController`, `NavBackStackEntry` or `ScaffoldState`.
-If you have a view model that you want to access with, for example `hiltViewModel()`, it cannot be a Destination argument. The good practice is to call other
-`Composable` function and use the Destination Composable as a wrapper to the testable `Composable` screen.
-- Default values must be resolvable from the generated `DestinationSpec` class. The code written after the "`=`" will be exactly what is used inside the generated classes. Unfortunately, this means you won't be able to use a private constant as the default value. We'll be looking for ways to improve this.
+Notes about arguments:
+- They must be one of `String`, `Boolean`, `Int`, `Float`, `Long` to be considered navigation arguments.
+  `NavController`, `NavBackStackEntry` or `ScaffoldState` (only if you are using `Scaffold`) can also be used by all destinations.
+- Navigation arguments with default values must be resolvable from the generated `DestinationSpec` class since the code written after the "`=`" 
+  will be copied into the generated classes. 
+Unfortunately, this means you won't be able to use a private constant as the default value. We'll be looking for ways to improve this.
 
-### Going deeper:
-
-- All annotated composables will generate an implementation of `DestinationSpec` which is a sealed interface that contains the full route, navigation arguments,
-`Content` composable function that will call your `Composable` and the `withArgs` implementation.
-- `Scaffold` composable lambda parameters will be given a current `DestinationSpec`. This makes it trivial to have top bar, bottom bar and drawer depend on the current destination.
-- If you would like to have additional properties/functions in the `DestinationSpec` (for example a "title" which will be shown to the user for each screen) you can make an extension 
-property/function of `DestinationSpec`. Since it is a sealed interface, a sealed `when` expression will make sure you always have a definition for each screen (check 
-`DestinationSpecExtensions.kt` file in the sample app).
-
-### Current state
-
-At the moment I haven't done any release because I don't really want people to be using this just yet on real projects. I want to be able to change the APIs without worries.
-I'm looking for all kinds of feedback, issues, feature requests and help in improving the code or even this README. So please, if you find this interesting, try it out in some sample projects and let me know how it goes! 
-
-
-### Import it
+### Dependencies
 
 For now, in order to try Compose Destinations, add jitpack repository and point to a specific commit. For the public releases, I may change it to maven central.
 
@@ -122,10 +106,38 @@ plugins {
 
 Add the dependencies:
 ```gradle
-    implementation 'com.github.raamcosta.compose-destinations:core:e5ff2ae7db'
-    ksp 'com.github.raamcosta.compose-destinations:ksp:e5ff2ae7db'
+implementation 'com.github.raamcosta.compose-destinations:core:e5ff2ae7db'
+ksp 'com.github.raamcosta.compose-destinations:ksp:e5ff2ae7db'
 
 ```
+
+And finally, you need to make sure the IDE looks at the generated folder.
+See KSP related [issue](https://github.com/google/ksp/issues/37).
+An example for the debug variant would be:
+```gradle
+sourceSets {
+    //...
+    main {
+        java.srcDir(file("build/generated/ksp/debug/kotlin"))
+    }
+}
+```
+
+### Going deeper:
+
+- All annotated composables will generate an implementation of `DestinationSpec` which is a sealed interface that contains the full route, navigation arguments,
+  `Content` composable function and the `withArgs` implementation.
+- `Scaffold` composable lambda parameters will be given a current `DestinationSpec`. This makes it trivial to have top bar, bottom bar and drawer depend on the current destination.
+- Besides the `NavHost` and `Scaffold` wrappers, the generated `Destinations` class contains a collection of all `DestinationSpec`s as well as the `startDestination`.
+- If you would like to have additional properties/functions in the `DestinationSpec` (for example a "title" which will be shown to the user for each screen) you can make an extension
+  property/function of `DestinationSpec`. Since it is a sealed interface, a `when` expression will make sure you always have a definition for each screen (check
+  `DestinationSpecExtensions.kt` file in the sample app).
+
+### Current state
+
+This lib is still in its alpha stage, APIs can change.
+I'm looking for all kinds of feedback, issues, feature requests and help in improving the code or even this README. So please, if you find this interesting, try it out in
+some sample projects and let me know how it goes!
 
 ## License
 
