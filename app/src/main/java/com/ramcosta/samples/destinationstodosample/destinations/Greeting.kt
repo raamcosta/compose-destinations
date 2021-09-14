@@ -47,11 +47,12 @@ fun Greeting(
                     navController.navigate(
                         //"settings/{arg0}/{arg5}?arg1={arg1}?arg2={arg2}?arg3={arg3}?arg4={arg4}"
                         ProfileDestination.withArgs(
-                            arg1 = "stuff",
-                            arg0 = 7L,
-                            arg4 = "ARG4",
-                            arg5 = true,
-                            arg3 = "arg3333"
+                            id = 1L
+//                            arg1 = "stuff",
+//                            arg0 = 7L,
+//                            arg4 = "ARG4",
+//                            arg5 = true,
+//                            arg3 = "arg3333"
                         )
                     )
                 }

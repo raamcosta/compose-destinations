@@ -8,6 +8,7 @@ const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"
 const val DESTINATION_ANNOTATION_START_ARGUMENT = "start"
 const val DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT = "navGraph"
 const val DESTINATION_ANNOTATION_DEEP_LINKS = "deepLinks"
+const val DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER = "@ramcosta.destinations.fullroute@" // Needs to be the same as the constant in core module
 
 const val GENERATED_DESTINATION = "Destination"
 const val GENERATED_NAV_GRAPH = "NavGraph"

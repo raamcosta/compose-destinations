@@ -31,12 +31,13 @@ class SingleDestinationProcessor(
             name = name
         )
 
+        val composedRoute = constructRoute()
         outputStream += destinationTemplate
             .replace(ADDITIONAL_IMPORTS, additionalImports())
             .replace(DESTINATION_NAME, name)
-            .replace(COMPOSED_ROUTE, constructRoute())
+            .replace(COMPOSED_ROUTE, composedRoute)
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
-            .replace(DEEP_LINKS, deepLinksDeclarationCode())
+            .replace(DEEP_LINKS, deepLinksDeclarationCode(composedRoute))
             .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
             .replace(WITH_ARGS_METHOD, withArgsMethod())
 
@@ -210,7 +211,7 @@ class SingleDestinationProcessor(
         return code.toString()
     }
 
-    private fun deepLinksDeclarationCode(): String {
+    private fun deepLinksDeclarationCode(composedRoute: String): String {
         val code = StringBuilder()
 
         destination.deepLinks.forEachIndexed { i, it ->
@@ -227,7 +228,7 @@ class SingleDestinationProcessor(
                 code += "\tmimeType = \"${it.mimeType}\"\n\t\t"
             }
             if (it.uriPattern.isNotEmpty()) {
-                code += "\turiPattern = \"${it.uriPattern}\"\n\t\t"
+                code += "\turiPattern = \"${it.uriPattern.replace(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER, composedRoute)}\"\n\t\t"
             }
             code += "}"
 
