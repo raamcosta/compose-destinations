@@ -4,12 +4,10 @@ import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
-import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.KSValueParameter
+import com.google.devtools.ksp.symbol.*
 import com.google.devtools.ksp.validate
 import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.model.DeepLink
 import com.ramcosta.composedestinations.codegen.model.Destination
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.Type
@@ -53,6 +51,7 @@ internal class Processor(
         val composableName = simpleName.asString()
         val name = composableName + GENERATED_DESTINATION_SUFFIX
         val destinationAnnotation = findAnnotation(DESTINATION_ANNOTATION)
+        val deepLinksAnnotations = destinationAnnotation.findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS)!!
 
         return Destination(
             name = name,
@@ -61,6 +60,7 @@ internal class Processor(
             composableQualifiedName = qualifiedName!!.asString(),
             cleanRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT)!!,
             parameters = parameters.map { it.toParameter() },
+            deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             isStart = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
             navGraphName = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!
         )
@@ -79,4 +79,12 @@ internal class Processor(
         declaration.qualifiedName!!.asString(),
         isMarkedNullable
     )
+
+    private fun KSAnnotation.toDeepLink(): DeepLink {
+        return DeepLink(
+            findArgumentValue("action")!!,
+            findArgumentValue("mimeType")!!,
+            findArgumentValue("uriPattern")!!,
+        )
+    }
 }

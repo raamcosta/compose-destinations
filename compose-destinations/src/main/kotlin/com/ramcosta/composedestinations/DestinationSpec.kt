@@ -24,6 +24,12 @@ interface DestinationSpec {
     val arguments: List<NamedNavArgument> get() = emptyList()
 
     /**
+     * All [NavDeepLink]s that will be added to the navigation
+     * graph for this destination
+     */
+    val deepLinks: List<NavDeepLink> get() = emptyList()
+
+    /**
      * [Composable] function that will be called to compose
      * the destination content in the screen, when the user
      * navigates to it.

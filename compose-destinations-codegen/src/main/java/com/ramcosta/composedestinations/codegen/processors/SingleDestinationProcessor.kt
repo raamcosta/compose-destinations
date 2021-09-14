@@ -4,11 +4,12 @@ import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.templates.COMPOSED_ROUTE
-import com.ramcosta.composedestinations.codegen.templates.CONTENT_FUNCION_CODE
+import com.ramcosta.composedestinations.codegen.templates.CONTENT_FUNCTION_CODE
 import com.ramcosta.composedestinations.codegen.templates.DESTINATION_NAME
 import com.ramcosta.composedestinations.codegen.templates.NAV_ARGUMENTS
-import com.ramcosta.composedestinations.codegen.templates.SYMBOL_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.templates.ADDITIONAL_IMPORTS
 import com.ramcosta.composedestinations.codegen.templates.WITH_ARGS_METHOD
 import com.ramcosta.composedestinations.codegen.templates.destinationTemplate
 
@@ -31,16 +32,28 @@ class SingleDestinationProcessor(
         )
 
         outputStream += destinationTemplate
-            .replace(SYMBOL_QUALIFIED_NAME, composableQualifiedName)
+            .replace(ADDITIONAL_IMPORTS, additionalImports())
             .replace(DESTINATION_NAME, name)
             .replace(COMPOSED_ROUTE, constructRoute())
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
-            .replace(CONTENT_FUNCION_CODE, contentFunctionCode())
+            .replace(DEEP_LINKS, deepLinksDeclarationCode())
+            .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
             .replace(WITH_ARGS_METHOD, withArgsMethod())
 
         outputStream.close()
 
         return GeneratedDestination(qualifiedName, name, isStart, navGraphName)
+    }
+
+    private fun additionalImports(): String {
+        val imports = StringBuilder()
+
+        imports += "import ${destination.composableQualifiedName}"
+        if (destination.deepLinks.isNotEmpty()) {
+            imports += "\nimport androidx.navigation.navDeepLink"
+        }
+
+        return imports.toString()
     }
 
     private fun withArgsMethod(): String {
@@ -188,6 +201,37 @@ class SingleDestinationProcessor(
             code += "}"
 
             code += if (i != navArgs.lastIndex) {
+                ",\n\t\t"
+            } else {
+                "\n\t)\n"
+            }
+        }
+
+        return code.toString()
+    }
+
+    private fun deepLinksDeclarationCode(): String {
+        val code = StringBuilder()
+
+        destination.deepLinks.forEachIndexed { i, it ->
+            if (i == 0) {
+                code += "\n\toverride val deepLinks = listOf(\n\t\t"
+            }
+
+            code += "navDeepLink {\n\t\t"
+
+            if (it.action.isNotEmpty()) {
+                code += "\taction = \"${it.action}\"\n\t\t"
+            }
+            if (it.mimeType.isNotEmpty()) {
+                code += "\tmimeType = \"${it.mimeType}\"\n\t\t"
+            }
+            if (it.uriPattern.isNotEmpty()) {
+                code += "\turiPattern = \"${it.uriPattern}\"\n\t\t"
+            }
+            code += "}"
+
+            code += if (i != destination.deepLinks.lastIndex) {
                 ",\n\t\t"
             } else {
                 "\n\t)\n"

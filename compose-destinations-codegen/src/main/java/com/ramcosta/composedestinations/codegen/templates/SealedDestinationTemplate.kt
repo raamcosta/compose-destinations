@@ -8,7 +8,7 @@ import com.ramcosta.composedestinations.codegen.commons.GENERATED_NAV_GRAPH
 val sealedDestinationTemplate = """
 package com.ramcosta.composedestinations
 
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 
 /**
@@ -34,11 +34,21 @@ data class $GENERATED_NAV_GRAPH(
  * Navigates to the [navGraph].
  * It will use its name (which is also the route it is registered in).
  */
-fun NavHostController.navigateToGraph(
+fun NavController.navigateTo(
     navGraph: $GENERATED_NAV_GRAPH,
     navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
 ) {
     navigate(navGraph.name, navOptionsBuilder)
+}
+
+/**
+ * Navigates to the [destination].
+ */
+fun NavController.navigateTo(
+    destination: $GENERATED_DESTINATION,
+    navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
+) {
+    navigate(destination.route, navOptionsBuilder)
 }
 
 """.trimIndent()

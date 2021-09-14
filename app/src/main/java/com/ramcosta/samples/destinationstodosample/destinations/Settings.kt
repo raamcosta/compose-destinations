@@ -14,19 +14,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.SettingsDestination
 import com.ramcosta.composedestinations.ThemeSettingsDestination
+import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigateTo
 import com.ramcosta.samples.destinationstodosample.title
 
 const val SETTINGS_NAV_GRAPH = "settings"
+const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 
 @Destination(
     route = "settings/main",
     start = true,
-    navGraph = SETTINGS_NAV_GRAPH
+    navGraph = SETTINGS_NAV_GRAPH,
+    deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)]
 )
 @Composable
 fun Settings(
-    navController: NavController
+    navController: NavController,
 ) {
     Box(
         Modifier
@@ -37,7 +41,7 @@ fun Settings(
             modifier = Modifier.align(Alignment.Center)
         ) {
             Button(
-                onClick = { navController.navigate(ThemeSettingsDestination.route) }
+                onClick = { navController.navigateTo(ThemeSettingsDestination) }
             ) {
                 Text(text = stringResource(id = ThemeSettingsDestination.title))
             }

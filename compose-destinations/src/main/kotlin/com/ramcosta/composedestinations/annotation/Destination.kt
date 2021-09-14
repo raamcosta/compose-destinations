@@ -22,4 +22,5 @@ annotation class Destination(
     val route: String,
     val start: Boolean = false,
     val navGraph: String = "root",
+    val deepLinks: Array<DeepLink> = []
 )

@@ -81,6 +81,7 @@ private fun NavGraphBuilder.addDestination(
     composable(
         route = destination.route,
         content = { destination.Content(navController, it, scaffoldState) },
-        arguments = destination.arguments
+        arguments = destination.arguments,
+        deepLinks = destination.deepLinks
     )
 }
