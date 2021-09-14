@@ -17,6 +17,12 @@ import androidx.navigation.NavOptionsBuilder
  */
 sealed interface $GENERATED_DESTINATION : $CORE_DESTINATION_SPEC
 
+/**
+ * Realization of [$CORE_NAV_GRAPH_SPEC] for the app.
+ * It uses [$GENERATED_DESTINATION] instead of [$CORE_DESTINATION_SPEC].
+ * 
+ * @see [$CORE_NAV_GRAPH_SPEC]
+ */
 data class $GENERATED_NAV_GRAPH(
     override val name: String,
     override val startDestination: $GENERATED_DESTINATION,
@@ -24,6 +30,10 @@ data class $GENERATED_NAV_GRAPH(
     override val nestedNavGraphs: List<$GENERATED_NAV_GRAPH> = emptyList()
 ): $CORE_NAV_GRAPH_SPEC
 
+/**
+ * Navigates to the [navGraph].
+ * It will use its name (which is also the route it is registered in).
+ */
 fun NavHostController.navigateToGraph(
     navGraph: $GENERATED_NAV_GRAPH,
     navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
