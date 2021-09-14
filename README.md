@@ -2,18 +2,16 @@
 
 # Compose Destinations
 
-### What?
-
 Compose destinations is a KSP library to use alongside compose navigation. It makes managing destinations easier, requiring no boilerplate code and being less error-prone. Navigations between screen destinations are type-safe, since the APIs used for declaring/sending arguments will use the type system, while all the "non-type-safe" code required by compose navigation is generated for you.
 
-### Why?
+## Why?
 
 Because:
 - How nice would it be if navigation compose did not rely as much on bundles, strings and other "non-type-safe" stuff?
 - What if we could simply add parameters to the `Composable` function to define the destination arguments?
 - And what if the navigation graph could be built/updated automatically when we add new or remove old screen composables?
 
-### How?
+## How?
 
 1. Start by annotating the `Composable` functions that you want to add to the navigation graph with `@Destination`.
 
@@ -113,7 +111,43 @@ fun UserScreen(
 ```
 We'll be looking for ways to improve this.
 
-### Dependencies
+## Deep Linking
+
+You can define deeps links to a destination like this:
+
+```kotlin
+@Destination(
+  route = "user",
+  deepLinks = [
+    DeepLink(
+      uriPattern = "https://myapp.com/user/{id}"
+    )
+  ]
+)
+@Composable
+fun UserScreen(
+  navController: NavController,
+  id: Int
+)
+```
+You can also use the placeholder suffix `FULL_ROUTE_PLACEHOLDER` in your `uriPattern`. In the code generation process it will be replaced with the full route of the destination which contains all the destination arguments. So, for example, this would result in the same `uriPattern` as the above example:
+```kotlin
+@Destination(
+  route = "user",
+  deepLinks = [
+    DeepLink(
+      uriPattern = "https://myapp.com/$FULL_ROUTE_PLACEHOLDER"
+    )
+  ]
+)
+@Composable
+fun UserScreen(
+  navController: NavController,
+  id: Int
+)
+```
+
+## Dependencies
 
 Add jitpack in your root build.gradle at the end of repositories:
 ```gradle
@@ -152,7 +186,7 @@ sourceSets {
 }
 ```
 
-### Going deeper:
+## Going deeper:
 
 - All annotated composables will generate an implementation of `Destination` which is a sealed interface that contains the full route, navigation arguments,
   `Content` composable function and the `withArgs` implementation.
@@ -162,7 +196,7 @@ sourceSets {
 - If you would like to have additional properties/functions in the `Destination` (for example a "title" which will be shown to the user for each screen) you can make an extension
   property/function of `Destination` for a similar effect. Since it is a sealed interface, a `when` expression will make sure you always have a definition for each screen (check this file for an example [file](https://github.com/raamcosta/compose-destinations/blob/main/app/src/main/java/com/ramcosta/samples/destinationstodosample/DestinationSpecExtensions.kt)).
 
-### Current state
+## Current state
 
 This lib is still in its alpha stage, APIs can change.
 I'm looking for all kinds of feedback, issues, feature requests and help in improving the code or even this README. So please, if you find this interesting, try it out in
