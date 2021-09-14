@@ -7,5 +7,6 @@ data class Destination(
     val composableQualifiedName: String,
     val cleanRoute: String,
     val parameters: List<Parameter>,
-    val isStart: Boolean
+    val isStart: Boolean,
+    val navGraphName: String
 )

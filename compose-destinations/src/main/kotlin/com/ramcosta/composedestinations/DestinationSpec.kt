@@ -10,7 +10,7 @@ import androidx.navigation.compose.NamedNavArgument
  * added to a navigation graph and composed on the screen
  * when the user navigates to it.
  */
-interface Destination {
+interface DestinationSpec {
 
     /**
      * Full route that will be added to the navigation graph

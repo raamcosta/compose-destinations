@@ -51,7 +51,7 @@ internal class Processor(
 
     private fun KSFunctionDeclaration.toDestination(): Destination {
         val composableName = simpleName.asString()
-        val name = composableName + DESTINATION_SPEC_SUFFIX
+        val name = composableName + GENERATED_DESTINATION_SUFFIX
         val destinationAnnotation = findAnnotation(DESTINATION_ANNOTATION)
 
         return Destination(
@@ -61,7 +61,8 @@ internal class Processor(
             composableQualifiedName = qualifiedName!!.asString(),
             cleanRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT)!!,
             parameters = parameters.map { it.toParameter() },
-            isStart = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!
+            isStart = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
+            navGraphName = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!
         )
     }
 

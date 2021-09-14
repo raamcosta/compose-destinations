@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.codegen.templates
 
-import com.ramcosta.composedestinations.codegen.commons.DESTINATION_SPEC
+import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION
 import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 
 //region anchors
@@ -23,7 +23,7 @@ import androidx.compose.material.ScaffoldState
 import androidx.navigation.compose.navArgument
 import $SYMBOL_QUALIFIED_NAME
 
-object $DESTINATION_NAME: $DESTINATION_SPEC {
+object $DESTINATION_NAME: $GENERATED_DESTINATION {
 
     override val route get() = "$COMPOSED_ROUTE"
     $NAV_ARGUMENTS

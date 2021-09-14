@@ -6,9 +6,14 @@ const val DESTINATION_ANNOTATION = "Destination"
 const val DESTINATION_ANNOTATION_QUALIFIED = "$PACKAGE_NAME.annotation.Destination"
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"
 const val DESTINATION_ANNOTATION_START_ARGUMENT = "start"
+const val DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT = "navGraph"
 
-const val DESTINATION_SPEC = "DestinationSpec"
-const val DESTINATION_SPEC_SUFFIX = "Destination"
+const val GENERATED_DESTINATION = "Destination"
+const val GENERATED_NAV_GRAPH = "NavGraph"
+const val GENERATED_DESTINATION_SUFFIX = "Destination"
+
+const val CORE_DESTINATION_SPEC = "DestinationSpec"
+const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
 
 const val DESTINATIONS_AGGREGATE_CLASS = "Destinations"
 

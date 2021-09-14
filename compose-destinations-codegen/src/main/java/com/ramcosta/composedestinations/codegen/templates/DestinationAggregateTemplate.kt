@@ -1,14 +1,10 @@
 package com.ramcosta.composedestinations.codegen.templates
 
-import com.ramcosta.composedestinations.codegen.commons.DESTINATIONS_AGGREGATE_CLASS
-import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION
-import com.ramcosta.composedestinations.codegen.commons.DESTINATION_SPEC
-import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.*
 
 //region anchors
 internal const val IMPORTS_BLOCK = "[IMPORTS_BLOCK]"
-internal const val DESTINATIONS_INSIDE_MAP_OF = "[DESTINATIONS_INSIDE_MAP_OF]"
-internal const val STARTING_DESTINATION = "[STARTING_DESTINATION]"
+internal const val NAV_GRAPHS_DECLARATION = "[NAV_GRAPHS_DECLARATION]"
 //endregion
 
 internal val destinationsTemplate = """
@@ -29,25 +25,12 @@ $IMPORTS_BLOCK
 
 /**
  * Class generated if any Composable is annotated with `@$DESTINATION_ANNOTATION`.
- * It aggregates all [$DESTINATION_SPEC]s and has 
+ * It aggregates all [$GENERATED_DESTINATION]s and has 
  * [DestinationsNavHost]/[DestinationsScaffold] equivalent methods which
  * will relay the destinations to be used in the navigation graph.
  */
 object $DESTINATIONS_AGGREGATE_CLASS {
-
-    /**
-     * Start destination of the navigation graph deduced from
-     * the `@$DESTINATION_ANNOTATION` declared with `start = true`
-     */
-    val start: $DESTINATION_SPEC = $STARTING_DESTINATION
-
-    /**
-     * Available [$DESTINATION_SPEC]s generated form the
-     * `@$DESTINATION_ANNOTATION` annotation.
-     */
-    val all: Map<String, $DESTINATION_SPEC> = mapOf(
-        $DESTINATIONS_INSIDE_MAP_OF
-    )
+    $NAV_GRAPHS_DECLARATION
 
     /**
      * Like [DestinationsNavHost] but uses composables annotated with 
@@ -59,16 +42,13 @@ object $DESTINATIONS_AGGREGATE_CLASS {
     fun NavHost(
         navController: NavHostController,
         modifier: Modifier = Modifier,
-        route: String? = null,
         builder: NavGraphBuilder.() -> Unit = {}
     ) {
         DestinationsNavHost(
-            all.values,
+            ${GENERATED_NAV_GRAPH}s.root,
             navController,
-            start,
             modifier,
             null,
-            route,
             builder
         )
     }
@@ -76,7 +56,7 @@ object $DESTINATIONS_AGGREGATE_CLASS {
     /**
      * Like [DestinationsScaffold] but uses composables annotated with
      * `@$DESTINATION_ANNOTATION` to pass in as the destinations available.
-     * It will also expose [Destination] as the generated sealed [$DESTINATION_SPEC]
+     * It will also expose [Destination] as the generated sealed [$GENERATED_DESTINATION]
      * interface to allow for exhaustive when expressions.
      * 
      * @see [DestinationsScaffold]
@@ -86,13 +66,13 @@ object $DESTINATIONS_AGGREGATE_CLASS {
         modifier: Modifier = Modifier,
         navController: NavHostController = rememberNavController(),
         scaffoldState: ScaffoldState = rememberScaffoldState(),
-        topBar: (@Composable ($DESTINATION_SPEC) -> Unit) = {},
-        bottomBar: @Composable ($DESTINATION_SPEC) -> Unit = {},
+        topBar: (@Composable ($GENERATED_DESTINATION) -> Unit) = {},
+        bottomBar: @Composable ($GENERATED_DESTINATION) -> Unit = {},
         snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) },
-        floatingActionButton: @Composable ($DESTINATION_SPEC) -> Unit = {},
+        floatingActionButton: @Composable ($GENERATED_DESTINATION) -> Unit = {},
         floatingActionButtonPosition: FabPosition = FabPosition.End,
         isFloatingActionButtonDocked: Boolean = false,
-        drawerContent: @Composable (ColumnScope.($DESTINATION_SPEC) -> Unit)? = null,
+        drawerContent: @Composable (ColumnScope.($GENERATED_DESTINATION) -> Unit)? = null,
         drawerGesturesEnabled: Boolean = true,
         drawerShape: Shape = MaterialTheme.shapes.large,
         drawerElevation: Dp = DrawerDefaults.Elevation,
@@ -101,21 +81,20 @@ object $DESTINATIONS_AGGREGATE_CLASS {
         drawerScrimColor: Color = DrawerDefaults.scrimColor,
         backgroundColor: Color = MaterialTheme.colors.background,
         contentColor: Color = contentColorFor(backgroundColor),
-        modifierForDestination: ($DESTINATION_SPEC, PaddingValues) -> Modifier = { _, _ -> Modifier }
+        modifierForDestination: ($GENERATED_DESTINATION, PaddingValues) -> Modifier = { _, _ -> Modifier }
     ) {
         DestinationsScaffold(
-            all,
-            start,
+            ${GENERATED_NAV_GRAPH}s.root,
             modifier,
             navController,
             scaffoldState,
-            { topBar(it as $DESTINATION_SPEC) },
-            { bottomBar(it as $DESTINATION_SPEC) },
+            { topBar(it as $GENERATED_DESTINATION) },
+            { bottomBar(it as $GENERATED_DESTINATION) },
             snackbarHost,
-            { floatingActionButton(it as $DESTINATION_SPEC) },
+            { floatingActionButton(it as $GENERATED_DESTINATION) },
             floatingActionButtonPosition,
             isFloatingActionButtonDocked,
-            drawerContent?.let { { drawerContent.invoke(this, it as $DESTINATION_SPEC) } },
+            drawerContent?.let { { drawerContent.invoke(this, it as $GENERATED_DESTINATION) } },
             drawerGesturesEnabled,
             drawerShape,
             drawerElevation,
@@ -124,7 +103,7 @@ object $DESTINATIONS_AGGREGATE_CLASS {
             drawerScrimColor,
             backgroundColor,
             contentColor,
-            { dest, padding -> modifierForDestination(dest as $DESTINATION_SPEC, padding) }
+            { dest, padding -> modifierForDestination(dest as $GENERATED_DESTINATION, padding) }
         )
     }
 }

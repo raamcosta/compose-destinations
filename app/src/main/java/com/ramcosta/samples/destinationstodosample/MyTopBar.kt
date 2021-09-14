@@ -10,18 +10,20 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.DestinationSpec
+import com.ramcosta.composedestinations.Destination
 
 @Composable
 fun MyTopBar(
-    destination: DestinationSpec,
-    onDrawerClick: () -> Unit
+    destination: Destination,
+    onDrawerClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -45,5 +47,16 @@ fun MyTopBar(
             modifier = Modifier.align(Alignment.Center),
             color = Color.White
         )
+
+        IconButton(
+            onClick = onSettingsClick,
+            modifier = Modifier.align(Alignment.CenterEnd)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Settings,
+                tint = Color.White,
+                contentDescription = "menu"
+            )
+        }
     }
 }

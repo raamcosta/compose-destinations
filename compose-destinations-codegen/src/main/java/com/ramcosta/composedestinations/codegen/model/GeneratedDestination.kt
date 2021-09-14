@@ -1,7 +1,8 @@
 package com.ramcosta.composedestinations.codegen.model
 
-data class GeneratedDestinationFile(
+data class GeneratedDestination(
     val qualifiedName: String,
     val simpleName: String,
-    val isStartDestination: Boolean
+    val isStartDestination: Boolean,
+    val navGraphName: String
 )

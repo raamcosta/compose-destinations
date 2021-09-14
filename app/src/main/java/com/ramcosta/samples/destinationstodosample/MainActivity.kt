@@ -7,6 +7,7 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.Destinations
+import com.ramcosta.composedestinations.navigateToGraph
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
 import kotlinx.coroutines.launch
 
@@ -26,15 +27,16 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         MyTopBar(
                             destination = it,
-                            onDrawerClick = { coroutineScope.launch { scaffoldState.drawerState.open() } }
+                            onDrawerClick = { coroutineScope.launch { scaffoldState.drawerState.open() } },
+                            onSettingsClick = { navController.navigateToGraph(Destinations.NavGraphs.settings) }
                         )
                     },
                     bottomBar = {
                         MyBottomBar(destination = it)
                     },
                     drawerContent = { currentDestination ->
-                        Destinations.all.values
-                            .sortedBy { if (it == Destinations.start) 0 else 1 }
+                        Destinations.NavGraphs.root.destinations.values
+                            .sortedBy { if (it == Destinations.NavGraphs.root.startDestination) 0 else 1 }
                             .forEach {
                                 it.DrawerContent(
                                     isSelected = it == currentDestination,

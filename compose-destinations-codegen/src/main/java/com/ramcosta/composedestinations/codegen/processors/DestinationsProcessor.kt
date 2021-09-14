@@ -9,8 +9,8 @@ class DestinationsProcessor(
     private val logger: Logger
 ) {
 
-    fun process(destinations: Sequence<Destination>): List<GeneratedDestinationFile> {
-        val generatedFiles = mutableListOf<GeneratedDestinationFile>()
+    fun process(destinations: Sequence<Destination>): List<GeneratedDestination> {
+        val generatedFiles = mutableListOf<GeneratedDestination>()
 
         destinations.forEach { destination ->
             generatedFiles.add(SingleDestinationProcessor(codeGenerator, logger, destination).process())

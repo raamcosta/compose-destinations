@@ -11,7 +11,6 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_ARGUMENTS
 import com.ramcosta.composedestinations.codegen.templates.SYMBOL_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.templates.WITH_ARGS_METHOD
 import com.ramcosta.composedestinations.codegen.templates.destinationTemplate
-import java.lang.IllegalStateException
 
 class SingleDestinationProcessor(
     private val codeGenerator: CodeOutputStreamMaker,
@@ -21,17 +20,19 @@ class SingleDestinationProcessor(
 
     private val navArgs = destination.parameters.filter { it.type.toNavTypeCodeOrNull() != null }
 
-    fun process(): GeneratedDestinationFile = with(destination) {
-        val fileName = name
+    fun process(): GeneratedDestination = with(destination) {
+        if (isStart && navArgs.any { it.isMandatory }) {
+            throw IllegalStateException("Start destinations cannot have mandatory navigation arguments! (route: \"$cleanRoute\")")
+        }
 
         val outputStream = codeGenerator.makeFile(
             packageName = PACKAGE_NAME,
-            name = fileName
+            name = name
         )
 
         outputStream += destinationTemplate
             .replace(SYMBOL_QUALIFIED_NAME, composableQualifiedName)
-            .replace(DESTINATION_NAME, fileName)
+            .replace(DESTINATION_NAME, name)
             .replace(COMPOSED_ROUTE, constructRoute())
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
             .replace(CONTENT_FUNCION_CODE, contentFunctionCode())
@@ -39,7 +40,7 @@ class SingleDestinationProcessor(
 
         outputStream.close()
 
-        return GeneratedDestinationFile(qualifiedName, name, isStart)
+        return GeneratedDestination(qualifiedName, name, isStart, navGraphName)
     }
 
     private fun withArgsMethod(): String {

@@ -12,9 +12,14 @@ package com.ramcosta.composedestinations.annotation
  *
  * @param route main route of this destination (with no arguments)
  * @param start `true` if this destination is the start destination of the navigation graph
+ * @param navGraph name of the navigation graph this destination is a part of.
+ * `"root"` is used by default. If this destination is part of a nested nav graph, then this should
+ * be used
  */
 @Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.SOURCE)
 annotation class Destination(
     val route: String,
-    val start: Boolean = false
+    val start: Boolean = false,
+    val navGraph: String = "root",
 )

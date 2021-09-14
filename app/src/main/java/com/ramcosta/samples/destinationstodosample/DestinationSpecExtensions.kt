@@ -13,9 +13,9 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.*
 
 @Composable
-fun DestinationSpec.DrawerContent(
+fun Destination.DrawerContent(
     isSelected: Boolean,
-    onDestinationClick: (DestinationSpec) -> Unit
+    onDestinationClick: (Destination) -> Unit
 ) {
     when (this) {
         FeedDestination,
@@ -31,30 +31,34 @@ fun DestinationSpec.DrawerContent(
                 fontWeight = if (isSelected) FontWeight.Bold else null
             )
         }
-        ProfileDestination -> { }
+        ProfileDestination,
+        ThemeSettingsDestination -> { }
     }
 }
 
-fun DestinationSpec.destinationPadding(parentPadding: PaddingValues): Modifier {
+fun Destination.destinationPadding(parentPadding: PaddingValues): Modifier {
     return when (this) {
-        GreetingDestination -> Modifier.padding(parentPadding)
+        ThemeSettingsDestination,
+        GreetingDestination,
+        FeedDestination,
         ProfileDestination -> Modifier.padding(parentPadding)
+
         SettingsDestination -> Modifier.padding(
             start = 0.dp,
             end = 0.dp,
             top = parentPadding.calculateTopPadding() + 10.dp,
             bottom = parentPadding.calculateBottomPadding() + 10.dp
         )
-        FeedDestination -> Modifier.padding(parentPadding)
     }
 }
 
 @get:StringRes
-val DestinationSpec.title get(): Int {
+val Destination.title get(): Int {
     return when (this) {
         GreetingDestination -> R.string.greeting_screen
         ProfileDestination -> R.string.profile_screen
         SettingsDestination -> R.string.settings_screen
         FeedDestination -> R.string.feed_screen
+        ThemeSettingsDestination -> R.string.theme_settings_screen
     }
 }
