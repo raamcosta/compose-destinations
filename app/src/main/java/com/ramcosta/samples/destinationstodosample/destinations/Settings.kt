@@ -11,12 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import com.ramcosta.composedestinations.SettingsDestination
-import com.ramcosta.composedestinations.ThemeSettingsDestination
+import com.ramcosta.composedestinations.*
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigateTo
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.title
 
 const val SETTINGS_NAV_GRAPH = "settings"
@@ -30,7 +29,7 @@ const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 )
 @Composable
 fun Settings(
-    navController: NavController,
+    navigator: DestinationsNavigator,
 ) {
     Box(
         Modifier
@@ -41,7 +40,7 @@ fun Settings(
             modifier = Modifier.align(Alignment.Center)
         ) {
             Button(
-                onClick = { navController.navigateTo(ThemeSettingsDestination) }
+                onClick = { navigator.navigate(ThemeSettingsDestination) }
             ) {
                 Text(text = stringResource(id = ThemeSettingsDestination.title))
             }
@@ -51,4 +50,13 @@ fun Settings(
             )
         }
     }
+}
+
+/**
+ * As an example of a preview
+ */
+//@Preview
+@Composable
+fun SettingsPreview() {
+    Settings(EmptyDestinationsNavigator)
 }

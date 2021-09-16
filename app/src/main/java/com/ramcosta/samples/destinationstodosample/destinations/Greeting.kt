@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.GreetingDestination
 import com.ramcosta.composedestinations.ProfileDestination
 import com.ramcosta.composedestinations.annotation.Destination
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 @Destination(route = "greeting", start = true)
 @Composable
 fun Greeting(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     scaffoldState: ScaffoldState,
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
@@ -44,17 +44,7 @@ fun Greeting(
 
             Button(
                 onClick = {
-                    navController.navigate(
-                        //"settings/{arg0}/{arg5}?arg1={arg1}?arg2={arg2}?arg3={arg3}?arg4={arg4}"
-                        ProfileDestination.withArgs(
-                            id = 1L
-//                            arg1 = "stuff",
-//                            arg0 = 7L,
-//                            arg4 = "ARG4",
-//                            arg5 = true,
-//                            arg3 = "arg3333"
-                        )
-                    )
+                    navigator.navigate(ProfileDestination.withArgs(id = 1L))
                 }
             ) {
                 Text(text = "GO TO PROFILE")

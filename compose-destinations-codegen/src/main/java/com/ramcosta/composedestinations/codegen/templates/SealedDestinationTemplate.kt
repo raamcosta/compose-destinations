@@ -10,6 +10,7 @@ package com.ramcosta.composedestinations
 
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
+import com.ramcosta.composedestinations.navigation.Routed
 
 /**
  * When using the code gen module, all APIs will expose
@@ -24,31 +25,20 @@ sealed interface $GENERATED_DESTINATION : $CORE_DESTINATION_SPEC
  * @see [$CORE_NAV_GRAPH_SPEC]
  */
 data class $GENERATED_NAV_GRAPH(
-    override val name: String,
+    override val route: String,
     override val startDestination: $GENERATED_DESTINATION,
     override val destinations: Map<String, $GENERATED_DESTINATION>,
     override val nestedNavGraphs: List<$GENERATED_NAV_GRAPH> = emptyList()
 ): $CORE_NAV_GRAPH_SPEC
 
 /**
- * Navigates to the [navGraph].
- * It will use its name (which is also the route it is registered in).
+ * Navigates to the [$GENERATED_NAV_GRAPH] or [$GENERATED_DESTINATION].
  */
 fun NavController.navigateTo(
-    navGraph: $GENERATED_NAV_GRAPH,
+    routed: Routed,
     navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
 ) {
-    navigate(navGraph.name, navOptionsBuilder)
-}
-
-/**
- * Navigates to the [destination].
- */
-fun NavController.navigateTo(
-    destination: $GENERATED_DESTINATION,
-    navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
-) {
-    navigate(destination.route, navOptionsBuilder)
+    navigate(routed.route, navOptionsBuilder)
 }
 
 """.trimIndent()

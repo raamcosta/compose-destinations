@@ -33,7 +33,7 @@ fun DestinationsNavHost(
         navController = navController,
         startDestination = navGraph.startDestination.route,
         modifier = modifier,
-        route = navGraph.name
+        route = navGraph.route
     ) {
         addNavGraphDestinations(navGraph, navController, scaffoldState)
 
@@ -63,7 +63,7 @@ private fun NavGraphBuilder.addNestedNavGraphs(
     scaffoldState: ScaffoldState?
 ) {
     nestedNavGraphs.forEach { nestedGraph ->
-        navigation(nestedGraph.startDestination.route, nestedGraph.name) {
+        navigation(nestedGraph.startDestination.route, nestedGraph.route) {
             nestedGraph.destinations.forEach {
                 addDestination(it.value, navController, scaffoldState)
             }

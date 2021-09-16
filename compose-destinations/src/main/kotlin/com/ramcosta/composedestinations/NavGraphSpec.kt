@@ -1,15 +1,17 @@
 package com.ramcosta.composedestinations
 
+import com.ramcosta.composedestinations.navigation.Routed
+
 /**
  * Defines a navigation graph.
  */
-interface NavGraphSpec {
+interface NavGraphSpec: Routed {
 
     /**
-     * Unique name of this navigation graph.
+     * Route for this navigation graph.
      * It can be used to navigate to it.
      */
-    val name: String
+    override val route: String
 
     /**
      * Start destination of this navigation graph.

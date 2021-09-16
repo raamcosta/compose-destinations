@@ -23,7 +23,7 @@ class SingleDestinationProcessor(
 
     fun process(): GeneratedDestination = with(destination) {
         if (isStart && navArgs.any { it.isMandatory }) {
-            throw IllegalStateException("Start destinations cannot have mandatory navigation arguments! (route: \"$cleanRoute\")")
+            throw RuntimeException("Start destinations cannot have mandatory navigation arguments! (route: \"$cleanRoute\")")
         }
 
         val outputStream = codeGenerator.makeFile(
@@ -52,6 +52,10 @@ class SingleDestinationProcessor(
         imports += "import ${destination.composableQualifiedName}"
         if (destination.deepLinks.isNotEmpty()) {
             imports += "\nimport androidx.navigation.navDeepLink"
+        }
+
+        if (destination.parameters.any { it.type.qualifiedName == DESTINATIONS_NAVIGATOR_QUALIFIED_NAME }) {
+            imports += "\nimport $CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME"
         }
 
         return imports.toString()
@@ -135,10 +139,10 @@ class SingleDestinationProcessor(
     }
 
     private fun contentFunctionCode(): String = with(destination) {
-        return "${composableName}(${prepareArguments(parameters)})"
+        return "${composableName}(${prepareArguments()})"
     }
 
-    private fun prepareArguments(parameters: List<Parameter>): String {
+    private fun prepareArguments(): String = with(destination) {
         var argsCode = ""
 
         parameters.forEachIndexed { i, it ->
@@ -150,7 +154,7 @@ class SingleDestinationProcessor(
                 argsCode += "\n\t\t\t${it.name} = $argumentResolver"
 
             } else if (!it.hasDefault) {
-                throw IllegalStateException("Unresolvable argument without default value: $it")
+                throw RuntimeException("Unresolvable argument without default value: $it")
             }
 
             if (i == parameters.lastIndex) argsCode += "\n\t\t"
@@ -162,6 +166,7 @@ class SingleDestinationProcessor(
     private fun resolveArgumentForTypeAndName(parameter: Parameter): String? {
         return when (parameter.type.qualifiedName) {
             NAV_CONTROLLER_QUALIFIED_NAME -> "navController"
+            DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController)"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
             SCAFFOLD_STATE_QUALIFIED_NAME -> "scaffoldState ?: throw RuntimeException(\"'scaffoldState' was requested but we don't have it. Is this screen a part of a Scaffold?\")"
             else -> {
@@ -184,7 +189,7 @@ class SingleDestinationProcessor(
             return ""
         }
 
-        return " ?: throw IllegalArgumentException(\"'${parameter.name}' argument is mandatory, but was not present!\")"
+        return " ?: throw RuntimeException(\"'${parameter.name}' argument is mandatory, but was not present!\")"
     }
 
     private fun navArgumentsDeclarationCode(): String {

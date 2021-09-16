@@ -4,18 +4,19 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.navigation.*
 import androidx.navigation.compose.NamedNavArgument
+import com.ramcosta.composedestinations.navigation.Routed
 
 /**
  * Defines what a Destination needs to have to be able to be
  * added to a navigation graph and composed on the screen
  * when the user navigates to it.
  */
-interface DestinationSpec {
+interface DestinationSpec: Routed {
 
     /**
      * Full route that will be added to the navigation graph
      */
-    val route: String
+    override val route: String
 
     /**
      * All [NamedNavArgument]s that will be added to the navigation

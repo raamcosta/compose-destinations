@@ -75,7 +75,7 @@ class DestinationsAggregateProcessor(
 
         return """
        |        val ${navGraphFieldName(navGraphName)} = $GENERATED_NAV_GRAPH(
-       |            name = "$navGraphName",
+       |            route = "$navGraphName",
        |            startDestination = ${startDestination},
        |            destinations = mapOf(
        |                $destinationsAnchor
@@ -119,11 +119,11 @@ class DestinationsAggregateProcessor(
     private fun startingDestination(navGraphName: String, generatedDestinations: List<GeneratedDestination>): String {
         val startingDestinations = generatedDestinations.filter { it.isStartDestination }
         if (startingDestinations.isEmpty()) {
-            throw IllegalStateException("No start destination found for nav graph $navGraphName!")
+            throw RuntimeException("No start destination found for nav graph $navGraphName!")
         }
 
         if (startingDestinations.size > 1) {
-            throw IllegalStateException("Found ${startingDestinations.size} start destinations in $navGraphName nav graph, only one is allowed!")
+            throw RuntimeException("Found ${startingDestinations.size} start destinations in $navGraphName nav graph, only one is allowed!")
         }
 
         return startingDestinations[0].simpleName
