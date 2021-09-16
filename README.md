@@ -19,12 +19,12 @@ Because:
 @Destination(route = "home", start = true)
 @Composable
 fun HomeScreen(
-    navController: NavController,
-    scaffoldState: ScaffoldState
+    navController: NavController
 ) {
 	//...
 }
 ```
+NOTE: You can use `DestinationsNavigator` instead of `NavController` to make these Composables testable and "previewable". Read more in [Going deeper](#Going-deeper)
 
 2. Replace your `NavHost` call with `Destinations.NavHost` (or if using a `Scaffold`, then replace it with `Destinations.Scaffold`). 
 You can also remove the builder blocks, you won't be needing them anymore.
@@ -77,7 +77,7 @@ Now the IDE will even tell you the default arguments of the composable when call
 
 Notes about arguments:
 - They must be one of `String`, `Boolean`, `Int`, `Float`, `Long` to be considered navigation arguments.
-  `NavController`, `NavBackStackEntry` or `ScaffoldState` (only if you are using `Scaffold`) can also be used by all destinations.
+  `NavController`, `DestinationsNavigator`, `NavBackStackEntry` or `ScaffoldState` (only if you are using `Scaffold`) can also be used by all destinations.
 - Navigation arguments' default values must be resolvable from the generated `Destination` class since the code written after the "`=`" 
   will be copied into it as is. 
 Unfortunately, this means you won't be able to use a constant or a function call as the default value of a nav argument. However, if the parameter 
@@ -87,14 +87,14 @@ Unfortunately, this means you won't be able to use a constant or a function call
 @Destination(route = "greeting", start = true)
 @Composable
 fun Greeting(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     coroutineScope: CoroutineScope = rememberCoroutineScope() //valid because CoroutineScope is not a navigation argument type
 )
 
 @Destination(route = "user")
 @Composable
 fun UserScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     id: Int = getDefaultUserId() //not valid because Int is a navigation argument type so we need to resolve the default value in the generated classes
 )
 
@@ -102,7 +102,7 @@ fun UserScreen(
 @Destination(route = "user")
 @Composable
 fun UserScreen(
-  navController: NavController,
+  navigator: DestinationsNavigator,
   id: Int? = null
 ) {
   //then here do:
@@ -126,7 +126,7 @@ You can define deeps links to a destination like this:
 )
 @Composable
 fun UserScreen(
-  navController: NavController,
+  navigator: DestinationsNavigator,
   id: Int
 )
 ```
@@ -142,7 +142,7 @@ You can also use the placeholder suffix `FULL_ROUTE_PLACEHOLDER` in your `uriPat
 )
 @Composable
 fun UserScreen(
-  navController: NavController,
+  navigator: DestinationsNavigator,
   id: Int
 )
 ```
@@ -186,8 +186,11 @@ sourceSets {
 }
 ```
 
-## Going deeper:
+## Going deeper
 
+- It is good practice to not depend directly on `NavController` on your Composeables. You can choose to depend on `DestinationsNavigator` instead of `NavController`, which is an interface wrapper of `NavController` that allows to easily pass an empty implementation (one is available already `EmptyDestinationsNavigator`) for
+previews or testing. All above examples can replace `navController: NavController` with `navigator: DestinationsNavigator`, in order to make use of
+this dependency inversion principle.
 - All annotated composables will generate an implementation of `Destination` which is a sealed interface that contains the full route, navigation arguments,
   `Content` composable function and the `withArgs` implementation.
 - `Destination` annotation can receive a `navGraph` parameter for nested navigation graphs. This will be the route of the nested graph and all destinations with the same `navGraph` will belong to it. If this parameter is not specified, then the `Destination` will belong to the root navigation graph (which is the norm when not using nested nav graphs)
