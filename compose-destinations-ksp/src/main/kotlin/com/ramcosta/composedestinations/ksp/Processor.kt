@@ -62,7 +62,7 @@ internal class Processor(
             parameters = parameters.map { it.toParameter() },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             isStart = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
-            navGraphName = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!
+            navGraphRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!
         )
     }
 

@@ -12,7 +12,7 @@ package com.ramcosta.composedestinations.annotation
  *
  * @param route main route of this destination (with no arguments)
  * @param start `true` if this destination is the start destination of the navigation graph
- * @param navGraph name of the navigation graph this destination is a part of.
+ * @param navGraph route of the navigation graph this destination is a part of.
  * `"root"` is used by default. If this destination is part of a nested nav graph, then this should
  * be used
  */

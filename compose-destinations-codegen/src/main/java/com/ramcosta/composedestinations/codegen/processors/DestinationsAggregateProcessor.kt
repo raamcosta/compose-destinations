@@ -39,7 +39,7 @@ class DestinationsAggregateProcessor(
     private fun navGraphsDeclaration(generatedDestinations: List<GeneratedDestination>): String {
         val destinationsByNavGraph: MutableMap<String, List<GeneratedDestination>> =
             generatedDestinations
-                .groupBy { it.navGraphName }
+                .groupBy { it.navGraphRoute }
                 .toMutableMap()
 
         val navGraphsDeclaration = StringBuilder("\n")
@@ -50,10 +50,10 @@ class DestinationsAggregateProcessor(
         navGraphsDeclaration += "\tobject ${GENERATED_NAV_GRAPH}s {\n\n"
 
         destinationsByNavGraph.forEach {
-            val navGraphName = it.value[0].navGraphName
-            nestedNavGraphs.add(navGraphName)
+            val navGraphRoute = it.value[0].navGraphRoute
+            nestedNavGraphs.add(navGraphRoute)
 
-            navGraphsDeclaration += navGraphDeclaration(navGraphName, it.value, emptyList())
+            navGraphsDeclaration += navGraphDeclaration(navGraphRoute, it.value, emptyList())
             navGraphsDeclaration += "\n\n"
         }
 
@@ -64,18 +64,18 @@ class DestinationsAggregateProcessor(
     }
 
     private fun navGraphDeclaration(
-        navGraphName: String,
+        navGraphRoute: String,
         navGraphDestinations: List<GeneratedDestination>,
         nestedNavGraphs: List<String>
     ): String {
-        val startDestination = startingDestination(navGraphName, navGraphDestinations)
+        val startDestination = startingDestination(navGraphRoute, navGraphDestinations)
 
         val destinationsAnchor = "[DESTINATIONS]"
         val nestedGraphsAnchor = "[NESTED_GRAPHS]"
 
         return """
-       |        val ${navGraphFieldName(navGraphName)} = $GENERATED_NAV_GRAPH(
-       |            route = "$navGraphName",
+       |        val ${navGraphFieldName(navGraphRoute)} = $GENERATED_NAV_GRAPH(
+       |            route = "$navGraphRoute",
        |            startDestination = ${startDestination},
        |            destinations = mapOf(
        |                $destinationsAnchor
@@ -87,22 +87,22 @@ class DestinationsAggregateProcessor(
 
     }
 
-    private fun navGraphFieldName(navGraphName: String): String {
+    private fun navGraphFieldName(navGraphRoute: String): String {
         val regex = "[^a-zA-Z]".toRegex()
-        val auxNavGraphName = navGraphName.toCharArray().toMutableList()
-        var weirdCharIndex = auxNavGraphName.indexOfFirst{ it.toString().matches(regex) }
+        val auxNavGraphRoute = navGraphRoute.toCharArray().toMutableList()
+        var weirdCharIndex = auxNavGraphRoute.indexOfFirst{ it.toString().matches(regex) }
 
         while(weirdCharIndex != -1) {
-            auxNavGraphName.removeAt(weirdCharIndex)
-            if (weirdCharIndex >= auxNavGraphName.size) {
+            auxNavGraphRoute.removeAt(weirdCharIndex)
+            if (weirdCharIndex >= auxNavGraphRoute.size) {
                 break
             }
-            auxNavGraphName[weirdCharIndex] = auxNavGraphName[weirdCharIndex].uppercaseChar()
+            auxNavGraphRoute[weirdCharIndex] = auxNavGraphRoute[weirdCharIndex].uppercaseChar()
 
-            weirdCharIndex = auxNavGraphName.indexOfFirst { it.toString().matches(regex) }
+            weirdCharIndex = auxNavGraphRoute.indexOfFirst { it.toString().matches(regex) }
         }
 
-        return String(auxNavGraphName.toCharArray())
+        return String(auxNavGraphRoute.toCharArray())
     }
 
     private fun importsCode(qualifiedNames: List<GeneratedDestination>): String {
@@ -116,14 +116,14 @@ class DestinationsAggregateProcessor(
         return code.toString()
     }
 
-    private fun startingDestination(navGraphName: String, generatedDestinations: List<GeneratedDestination>): String {
+    private fun startingDestination(navGraphRoute: String, generatedDestinations: List<GeneratedDestination>): String {
         val startingDestinations = generatedDestinations.filter { it.isStartDestination }
         if (startingDestinations.isEmpty()) {
-            throw RuntimeException("No start destination found for nav graph $navGraphName!")
+            throw RuntimeException("No start destination found for nav graph $navGraphRoute!")
         }
 
         if (startingDestinations.size > 1) {
-            throw RuntimeException("Found ${startingDestinations.size} start destinations in $navGraphName nav graph, only one is allowed!")
+            throw RuntimeException("Found ${startingDestinations.size} start destinations in $navGraphRoute nav graph, only one is allowed!")
         }
 
         return startingDestinations[0].simpleName
@@ -141,15 +141,15 @@ class DestinationsAggregateProcessor(
         return code.toString()
     }
 
-    private fun nestedGraphsList(navGraphNames: List<String>): String {
+    private fun nestedGraphsList(navGraphRoutes: List<String>): String {
         val code = StringBuilder()
-        navGraphNames.forEachIndexed { i, it ->
+        navGraphRoutes.forEachIndexed { i, it ->
             if (i == 0) {
                 code += "nestedNavGraphs = listOf(\n\t\t\t\t"
             }
             code += navGraphFieldName(it)
 
-            code += if (i != navGraphNames.lastIndex)
+            code += if (i != navGraphRoutes.lastIndex)
                 ",\n\t\t\t\t"
             else "\n\t\t\t)"
         }

@@ -43,7 +43,7 @@ class SingleDestinationProcessor(
 
         outputStream.close()
 
-        return GeneratedDestination(qualifiedName, name, isStart, navGraphName)
+        return GeneratedDestination(qualifiedName, name, isStart, navGraphRoute)
     }
 
     private fun additionalImports(): String {

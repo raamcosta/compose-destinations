@@ -9,5 +9,5 @@ data class Destination(
     val parameters: List<Parameter>,
     val deepLinks: List<DeepLink>,
     val isStart: Boolean,
-    val navGraphName: String
+    val navGraphRoute: String
 )

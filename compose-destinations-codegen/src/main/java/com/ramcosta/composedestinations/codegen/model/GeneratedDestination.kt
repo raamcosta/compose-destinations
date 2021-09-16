@@ -4,5 +4,5 @@ data class GeneratedDestination(
     val qualifiedName: String,
     val simpleName: String,
     val isStartDestination: Boolean,
-    val navGraphName: String
+    val navGraphRoute: String
 )
