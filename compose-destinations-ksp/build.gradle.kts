@@ -13,7 +13,7 @@ dependencies {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            groupId = "com.github.raamcosta.compose-destinations"
+            groupId = "io.github.raamcosta.compose-destinations"
             artifactId = "ksp"
 
             from(components["java"])

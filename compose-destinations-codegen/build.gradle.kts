@@ -12,7 +12,7 @@ java {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            groupId = "com.github.raamcosta.compose-destinations"
+            groupId = "io.github.raamcosta.compose-destinations"
             artifactId = "codegen"
 
             from(components["java"])
