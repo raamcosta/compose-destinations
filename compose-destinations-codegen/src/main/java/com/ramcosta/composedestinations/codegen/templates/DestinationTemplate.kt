@@ -21,7 +21,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.compose.material.ScaffoldState
-import androidx.navigation.compose.navArgument
+import androidx.navigation.navArgument
 $ADDITIONAL_IMPORTS
 
 object $DESTINATION_NAME: $GENERATED_DESTINATION {

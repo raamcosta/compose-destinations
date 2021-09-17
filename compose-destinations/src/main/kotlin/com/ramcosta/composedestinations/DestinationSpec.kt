@@ -3,7 +3,7 @@ package com.ramcosta.composedestinations
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.navigation.*
-import androidx.navigation.compose.NamedNavArgument
+import androidx.navigation.NamedNavArgument
 import com.ramcosta.composedestinations.navigation.Routed
 
 /**

@@ -8,12 +8,12 @@ object Versions {
     const val gradlePluginVersion = "7.0.2"
 
     const val compose = "1.0.2"
-    const val composeNavigation = "2.4.0-alpha08"
-    const val composeViewModel = "1.0.0-alpha07"
+    const val composeNavigation = "2.4.0-alpha09"
+    const val composeViewModel = "2.4.0-beta01"
     const val activityCompose = "1.3.1"
 
     const val material = "1.4.0"
-    const val lifecycleKtx = "2.4.0-alpha03"
+    const val lifecycleKtx = "2.4.0-beta01"
     const val lifecycleRuntimeKtx = lifecycleKtx
 
     const val ksp = "1.5.21-1.0.0-beta07"

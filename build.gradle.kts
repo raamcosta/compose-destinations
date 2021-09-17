@@ -16,7 +16,7 @@ buildscript {
         with(Deps.Gradle) {
             classpath(pluginVersion)
             classpath(kotlin)
-            classpath("com.vanniktech:gradle-maven-publish-plugin:0.17.0")
+            classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
         }
     }
 }
