@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
-plugins{
+plugins {
     id(Deps.Gradle.dependencyCheckPlugin) version Versions.dependencyCheckPlugin
 }
 

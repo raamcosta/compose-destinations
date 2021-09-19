@@ -1,6 +1,14 @@
 plugins {
     kotlin("jvm")
-    id("maven-publish")
+    id("com.vanniktech.maven.publish")
+}
+
+java {
+    plugins.withId("com.vanniktech.maven.publish") {
+        mavenPublish {
+            sonatypeHost = com.vanniktech.maven.publish.SonatypeHost.S01
+        }
+    }
 }
 
 dependencies {
@@ -8,15 +16,4 @@ dependencies {
 
     implementation(Deps.Ksp.api)
     implementation(Deps.Test.junit)
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            groupId = "io.github.raamcosta.compose-destinations"
-            artifactId = "ksp"
-
-            from(components["java"])
-        }
-    }
 }
