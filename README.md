@@ -1,4 +1,4 @@
-[![](https://jitpack.io/v/raamcosta/compose-destinations.svg)](https://jitpack.io/#raamcosta/compose-destinations)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)
 
 # Compose Destinations
 
@@ -149,17 +149,9 @@ fun UserScreen(
 
 ## Dependencies
 
-Add jitpack in your root build.gradle at the end of repositories:
-```gradle
-allprojects {
-    repositories {
-        //...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
+Compose destinations is available via maven central.
 
-Add the ksp plugin like this:
+1. Add the ksp plugin:
 ```gradle
 plugins {
     //...
@@ -167,14 +159,14 @@ plugins {
 }
 ```
 
-Add the dependencies:
+2. Add the dependencies:
 ```gradle
-implementation 'com.github.raamcosta.compose-destinations:core:0.6.1-alpha03'
-ksp 'com.github.raamcosta.compose-destinations:ksp:0.6.1-alpha03'
+implementation 'io.github.raamcosta.compose-destinations:core:0.6.2-alpha03'
+ksp 'io.github.raamcosta.compose-destinations:ksp:0.6.2-alpha03'
 
 ```
 
-And finally, you need to make sure the IDE looks at the generated folder.
+3. And finally, you need to make sure the IDE looks at the generated folder.
 See KSP related [issue](https://github.com/google/ksp/issues/37).
 An example for the debug variant would be:
 ```gradle
