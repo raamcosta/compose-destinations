@@ -26,7 +26,10 @@ fun HomeScreen(
 ```
 NOTE: You can use `DestinationsNavigator` instead of `NavController` to make these Composables testable and "previewable". Read more in [Going deeper](#Going-deeper)
 
-2. Replace your `NavHost` call with `Destinations.NavHost` (or if using a `Scaffold`, then replace it with `Destinations.Scaffold`). 
+2. Build the project (f.e: Build > Make Project) to make KSP generate `HomeScreenDestination` and `Destinations` files.
+Each `@Destination` will generate a Destination object, so do this everytime you need to access new Destination files.
+
+3. Replace your `NavHost` call with `Destinations.NavHost` (or if using a `Scaffold`, then replace it with `Destinations.Scaffold`). 
 You can also remove the builder blocks, you won't be needing them anymore.
 
 ```kotlin
@@ -43,7 +46,7 @@ Destinations.Scaffold(
 ```
 You don't even need to pass `NavHostController`/ `ScaffoldState` if you don't need to get a hold of them for some other reason.
 
-3. If the destination has arguments, then simply add them to the `Composable` function!
+4. If the destination has arguments, then simply add them to the `Composable` function!
 
 ```kotlin
 @Destination(route = "user")
@@ -53,7 +56,7 @@ fun UserScreen(
 )
 ```
 
-Then, to navigate to the User Screen, anywhere you have the `navController`.
+5. Then, to navigate to the User Screen, anywhere you have the `NavController` (or `DestinationsNavigator`).
 
 ```kotlin
 navController.navigate(UserScreenDestination.withArgs(userId = 1))
@@ -161,8 +164,8 @@ plugins {
 
 2. Add the dependencies:
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:0.6.2-alpha03'
-ksp 'io.github.raamcosta.compose-destinations:ksp:0.6.2-alpha03'
+implementation 'io.github.raamcosta.compose-destinations:core:0.7.0-alpha04'
+ksp 'io.github.raamcosta.compose-destinations:ksp:0.7.0-alpha04'
 
 ```
 

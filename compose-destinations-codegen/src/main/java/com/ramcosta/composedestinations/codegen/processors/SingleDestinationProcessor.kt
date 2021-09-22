@@ -28,7 +28,8 @@ class SingleDestinationProcessor(
 
         val outputStream = codeGenerator.makeFile(
             packageName = PACKAGE_NAME,
-            name = name
+            name = name,
+            sourceIds = arrayOf(sourceId)
         )
 
         val composedRoute = constructRoute()
@@ -43,7 +44,7 @@ class SingleDestinationProcessor(
 
         outputStream.close()
 
-        return GeneratedDestination(qualifiedName, name, isStart, navGraphRoute)
+        return GeneratedDestination(sourceId, qualifiedName, name, isStart, navGraphRoute)
     }
 
     private fun additionalImports(): String {

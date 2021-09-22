@@ -17,7 +17,8 @@ class DestinationsAggregateProcessor(
     fun process(generatedDestinations: List<GeneratedDestination>) {
         val file: OutputStream = codeGenerator.makeFile(
             packageName = PACKAGE_NAME,
-            name = DESTINATIONS_AGGREGATE_CLASS
+            name = DESTINATIONS_AGGREGATE_CLASS,
+            sourceIds = generatedDestinations.map { it.sourceId }.toTypedArray()
         )
 
         file += destinationsTemplate

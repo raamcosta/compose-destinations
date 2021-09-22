@@ -20,7 +20,7 @@ import com.ramcosta.composedestinations.commons.findArgumentValue
 internal class Processor(
     private val codeGenerator: CodeGenerator,
     private val logger: KSPLogger,
-    private val options: Map<String, String>
+    private val options: Map<String, String>,
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -32,17 +32,25 @@ internal class Processor(
             return emptyList()
         }
 
-        val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator)
+        val map = mutableMapOf<String, KSFile?>()
+        val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator) { map[it] }
         val kspLogger = KspLogger(logger)
 
         val generatedDestinationFiles = DestinationsProcessor(
             kspCodeOutputStreamMaker,
             kspLogger
         ).process(
-            annotatedFunctions.map { it.toDestination() }
+            annotatedFunctions.map { ksFunction ->
+                ksFunction.toDestination().also { dest ->
+                    map[dest.sourceId] = ksFunction.containingFile
+                }
+            }
         )
 
-        DestinationsAggregateProcessor(kspCodeOutputStreamMaker, kspLogger).process(generatedDestinationFiles)
+        DestinationsAggregateProcessor(
+            kspCodeOutputStreamMaker,
+            kspLogger
+        ).process(generatedDestinationFiles)
 
         return annotatedFunctions.filterNot { it.validate() }.toList()
     }
@@ -54,6 +62,7 @@ internal class Processor(
         val deepLinksAnnotations = destinationAnnotation.findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS)!!
 
         return Destination(
+            sourceId = name,
             name = name,
             qualifiedName = "$PACKAGE_NAME.$name",
             composableName = composableName,

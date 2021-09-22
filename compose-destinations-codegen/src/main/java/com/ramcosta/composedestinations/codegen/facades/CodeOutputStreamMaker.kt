@@ -4,5 +4,9 @@ import java.io.OutputStream
 
 interface CodeOutputStreamMaker {
 
-    fun makeFile(name: String, packageName: String): OutputStream
+    fun makeFile(
+        name: String,
+        packageName: String,
+        vararg sourceIds: String,
+    ): OutputStream
 }
