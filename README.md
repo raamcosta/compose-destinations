@@ -2,16 +2,17 @@
 
 # Compose Destinations
 
-Compose destinations is a KSP library to use alongside compose navigation. It makes managing destinations easier, requiring no boilerplate code and being less error-prone. Navigations between screen destinations are type-safe, since the APIs used for declaring/sending arguments will use the type system, while all the "non-type-safe" code required by compose navigation is generated for you.
+A KSP library to use alongside compose navigation. It reduces boilerplate code and is less error-prone since passing arguments between screens is type-safe. You won't need to update multiple source files every time you add or remove a screen composable, the navigation graph will be updated automatically.
 
-## Why?
+## Table of contents
 
-Because:
-- How nice would it be if navigation compose did not rely as much on bundles, strings and other "non-type-safe" stuff?
-- What if we could simply add parameters to the `Composable` function to define the destination arguments?
-- And what if the navigation graph could be built/updated automatically when we add new or remove old screen composables?
+* [Usage](#usage)
+* [Setup](#setup)
+* [Going deeper](#going-deeper)
+* [Current state](#current-state)
+* [License](#license)
 
-## How?
+## Usage
 
 1. Start by annotating the `Composable` functions that you want to add to the navigation graph with `@Destination`.
 
@@ -40,11 +41,9 @@ Destinations.NavHost(
 OR
 ```kotlin
 Destinations.Scaffold(
-    scaffoldState = myScaffoldState,
-    navController = myNavController,
+    scaffoldState = myScaffoldState
 )
 ```
-You don't even need to pass `NavHostController`/ `ScaffoldState` if you don't need to get a hold of them for some other reason.
 
 4. If the destination has arguments, then simply add them to the `Composable` function!
 
@@ -64,7 +63,7 @@ navController.navigate(UserScreenDestination.withArgs(userId = 1))
 
 That's it! No messing with `NavType`, weird routes, bundles and strings. All this will be taken care for you.
 
-Oh and by the way, what if the destination has default arguments? Wouldn't it be nice if we could just use Kotlin default parameters feature?
+6. Oh and by the way, what if the destination has default arguments? Wouldn't it be nice if we could just use Kotlin default parameters feature?
 Well, that is exactly how we do it:
 
 ```kotlin
@@ -114,7 +113,7 @@ fun UserScreen(
 ```
 We'll be looking for ways to improve this.
 
-## Deep Linking
+#### Deep Links
 
 You can define deeps links to a destination like this:
 
@@ -150,7 +149,7 @@ fun UserScreen(
 )
 ```
 
-## Dependencies
+## Setup
 
 Compose destinations is available via maven central.
 
@@ -192,12 +191,13 @@ this dependency inversion principle.
 - `Scaffold` composable lambda parameters will be given a current `Destination`. This makes it trivial to have top bar, bottom bar and drawer depend on the current destination.
 - Besides the `NavHost` and `Scaffold` wrappers, the generated `Destinations` class contains all `NavGraphs`. Each `NavGraph` contains the start `Destination` as well as all its destinations and its nested `NavGraphs`.
 - If you would like to have additional properties/functions in the `Destination` (for example a "title" which will be shown to the user for each screen) you can make an extension
-  property/function of `Destination` for a similar effect. Since it is a sealed interface, a `when` expression will make sure you always have a definition for each screen (check this file for an example [file](https://github.com/raamcosta/compose-destinations/blob/main/app/src/main/java/com/ramcosta/samples/destinationstodosample/DestinationSpecExtensions.kt)).
+  property/function of `Destination` for a similar effect. Since it is a sealed interface, a `when` expression will make sure you always have a definition for each screen (check this [file](https://github.com/raamcosta/compose-destinations/blob/main/app/src/main/java/com/ramcosta/samples/destinationstodosample/DestinationSpecExtensions.kt) for an example).
+
 
 ## Current state
 
 This lib is still in its alpha stage, APIs can change.
-I'm looking for all kinds of feedback, issues, feature requests and help in improving the code or even this README. So please, if you find this interesting, try it out in
+I'm looking for all kinds of feedback, issues, feature requests and help in improving the code. So please, if you find this interesting, try it out in
 some sample projects and let me know how it goes!
 
 ## License
