@@ -3,7 +3,7 @@
 # Compose Destinations
 
 A KSP library to improve Compose Navigation. 
-It reduces boilerplate code and is less error-prone. 
+It reduces boilerplate and error-prone code. 
 Passing arguments between screens is type-safe. 
 You won't need to update multiple source files every time you add or remove a screen composable, the navigation graph will be updated automatically.
 
