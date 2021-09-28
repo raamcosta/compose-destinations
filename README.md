@@ -165,8 +165,8 @@ plugins {
 
 2. Add the dependencies:
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:0.7.0-alpha04'
-ksp 'io.github.raamcosta.compose-destinations:ksp:0.7.0-alpha04'
+implementation 'io.github.raamcosta.compose-destinations:core:0.7.1-alpha04'
+ksp 'io.github.raamcosta.compose-destinations:ksp:0.7.1-alpha04'
 
 ```
 
