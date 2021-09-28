@@ -5,8 +5,7 @@ import androidx.navigation.NavOptionsBuilder
 
 /**
  * Implementation of [DestinationsNavigator] that uses
- * a [NavController] to navigate to [Routed] or specific
- * route strings.
+ * a [NavController] to navigate.
  */
 class NavControllerDestinationsNavigator(
     private val navController: NavController
@@ -18,5 +17,9 @@ class NavControllerDestinationsNavigator(
 
     override fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit) {
         navController.navigate(route, builder)
+    }
+
+    override fun navigateUp() {
+        navController.navigateUp()
     }
 }

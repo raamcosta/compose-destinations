@@ -20,6 +20,8 @@ interface DestinationsNavigator {
     fun navigate(routed: Routed, builder: NavOptionsBuilder.() -> Unit = {})
 
     fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit = {})
+
+    fun navigateUp()
 }
 
 /**
@@ -28,8 +30,10 @@ interface DestinationsNavigator {
  */
 object EmptyDestinationsNavigator : DestinationsNavigator {
 
-    override fun navigate(routed: Routed, builder: NavOptionsBuilder.() -> Unit) { }
+    override fun navigate(routed: Routed, builder: NavOptionsBuilder.() -> Unit) {}
 
-    override fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit) { }
+    override fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit) {}
+
+    override fun navigateUp() {}
 }
 
