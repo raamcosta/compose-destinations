@@ -4,8 +4,7 @@
 
 A KSP library to improve Compose Navigation. 
 It reduces boilerplate and error-prone code. 
-Passing arguments between screens is type-safe. 
-You won't need to update multiple source files every time you add or remove a screen composable, the navigation graph will be updated automatically.
+Passing arguments between screens is type-safe and you won't need to update multiple source files every time you add or remove a screen, the navigation graph will be updated automatically.
 
 ## Table of contents
 
