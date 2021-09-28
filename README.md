@@ -2,7 +2,10 @@
 
 # Compose Destinations
 
-A KSP library to use alongside compose navigation. It reduces boilerplate code and is less error-prone since passing arguments between screens is type-safe. You won't need to update multiple source files every time you add or remove a screen composable, the navigation graph will be updated automatically.
+A KSP library to improve Compose Navigation. 
+It reduces boilerplate code and is less error-prone. 
+Passing arguments between screens is type-safe. 
+You won't need to update multiple source files every time you add or remove a screen composable, the navigation graph will be updated automatically.
 
 ## Table of contents
 
@@ -14,7 +17,7 @@ A KSP library to use alongside compose navigation. It reduces boilerplate code a
 
 ## Usage
 
-1. Start by annotating the `Composable` functions that you want to add to the navigation graph with `@Destination`.
+1. Start by annotating the Composable functions that you want to add to the navigation graph with `@Destination`.
 
 ```kotlin
 @Destination(route = "home", start = true)
@@ -28,7 +31,7 @@ fun HomeScreen(
 NOTE: You can use `DestinationsNavigator` instead of `NavController` to make these Composables testable and "previewable". Read more in [Going deeper](#Going-deeper)
 
 2. Build the project (f.e: Build > Make Project) to make KSP generate `HomeScreenDestination` and `Destinations` files.
-Each `@Destination` will generate a Destination object, so do this everytime you need to access new Destination files.
+Each `@Destination` will generate a Destination object, so do this everytime you need to access new Destination objects.
 
 3. Replace your `NavHost` call with `Destinations.NavHost` (or if using a `Scaffold`, then replace it with `Destinations.Scaffold`). 
 You can also remove the builder blocks, you won't be needing them anymore.
@@ -45,7 +48,7 @@ Destinations.Scaffold(
 )
 ```
 
-4. If the destination has arguments, then simply add them to the `Composable` function!
+4. If the destination has arguments, then simply add them to the Composable function!
 
 ```kotlin
 @Destination(route = "user")
@@ -63,8 +66,8 @@ navController.navigate(UserScreenDestination.withArgs(userId = 1))
 
 That's it! No messing with `NavType`, weird routes, bundles and strings. All this will be taken care for you.
 
-6. Oh and by the way, what if the destination has default arguments? Wouldn't it be nice if we could just use Kotlin default parameters feature?
-Well, that is exactly how we do it:
+6. Oh and by the way, what if the destination has default arguments? Wouldn't it be nice if you could just use Kotlin default parameters feature?
+Well, that is exactly how you do it:
 
 ```kotlin
 @Destination(route = "user")
