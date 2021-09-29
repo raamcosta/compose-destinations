@@ -4,6 +4,12 @@ plugins {
     id("com.google.devtools.ksp") version Versions.ksp
 }
 
+kotlin {
+    sourceSets.main {
+        kotlin.srcDir("build/generated/ksp/debug/kotlin")
+    }
+}
+
 android {
     compileSdk = Versions.compileSdk
 
