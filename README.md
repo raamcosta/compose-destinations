@@ -159,14 +159,14 @@ Compose destinations is available via maven central.
 ```gradle
 plugins {
     //...
-    id("com.google.devtools.ksp") version "1.5.21-1.0.0-beta07" // This will change to the stable ksp version when compose allows us to use kotlin 1.5.30
+    id("com.google.devtools.ksp") version "1.5.30-1.0.0"
 }
 ```
 
 2. Add the dependencies:
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:0.7.1-alpha04'
-ksp 'io.github.raamcosta.compose-destinations:ksp:0.7.1-alpha04'
+implementation 'io.github.raamcosta.compose-destinations:core:0.7.2-alpha04'
+ksp 'io.github.raamcosta.compose-destinations:ksp:0.7.2-alpha04'
 
 ```
 

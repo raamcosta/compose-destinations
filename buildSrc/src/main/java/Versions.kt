@@ -3,20 +3,20 @@ object Versions {
     const val compileSdk = 31
     const val targetSdk = compileSdk
 
-    const val kotlin = "1.5.21"
+    const val kotlin = "1.5.30"
     const val dependencyCheckPlugin = "0.39.0"
     const val gradlePluginVersion = "7.0.2"
 
-    const val compose = "1.0.2"
-    const val composeNavigation = "2.4.0-alpha09"
-    const val composeViewModel = "2.4.0-beta01"
+    const val compose = "1.0.3"
+    const val composeNavigation = "2.4.0-alpha10"
+    const val composeViewModel = "2.4.0-rc01"
     const val activityCompose = "1.3.1"
 
     const val material = "1.4.0"
-    const val lifecycleKtx = "2.4.0-beta01"
+    const val lifecycleKtx = "2.4.0-rc01"
     const val lifecycleRuntimeKtx = lifecycleKtx
 
-    const val ksp = "1.5.21-1.0.0-beta07"
+    const val ksp = "1.5.30-1.0.0"
 
     const val junit = "4.13.2"
 }
