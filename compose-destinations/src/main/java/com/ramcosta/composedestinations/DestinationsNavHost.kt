@@ -25,13 +25,14 @@ fun DestinationsNavHost(
     navGraph: NavGraphSpec,
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    startDestination: DestinationSpec = navGraph.startDestination,
     scaffoldState: ScaffoldState?,
     builder: NavGraphBuilder.() -> Unit = {}
 ) {
 
     NavHost(
         navController = navController,
-        startDestination = navGraph.startDestination.route,
+        startDestination = startDestination.route,
         modifier = modifier,
         route = navGraph.route
     ) {

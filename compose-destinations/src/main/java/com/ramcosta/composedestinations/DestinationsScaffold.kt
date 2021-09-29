@@ -31,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 fun DestinationsScaffold(
     navGraph: NavGraphSpec,
     modifier: Modifier = Modifier,
+    startDestination: DestinationSpec = navGraph.startDestination,
     navController: NavHostController = rememberNavController(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     topBar: (@Composable (DestinationSpec) -> Unit) = {},
@@ -54,7 +55,7 @@ fun DestinationsScaffold(
 
     val destination = currentBackStackEntryAsState?.destination?.route
         ?.let { navGraph.findDestination(it) }
-        ?: navGraph.startDestination
+        ?: startDestination
 
     Scaffold(
         modifier,
@@ -78,6 +79,7 @@ fun DestinationsScaffold(
         DestinationsNavHost(
             navGraph = navGraph,
             modifier = modifierForPaddingValues(destination, paddingValues),
+            startDestination = startDestination,
             navController = navController,
             scaffoldState = scaffoldState
         )

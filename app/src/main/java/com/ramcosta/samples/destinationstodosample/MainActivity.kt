@@ -7,6 +7,7 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.Destinations
+import com.ramcosta.composedestinations.FeedDestination
 import com.ramcosta.composedestinations.navigateTo
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
 import kotlinx.coroutines.launch
@@ -24,6 +25,7 @@ class MainActivity : ComponentActivity() {
                 Destinations.Scaffold(
                     scaffoldState = scaffoldState,
                     navController = navController,
+                    startDestination = if (Math.random() > 0.5) FeedDestination else Destinations.NavGraphs.root.startDestination,
                     topBar = {
                         MyTopBar(
                             destination = it,

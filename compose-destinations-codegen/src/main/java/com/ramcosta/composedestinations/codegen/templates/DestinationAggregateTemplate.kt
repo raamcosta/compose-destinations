@@ -42,12 +42,14 @@ object $DESTINATIONS_AGGREGATE_CLASS {
     fun NavHost(
         navController: NavHostController,
         modifier: Modifier = Modifier,
+        startDestination: $GENERATED_DESTINATION = ${GENERATED_NAV_GRAPH}s.root.startDestination,
         builder: NavGraphBuilder.() -> Unit = {}
     ) {
         DestinationsNavHost(
             ${GENERATED_NAV_GRAPH}s.root,
             navController,
             modifier,
+            startDestination,
             null,
             builder
         )
@@ -64,6 +66,7 @@ object $DESTINATIONS_AGGREGATE_CLASS {
     @Composable
     fun Scaffold(
         modifier: Modifier = Modifier,
+        startDestination: $GENERATED_DESTINATION = ${GENERATED_NAV_GRAPH}s.root.startDestination,
         navController: NavHostController = rememberNavController(),
         scaffoldState: ScaffoldState = rememberScaffoldState(),
         topBar: (@Composable ($GENERATED_DESTINATION) -> Unit) = {},
@@ -86,6 +89,7 @@ object $DESTINATIONS_AGGREGATE_CLASS {
         DestinationsScaffold(
             ${GENERATED_NAV_GRAPH}s.root,
             modifier,
+            startDestination,
             navController,
             scaffoldState,
             { topBar(it as $GENERATED_DESTINATION) },
