@@ -50,7 +50,7 @@ object $DESTINATIONS_AGGREGATE_CLASS {
             navController,
             modifier,
             startDestination,
-            null,
+            { emptyMap() },
             builder
         )
     }
@@ -89,6 +89,7 @@ object $DESTINATIONS_AGGREGATE_CLASS {
         DestinationsScaffold(
             ${GENERATED_NAV_GRAPH}s.root,
             modifier,
+            { emptyMap() },
             startDestination,
             navController,
             scaffoldState,

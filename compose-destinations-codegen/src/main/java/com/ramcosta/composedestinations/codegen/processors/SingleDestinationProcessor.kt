@@ -169,7 +169,7 @@ class SingleDestinationProcessor(
             NAV_CONTROLLER_QUALIFIED_NAME -> "navController"
             DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController)"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
-            SCAFFOLD_STATE_QUALIFIED_NAME -> "scaffoldState ?: throw RuntimeException(\"'scaffoldState' was requested but we don't have it. Is this screen a part of a Scaffold?\")"
+            SCAFFOLD_STATE_QUALIFIED_NAME -> "situationalParameters[ScaffoldState::class] as? ScaffoldState ?: throw RuntimeException(\"'scaffoldState' was requested but we don't have it. Is this screen a part of a Scaffold?\")"
             else -> {
                 if (navArgs.contains(parameter)) {
                     "navBackStackEntry.arguments?.${parameter.type.toNavBackStackEntryArgGetter(parameter.name)}${defaultCodeIfArgNotPresent(parameter)}"

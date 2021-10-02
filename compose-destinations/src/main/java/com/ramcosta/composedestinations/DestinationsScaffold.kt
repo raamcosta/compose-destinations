@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import kotlin.reflect.KClass
 
 /**
  * Like [Scaffold] but it adds a navigation graph using [DestinationsScaffold]
@@ -31,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 fun DestinationsScaffold(
     navGraph: NavGraphSpec,
     modifier: Modifier = Modifier,
+    situationalParametersProvider: (DestinationSpec) -> Map<KClass<*>, Any> = { emptyMap() },
     startDestination: DestinationSpec = navGraph.startDestination,
     navController: NavHostController = rememberNavController(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
@@ -81,7 +83,11 @@ fun DestinationsScaffold(
             modifier = modifierForPaddingValues(destination, paddingValues),
             startDestination = startDestination,
             navController = navController,
-            scaffoldState = scaffoldState
+            situationalParametersProvider = {
+                situationalParametersProvider(it).toMutableMap().apply {
+                    this[ScaffoldState::class] = scaffoldState
+                }
+            }
         )
     }
 }

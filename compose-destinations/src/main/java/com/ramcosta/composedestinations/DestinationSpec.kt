@@ -1,10 +1,10 @@
 package com.ramcosta.composedestinations
 
-import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.navigation.*
 import androidx.navigation.NamedNavArgument
 import com.ramcosta.composedestinations.navigation.Routed
+import kotlin.reflect.KClass
 
 /**
  * Defines what a Destination needs to have to be able to be
@@ -35,14 +35,13 @@ interface DestinationSpec: Routed {
      * the destination content in the screen, when the user
      * navigates to it.
      *
-     * [scaffoldState] can be null if this Destination is not
-     * a part of any Scaffold
-     *
+     * [situationalParameters] can contain diverse things depending
+     * on the situation of the screens
      */
     @Composable
     fun Content(
         navController: NavController,
         navBackStackEntry: NavBackStackEntry,
-        scaffoldState: ScaffoldState?
+        situationalParameters: Map<KClass<*>, Any>
     )
 }

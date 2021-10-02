@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import kotlin.reflect.KClass
 
 /**
  * Like [NavHost] but adds destinations to the nav graph, using
@@ -26,7 +27,7 @@ fun DestinationsNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     startDestination: DestinationSpec = navGraph.startDestination,
-    scaffoldState: ScaffoldState?,
+    situationalParametersProvider: (DestinationSpec) -> Map<KClass<*>, Any> = { emptyMap() },
     builder: NavGraphBuilder.() -> Unit = {}
 ) {
 
@@ -36,7 +37,7 @@ fun DestinationsNavHost(
         modifier = modifier,
         route = navGraph.route
     ) {
-        addNavGraphDestinations(navGraph, navController, scaffoldState)
+        addNavGraphDestinations(navGraph, navController, situationalParametersProvider)
 
         builder()
     }
@@ -49,27 +50,27 @@ fun DestinationsNavHost(
 fun NavGraphBuilder.addNavGraphDestinations(
     navGraphSpec: NavGraphSpec,
     navController: NavHostController,
-    scaffoldState: ScaffoldState?
+    situationalParametersProvider: (DestinationSpec) -> Map<KClass<*>, Any>,
 ) {
     navGraphSpec.destinations.values.forEach { destination ->
-        addDestination(destination, navController, scaffoldState)
+        addDestination(destination, navController, situationalParametersProvider(destination))
     }
 
-    addNestedNavGraphs(navGraphSpec.nestedNavGraphs, navController, scaffoldState)
+    addNestedNavGraphs(navGraphSpec.nestedNavGraphs, navController, situationalParametersProvider)
 }
 
 private fun NavGraphBuilder.addNestedNavGraphs(
     nestedNavGraphs: List<NavGraphSpec>,
     navController: NavHostController,
-    scaffoldState: ScaffoldState?
+    situationalParametersProvider: (DestinationSpec) -> Map<KClass<*>, Any>,
 ) {
     nestedNavGraphs.forEach { nestedGraph ->
         navigation(nestedGraph.startDestination.route, nestedGraph.route) {
             nestedGraph.destinations.forEach {
-                addDestination(it.value, navController, scaffoldState)
+                addDestination(it.value, navController, situationalParametersProvider(it.value))
             }
 
-            addNestedNavGraphs(nestedGraph.nestedNavGraphs, navController, scaffoldState)
+            addNestedNavGraphs(nestedGraph.nestedNavGraphs, navController, situationalParametersProvider)
         }
     }
 }
@@ -77,11 +78,11 @@ private fun NavGraphBuilder.addNestedNavGraphs(
 private fun NavGraphBuilder.addDestination(
     destination: DestinationSpec,
     navController: NavHostController,
-    scaffoldState: ScaffoldState?
+    situationalParameters: Map<KClass<*>, Any>
 ) {
     composable(
         route = destination.route,
-        content = { destination.Content(navController, it, scaffoldState) },
+        content = { destination.Content(navController, it, situationalParameters) },
         arguments = destination.arguments,
         deepLinks = destination.deepLinks
     )

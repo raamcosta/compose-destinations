@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.compose.material.ScaffoldState
 import androidx.navigation.navArgument
+import kotlin.reflect.KClass
 $ADDITIONAL_IMPORTS
 
 object $DESTINATION_NAME: $GENERATED_DESTINATION {
@@ -32,7 +33,7 @@ object $DESTINATION_NAME: $GENERATED_DESTINATION {
     override fun Content(
         navController: NavController,
         navBackStackEntry: NavBackStackEntry,
-        scaffoldState: ScaffoldState?
+        situationalParameters: Map<KClass<*>, Any>,
     ) {
         $CONTENT_FUNCTION_CODE
     }
