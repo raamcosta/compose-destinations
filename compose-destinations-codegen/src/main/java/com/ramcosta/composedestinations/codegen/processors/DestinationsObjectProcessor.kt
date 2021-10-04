@@ -4,6 +4,7 @@ import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
+import com.ramcosta.composedestinations.codegen.model.ProcessingConfig
 import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.templates.IMPORTS_BLOCK
 import com.ramcosta.composedestinations.codegen.templates.destinationsObjectTemplate
@@ -12,8 +13,7 @@ import java.io.OutputStream
 class DestinationsObjectProcessor(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
-    private val isScaffoldAvailable: Boolean,
-    private val isAccompanistAnimationsAvailable: Boolean,
+    private val processingConfig: ProcessingConfig
 ) {
 
     fun process(generatedDestinations: List<GeneratedDestination>) {
@@ -31,14 +31,14 @@ class DestinationsObjectProcessor(
         var generatedCode = destinationsObjectTemplate
             .replace(IMPORTS_BLOCK, importsCode(generatedDestinations))
             .replace(NAV_GRAPHS_DECLARATION, navGraphsDeclaration(generatedDestinations))
-            .replace(INNER_NAV_HOST_PLACEHOLDER, if (isAccompanistAnimationsAvailable) innerAnimatedNavHost else innerNavHost)
-            .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, if (isAccompanistAnimationsAvailable) "rememberAnimatedNavController()" else "rememberNavController()")
-            .replace(EXPERIMENTAL_API_PLACEHOLDER, if (isAccompanistAnimationsAvailable) "\n\t@ExperimentalAnimationApi" else "")
-            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams(isAccompanistAnimationsAvailable))
-            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1, animationDefaultParamsPassToInner(isAccompanistAnimationsAvailable))
-            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2, animationDefaultParamsPassToInner(isAccompanistAnimationsAvailable).prependIndent("\t"))
+            .replace(INNER_NAV_HOST_PLACEHOLDER, if (processingConfig.isAccompanistAnimationAvailable) innerAnimatedNavHost else innerNavHost)
+            .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, if (processingConfig.isAccompanistAnimationAvailable) "rememberAnimatedNavController()" else "rememberNavController()")
+            .replace(EXPERIMENTAL_API_PLACEHOLDER, if (processingConfig.isAccompanistAnimationAvailable) "\n\t@ExperimentalAnimationApi" else "")
+            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams(processingConfig.isAccompanistAnimationAvailable))
+            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1, animationDefaultParamsPassToInner(processingConfig.isAccompanistAnimationAvailable))
+            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2, animationDefaultParamsPassToInner(processingConfig.isAccompanistAnimationAvailable).prependIndent("\t"))
 
-        if (!isScaffoldAvailable) {
+        if (!processingConfig.isScaffoldAvailable) {
             val startIndex = generatedCode.indexOf(SCAFFOLD_FUNCTION_START)
             val endIndex = generatedCode.indexOf(SCAFFOLD_FUNCTION_END) + SCAFFOLD_FUNCTION_END.length
 
@@ -54,7 +54,7 @@ class DestinationsObjectProcessor(
         )
 
         sealedDestSpecFile += sealedDestinationTemplate.let {
-            if (isAccompanistAnimationsAvailable) {
+            if (processingConfig.isAccompanistAnimationAvailable) {
                 it.replace(TRANSITION_TYPE_START_PLACEHOLDER, "")
                     .replace(TRANSITION_TYPE_END_PLACEHOLDER, "")
             } else {
