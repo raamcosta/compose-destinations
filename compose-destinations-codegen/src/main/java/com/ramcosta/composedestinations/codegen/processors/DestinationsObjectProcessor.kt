@@ -6,25 +6,46 @@ import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.templates.IMPORTS_BLOCK
-import com.ramcosta.composedestinations.codegen.templates.destinationsTemplate
+import com.ramcosta.composedestinations.codegen.templates.destinationsObjectTemplate
 import java.io.OutputStream
 
-class DestinationsAggregateProcessor(
+class DestinationsObjectProcessor(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val logger: Logger
+    private val logger: Logger,
+    private val isScaffoldAvailable: Boolean,
+    private val isAccompanistAnimationsAvailable: Boolean,
 ) {
 
     fun process(generatedDestinations: List<GeneratedDestination>) {
+        val sourceIds = mutableListOf<String>()
+        generatedDestinations.forEach {
+            sourceIds.addAll(it.sourceIds)
+        }
+
         val file: OutputStream = codeGenerator.makeFile(
             packageName = PACKAGE_NAME,
-            name = DESTINATIONS_AGGREGATE_CLASS,
-            sourceIds = generatedDestinations.map { it.sourceId }.toTypedArray()
+            name = DESTINATIONS_AGGREGATE_CLASS_NAME,
+            sourceIds = sourceIds.toTypedArray()
         )
 
-        file += destinationsTemplate
+        var generatedCode = destinationsObjectTemplate
             .replace(IMPORTS_BLOCK, importsCode(generatedDestinations))
             .replace(NAV_GRAPHS_DECLARATION, navGraphsDeclaration(generatedDestinations))
+            .replace(INNER_NAV_HOST_PLACEHOLDER, if (isAccompanistAnimationsAvailable) innerAnimatedNavHost else innerNavHost)
+            .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, if (isAccompanistAnimationsAvailable) "rememberAnimatedNavController()" else "rememberNavController()")
+            .replace(EXPERIMENTAL_API_PLACEHOLDER, if (isAccompanistAnimationsAvailable) "\n\t@ExperimentalAnimationApi" else "")
+            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams(isAccompanistAnimationsAvailable))
+            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1, animationDefaultParamsPassToInner(isAccompanistAnimationsAvailable))
+            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2, animationDefaultParamsPassToInner(isAccompanistAnimationsAvailable).prependIndent("\t"))
 
+        if (!isScaffoldAvailable) {
+            val startIndex = generatedCode.indexOf(SCAFFOLD_FUNCTION_START)
+            val endIndex = generatedCode.indexOf(SCAFFOLD_FUNCTION_END) + SCAFFOLD_FUNCTION_END.length
+
+            generatedCode = generatedCode.removeRange(startIndex, endIndex)
+        }
+
+        file += generatedCode
         file.close()
 
         val sealedDestSpecFile: OutputStream = codeGenerator.makeFile(
@@ -32,9 +53,50 @@ class DestinationsAggregateProcessor(
             name = GENERATED_DESTINATION
         )
 
-        sealedDestSpecFile += sealedDestinationTemplate
+        sealedDestSpecFile += sealedDestinationTemplate.let {
+            if (isAccompanistAnimationsAvailable) {
+                it.replace(TRANSITION_TYPE_START_PLACEHOLDER, "")
+                    .replace(TRANSITION_TYPE_END_PLACEHOLDER, "")
+            } else {
+                it.removeRange(it.indexOf(TRANSITION_TYPE_START_PLACEHOLDER), it.indexOf(TRANSITION_TYPE_END_PLACEHOLDER) + TRANSITION_TYPE_END_PLACEHOLDER.length)
+            }
+        }
 
         sealedDestSpecFile.close()
+    }
+
+    private fun animationDefaultParamsPassToInner(anyDestinationHasAnimations: Boolean): String {
+        return if (anyDestinationHasAnimations) {
+            """
+
+				contentAlignment = contentAlignment,
+				enterTransition = enterTransition,
+				exitTransition = exitTransition,
+				popEnterTransition = popEnterTransition,
+				popExitTransition = popExitTransition
+            """.trimIndent()
+                .prependIndent("\t\t\t")
+        } else {
+            ""
+        }
+    }
+
+    private fun animationDefaultParams(anyDestinationHasAnimations: Boolean): String {
+        return if (anyDestinationHasAnimations) {
+            """
+                
+                contentAlignment: Alignment = Alignment.Center,
+                enterTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> EnterTransition)? =
+                    { _, _ -> fadeIn(animationSpec = tween(700)) },
+                exitTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> ExitTransition)? =
+                    { _, _ -> fadeOut(animationSpec = tween(700)) },
+                popEnterTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> EnterTransition)? = enterTransition,
+                popExitTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> ExitTransition)? = exitTransition,
+            """.trimIndent()
+                .prependIndent("\t\t")
+        } else {
+            ""
+        }
     }
 
     private fun navGraphsDeclaration(generatedDestinations: List<GeneratedDestination>): String {
@@ -43,7 +105,7 @@ class DestinationsAggregateProcessor(
                 .groupBy { it.navGraphRoute }
                 .toMutableMap()
 
-        val navGraphsDeclaration = StringBuilder("\n")
+        val navGraphsDeclaration = StringBuilder()
         val nestedNavGraphs = mutableListOf<String>()
 
         val rootDestinations = destinationsByNavGraph.remove("root")
@@ -59,7 +121,7 @@ class DestinationsAggregateProcessor(
         }
 
         navGraphsDeclaration += navGraphDeclaration("root", rootDestinations!!, nestedNavGraphs)
-        navGraphsDeclaration += "\n\t}\n"
+        navGraphsDeclaration += "\n\t}"
 
         return navGraphsDeclaration.toString()
     }

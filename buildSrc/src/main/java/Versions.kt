@@ -12,6 +12,8 @@ object Versions {
     const val composeViewModel = "2.4.0-rc01"
     const val activityCompose = "1.3.1"
 
+    const val accompanist = "0.19.0"
+
     const val material = "1.4.0"
     const val lifecycleKtx = "2.4.0-rc01"
     const val lifecycleRuntimeKtx = lifecycleKtx
@@ -43,6 +45,10 @@ object Deps {
         const val material = "androidx.compose.material:material:${Versions.compose}"
         const val navigation = "androidx.navigation:navigation-compose:${Versions.composeNavigation}"
         const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.composeViewModel}"
+
+        const val accompanistMaterial = "com.google.accompanist:accompanist-navigation-material:${Versions.accompanist}"
+        const val accompanistAnimation = "com.google.accompanist:accompanist-navigation-animation:${Versions.accompanist}"
+
     }
 
     object Ksp {

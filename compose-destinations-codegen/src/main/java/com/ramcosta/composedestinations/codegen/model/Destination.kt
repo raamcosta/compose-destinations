@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.codegen.model
 
 data class Destination(
-    val sourceId: String,
+    val sourceIds: List<String>,
     val name: String,
     val qualifiedName: String,
     val composableName: String,
@@ -10,5 +10,7 @@ data class Destination(
     val parameters: List<Parameter>,
     val deepLinks: List<DeepLink>,
     val isStart: Boolean,
-    val navGraphRoute: String
+    val navGraphRoute: String,
+    val transitionsSpecType: Type?,
+    val composableReceiverSimpleName: String?
 )

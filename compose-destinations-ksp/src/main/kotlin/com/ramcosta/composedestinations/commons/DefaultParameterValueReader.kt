@@ -10,7 +10,7 @@ internal class DefaultParameterValueReader {
         lineText: String,
         argName: String,
         argType: String,
-    ): String? {
+    ): String {
         var auxText = lineText
 
         val anchors = arrayOf(

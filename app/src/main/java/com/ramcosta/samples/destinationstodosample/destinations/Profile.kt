@@ -1,5 +1,7 @@
 package com.ramcosta.samples.destinationstodosample.destinations
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,12 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.ProfileDestination
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@OptIn(ExperimentalAnimationApi::class)
 @Destination(
     route = "profile",
     deepLinks = [
@@ -24,7 +27,7 @@ import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 )
 @Composable
 //as an example of the 4 parameter types the library can resolve
-fun Profile(
+fun AnimatedVisibilityScope.Profile(
     navController: NavController,
     navBackStackEntry: NavBackStackEntry,
     navigator: DestinationsNavigator,

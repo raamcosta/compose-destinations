@@ -3,15 +3,17 @@ package com.ramcosta.samples.destinationstodosample
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.ramcosta.composedestinations.Destinations
 import com.ramcosta.composedestinations.FeedDestination
 import com.ramcosta.composedestinations.navigateTo
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
 import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +22,7 @@ class MainActivity : ComponentActivity() {
             DestinationsTodoSampleTheme {
                 val scaffoldState = rememberScaffoldState()
                 val coroutineScope = rememberCoroutineScope()
-                val navController = rememberNavController()
+                val navController = rememberAnimatedNavController()
 
                 Destinations.Scaffold(
                     scaffoldState = scaffoldState,

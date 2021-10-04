@@ -29,7 +29,7 @@ class SingleDestinationProcessor(
         val outputStream = codeGenerator.makeFile(
             packageName = PACKAGE_NAME,
             name = name,
-            sourceIds = arrayOf(sourceId)
+            sourceIds = sourceIds.toTypedArray()
         )
 
         val composedRoute = constructRoute()
@@ -39,24 +39,36 @@ class SingleDestinationProcessor(
             .replace(COMPOSED_ROUTE, composedRoute)
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
             .replace(DEEP_LINKS, deepLinksDeclarationCode(composedRoute))
+            .replace(TRANSITION_TYPE, transitionType())
             .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
             .replace(WITH_ARGS_METHOD, withArgsMethod())
+            .replace(ANIMATED_VISIBILITY_EXPERIMENTAL_API_PLACEHOLDER, if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) "\n\t@ExperimentalAnimationApi" else "")
 
         outputStream.close()
 
-        return GeneratedDestination(sourceId, qualifiedName, name, isStart, navGraphRoute)
+        return GeneratedDestination(sourceIds, qualifiedName, name, isStart, navGraphRoute)
     }
 
     private fun additionalImports(): String {
         val imports = StringBuilder()
 
         imports += "import ${destination.composableQualifiedName}"
+
         if (destination.deepLinks.isNotEmpty()) {
             imports += "\nimport androidx.navigation.navDeepLink"
         }
 
         if (destination.parameters.any { it.type.qualifiedName == DESTINATIONS_NAVIGATOR_QUALIFIED_NAME }) {
             imports += "\nimport $CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME"
+        }
+
+        if (destination.transitionsSpecType != null) {
+            imports += "\nimport androidx.compose.animation.ExperimentalAnimationApi"
+            imports += "\nimport ${destination.transitionsSpecType.qualifiedName}"
+
+            if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
+                imports += "\nimport androidx.compose.animation.AnimatedVisibilityScope"
+            }
         }
 
         return imports.toString()
@@ -140,7 +152,13 @@ class SingleDestinationProcessor(
     }
 
     private fun contentFunctionCode(): String = with(destination) {
-        return "${composableName}(${prepareArguments()})"
+        val receiver = if (composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
+            "val animatedVisibilityScope = situationalParameters[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class] as? $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME ?: throw RuntimeException(\"'$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME' was requested but we don't have it. Did you specify a $GENERATED_DESTINATION_TRANSITIONS for this route?\")" +
+                    "\n\t\tanimatedVisibilityScope."
+        } else {
+            ""
+        }
+        return "$receiver${composableName}(${prepareArguments()})"
     }
 
     private fun prepareArguments(): String = with(destination) {
@@ -244,6 +262,20 @@ class SingleDestinationProcessor(
                 "\n\t)\n"
             }
         }
+
+        return code.toString()
+    }
+
+    private fun transitionType(): String {
+        if (destination.transitionsSpecType == null) {
+            return ""
+        }
+
+        val code = StringBuilder()
+        val transitionType = "TransitionType.Animation(${destination.transitionsSpecType.simpleName})"
+
+        code += "\n\t@ExperimentalAnimationApi"
+        code += "\n\toverride val transitionType = ${transitionType}\n"
 
         return code.toString()
     }

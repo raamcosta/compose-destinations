@@ -49,8 +49,6 @@ android {
 dependencies {
 
     with(Deps.Compose) {
-        implementation(ui)
-        implementation(material)
         implementation(navigation)
     }
 }
