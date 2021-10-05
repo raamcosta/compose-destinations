@@ -18,6 +18,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@ExperimentalAnimationApi
 @Destination(
     route = "profile",
     deepLinks = [
@@ -25,7 +26,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
     ]
 )
 @Composable
-@OptIn(ExperimentalAnimationApi::class)
 //as an example of the 4 parameter types the library can resolve
 fun AnimatedVisibilityScope.Profile(
     navController: NavController,

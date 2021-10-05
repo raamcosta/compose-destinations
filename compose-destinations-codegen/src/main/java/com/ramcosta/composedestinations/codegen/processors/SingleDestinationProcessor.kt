@@ -36,17 +36,34 @@ class SingleDestinationProcessor(
         outputStream += destinationTemplate
             .replace(ADDITIONAL_IMPORTS, additionalImports())
             .replace(DESTINATION_NAME, name)
+            .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotationsCode())
             .replace(COMPOSED_ROUTE, composedRoute)
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
             .replace(DEEP_LINKS, deepLinksDeclarationCode(composedRoute))
             .replace(TRANSITION_TYPE, transitionType())
             .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
             .replace(WITH_ARGS_METHOD, withArgsMethod())
-            .replace(ANIMATED_VISIBILITY_EXPERIMENTAL_API_PLACEHOLDER, if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) "\n\t@ExperimentalAnimationApi" else "")
 
         outputStream.close()
 
         return GeneratedDestination(sourceIds, qualifiedName, name, isStart, navGraphRoute)
+    }
+
+    private fun requireOptInAnnotationsCode(): String {
+        val code = StringBuilder()
+        destination.requireOptInAnnotationNames.forEach {
+            code += "@$it\n"
+        }
+
+        if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
+            && !destination.requireOptInAnnotationNames.contains("ExperimentalAnimationApi")
+        ) {
+            // we don't have a require opt in annotation that matches the needed one
+            // for this receiver -> user must have opted in, so we will too
+            code += "@OptIn(ExperimentalAnimationApi::class)\n"
+        }
+
+        return code.toString()
     }
 
     private fun additionalImports(): String {

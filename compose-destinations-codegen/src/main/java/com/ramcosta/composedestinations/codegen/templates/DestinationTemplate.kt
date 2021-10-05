@@ -12,7 +12,7 @@ internal const val DEEP_LINKS = "[DEEP_LINKS]"
 internal const val TRANSITION_TYPE = "[TRANSITION_TYPE]"
 internal const val WITH_ARGS_METHOD = "[WITH_ARGS_METHOD]"
 internal const val CONTENT_FUNCTION_CODE = "[CONTENT_FUNCTION_CODE]"
-internal const val ANIMATED_VISIBILITY_EXPERIMENTAL_API_PLACEHOLDER = "[ANIMATED_VISIBILITY_EXPERIMENTAL_API_PLACEHOLDER]"
+internal const val REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER = "[REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER]"
 //endregion
 
 internal val destinationTemplate="""
@@ -27,11 +27,11 @@ import androidx.navigation.navArgument
 import kotlin.reflect.KClass
 $ADDITIONAL_IMPORTS
 
-object $DESTINATION_NAME: $GENERATED_DESTINATION {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME: $GENERATED_DESTINATION {
 
     override val route get() = "$COMPOSED_ROUTE"
     $NAV_ARGUMENTS$DEEP_LINKS$TRANSITION_TYPE
-    @Composable$ANIMATED_VISIBILITY_EXPERIMENTAL_API_PLACEHOLDER
+    @Composable
     override fun Content(
         navController: NavController,
         navBackStackEntry: NavBackStackEntry,

@@ -12,5 +12,6 @@ data class Destination(
     val isStart: Boolean,
     val navGraphRoute: String,
     val transitionsSpecType: Type?,
-    val composableReceiverSimpleName: String?
+    val composableReceiverSimpleName: String?,
+    val requireOptInAnnotationNames: List<String>
 )

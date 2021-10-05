@@ -129,6 +129,31 @@ internal class Processor(
         )
     }
 
+    private fun KSFunctionDeclaration.findAllRequireOptInAnnotations(): List<String> {
+        val requireOptInAnnotations = mutableListOf<String>()
+        annotations.forEach { annotation ->
+            val annotationShortName = annotation.shortName.asString()
+            if (annotationShortName == "Composable" || annotationShortName == "Destination") {
+                return@forEach
+            }
+
+            if (annotation.isRequireOptIn()) {
+                requireOptInAnnotations.add(annotationShortName)
+            }
+        }
+
+        return requireOptInAnnotations
+    }
+
+    private fun KSAnnotation.isRequireOptIn(): Boolean {
+        val annotations = annotationType.resolve().declaration.annotations
+        return annotations.any { annotation ->
+            val annotationQualifiedName = annotation.annotationType.resolve().declaration.qualifiedName?.asString()
+            annotationQualifiedName == "kotlin.RequiresOptIn"
+                    || annotation.annotationType.annotations.any { it.isRequireOptIn() }
+        }
+    }
+
     private fun KSFunctionDeclaration.toDestination(transitionSpecForCleanRoute: (cleanRoute: String) -> TransitionSpec?): Destination {
         val composableName = simpleName.asString()
         val name = composableName + GENERATED_DESTINATION_SUFFIX
@@ -159,7 +184,8 @@ internal class Processor(
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             isStart = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
             navGraphRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!,
-            composableReceiverSimpleName = extensionReceiver?.toString()
+            composableReceiverSimpleName = extensionReceiver?.toString(),
+            requireOptInAnnotationNames = findAllRequireOptInAnnotations()
         )
     }
 
