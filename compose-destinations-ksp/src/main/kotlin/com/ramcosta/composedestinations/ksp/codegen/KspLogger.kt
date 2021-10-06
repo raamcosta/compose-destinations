@@ -1,9 +1,9 @@
-package com.ramcosta.composedestinations.ksp
+package com.ramcosta.composedestinations.ksp.codegen
 
 import com.google.devtools.ksp.processing.KSPLogger
 import com.ramcosta.composedestinations.codegen.facades.Logger
 
-internal class KspLogger(
+class KspLogger(
     private val kspLogger: KSPLogger
 ): Logger {
 

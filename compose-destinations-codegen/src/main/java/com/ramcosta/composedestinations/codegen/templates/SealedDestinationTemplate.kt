@@ -15,6 +15,7 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
+import com.ramcosta.composedestinations.DestinationTransitionsSpec
 
 /**
  * When using the code gen module, all APIs will expose
@@ -33,7 +34,7 @@ sealed class TransitionType {
 }$TRANSITION_TYPE_END_PLACEHOLDER
 
 @ExperimentalAnimationApi
-interface $GENERATED_DESTINATION_TRANSITIONS {
+interface $GENERATED_DESTINATION_TRANSITIONS : $CORE_DESTINATION_TRANSITIONS {
 
     val enterTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> EnterTransition?)? get() = null
 

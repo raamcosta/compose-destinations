@@ -3,51 +3,20 @@ package com.ramcosta.composedestinations.codegen.templates
 import com.ramcosta.composedestinations.codegen.commons.*
 
 //region anchors
-internal const val IMPORTS_BLOCK = "[IMPORTS_BLOCK]"
-internal const val NAV_GRAPHS_DECLARATION = "[NAV_GRAPHS_DECLARATION]"
-internal const val DEFAULT_NAV_CONTROLLER_PLACEHOLDER = "[DEFAULT_NAV_CONTROLLER_PLACEHOLDER]"
-internal const val INNER_NAV_HOST_PLACEHOLDER = "[INNER_NAV_HOST_PLACEHOLDER]"
-internal const val EXPERIMENTAL_API_PLACEHOLDER = "[EXPERIMENTAL_API_PLACEHOLDER]"
-internal const val ANIMATION_DEFAULT_PARAMS_PLACEHOLDER = "[ANIMATION_DEFAULT_PARAMS_PLACEHOLDER]"
-internal const val ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1 = "[ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1]"
-internal const val ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2 = "[ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2]"
-internal const val SCAFFOLD_FUNCTION_START = "//region Scaffold"
-internal const val SCAFFOLD_FUNCTION_END = "//endregion Scaffold"
+const val IMPORTS_BLOCK = "[IMPORTS_BLOCK]"
+const val NAV_GRAPHS_DECLARATION = "[NAV_GRAPHS_DECLARATION]"
+const val DEFAULT_NAV_CONTROLLER_PLACEHOLDER = "[DEFAULT_NAV_CONTROLLER_PLACEHOLDER]"
+const val INNER_NAV_HOST_PLACEHOLDER = "[INNER_NAV_HOST_PLACEHOLDER]"
+const val EXPERIMENTAL_API_PLACEHOLDER = "[EXPERIMENTAL_API_PLACEHOLDER]"
+const val ANIMATION_DEFAULT_PARAMS_PLACEHOLDER = "[ANIMATION_DEFAULT_PARAMS_PLACEHOLDER]"
+const val ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1 = "[ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1]"
+const val ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2 = "[ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2]"
+const val SCAFFOLD_FUNCTION_START = "//region Scaffold"
+const val SCAFFOLD_FUNCTION_END = "//endregion Scaffold"
 //endregion
 
-internal val destinationsObjectTemplate = """
+val destinationsObjectTemplate = """
 package $PACKAGE_NAME
-
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material.*
-import androidx.navigation.compose.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.Dp
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-
-import androidx.compose.runtime.getValue //TODO check these
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import kotlin.reflect.KClass
-import com.google.accompanist.navigation.animation.composable as animationComposable
-import com.google.accompanist.navigation.animation.navigation as animationNavigation
-
-import androidx.navigation.NavBackStackEntry
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.core.tween
-import androidx.compose.ui.Alignment
-import androidx.compose.animation.*
 
 $IMPORTS_BLOCK
 

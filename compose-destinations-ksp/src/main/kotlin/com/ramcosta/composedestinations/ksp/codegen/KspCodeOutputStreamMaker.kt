@@ -1,14 +1,14 @@
-package com.ramcosta.composedestinations.ksp
+package com.ramcosta.composedestinations.ksp.codegen
 
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
-import com.google.devtools.ksp.symbol.KSFile
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
+import com.ramcosta.composedestinations.ksp.commons.KSFileSourceMapper
 import java.io.OutputStream
 
-internal class KspCodeOutputStreamMaker(
+class KspCodeOutputStreamMaker(
     private val codeGenerator: CodeGenerator,
-    private val sourceMapper: KSFileSourceMapper,
+    private val sourceMapper: KSFileSourceMapper
 ) : CodeOutputStreamMaker {
 
     override fun makeFile(name: String,
@@ -24,10 +24,5 @@ internal class KspCodeOutputStreamMaker(
             fileName = name,
             packageName = packageName
         )
-    }
-
-    fun interface KSFileSourceMapper {
-
-        fun mapToKSFile(sourceId: String): KSFile?
     }
 }

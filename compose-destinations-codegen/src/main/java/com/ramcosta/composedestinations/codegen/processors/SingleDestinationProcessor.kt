@@ -16,9 +16,11 @@ import com.ramcosta.composedestinations.codegen.templates.destinationTemplate
 class SingleDestinationProcessor(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
+    private val availableDependencies: AvailableDependencies,
     private val destination: Destination
 ) {
 
+    private val additionalImports = mutableSetOf<String>()
     private val navArgs = destination.parameters.filter { it.type.toNavTypeCodeOrNull() != null }
 
     fun process(): GeneratedDestination = with(destination) {
@@ -34,7 +36,6 @@ class SingleDestinationProcessor(
 
         val composedRoute = constructRoute()
         outputStream += destinationTemplate
-            .replace(ADDITIONAL_IMPORTS, additionalImports())
             .replace(DESTINATION_NAME, name)
             .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotationsCode())
             .replace(COMPOSED_ROUTE, composedRoute)
@@ -43,10 +44,11 @@ class SingleDestinationProcessor(
             .replace(TRANSITION_TYPE, transitionType())
             .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
             .replace(WITH_ARGS_METHOD, withArgsMethod())
+            .replace(ADDITIONAL_IMPORTS, additionalImports())
 
         outputStream.close()
 
-        return GeneratedDestination(sourceIds, qualifiedName, name, isStart, navGraphRoute)
+        return GeneratedDestination(sourceIds, qualifiedName, name, isStart, navGraphRoute, destination.requireOptInAnnotationNames)
     }
 
     private fun requireOptInAnnotationsCode(): String {
@@ -60,6 +62,7 @@ class SingleDestinationProcessor(
         ) {
             // we don't have a require opt in annotation that matches the needed one
             // for this receiver -> user must have opted in, so we will too
+            additionalImports.add("androidx.compose.animation.ExperimentalAnimationApi")
             code += "@OptIn(ExperimentalAnimationApi::class)\n"
         }
 
@@ -69,23 +72,23 @@ class SingleDestinationProcessor(
     private fun additionalImports(): String {
         val imports = StringBuilder()
 
-        imports += "import ${destination.composableQualifiedName}"
-
-        if (destination.deepLinks.isNotEmpty()) {
-            imports += "\nimport androidx.navigation.navDeepLink"
-        }
+        additionalImports.add(destination.composableQualifiedName)
 
         if (destination.parameters.any { it.type.qualifiedName == DESTINATIONS_NAVIGATOR_QUALIFIED_NAME }) {
-            imports += "\nimport $CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME"
+            additionalImports.add(CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME)
         }
 
         if (destination.transitionsSpecType != null) {
-            imports += "\nimport androidx.compose.animation.ExperimentalAnimationApi"
-            imports += "\nimport ${destination.transitionsSpecType.qualifiedName}"
+            additionalImports.add("androidx.compose.animation.ExperimentalAnimationApi")
+            additionalImports.add(destination.transitionsSpecType.qualifiedName)
 
             if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
-                imports += "\nimport androidx.compose.animation.AnimatedVisibilityScope"
+                additionalImports.add("androidx.compose.animation.AnimatedVisibilityScope")
             }
+        }
+
+        additionalImports.forEach {
+            imports += "\nimport $it"
         }
 
         return imports.toString()
@@ -170,6 +173,7 @@ class SingleDestinationProcessor(
 
     private fun contentFunctionCode(): String = with(destination) {
         val receiver = if (composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
+            additionalImports.add("androidx.compose.animation.AnimatedVisibilityScope")
             "val animatedVisibilityScope = situationalParameters[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class] as? $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME ?: throw RuntimeException(\"'$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME' was requested but we don't have it. Did you specify a $GENERATED_DESTINATION_TRANSITIONS for this route?\")" +
                     "\n\t\tanimatedVisibilityScope."
         } else {
@@ -257,6 +261,7 @@ class SingleDestinationProcessor(
 
         destination.deepLinks.forEachIndexed { i, it ->
             if (i == 0) {
+                additionalImports.add("androidx.navigation.navDeepLink")
                 code += "\n\toverride val deepLinks = listOf(\n\t\t"
             }
 
@@ -286,6 +291,10 @@ class SingleDestinationProcessor(
     private fun transitionType(): String {
         if (destination.transitionsSpecType == null) {
             return ""
+        }
+
+        if (!availableDependencies.accompanistAnimation) {
+            throw RuntimeException("You need to include 'com.google.accompanist:accompanist-navigation-animation' to use @$DESTINATION_TRANSITIONS_SPEC_ANNOTATION!")
         }
 
         val code = StringBuilder()

@@ -4,7 +4,7 @@ import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
-import com.ramcosta.composedestinations.codegen.model.ProcessingConfig
+import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
 import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.templates.IMPORTS_BLOCK
 import com.ramcosta.composedestinations.codegen.templates.destinationsObjectTemplate
@@ -13,8 +13,10 @@ import java.io.OutputStream
 class DestinationsObjectProcessor(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
-    private val processingConfig: ProcessingConfig
+    private val availableDependencies: AvailableDependencies
 ) {
+
+    private val additionalImports = mutableSetOf<String>()
 
     fun process(generatedDestinations: List<GeneratedDestination>) {
         val sourceIds = mutableListOf<String>()
@@ -29,16 +31,16 @@ class DestinationsObjectProcessor(
         )
 
         var generatedCode = destinationsObjectTemplate
-            .replace(IMPORTS_BLOCK, importsCode(generatedDestinations))
             .replace(NAV_GRAPHS_DECLARATION, navGraphsDeclaration(generatedDestinations))
-            .replace(INNER_NAV_HOST_PLACEHOLDER, if (processingConfig.isAccompanistAnimationAvailable) innerAnimatedNavHost else innerNavHost)
-            .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, if (processingConfig.isAccompanistAnimationAvailable) "rememberAnimatedNavController()" else "rememberNavController()")
-            .replace(EXPERIMENTAL_API_PLACEHOLDER, if (processingConfig.isAccompanistAnimationAvailable) "\n\t@ExperimentalAnimationApi" else "")
-            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams(processingConfig.isAccompanistAnimationAvailable))
-            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1, animationDefaultParamsPassToInner(processingConfig.isAccompanistAnimationAvailable))
-            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2, animationDefaultParamsPassToInner(processingConfig.isAccompanistAnimationAvailable).prependIndent("\t"))
+            .replace(INNER_NAV_HOST_PLACEHOLDER, if (availableDependencies.accompanistAnimation) innerAnimatedNavHost else innerNavHost)
+            .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, if (availableDependencies.accompanistAnimation) "rememberAnimatedNavController()" else "rememberNavController()")
+            .replace(EXPERIMENTAL_API_PLACEHOLDER, experimentalAnimationApi())
+            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams())
+            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1, animationDefaultParamsPassToInner())
+            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2, animationDefaultParamsPassToInner().prependIndent("\t"))
+            .replace(IMPORTS_BLOCK, importsCode())
 
-        if (!processingConfig.isScaffoldAvailable) {
+        if (!availableDependencies.composeMaterial) {
             val startIndex = generatedCode.indexOf(SCAFFOLD_FUNCTION_START)
             val endIndex = generatedCode.indexOf(SCAFFOLD_FUNCTION_END) + SCAFFOLD_FUNCTION_END.length
 
@@ -54,7 +56,7 @@ class DestinationsObjectProcessor(
         )
 
         sealedDestSpecFile += sealedDestinationTemplate.let {
-            if (processingConfig.isAccompanistAnimationAvailable) {
+            if (availableDependencies.accompanistAnimation) {
                 it.replace(TRANSITION_TYPE_START_PLACEHOLDER, "")
                     .replace(TRANSITION_TYPE_END_PLACEHOLDER, "")
             } else {
@@ -65,8 +67,28 @@ class DestinationsObjectProcessor(
         sealedDestSpecFile.close()
     }
 
-    private fun animationDefaultParamsPassToInner(anyDestinationHasAnimations: Boolean): String {
-        return if (anyDestinationHasAnimations) {
+    private fun experimentalAnimationApi(): String {
+        return if (availableDependencies.accompanistAnimation) {
+            additionalImports.add("androidx.compose.animation.ExperimentalAnimationApi")
+            "\n\t@ExperimentalAnimationApi"
+        } else ""
+    }
+
+    private fun importsCode(): String {
+        val importsCode = StringBuilder()
+        val baseImports =
+            if (availableDependencies.accompanistAnimation) importsAnimatedDestinations else importsDestinations
+
+        importsCode += baseImports
+        additionalImports.forEach {
+            importsCode += "\nimport $it"
+        }
+
+        return importsCode.toString()
+    }
+
+    private fun animationDefaultParamsPassToInner(): String {
+        return if (availableDependencies.accompanistAnimation) {
             """
 
 				contentAlignment = contentAlignment,
@@ -81,8 +103,8 @@ class DestinationsObjectProcessor(
         }
     }
 
-    private fun animationDefaultParams(anyDestinationHasAnimations: Boolean): String {
-        return if (anyDestinationHasAnimations) {
+    private fun animationDefaultParams(): String {
+        return if (availableDependencies.accompanistAnimation) {
             """
                 
                 contentAlignment: Alignment = Alignment.Center,
@@ -135,9 +157,10 @@ class DestinationsObjectProcessor(
 
         val destinationsAnchor = "[DESTINATIONS]"
         val nestedGraphsAnchor = "[NESTED_GRAPHS]"
+        val requireOptInAnnotationsAnchor = "[REQUIRE_OPT_IN_ANNOTATIONS_ANCHOR]"
 
         return """
-       |        val ${navGraphFieldName(navGraphRoute)} = $GENERATED_NAV_GRAPH(
+       |        ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(navGraphRoute)} = $GENERATED_NAV_GRAPH(
        |            route = "$navGraphRoute",
        |            startDestination = ${startDestination},
        |            destinations = mapOf(
@@ -147,7 +170,20 @@ class DestinationsObjectProcessor(
         """.trimMargin()
             .replace(destinationsAnchor, destinationsInsideMap(navGraphDestinations))
             .replace(nestedGraphsAnchor, nestedGraphsList(nestedNavGraphs))
+            .replace(requireOptInAnnotationsAnchor, requireOptInAnnotations(navGraphDestinations))
 
+    }
+
+    private fun requireOptInAnnotations(navGraphDestinations: List<GeneratedDestination>): String {
+        val code = StringBuilder()
+
+        navGraphDestinations
+            .flatMap { it.requireOptInAnnotationNames }
+            .forEach { annotation ->
+                code += "@$annotation\n\t\t"
+            }
+
+        return code.toString()
     }
 
     private fun navGraphFieldName(navGraphRoute: String): String {
@@ -166,17 +202,6 @@ class DestinationsObjectProcessor(
         }
 
         return String(auxNavGraphRoute.toCharArray())
-    }
-
-    private fun importsCode(qualifiedNames: List<GeneratedDestination>): String {
-        val code = StringBuilder()
-        qualifiedNames.forEachIndexed { i, it ->
-            code += "import ${it.qualifiedName}"
-            if (i != qualifiedNames.lastIndex)
-                code += "\n"
-        }
-
-        return code.toString()
     }
 
     private fun startingDestination(navGraphRoute: String, generatedDestinations: List<GeneratedDestination>): String {

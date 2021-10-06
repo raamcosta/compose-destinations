@@ -17,7 +17,7 @@ fun NavGraphBuilder.addNavGraphDestinations(
         addComposable(destination)
     }
 
-    addNestedNavGraphs(navGraphSpec.nestedNavGraphs, navController/*, situationalParametersProvider*/, addComposable, addNavigation)
+    addNestedNavGraphs(navGraphSpec.nestedNavGraphs, navController, addComposable, addNavigation)
 }
 
 private fun NavGraphBuilder.addNestedNavGraphs(
@@ -34,7 +34,7 @@ private fun NavGraphBuilder.addNestedNavGraphs(
 
             addNestedNavGraphs(
                 nestedGraph.nestedNavGraphs,
-                navController/*, situationalParametersProvider*/,
+                navController,
                 addComposable,
                 addNavigation
             )

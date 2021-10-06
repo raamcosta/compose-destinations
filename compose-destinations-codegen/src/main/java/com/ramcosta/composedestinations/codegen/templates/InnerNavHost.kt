@@ -4,6 +4,22 @@ import com.ramcosta.composedestinations.codegen.commons.DESTINATIONS_AGGREGATE_C
 import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION
 import com.ramcosta.composedestinations.codegen.commons.GENERATED_NAV_GRAPH
 
+const val importsDestinations = """
+import androidx.compose.animation.*
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.*
+import kotlin.reflect.KClass
+"""
+
 val innerNavHost = """
 
 @Composable

@@ -1,12 +1,12 @@
-package com.ramcosta.composedestinations.commons
+package com.ramcosta.composedestinations.ksp.commons
 
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSValueParameter
 import java.io.File
 
-internal class DefaultParameterValueReader {
+object DefaultParameterValueReader {
 
-    internal fun readDefaultValue(
+    fun readDefaultValue(
         lineText: String,
         argName: String,
         argType: String,
@@ -38,9 +38,7 @@ internal class DefaultParameterValueReader {
     }
 }
 
-internal val reader = DefaultParameterValueReader()
-
-internal fun KSValueParameter.getDefaultValue(): String? {
+fun KSValueParameter.getDefaultValue(): String? {
     if (!hasDefault) return null
 
     /*
@@ -53,5 +51,5 @@ internal fun KSValueParameter.getDefaultValue(): String? {
     val fileLocation = location as FileLocation
     val lineText = File(fileLocation.filePath).readLine(fileLocation.lineNumber)
 
-    return reader.readDefaultValue(lineText, name!!.asString(), type.toString())
+    return DefaultParameterValueReader.readDefaultValue(lineText, name!!.asString(), type.toString())
 }

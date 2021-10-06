@@ -1,5 +1,6 @@
 package com.ramcosta.samples.destinationstodosample.destinations
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -14,13 +15,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.GreetingDestination
-import com.ramcosta.composedestinations.ProfileDestination
+import com.ramcosta.composedestinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.samples.destinationstodosample.destinations.transitions.GreetingTransitions
 import com.ramcosta.samples.destinationstodosample.title
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Destination(route = "greeting", start = true)
+@OptIn(ExperimentalAnimationApi::class)
+@Destination(
+    start = true,
+    transitions = GreetingTransitions::class
+)
 @Composable
 fun Greeting(
     navigator: DestinationsNavigator,
@@ -44,7 +50,7 @@ fun Greeting(
 
             Button(
                 onClick = {
-                    navigator.navigate(ProfileDestination.withArgs(id = 1L))
+                    navigator.navigate(ProfileScreenDestination.withArgs(id = 1L))
                 }
             ) {
                 Text(text = "GO TO PROFILE")

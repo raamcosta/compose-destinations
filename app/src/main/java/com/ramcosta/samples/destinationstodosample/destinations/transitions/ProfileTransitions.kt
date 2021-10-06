@@ -2,14 +2,12 @@ package com.ramcosta.samples.destinationstodosample.destinations.transitions
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import com.ramcosta.composedestinations.DestinationTransitionsSpec
 import com.ramcosta.composedestinations.Destination
+import com.ramcosta.composedestinations.DestinationTransitions
 import com.ramcosta.composedestinations.GreetingDestination
-import com.ramcosta.composedestinations.annotation.DestinationTransitions
 
 @ExperimentalAnimationApi
-@DestinationTransitions("profile")
-object ProfileTransitions : DestinationTransitionsSpec {
+object ProfileTransitions : DestinationTransitions {
 
     override val enterTransition: AnimatedContentScope<String>.(Destination?, Destination?) -> EnterTransition? = { initial, _ ->
         when (initial) {

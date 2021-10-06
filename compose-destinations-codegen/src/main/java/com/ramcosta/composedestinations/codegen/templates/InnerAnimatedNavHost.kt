@@ -2,6 +2,30 @@ package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.commons.*
 
+const val importsAnimatedDestinations = """
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.*
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.navigation
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import kotlin.reflect.KClass 
+"""
+
 val innerAnimatedNavHost = """
     
 @ExperimentalAnimationApi
@@ -73,7 +97,7 @@ private fun NavGraphBuilder.addComposable(
     navController: NavHostController,
     situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<KClass<*>, Any>
 ) = with(transitionType.destinationTransitions) {
-    animationComposable(
+    composable(
         route = destination.route,
         arguments = destination.arguments,
         deepLinks = destination.deepLinks,
@@ -86,7 +110,7 @@ private fun NavGraphBuilder.addComposable(
             navController,
             navBackStackEntry,
             situationalParametersProvider(destination).apply {
-                this[AnimatedVisibilityScope::class] = this@animationComposable
+                this[AnimatedVisibilityScope::class] = this@composable
             })
     }
 }
@@ -97,7 +121,7 @@ private fun NavGraphBuilder.addComposableWithNoAnimation(
     navController: NavHostController,
     situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<KClass<*>, Any>
 ) {
-    animationComposable(
+    composable(
         route = destination.route,
         arguments = destination.arguments,
         deepLinks = destination.deepLinks
@@ -113,7 +137,7 @@ private fun NavGraphBuilder.addComposableWithNoAnimation(
 @ExperimentalAnimationApi
 private fun addNavigation(): NavGraphBuilder.($CORE_NAV_GRAPH_SPEC, NavGraphBuilder.() -> Unit) -> Unit {
     return { navGraph, builder ->
-        animationNavigation(
+        navigation(
             navGraph.startDestination.route,
             navGraph.route
         ) {

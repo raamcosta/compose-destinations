@@ -6,14 +6,22 @@ import com.ramcosta.composedestinations.codegen.model.*
 
 class DestinationsProcessor(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val logger: Logger
+    private val logger: Logger,
+    private val availableDependencies: AvailableDependencies
 ) {
 
-    fun process(destinations: Sequence<Destination>): List<GeneratedDestination> {
+    fun process(destinations: List<Destination>): List<GeneratedDestination> {
         val generatedFiles = mutableListOf<GeneratedDestination>()
 
         destinations.forEach { destination ->
-            generatedFiles.add(SingleDestinationProcessor(codeGenerator, logger, destination).process())
+            val generatedDestination = SingleDestinationProcessor(
+                codeGenerator,
+                logger,
+                availableDependencies,
+                destination
+            ).process()
+
+            generatedFiles.add(generatedDestination)
         }
 
         return generatedFiles

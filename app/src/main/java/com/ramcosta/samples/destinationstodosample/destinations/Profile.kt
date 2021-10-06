@@ -12,22 +12,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.ramcosta.composedestinations.ProfileDestination
+import com.ramcosta.composedestinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.samples.destinationstodosample.destinations.transitions.ProfileTransitions
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Destination(
-    route = "profile",
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
-    ]
+    ],
+    transitions = ProfileTransitions::class
 )
 @Composable
 //as an example of the 4 parameter types the library can resolve
-fun AnimatedVisibilityScope.Profile(
+fun AnimatedVisibilityScope.ProfileScreen(
     navController: NavController,
     navBackStackEntry: NavBackStackEntry,
     navigator: DestinationsNavigator,
@@ -40,7 +41,7 @@ fun AnimatedVisibilityScope.Profile(
             .background(Color.Green)
     ) {
         Text(
-            text = "Profile route: ${ProfileDestination.route} " +
+            text = "Profile route: ${ProfileScreenDestination.route} " +
                     "\n\nARGS =" +
                     "\n " +
                     "\n profile id= $id"

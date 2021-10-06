@@ -1,10 +1,10 @@
-package com.ramcosta.composedestinations.commons
+package com.ramcosta.composedestinations.ksp.commons
 
 import org.junit.Test
 
 class DefaultParameterValueReaderTest {
 
-    private val reader = DefaultParameterValueReader()
+    private val objectUnderTest = DefaultParameterValueReader
 
     private val casesToTest = arrayOf(
         TestCase(
@@ -30,7 +30,7 @@ class DefaultParameterValueReaderTest {
     @Test
     fun testCases() {
         casesToTest.forEach {
-            val result = reader.readDefaultValue(
+            val result = objectUnderTest.readDefaultValue(
                 it.lineText,
                 it.argName,
                 it.argType
