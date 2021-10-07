@@ -68,35 +68,46 @@ private fun addComposable(
 ): NavGraphBuilder.($CORE_DESTINATION_SPEC) -> Unit {
     return { destination ->
         destination as $GENERATED_DESTINATION
-        val transitionType = destination.transitionType
-        when (transitionType) {
-            is TransitionType.None -> {
-                addComposableWithNoAnimation(
+        val destinationStyle = destination.style
+        when (destinationStyle) {
+            is DestinationStyle.Default -> {
+                addComposable(
                     destination,
                     navController,
                     situationalParametersProvider
                 )
             }
 
-            is TransitionType.Animation -> {
-                addComposable(
-                    transitionType,
+            is DestinationStyle.Animated<*> -> {
+                addAnimatedComposable(
+                    destinationStyle as AnimatedDestinationStyle,
                     destination,
                     navController,
                     situationalParametersProvider
                 )
             }
+
+            is DestinationStyle.Dialog -> {
+                addDialogComposable(
+                    destinationStyle,
+                    destination,
+                    navController,
+                    situationalParametersProvider
+                )
+            }
+
+            is DestinationStyle.BottomSheet -> TODO()
         }
     }
 }
 
 @ExperimentalAnimationApi
-private fun NavGraphBuilder.addComposable(
-    transitionType: TransitionType.Animation,
+private fun NavGraphBuilder.addAnimatedComposable(
+    animatedStyle: AnimatedDestinationStyle,
     destination: Destination,
     navController: NavHostController,
     situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<KClass<*>, Any>
-) = with(transitionType.destinationTransitions) {
+) = with(animatedStyle) {
     composable(
         route = destination.route,
         arguments = destination.arguments,
@@ -116,7 +127,7 @@ private fun NavGraphBuilder.addComposable(
 }
 
 @ExperimentalAnimationApi
-private fun NavGraphBuilder.addComposableWithNoAnimation(
+private fun NavGraphBuilder.addComposable(
     destination: $GENERATED_DESTINATION,
     navController: NavHostController,
     situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<KClass<*>, Any>

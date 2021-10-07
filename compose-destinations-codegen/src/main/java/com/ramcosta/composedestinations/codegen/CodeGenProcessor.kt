@@ -1,5 +1,7 @@
 package com.ramcosta.composedestinations.codegen
 
+import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
@@ -27,7 +29,7 @@ class CodeGenProcessor(
 
     private fun requireComposeNavigation() {
         if (!availableDependencies.composeNavigation) {
-            throw RuntimeException("You must include the 'androidx.navigation:navigation-compose' dependency")
+            throw MissingRequiredDependency("You must include the 'androidx.navigation:navigation-compose' dependency")
         }
     }
 
@@ -35,7 +37,7 @@ class CodeGenProcessor(
         val cleanRoutes = mutableSetOf<String>()
         destinations.forEach {
             if (cleanRoutes.contains(it.cleanRoute)) {
-                throw RuntimeException("Multiple @Destinations are using '${it.cleanRoute}' as its route name")
+                throw IllegalDestinationsSetup("Multiple @Destinations are using '${it.cleanRoute}' as its route name")
             }
 
             cleanRoutes.add(it.cleanRoute)

@@ -2,9 +2,6 @@ package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.commons.*
 
-const val TRANSITION_TYPE_START_PLACEHOLDER = "[TRANSITION_TYPE_START_PLACEHOLDER]"
-const val TRANSITION_TYPE_END_PLACEHOLDER = "[TRANSITION_TYPE_END_PLACEHOLDER]"
-
 val sealedDestinationTemplate = """
 package $PACKAGE_NAME
 
@@ -15,34 +12,26 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
-import com.ramcosta.composedestinations.DestinationTransitionsSpec
 
 /**
  * When using the code gen module, all APIs will expose
  * $GENERATED_DESTINATION which is a sealed version of [$CORE_DESTINATION_SPEC]
  */
-sealed interface $GENERATED_DESTINATION : $CORE_DESTINATION_SPEC $TRANSITION_TYPE_START_PLACEHOLDER{
+sealed interface $GENERATED_DESTINATION : $CORE_DESTINATION_SPEC {
 
-    @ExperimentalAnimationApi
-    val transitionType: TransitionType get() = TransitionType.None
+    val style: DestinationStyle get() = DestinationStyle.Default
 }
 
-sealed class TransitionType {
-    @ExperimentalAnimationApi
-    class Animation(val destinationTransitions: $GENERATED_DESTINATION_TRANSITIONS) : TransitionType()
-    object None : TransitionType()
-}$TRANSITION_TYPE_END_PLACEHOLDER
-
 @ExperimentalAnimationApi
-interface $GENERATED_DESTINATION_TRANSITIONS : $CORE_DESTINATION_TRANSITIONS {
+interface $GENERATED_ANIMATED_DESTINATION_STYLE : $CORE_DESTINATION_TRANSITIONS<$GENERATED_DESTINATION> {
 
-    val enterTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> EnterTransition?)? get() = null
+    override val enterTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> EnterTransition?)? get() = null
 
-    val exitTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> ExitTransition?)? get() = null
+    override val exitTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> ExitTransition?)? get() = null
 
-    val popEnterTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> EnterTransition?)? get() = enterTransition
+    override val popEnterTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> EnterTransition?)? get() = enterTransition
 
-    val popExitTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> ExitTransition?)? get() = exitTransition
+    override val popExitTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> ExitTransition?)? get() = exitTransition
 
 }
 

@@ -9,11 +9,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import com.ramcosta.composedestinations.DestinationStyle
 import com.ramcosta.composedestinations.FeedDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.samples.destinationstodosample.title
 
-@Destination("feed")
+@Destination("feed", style = DestinationStyle.Default::class)
 @Composable
 fun Feed() {
     Box(

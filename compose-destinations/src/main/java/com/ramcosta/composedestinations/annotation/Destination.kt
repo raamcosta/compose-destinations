@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.annotation
 
-import com.ramcosta.composedestinations.DestinationTransitionsSpec
+import com.ramcosta.composedestinations.DestinationStyle
 import kotlin.reflect.KClass
 
 /**
@@ -19,8 +19,7 @@ import kotlin.reflect.KClass
  * `"root"` is used by default. If this destination is part of a nested nav graph, then this should
  * be used
  * @property deepLinks array of [DeepLink] which can be used to navigate to this destination
- * @property transitions class to the `DestinationTransitions` object that defines animation
- * transitions to this destination
+ * @property style TODO
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)
@@ -29,7 +28,7 @@ annotation class Destination(
     val start: Boolean = false,
     val navGraph: String = ROOT_NAV_GRAPH_ROUTE,
     val deepLinks: Array<DeepLink> = [],
-    val transitions: KClass<out DestinationTransitionsSpec> = Nothing::class
+    val style: KClass<out DestinationStyle> = DestinationStyle.Default::class
 ) {
     companion object {
         const val COMPOSABLE_NAME = "@composable-name-route"

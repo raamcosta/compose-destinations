@@ -131,5 +131,25 @@ $NAV_GRAPHS_DECLARATION
 
 //region internals
 $INNER_NAV_HOST_PLACEHOLDER
+
+private fun NavGraphBuilder.addDialogComposable(
+    dialogStyle: DestinationStyle.Dialog,
+    destination: $GENERATED_DESTINATION,
+    navController: NavHostController,
+    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<KClass<*>, Any>
+) {
+    dialog(
+        destination.route,
+        destination.arguments,
+        destination.deepLinks,
+        dialogStyle.properties
+    ) {
+        destination.Content(
+            navController = navController,
+            navBackStackEntry = it,
+            situationalParameters = situationalParametersProvider(destination)
+        )
+    }
+}
 //endregion
 """.trimIndent()

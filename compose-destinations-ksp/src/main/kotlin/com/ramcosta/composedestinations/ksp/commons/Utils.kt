@@ -23,7 +23,7 @@ fun File.readLine(lineNumber: Int): String {
         }
 }
 
-fun KSFunctionDeclaration.findAllRequireOptInAnnotations(): List<String> {
+fun KSAnnotated.findAllRequireOptInAnnotations(): List<String> {
     val requireOptInAnnotations = mutableListOf<String>()
     annotations.forEach { annotation ->
         val annotationShortName = annotation.shortName.asString()

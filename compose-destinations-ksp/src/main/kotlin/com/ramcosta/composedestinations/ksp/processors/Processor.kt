@@ -26,7 +26,7 @@ class Processor(
         }
 
         val kspLogger = KspLogger(logger)
-        val functionsToDestinationsMapper = KspToCodeGenDestinationsMapper()
+        val functionsToDestinationsMapper = KspToCodeGenDestinationsMapper(resolver, kspLogger)
         val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, functionsToDestinationsMapper)
 
         val destinations = functionsToDestinationsMapper.map(annotatedDestinations)
@@ -48,11 +48,13 @@ class Processor(
         val hasAccompanistAnimations = getClassDeclarationByName("com.google.accompanist.navigation.animation.AnimatedComposeNavigator") != null
         val hasScaffold = getClassDeclarationByName("androidx.compose.material.ScaffoldState") != null
         val hasComposeNavigation = getClassDeclarationByName("androidx.navigation.NavHost") != null
+        val hasAccompanistMaterial = getClassDeclarationByName("com.google.accompanist.navigation.material.BottomSheetNavigator") != null
 
         return AvailableDependencies(
             hasComposeNavigation,
             hasScaffold,
-            hasAccompanistAnimations
+            hasAccompanistAnimations,
+            hasAccompanistMaterial
         )
     }
 }

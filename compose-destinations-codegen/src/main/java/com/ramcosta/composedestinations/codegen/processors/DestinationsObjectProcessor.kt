@@ -55,14 +55,7 @@ class DestinationsObjectProcessor(
             name = GENERATED_DESTINATION
         )
 
-        sealedDestSpecFile += sealedDestinationTemplate.let {
-            if (availableDependencies.accompanistAnimation) {
-                it.replace(TRANSITION_TYPE_START_PLACEHOLDER, "")
-                    .replace(TRANSITION_TYPE_END_PLACEHOLDER, "")
-            } else {
-                it.removeRange(it.indexOf(TRANSITION_TYPE_START_PLACEHOLDER), it.indexOf(TRANSITION_TYPE_END_PLACEHOLDER) + TRANSITION_TYPE_END_PLACEHOLDER.length)
-            }
-        }
+        sealedDestSpecFile += sealedDestinationTemplate
 
         sealedDestSpecFile.close()
     }
@@ -178,7 +171,7 @@ class DestinationsObjectProcessor(
         val code = StringBuilder()
 
         navGraphDestinations
-            .flatMap { it.requireOptInAnnotationNames }
+            .flatMapTo(mutableSetOf()) { it.requireOptInAnnotationNames }
             .forEach { annotation ->
                 code += "@$annotation\n\t\t"
             }
@@ -207,11 +200,11 @@ class DestinationsObjectProcessor(
     private fun startingDestination(navGraphRoute: String, generatedDestinations: List<GeneratedDestination>): String {
         val startingDestinations = generatedDestinations.filter { it.isStartDestination }
         if (startingDestinations.isEmpty()) {
-            throw RuntimeException("No start destination found for nav graph $navGraphRoute!")
+            throw IllegalDestinationsSetup("No start destination found for nav graph $navGraphRoute!")
         }
 
         if (startingDestinations.size > 1) {
-            throw RuntimeException("Found ${startingDestinations.size} start destinations in $navGraphRoute nav graph, only one is allowed!")
+            throw IllegalDestinationsSetup("Found ${startingDestinations.size} start destinations in $navGraphRoute nav graph, only one is allowed!")
         }
 
         return startingDestinations[0].simpleName

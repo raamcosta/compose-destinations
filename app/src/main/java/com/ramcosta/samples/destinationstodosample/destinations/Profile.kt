@@ -17,14 +17,15 @@ import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.samples.destinationstodosample.destinations.transitions.ProfileTransitions
+import com.ramcosta.samples.destinationstodosample.destinations.transitions.ProfileScreenStyle
 
 @OptIn(ExperimentalAnimationApi::class)
+//@ExperimentalAnimationApi
 @Destination(
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
-    transitions = ProfileTransitions::class
+    style = ProfileScreenStyle::class
 )
 @Composable
 //as an example of the 4 parameter types the library can resolve

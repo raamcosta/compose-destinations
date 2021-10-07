@@ -1,15 +1,18 @@
 package com.ramcosta.composedestinations.ksp.processors
 
+import com.google.devtools.ksp.getClassDeclarationByName
+import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.*
 import com.ramcosta.composedestinations.codegen.commons.*
-import com.ramcosta.composedestinations.codegen.model.DeepLink
-import com.ramcosta.composedestinations.codegen.model.Destination
-import com.ramcosta.composedestinations.codegen.model.Parameter
-import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.ksp.codegen.KspLogger
 import com.ramcosta.composedestinations.ksp.commons.*
 import java.util.*
 
-class KspToCodeGenDestinationsMapper : KSFileSourceMapper {
+class KspToCodeGenDestinationsMapper(
+    private val resolver: Resolver,
+    private val logger: KspLogger
+) : KSFileSourceMapper {
 
     private val humps = "(?<=.)(?=\\p{Upper})".toRegex()
 
@@ -41,7 +44,7 @@ class KspToCodeGenDestinationsMapper : KSFileSourceMapper {
         val composableName = simpleName.asString()
         val name = composableName + GENERATED_DESTINATION_SUFFIX
         val destinationAnnotation = findAnnotation(DESTINATION_ANNOTATION)
-        val deepLinksAnnotations = destinationAnnotation.findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS)!!
+        val deepLinksAnnotations = destinationAnnotation.findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)!!
 
         val cleanRoute = destinationAnnotation.prepareRoute(composableName)
 
@@ -52,7 +55,7 @@ class KspToCodeGenDestinationsMapper : KSFileSourceMapper {
             composableName = composableName,
             composableQualifiedName = qualifiedName!!.asString(),
             cleanRoute = cleanRoute,
-            transitionsSpecType = destinationAnnotation.getTransitionSpec(),
+            destinationStyleType = destinationAnnotation.getDestinationStyleType(),
             parameters = parameters.map { it.toParameter() },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             isStart = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
@@ -62,10 +65,29 @@ class KspToCodeGenDestinationsMapper : KSFileSourceMapper {
         )
     }
 
-    private fun KSAnnotation.getTransitionSpec(): Type? {
-        return this.findArgumentValue<KSType>(DESTINATION_ANNOTATION_TRANSITIONS_ARGUMENT)!!
-            .toType()
-            .takeIf { it.simpleName != "Void" }
+    private fun KSAnnotation.getDestinationStyleType(): DestinationStyleType {
+        val ksStyleType = findArgumentValue<KSType>(DESTINATION_ANNOTATION_STYLE_ARGUMENT)
+            ?: return DestinationStyleType.Default
+
+        val defaultStyle = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.DestinationStyle.Default")!!
+                .asType(emptyList())
+        if (defaultStyle.isAssignableFrom(ksStyleType)) {
+            return DestinationStyleType.Default
+        }
+
+        val bottomSheet = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.DestinationStyle.BottomSheet")!!
+                .asType(emptyList())
+        if (bottomSheet.isAssignableFrom(ksStyleType)) {
+            return DestinationStyleType.BottomSheet
+        }
+
+        val dialog = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.DestinationStyle.Dialog")!!
+                .asType(emptyList())
+        if (dialog.isAssignableFrom(ksStyleType)) {
+            return DestinationStyleType.Dialog(ksStyleType.toType())
+        }
+
+        return DestinationStyleType.Animated(ksStyleType.toType(), ksStyleType.declaration.findAllRequireOptInAnnotations())
     }
 
     private fun KSAnnotation.prepareRoute(composableName: String): String {

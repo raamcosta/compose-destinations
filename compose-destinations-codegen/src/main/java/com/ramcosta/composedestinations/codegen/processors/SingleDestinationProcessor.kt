@@ -25,7 +25,7 @@ class SingleDestinationProcessor(
 
     fun process(): GeneratedDestination = with(destination) {
         if (isStart && navArgs.any { it.isMandatory }) {
-            throw RuntimeException("Start destinations cannot have mandatory navigation arguments! (route: \"$cleanRoute\")")
+            throw IllegalDestinationsSetup("Start destinations cannot have mandatory navigation arguments! (route: \"$cleanRoute\")")
         }
 
         val outputStream = codeGenerator.makeFile(
@@ -37,33 +37,55 @@ class SingleDestinationProcessor(
         val composedRoute = constructRoute()
         outputStream += destinationTemplate
             .replace(DESTINATION_NAME, name)
-            .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotationsCode())
+            .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotations())
             .replace(COMPOSED_ROUTE, composedRoute)
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
             .replace(DEEP_LINKS, deepLinksDeclarationCode(composedRoute))
-            .replace(TRANSITION_TYPE, transitionType())
+            .replace(DESTINATION_STYLE, destinationStyle())
             .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
             .replace(WITH_ARGS_METHOD, withArgsMethod())
             .replace(ADDITIONAL_IMPORTS, additionalImports())
 
         outputStream.close()
 
-        return GeneratedDestination(sourceIds, qualifiedName, name, isStart, navGraphRoute, destination.requireOptInAnnotationNames)
+        return GeneratedDestination(sourceIds, qualifiedName, name, isStart, navGraphRoute, baseOptInAnnotations().filter { !it.isOptedIn }.map { it.annotationName }.toList())
     }
 
-    private fun requireOptInAnnotationsCode(): String {
-        val code = StringBuilder()
-        destination.requireOptInAnnotationNames.forEach {
-            code += "@$it\n"
+    private fun baseOptInAnnotations(): List<OptInAnnotation> {
+        val optInByAnnotation = destination.requireOptInAnnotationNames.associateWithTo(mutableMapOf()) { false }
+        if (destination.destinationStyleType is DestinationStyleType.Animated) {
+            optInByAnnotation.putAll(destination.destinationStyleType.requireOptInAnnotations.associateWithTo(mutableMapOf()) { false })
         }
 
-        if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
-            && !destination.requireOptInAnnotationNames.contains("ExperimentalAnimationApi")
-        ) {
-            // we don't have a require opt in annotation that matches the needed one
-            // for this receiver -> user must have opted in, so we will too
-            additionalImports.add("androidx.compose.animation.ExperimentalAnimationApi")
-            code += "@OptIn(ExperimentalAnimationApi::class)\n"
+        if (isRequiredReceiverExperimentalOptedIn() || isRequiredAnimationExperimentalOptedIn()) {
+            // user has opted in, so we will too
+            additionalImports.add(EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME)
+            optInByAnnotation[EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME] = true
+        }
+
+        return optInByAnnotation.map { OptInAnnotation(it.key, it.value) }
+    }
+
+    private fun isRequiredAnimationExperimentalOptedIn(): Boolean {
+        return destination.destinationStyleType is DestinationStyleType.Animated
+                && !destination.destinationStyleType.requireOptInAnnotations.contains(EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME)
+    }
+
+    private fun isRequiredReceiverExperimentalOptedIn(): Boolean {
+        return destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
+                && !destination.requireOptInAnnotationNames.contains(EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME)
+    }
+
+    private fun objectWideRequireOptInAnnotations(): String {
+        val code = StringBuilder()
+        val optInByAnnotation = baseOptInAnnotations()
+
+        optInByAnnotation.forEach {
+            code += if (it.isOptedIn) {
+                "@OptIn(${it.annotationName}::class)\n"
+            } else {
+                "@${it.annotationName}\n"
+            }
         }
 
         return code.toString()
@@ -76,15 +98,6 @@ class SingleDestinationProcessor(
 
         if (destination.parameters.any { it.type.qualifiedName == DESTINATIONS_NAVIGATOR_QUALIFIED_NAME }) {
             additionalImports.add(CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME)
-        }
-
-        if (destination.transitionsSpecType != null) {
-            additionalImports.add("androidx.compose.animation.ExperimentalAnimationApi")
-            additionalImports.add(destination.transitionsSpecType.qualifiedName)
-
-            if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
-                additionalImports.add("androidx.compose.animation.AnimatedVisibilityScope")
-            }
         }
 
         additionalImports.forEach {
@@ -172,12 +185,20 @@ class SingleDestinationProcessor(
     }
 
     private fun contentFunctionCode(): String = with(destination) {
-        val receiver = if (composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
-            additionalImports.add("androidx.compose.animation.AnimatedVisibilityScope")
-            "val animatedVisibilityScope = situationalParameters[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class] as? $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME ?: throw RuntimeException(\"'$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME' was requested but we don't have it. Did you specify a $GENERATED_DESTINATION_TRANSITIONS for this route?\")" +
-                    "\n\t\tanimatedVisibilityScope."
-        } else {
-            ""
+        val receiver = when (composableReceiverSimpleName) {
+            ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME -> {
+                additionalImports.add(ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME)
+                "val animatedVisibilityScope = situationalParameters[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class] as? $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_VISIBILITY_SCOPE}" +
+                        "\n\t\tanimatedVisibilityScope."
+            }
+            COLUMN_SCOPE_SIMPLE_NAME -> {
+                additionalImports.add("androidx.compose.foundation.layout.$COLUMN_SCOPE_SIMPLE_NAME")
+                "val columnScope = situationalParameters[$COLUMN_SCOPE_SIMPLE_NAME::class] as? $COLUMN_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_COLUMN_SCOPE}" +
+                        "\n\t\tcolumnScope."
+            }
+            else -> {
+                ""
+            }
         }
         return "$receiver${composableName}(${prepareArguments()})"
     }
@@ -194,7 +215,7 @@ class SingleDestinationProcessor(
                 argsCode += "\n\t\t\t${it.name} = $argumentResolver"
 
             } else if (!it.hasDefault) {
-                throw RuntimeException("Unresolvable argument without default value: $it")
+                throw IllegalDestinationsSetup("Unresolvable argument without default value: $it")
             }
 
             if (i == parameters.lastIndex) argsCode += "\n\t\t"
@@ -208,7 +229,9 @@ class SingleDestinationProcessor(
             NAV_CONTROLLER_QUALIFIED_NAME -> "navController"
             DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController)"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
-            SCAFFOLD_STATE_QUALIFIED_NAME -> "situationalParameters[ScaffoldState::class] as? ScaffoldState ?: throw RuntimeException(\"'scaffoldState' was requested but we don't have it. Is this screen a part of a Scaffold?\")"
+            SCAFFOLD_STATE_QUALIFIED_NAME -> {
+                "situationalParameters[ScaffoldState::class] as? ScaffoldState ?: ${GeneratedExceptions.SCAFFOLD_STATE_MISSING}"
+            }
             else -> {
                 if (navArgs.contains(parameter)) {
                     "navBackStackEntry.arguments?.${parameter.type.toNavBackStackEntryArgGetter(parameter.name)}${defaultCodeIfArgNotPresent(parameter)}"
@@ -229,7 +252,7 @@ class SingleDestinationProcessor(
             return ""
         }
 
-        return " ?: throw RuntimeException(\"'${parameter.name}' argument is mandatory, but was not present!\")"
+        return " ?: ${GeneratedExceptions.missingMandatoryArgument(parameter.name)}"
     }
 
     private fun navArgumentsDeclarationCode(): String {
@@ -288,22 +311,45 @@ class SingleDestinationProcessor(
         return code.toString()
     }
 
-    private fun transitionType(): String {
-        if (destination.transitionsSpecType == null) {
-            return ""
-        }
+    private fun destinationStyle(): String {
+        return when (destination.destinationStyleType) {
+            is DestinationStyleType.Default -> ""
 
+            is DestinationStyleType.BottomSheet -> destinationStyleBottomSheet()
+
+            is DestinationStyleType.Animated -> destinationStyleAnimated(destination.destinationStyleType)
+
+            is DestinationStyleType.Dialog -> destinationStyleDialog(destination.destinationStyleType)
+        }
+    }
+
+    private fun destinationStyleDialog(destinationStyleType: DestinationStyleType.Dialog): String {
+        additionalImports.add(destinationStyleType.type.qualifiedName)
+
+        return "\n\toverride val style = ${destinationStyleType.type.simpleName}\n"
+    }
+
+    private fun destinationStyleAnimated(destinationStyleType: DestinationStyleType.Animated): String {
         if (!availableDependencies.accompanistAnimation) {
-            throw RuntimeException("You need to include 'com.google.accompanist:accompanist-navigation-animation' to use @$DESTINATION_TRANSITIONS_SPEC_ANNOTATION!")
+            throw MissingRequiredDependency("You need to include '$ACCOMPANIST_NAVIGATION_ANIMATION' to use $GENERATED_ANIMATED_DESTINATION_STYLE!")
         }
 
-        val code = StringBuilder()
-        val transitionType = "TransitionType.Animation(${destination.transitionsSpecType.simpleName})"
+        additionalImports.add(EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME)
+        additionalImports.add(destinationStyleType.type.qualifiedName)
 
-        code += "\n\t@ExperimentalAnimationApi"
-        code += "\n\toverride val transitionType = ${transitionType}\n"
+        if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
+            additionalImports.add(ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME)
+        }
 
-        return code.toString()
+        return "\n\toverride val style = ${destinationStyleType.type.simpleName}\n"
+    }
+
+    private fun destinationStyleBottomSheet(): String {
+        if (!availableDependencies.accompanistMaterial) {
+            throw MissingRequiredDependency("You need to include '$ACCOMPANIST_NAVIGATION_MATERIAL' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
+        }
+
+        return "\n\toverride val style = $CORE_BOTTOM_SHEET_DESTINATION_STYLE\n"
     }
 
     private fun navArgDefaultCode(argDefault: String?): String {
@@ -317,12 +363,12 @@ class SingleDestinationProcessor(
             Float::class.qualifiedName -> "getFloat(\"$argName\")"
             Long::class.qualifiedName -> "getLong(\"$argName\")"
             Boolean::class.qualifiedName -> "getBoolean(\"$argName\")"
-            else -> throw RuntimeException("Unknown type $qualifiedName")
+            else -> throw IllegalDestinationsSetup("Unknown type $qualifiedName")
         }
     }
 
     private fun Type.toNavTypeCode(): String {
-        return toNavTypeCodeOrNull() ?: throw RuntimeException("Unknown type $qualifiedName")
+        return toNavTypeCodeOrNull() ?: throw IllegalDestinationsSetup("Unknown type $qualifiedName")
     }
 
     private fun Type.toNavTypeCodeOrNull(): String? {
@@ -335,4 +381,9 @@ class SingleDestinationProcessor(
             else -> null
         }
     }
+
+    private class OptInAnnotation(
+        val annotationName: String,
+        val isOptedIn: Boolean
+    )
 }

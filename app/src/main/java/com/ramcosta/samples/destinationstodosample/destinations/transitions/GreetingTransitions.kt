@@ -5,7 +5,7 @@ import androidx.compose.animation.core.tween
 import com.ramcosta.composedestinations.*
 
 @ExperimentalAnimationApi
-object GreetingTransitions : DestinationTransitions {
+object GreetingTransitions : AnimatedDestinationStyle {
 
     override val enterTransition: AnimatedContentScope<String>.(Destination?, Destination?) -> EnterTransition? =
         { initial, _ ->

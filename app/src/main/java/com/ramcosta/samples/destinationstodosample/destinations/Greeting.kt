@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalAnimationApi::class)
 @Destination(
     start = true,
-    transitions = GreetingTransitions::class
+    style = GreetingTransitions::class
 )
 @Composable
 fun Greeting(

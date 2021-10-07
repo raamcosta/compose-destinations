@@ -11,7 +11,7 @@ data class Destination(
     val deepLinks: List<DeepLink>,
     val isStart: Boolean,
     val navGraphRoute: String,
-    val transitionsSpecType: Type?,
+    val destinationStyleType: DestinationStyleType,
     val composableReceiverSimpleName: String?,
     val requireOptInAnnotationNames: List<String>
 )
