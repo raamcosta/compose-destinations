@@ -30,11 +30,35 @@ object DefaultParameterValueReader {
         index = auxText.indexOfFirst { it != ' ' }
         auxText = auxText.removeRange(0, index)
 
-        index = auxText.indexOfFirst { it == ' ' || it == ',' || it == '\n' || it == ')' }
-        if (index != -1)
-            auxText = auxText.removeRange(index, auxText.length)
+        return if (auxText.startsWith("\"")) {
+            stringValue(auxText)
+        } else {
+            nonStringValue(auxText)
+        }
+    }
 
-        return auxText
+    private fun stringValue(auxText: String): String {
+        var finalText = auxText
+        val splits = finalText.split("\"")
+        finalText = splits[1]
+
+        var i = 2
+        while (finalText.endsWith('\\')) {
+            finalText += "\"${splits[i]}"
+            i++
+        }
+
+        return "\"$finalText\""
+    }
+
+    private fun nonStringValue(auxText: String): String {
+        var auxText1 = auxText
+        val index = auxText1.indexOfFirst { it == ' ' || it == ',' || it == '\n' || it == ')' }
+
+        if (index != -1)
+            auxText1 = auxText1.removeRange(index, auxText1.length)
+
+        return auxText1
     }
 }
 

@@ -24,7 +24,43 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             expected = "\"defaultArg\""
-        )
+        ),
+        TestCase(
+            lineText = "arg1: String = \"multiple words string\",",
+            argName = "arg1",
+            argType = "String",
+            expected = "\"multiple words string\""
+        ),
+        TestCase(
+            lineText = "arg1: String = \"multiple, words string\", arg2: String = \"doesn't matter\"",
+            argName = "arg1",
+            argType = "String",
+            expected = "\"multiple, words string\""
+        ),
+        TestCase(
+            lineText = "arg1: String = \"multiple, \\\"words string\", arg2: String = \"doesn't matter\"",
+            argName = "arg1",
+            argType = "String",
+            expected = "\"multiple, \\\"words string\""
+        ),
+        TestCase(
+            lineText = "arg1: String = \"doesn't matter\", arg2: String = \"mul\\\"tiple words \\\"string\"",
+            argName = "arg2",
+            argType = "String",
+            expected = "\"mul\\\"tiple words \\\"string\""
+        ),
+        TestCase(
+            lineText = "arg1: String = \"doesn't matter\", arg2: Int = 2, arg3: String = \"mul\\\"tiple words \\\"string\"",
+            argName = "arg3",
+            argType = "String",
+            expected = "\"mul\\\"tiple words \\\"string\""
+        ),
+        TestCase(
+            lineText = "arg1: String = \"doesn't matter\", arg2: Int = 2, arg3: String = \"mul\\\"tiple words \\\"string\"",
+            argName = "arg2",
+            argType = "Int",
+            expected = "2"
+        ),
     )
 
     @Test
