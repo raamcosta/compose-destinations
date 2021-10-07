@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.codegen
 
+import com.ramcosta.composedestinations.codegen.commons.COMPOSE_NAVIGATION
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
@@ -20,7 +21,7 @@ class CodeGenProcessor(
     }
 
     fun process(destinations: List<Destination>) {
-        requireRoutesUniqueness(destinations)
+        initialValidations(destinations)
 
         val generatedDestinations = DestinationsProcessor(codeGenerator, logger, availableDependencies).process(destinations)
 
@@ -29,18 +30,25 @@ class CodeGenProcessor(
 
     private fun requireComposeNavigation() {
         if (!availableDependencies.composeNavigation) {
-            throw MissingRequiredDependency("You must include the 'androidx.navigation:navigation-compose' dependency")
+            throw MissingRequiredDependency("You must include the '$COMPOSE_NAVIGATION' dependency")
         }
     }
 
-    private fun requireRoutesUniqueness(destinations: List<Destination>) {
-        val cleanRoutes = mutableSetOf<String>()
+    private fun initialValidations(destinations: List<Destination>) {
+        val cleanRoutes = mutableListOf<String>()
+        val composableNames = mutableListOf<String>()
+
         destinations.forEach {
             if (cleanRoutes.contains(it.cleanRoute)) {
-                throw IllegalDestinationsSetup("Multiple @Destinations are using '${it.cleanRoute}' as its route name")
+                throw IllegalDestinationsSetup("Multiple Destinations with '${it.cleanRoute}' as its route name")
+            }
+
+            if (composableNames.contains(it.composableName)) {
+                throw IllegalDestinationsSetup("Destination composable names must be unique: found multiple named '${it.composableName}'")
             }
 
             cleanRoutes.add(it.cleanRoute)
+            composableNames.add(it.composableName)
         }
     }
 }

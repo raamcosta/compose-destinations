@@ -38,5 +38,6 @@ const val ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME = "AnimatedVisibilityScope"
 const val ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME = "androidx.compose.animation.AnimatedVisibilityScope"
 const val COLUMN_SCOPE_SIMPLE_NAME = "ColumnScope"
 
+const val COMPOSE_NAVIGATION = "androidx.navigation:navigation-compose"
 const val ACCOMPANIST_NAVIGATION_MATERIAL = "com.google.accompanist:accompanist-navigation-material"
 const val ACCOMPANIST_NAVIGATION_ANIMATION = "com.google.accompanist:accompanist-navigation-animation"
