@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.*
+import java.lang.RuntimeException
 
 @Composable
 fun Destination.DrawerContent(
@@ -22,7 +23,7 @@ fun Destination.DrawerContent(
         GreetingDestination,
         SettingsDestination -> {
             Text(
-                text = stringResource(id = title),
+                text = stringResource(id = requireTitle),
                 modifier = Modifier
                     .padding(8.dp)
                     .clickable {
@@ -32,7 +33,9 @@ fun Destination.DrawerContent(
             )
         }
         ProfileScreenDestination,
-        ThemeSettingsDestination -> { }
+        GoToProfileConfirmationDestination,
+        ThemeSettingsDestination -> {
+        }
     }
 }
 
@@ -41,6 +44,7 @@ fun Destination.destinationPadding(parentPadding: PaddingValues): Modifier {
         ThemeSettingsDestination,
         GreetingDestination,
         FeedDestination,
+        GoToProfileConfirmationDestination,
         ProfileScreenDestination -> Modifier.padding(parentPadding)
 
         SettingsDestination -> Modifier.padding(
@@ -53,12 +57,20 @@ fun Destination.destinationPadding(parentPadding: PaddingValues): Modifier {
 }
 
 @get:StringRes
-val Destination.title get(): Int {
-    return when (this) {
-        GreetingDestination -> R.string.greeting_screen
-        ProfileScreenDestination -> R.string.profile_screen
-        SettingsDestination -> R.string.settings_screen
-        FeedDestination -> R.string.feed_screen
-        ThemeSettingsDestination -> R.string.theme_settings_screen
+val Destination.requireTitle
+    get(): Int {
+        return title ?: throw RuntimeException("Destination $this, doesn't contain title")
     }
-}
+
+@get:StringRes
+val Destination.title
+    get(): Int? {
+        return when (this) {
+            GreetingDestination -> R.string.greeting_screen
+            ProfileScreenDestination -> R.string.profile_screen
+            SettingsDestination -> R.string.settings_screen
+            FeedDestination -> R.string.feed_screen
+            ThemeSettingsDestination -> R.string.theme_settings_screen
+            GoToProfileConfirmationDestination -> null
+        }
+    }

@@ -25,14 +25,33 @@ sealed interface $GENERATED_DESTINATION : $CORE_DESTINATION_SPEC {
 @ExperimentalAnimationApi
 interface $GENERATED_ANIMATED_DESTINATION_STYLE : $CORE_DESTINATION_TRANSITIONS<$GENERATED_DESTINATION> {
 
-    override val enterTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> EnterTransition?)? get() = null
+    override fun AnimatedContentScope<String>.enterTransition(
+        initial: $GENERATED_DESTINATION?,
+        target: $GENERATED_DESTINATION?
+    ): EnterTransition? {
+        return null
+    }
 
-    override val exitTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> ExitTransition?)? get() = null
+    override fun AnimatedContentScope<String>.exitTransition(
+        initial: $GENERATED_DESTINATION?,
+        target: $GENERATED_DESTINATION?
+    ): ExitTransition? {
+        return null
+    }
 
-    override val popEnterTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> EnterTransition?)? get() = enterTransition
+    override fun AnimatedContentScope<String>.popEnterTransition(
+        initial: $GENERATED_DESTINATION?,
+        target: $GENERATED_DESTINATION?
+    ): EnterTransition? {
+        return enterTransition(initial, target)
+    }
 
-    override val popExitTransition: (AnimatedContentScope<String>.(initial: $GENERATED_DESTINATION?, target: $GENERATED_DESTINATION?) -> ExitTransition?)? get() = exitTransition
-
+    override fun AnimatedContentScope<String>.popExitTransition(
+        initial: $GENERATED_DESTINATION?,
+        target: $GENERATED_DESTINATION?
+    ): ExitTransition? {
+        return exitTransition(initial, target)
+    }
 }
 
 /**

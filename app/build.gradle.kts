@@ -55,6 +55,14 @@ android {
     }
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    if (!incremental) {
+        //Found this by pure damn luck.. check if it makes sense
+        // (kspDebugKotlin task was failing without the if)
+        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    }
+}
+
 dependencies {
 
     implementation(project(mapOf("path" to ":compose-destinations")))

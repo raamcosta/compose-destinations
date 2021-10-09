@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavType
-import androidx.compose.material.ScaffoldState
 import androidx.navigation.navArgument
 import kotlin.reflect.KClass
 $ADDITIONAL_IMPORTS

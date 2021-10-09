@@ -215,7 +215,7 @@ class SingleDestinationProcessor(
                 argsCode += "\n\t\t\t${it.name} = $argumentResolver"
 
             } else if (!it.hasDefault) {
-                throw IllegalDestinationsSetup("Unresolvable argument without default value: $it")
+                throw IllegalDestinationsSetup("Unresolvable argument type without default value: $it")
             }
 
             if (i == parameters.lastIndex) argsCode += "\n\t\t"
@@ -230,6 +230,7 @@ class SingleDestinationProcessor(
             DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController)"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
             SCAFFOLD_STATE_QUALIFIED_NAME -> {
+                additionalImports.add("androidx.compose.material.ScaffoldState")
                 "situationalParameters[ScaffoldState::class] as? ScaffoldState ?: ${GeneratedExceptions.SCAFFOLD_STATE_MISSING}"
             }
             else -> {

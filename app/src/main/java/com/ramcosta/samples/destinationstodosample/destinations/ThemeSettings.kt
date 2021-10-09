@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.DestinationStyle
 import com.ramcosta.composedestinations.ThemeSettingsDestination
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.samples.destinationstodosample.title
+import com.ramcosta.samples.destinationstodosample.requireTitle
 
 @Destination(
     route = "settings/theme",
@@ -27,7 +27,7 @@ fun ThemeSettings() {
             .background(Color.Yellow)
     ) {
         Text(
-            text = stringResource(id = ThemeSettingsDestination.title),
+            text = stringResource(id = ThemeSettingsDestination.requireTitle),
             modifier = Modifier.align(Alignment.Center)
         )
     }

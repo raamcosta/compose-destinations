@@ -6,11 +6,15 @@ import com.ramcosta.composedestinations.AnimatedDestinationStyle
 import com.ramcosta.composedestinations.Destination
 import com.ramcosta.composedestinations.GreetingDestination
 
-@ExperimentalAnimationApi
-object ProfileScreenStyle : AnimatedDestinationStyle {
+@OptIn(ExperimentalAnimationApi::class)
+object ProfileTransitions : AnimatedDestinationStyle {
 
-    override val enterTransition: AnimatedContentScope<String>.(Destination?, Destination?) -> EnterTransition? = { initial, _ ->
-        when (initial) {
+    override fun AnimatedContentScope<String>.enterTransition(
+        initial: Destination?,
+        target: Destination?
+    ): EnterTransition? {
+
+        return when (initial) {
             GreetingDestination ->
                 slideInHorizontally(
                     initialOffsetX = { 1000 },
@@ -20,19 +24,19 @@ object ProfileScreenStyle : AnimatedDestinationStyle {
         }
     }
 
-    override val exitTransition: AnimatedContentScope<String>.(Destination?, Destination?) -> ExitTransition? = { _, target ->
-        when (target) {
-            GreetingDestination ->
-                slideOutHorizontally(
-                    targetOffsetX = { -1000 },
-                    animationSpec = tween(700)
-                )
-            else -> null
-        }
+    override fun AnimatedContentScope<String>.exitTransition(
+        initial: Destination?,
+        target: Destination?
+    ): ExitTransition? {
+        return popExitTransition(initial, target)
     }
 
-    override val popEnterTransition: AnimatedContentScope<String>.(Destination?, Destination?) -> EnterTransition? = { initial, _ ->
-        when (initial) {
+    override fun AnimatedContentScope<String>.popEnterTransition(
+        initial: Destination?,
+        target: Destination?
+    ): EnterTransition? {
+
+        return when (initial) {
             GreetingDestination ->
                 slideInHorizontally(
                     initialOffsetX = { -1000 },
@@ -42,8 +46,12 @@ object ProfileScreenStyle : AnimatedDestinationStyle {
         }
     }
 
-    override val popExitTransition: AnimatedContentScope<String>.(Destination?, Destination?) -> ExitTransition? = { _, target ->
-        when (target) {
+    override fun AnimatedContentScope<String>.popExitTransition(
+        initial: Destination?,
+        target: Destination?
+    ): ExitTransition? {
+
+        return when (target) {
             GreetingDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { 1000 },

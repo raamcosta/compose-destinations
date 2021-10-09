@@ -12,24 +12,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.window.DialogProperties
-import com.ramcosta.composedestinations.*
+import com.ramcosta.composedestinations.SettingsDestination
+import com.ramcosta.composedestinations.ThemeSettingsDestination
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.destinations.transitions.SettingsTransitions
-import com.ramcosta.samples.destinationstodosample.title
+import com.ramcosta.samples.destinationstodosample.requireTitle
 
 const val SETTINGS_ROUTE = "settings/main"
 const val SETTINGS_NAV_GRAPH = "settings"
 const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
-
-object SettingsDialogStyle : DestinationStyle.Dialog {
-    override val properties = DialogProperties(
-        dismissOnBackPress = false
-    )
-}
 
 @OptIn(ExperimentalAnimationApi::class)
 @Destination(
@@ -37,7 +31,7 @@ object SettingsDialogStyle : DestinationStyle.Dialog {
     start = true,
     navGraph = SETTINGS_NAV_GRAPH,
     deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],
-    style = SettingsDialogStyle::class
+    style = SettingsTransitions::class
 )
 @Composable
 fun Settings(
@@ -54,11 +48,11 @@ fun Settings(
             Button(
                 onClick = { navigator.navigate(ThemeSettingsDestination) }
             ) {
-                Text(text = stringResource(id = ThemeSettingsDestination.title))
+                Text(text = stringResource(id = ThemeSettingsDestination.requireTitle))
             }
 
             Text(
-                text = stringResource(id = SettingsDestination.title)
+                text = stringResource(id = SettingsDestination.requireTitle)
             )
         }
     }

@@ -55,8 +55,8 @@ class KspToCodeGenDestinationsMapper(
             composableName = composableName,
             composableQualifiedName = qualifiedName!!.asString(),
             cleanRoute = cleanRoute,
-            destinationStyleType = destinationAnnotation.getDestinationStyleType(),
-            parameters = parameters.map { it.toParameter() },
+            destinationStyleType = destinationAnnotation.getDestinationStyleType(composableName),
+            parameters = parameters.map { it.toParameter(composableName) },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             isStart = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
             navGraphRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!,
@@ -65,7 +65,7 @@ class KspToCodeGenDestinationsMapper(
         )
     }
 
-    private fun KSAnnotation.getDestinationStyleType(): DestinationStyleType {
+    private fun KSAnnotation.getDestinationStyleType(composableName: String): DestinationStyleType {
         val ksStyleType = findArgumentValue<KSType>(DESTINATION_ANNOTATION_STYLE_ARGUMENT)
             ?: return DestinationStyleType.Default
 
@@ -81,13 +81,15 @@ class KspToCodeGenDestinationsMapper(
             return DestinationStyleType.BottomSheet
         }
 
+        val type = ksStyleType.toType() ?: throw IllegalDestinationsSetup("Parameter $DESTINATION_ANNOTATION_STYLE_ARGUMENT of Destination annotation in composable $composableName was not resolvable: please review it.")
+
         val dialog = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.DestinationStyle.Dialog")!!
                 .asType(emptyList())
         if (dialog.isAssignableFrom(ksStyleType)) {
-            return DestinationStyleType.Dialog(ksStyleType.toType())
+            return DestinationStyleType.Dialog(type)
         }
 
-        return DestinationStyleType.Animated(ksStyleType.toType(), ksStyleType.declaration.findAllRequireOptInAnnotations())
+        return DestinationStyleType.Animated(type, ksStyleType.declaration.findAllRequireOptInAnnotations())
     }
 
     private fun KSAnnotation.prepareRoute(composableName: String): String {
@@ -103,16 +105,20 @@ class KspToCodeGenDestinationsMapper(
         )
     }
 
-    private fun KSType.toType() = Type(
-        declaration.simpleName.asString(),
-        declaration.qualifiedName!!.asString(),
-        isMarkedNullable
-    )
+    private fun KSType.toType(): Type? {
+        val qualifiedName = declaration.qualifiedName ?: return null
 
-    private fun KSValueParameter.toParameter(): Parameter {
+        return Type(
+            declaration.simpleName.asString(),
+            qualifiedName.asString(),
+            isMarkedNullable
+        )
+    }
+
+    private fun KSValueParameter.toParameter(composableName: String): Parameter {
         return Parameter(
             name!!.asString(),
-            type.resolve().toType(),
+            type.resolve().toType() ?: throw IllegalDestinationsSetup("Parameter ${name!!.asString()} of composable $composableName was not resolvable: please review it."),
             getDefaultValue()
         )
     }

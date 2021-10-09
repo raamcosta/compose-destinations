@@ -25,7 +25,7 @@ fun MyBottomBar(
             .background(MaterialTheme.colors.primary)
     ) {
         Text(
-            text = stringResource(destination.title),
+            text = destination.title?.let { stringResource(it) } ?: "",
             modifier = Modifier.align(Alignment.Center),
             color = Color.White
         )

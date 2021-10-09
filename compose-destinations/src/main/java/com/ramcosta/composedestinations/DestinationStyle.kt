@@ -7,20 +7,40 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.window.DialogProperties
 
 sealed interface DestinationStyle {
-    object Default: DestinationStyle
+    object Default : DestinationStyle
 
     object BottomSheet : DestinationStyle
 
     @ExperimentalAnimationApi
-    interface Animated<T: DestinationSpec> : DestinationStyle {
+    interface Animated<T : DestinationSpec> : DestinationStyle {
 
-        val enterTransition: (AnimatedContentScope<String>.(initial: T?, target: T?) -> EnterTransition?)? get() = null
+        fun AnimatedContentScope<String>.enterTransition(
+            initial: T?,
+            target: T?
+        ): EnterTransition? {
+            return null
+        }
 
-        val exitTransition: (AnimatedContentScope<String>.(initial: T?, target: T?) -> ExitTransition?)? get() = null
+        fun AnimatedContentScope<String>.exitTransition(
+            initial: T?,
+            target: T?
+        ): ExitTransition? {
+            return null
+        }
 
-        val popEnterTransition: (AnimatedContentScope<String>.(initial: T?, target: T?) -> EnterTransition?)? get() = enterTransition
+        fun AnimatedContentScope<String>.popEnterTransition(
+            initial: T?,
+            target: T?
+        ): EnterTransition? {
+            return enterTransition(initial, target)
+        }
 
-        val popExitTransition: (AnimatedContentScope<String>.(initial: T?, target: T?) -> ExitTransition?)? get() = exitTransition
+        fun AnimatedContentScope<String>.popExitTransition(
+            initial: T?,
+            target: T?
+        ): ExitTransition? {
+            return exitTransition(initial, target)
+        }
     }
 
     interface Dialog : DestinationStyle {

@@ -6,7 +6,7 @@ import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
 import com.ramcosta.composedestinations.codegen.templates.*
-import com.ramcosta.composedestinations.codegen.templates.IMPORTS_BLOCK
+import com.ramcosta.composedestinations.codegen.templates.ADDITIONAL_IMPORTS_BLOCK
 import com.ramcosta.composedestinations.codegen.templates.destinationsObjectTemplate
 import java.io.OutputStream
 
@@ -31,21 +31,98 @@ class DestinationsObjectProcessor(
         )
 
         var generatedCode = destinationsObjectTemplate
-            .replace(NAV_GRAPHS_DECLARATION, navGraphsDeclaration(generatedDestinations))
-            .replace(INNER_NAV_HOST_PLACEHOLDER, if (availableDependencies.accompanistAnimation) innerAnimatedNavHost else innerNavHost)
-            .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, if (availableDependencies.accompanistAnimation) "rememberAnimatedNavController()" else "rememberNavController()")
-            .replace(EXPERIMENTAL_API_PLACEHOLDER, experimentalAnimationApi())
-            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams())
-            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1, animationDefaultParamsPassToInner())
-            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2, animationDefaultParamsPassToInner().prependIndent("\t"))
-            .replace(IMPORTS_BLOCK, importsCode())
 
         if (!availableDependencies.composeMaterial) {
             val startIndex = generatedCode.indexOf(SCAFFOLD_FUNCTION_START)
             val endIndex = generatedCode.indexOf(SCAFFOLD_FUNCTION_END) + SCAFFOLD_FUNCTION_END.length
 
             generatedCode = generatedCode.removeRange(startIndex, endIndex)
+
+            generatedCode = generatedCode.replace("\nimport androidx.compose.material.*", "")
         }
+
+        if (!availableDependencies.accompanistAnimation) {
+            var startIndex = generatedCode.indexOf(START_ACCOMPANIST_NAVIGATION_IMPORTS)
+            var endIndex = generatedCode.indexOf(END_ACCOMPANIST_NAVIGATION_IMPORTS) + END_ACCOMPANIST_NAVIGATION_IMPORTS.length
+
+            generatedCode = generatedCode.removeRange(startIndex, endIndex)
+
+            startIndex = generatedCode.indexOf(ANIMATED_NAV_HOST_CALL_PARAMETERS_START)
+            endIndex = generatedCode.indexOf(ANIMATED_NAV_HOST_CALL_PARAMETERS_END) + ANIMATED_NAV_HOST_CALL_PARAMETERS_END.length
+
+            generatedCode = generatedCode.removeRange(startIndex, endIndex)
+
+            startIndex = generatedCode.indexOf(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START)
+            endIndex = generatedCode.indexOf(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END) + INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END.length
+
+            generatedCode = generatedCode.removeRange(startIndex, endIndex)
+
+            startIndex = generatedCode.indexOf(ADD_ANIMATED_COMPOSABLE_START)
+            endIndex = generatedCode.indexOf(ADD_ANIMATED_COMPOSABLE_END) + ADD_ANIMATED_COMPOSABLE_END.length
+
+            generatedCode = generatedCode.removeRange(startIndex, endIndex)
+
+            startIndex = generatedCode.indexOf(NAVIGATION_ANIMATION_FUNCTIONS_START)
+            endIndex = generatedCode.indexOf(NAVIGATION_ANIMATION_FUNCTIONS_END) + NAVIGATION_ANIMATION_FUNCTIONS_END.length
+
+            generatedCode = generatedCode.removeRange(startIndex, endIndex)
+        } else {
+            generatedCode = generatedCode
+                .replace(ANIMATED_NAV_HOST_CALL_PARAMETERS_START, "")
+                .replace(ANIMATED_NAV_HOST_CALL_PARAMETERS_END, "")
+                .replace(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START, "")
+                .replace(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END, "")
+                .replace(ADD_ANIMATED_COMPOSABLE_START, "")
+                .replace(ADD_ANIMATED_COMPOSABLE_END, "")
+                .replace(NAVIGATION_ANIMATION_FUNCTIONS_START, "")
+                .replace(NAVIGATION_ANIMATION_FUNCTIONS_END, "")
+        }
+
+        if (availableDependencies.accompanistMaterial) {
+            generatedCode = generatedCode
+                .replace(ADD_BOTTOM_SHEET_COMPOSABLE_START, "")
+                .replace(ADD_BOTTOM_SHEET_COMPOSABLE_END, "")
+                .replace(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START, "")
+                .replace(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END, "")
+        } else {
+            generatedCode = generatedCode.replace(BOTTOM_SHEET_COMPOSABLE_WRAPPER, "")
+
+            var startIndex = generatedCode.indexOf(ADD_BOTTOM_SHEET_COMPOSABLE_START)
+            var endIndex = generatedCode.indexOf(ADD_BOTTOM_SHEET_COMPOSABLE_END) + ADD_BOTTOM_SHEET_COMPOSABLE_END.length
+
+            generatedCode = generatedCode.removeRange(startIndex, endIndex)
+
+            startIndex = generatedCode.indexOf(START_ACCOMPANIST_MATERIAL_IMPORTS)
+            endIndex = generatedCode.indexOf(END_ACCOMPANIST_MATERIAL_IMPORTS) + END_ACCOMPANIST_MATERIAL_IMPORTS.length
+
+            generatedCode = generatedCode.removeRange(startIndex, endIndex)
+
+            startIndex = generatedCode.indexOf(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START)
+            endIndex = generatedCode.indexOf(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END) + NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END.length
+
+            generatedCode = generatedCode.removeRange(startIndex, endIndex)
+        }
+
+        if (availableDependencies.accompanistAnimation && availableDependencies.accompanistMaterial) {
+            val startIndex = generatedCode.indexOf(ADD_COMPOSABLE_WHEN_ELSE_START)
+            val endIndex = generatedCode.indexOf(ADD_COMPOSABLE_WHEN_ELSE_END) + ADD_COMPOSABLE_WHEN_ELSE_END.length
+
+            generatedCode = generatedCode.removeRange(startIndex, endIndex)
+        } else {
+            generatedCode = generatedCode
+                .replace(ADD_COMPOSABLE_WHEN_ELSE_START, "")
+                .replace(ADD_COMPOSABLE_WHEN_ELSE_END, "")
+        }
+
+        generatedCode = generatedCode
+            .replace(NAV_GRAPHS_DECLARATION, navGraphsDeclaration(generatedDestinations))
+            .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, if (availableDependencies.accompanistAnimation) "rememberAnimatedNavController()" else "rememberNavController()")
+            .replace(NAV_HOST_METHOD_NAME, navHostMethodName())
+            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams())
+            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1, animationDefaultParamsPassToInner())
+            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2, animationDefaultParamsPassToInner().prependIndent("\t"))
+            .replaceEach(EXPERIMENTAL_API_PLACEHOLDER) { if (it > generatedCode.indexOf("//region internals")) experimentalAnimationApi().replace("\t", "") else experimentalAnimationApi() }
+            .replace(ADDITIONAL_IMPORTS_BLOCK, importsCode())
 
         file += generatedCode
         file.close()
@@ -60,19 +137,31 @@ class DestinationsObjectProcessor(
         sealedDestSpecFile.close()
     }
 
-    private fun experimentalAnimationApi(): String {
+    private fun navHostMethodName(): String {
         return if (availableDependencies.accompanistAnimation) {
-            additionalImports.add("androidx.compose.animation.ExperimentalAnimationApi")
-            "\n\t@ExperimentalAnimationApi"
-        } else ""
+            "AnimatedNavHost"
+        } else {
+            "NavHost"
+        }
+    }
+
+    private fun experimentalAnimationApi(): String {
+        var result = ""
+
+        if (availableDependencies.accompanistMaterial) {
+            result += "@ExperimentalMaterialNavigationApi\n\t"
+        }
+
+        if (availableDependencies.accompanistAnimation) {
+            result += "@ExperimentalAnimationApi\n\t"
+        }
+
+        return result
     }
 
     private fun importsCode(): String {
         val importsCode = StringBuilder()
-        val baseImports =
-            if (availableDependencies.accompanistAnimation) importsAnimatedDestinations else importsDestinations
 
-        importsCode += baseImports
         additionalImports.forEach {
             importsCode += "\nimport $it"
         }
@@ -236,5 +325,18 @@ class DestinationsObjectProcessor(
         }
 
         return code.toString()
+    }
+
+    private fun String.replaceEach(toReplace: String, replaceWith: (index: Int) -> String): String {
+        var toReturn = this
+
+        while (true) {
+            val indexToChange = toReturn.indexOf(toReplace)
+            if (indexToChange == -1) break
+
+            toReturn = toReturn.replaceRange(indexToChange, indexToChange + toReplace.length, replaceWith(indexToChange))
+        }
+
+        return toReturn
     }
 }

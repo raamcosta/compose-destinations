@@ -4,54 +4,62 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import com.ramcosta.composedestinations.*
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 object GreetingTransitions : AnimatedDestinationStyle {
 
-    override val enterTransition: AnimatedContentScope<String>.(Destination?, Destination?) -> EnterTransition? =
-        { initial, _ ->
-            when (initial) {
-                ProfileScreenDestination ->
-                    slideInHorizontally(
-                        initialOffsetX = { 1000 },
-                        animationSpec = tween(700)
-                    )
-                else -> null
-            }
-        }
+    override fun AnimatedContentScope<String>.enterTransition(
+        initial: Destination?,
+        target: Destination?
+    ): EnterTransition? {
 
-    override val exitTransition: AnimatedContentScope<String>.(Destination?, Destination?) -> ExitTransition? =
-        { _, target ->
-            when (target) {
-                ProfileScreenDestination ->
-                    slideOutHorizontally(
-                        targetOffsetX = { -1000 },
-                        animationSpec = tween(700)
-                    )
-                else -> null
-            }
-        }
+        return popEnterTransition(initial, target)
+    }
 
-    override val popEnterTransition: AnimatedContentScope<String>.(Destination?, Destination?) -> EnterTransition? =
-        { initial, _ ->
-            when (initial) {
-                ProfileScreenDestination ->
-                    slideInHorizontally(
-                        initialOffsetX = { -1000 },
-                        animationSpec = tween(700)
-                    )
-                else -> null
-            }
-        }
+    override fun AnimatedContentScope<String>.exitTransition(
+        initial: Destination?,
+        target: Destination?
+    ): ExitTransition? {
 
-    override val popExitTransition: AnimatedContentScope<String>.(Destination?, Destination?) -> ExitTransition? =
-        { _, target ->
-            when (target) {
-                ProfileScreenDestination ->
-                    slideOutHorizontally(
-                        targetOffsetX = { 1000 },
-                        animationSpec = tween(700)
-                    )
-                else -> null
-            }
+        return when (target) {
+            ProfileScreenDestination,
+            SettingsDestination ->
+                slideOutHorizontally(
+                    targetOffsetX = { -1000 },
+                    animationSpec = tween(700)
+                )
+            else -> null
         }
+    }
+
+    override fun AnimatedContentScope<String>.popEnterTransition(
+        initial: Destination?,
+        target: Destination?
+    ): EnterTransition? {
+
+        return when (initial) {
+            ProfileScreenDestination,
+            SettingsDestination ->
+                slideInHorizontally(
+                    initialOffsetX = { -1000 },
+                    animationSpec = tween(700)
+                )
+            else -> null
+        }
+    }
+
+    override fun AnimatedContentScope<String>.popExitTransition(
+        initial: Destination?,
+        target: Destination?
+    ): ExitTransition? {
+
+        return when (target) {
+            ProfileScreenDestination,
+            SettingsDestination ->
+                slideOutHorizontally(
+                    targetOffsetX = { 1000 },
+                    animationSpec = tween(700)
+                )
+            else -> null
+        }
+    }
 }
