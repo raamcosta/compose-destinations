@@ -172,7 +172,7 @@ class DestinationsObjectWriter(
         return if (availableDependencies.accompanistMaterial) {
             """
                 
-                bottomSheetParams: @Composable() (BottomSheetLayoutParams.Builder.() -> Unit),
+                bottomSheetParams: @Composable() (BottomSheetLayoutParams.Builder.() -> Unit) = {},
             """.trimIndent()
                 .prependIndent("\t\t")
         } else {
