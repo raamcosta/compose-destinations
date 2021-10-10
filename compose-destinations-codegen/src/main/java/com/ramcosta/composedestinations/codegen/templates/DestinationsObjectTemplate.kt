@@ -8,6 +8,7 @@ const val NAV_GRAPHS_DECLARATION = "[NAV_GRAPHS_DECLARATION]"
 const val DEFAULT_NAV_CONTROLLER_PLACEHOLDER = "[DEFAULT_NAV_CONTROLLER_PLACEHOLDER]"
 const val EXPERIMENTAL_API_PLACEHOLDER = "[EXPERIMENTAL_API_PLACEHOLDER]"
 const val ANIMATION_DEFAULT_PARAMS_PLACEHOLDER = "[ANIMATION_DEFAULT_PARAMS_PLACEHOLDER]"
+const val BOTTOM_SHEET_DEFAULT_PARAMS_PLACEHOLDER = "[BOTTOM_SHEET_DEFAULT_PARAMS_PLACEHOLDER]"
 const val ANIMATION_PARAMS_TO_INNER_PLACEHOLDER = "[ANIMATION_PARAMS_TO_INNER_PLACEHOLDER]"
 const val ANIMATED_NAV_HOST_CALL_PARAMETERS_START = "[ANIMATED_NAV_HOST_CALL_PARAMETERS_START]"
 const val ANIMATED_NAV_HOST_CALL_PARAMETERS_END = "[ANIMATED_NAV_HOST_CALL_PARAMETERS_END]"
@@ -18,13 +19,9 @@ const val ADD_ANIMATED_COMPOSABLE_START = "[ADD_ANIMATED_COMPOSABLE_START]"
 const val ADD_ANIMATED_COMPOSABLE_END = "[ADD_ANIMATED_COMPOSABLE_END]"
 const val ADD_BOTTOM_SHEET_COMPOSABLE_START = "[ADD_BOTTOM_SHEET_COMPOSABLE_START]"
 const val ADD_BOTTOM_SHEET_COMPOSABLE_END = "[ADD_BOTTOM_SHEET_COMPOSABLE_END]"
-const val NAVIGATION_ANIMATION_FUNCTIONS_START = "[NAVIGATION_ANIMATION_FUNCTIONS_START]"
-const val NAVIGATION_ANIMATION_FUNCTIONS_END = "[NAVIGATION_ANIMATION_FUNCTIONS_END]"
-const val NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START = "[NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START]"
-const val NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END = "[NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END]"
 const val ADD_COMPOSABLE_WHEN_ELSE_START = "[ADD_COMPOSABLES_WHEN_ELSE_START]"
 const val ADD_COMPOSABLE_WHEN_ELSE_END = "[ADD_COMPOSABLES_WHEN_ELSE_END]"
-const val BOTTOM_SHEET_COMPOSABLE_WRAPPER = " = BottomSheet(navController)"
+const val BOTTOM_SHEET_COMPOSABLE_WRAPPER = " = BottomSheetLayout(navController, bottomSheetParams)"
 
 const val SCAFFOLD_FUNCTION_START = "//region Scaffold"
 const val SCAFFOLD_FUNCTION_END = "//endregion Scaffold"
@@ -57,9 +54,6 @@ import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.DestinationStyle
 import $PACKAGE_NAME.spec.NavGraphSpec
 $START_ACCOMPANIST_NAVIGATION_IMPORTS
-import androidx.compose.animation.core.tween
-import androidx.compose.ui.Alignment
-import androidx.navigation.NavBackStackEntry
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
@@ -67,10 +61,6 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 $END_ACCOMPANIST_NAVIGATION_IMPORTS
 $START_ACCOMPANIST_MATERIAL_IMPORTS
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import androidx.navigation.plusAssign
 $END_ACCOMPANIST_MATERIAL_IMPORTS
 $ADDITIONAL_IMPORTS_BLOCK
 
@@ -97,7 +87,7 @@ $NAV_GRAPHS_DECLARATION
     fun NavHost(
         navController: NavHostController = $DEFAULT_NAV_CONTROLLER_PLACEHOLDER,
         modifier: Modifier = Modifier,
-        startDestination: $GENERATED_DESTINATION = ${GENERATED_NAV_GRAPH}s.root.startDestination,$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER
+        startDestination: $GENERATED_DESTINATION = ${GENERATED_NAV_GRAPH}s.root.startDestination,$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER$BOTTOM_SHEET_DEFAULT_PARAMS_PLACEHOLDER
     )$BOTTOM_SHEET_COMPOSABLE_WRAPPER {
         InnerDestinationsNavHost(
             navController = navController,
@@ -127,7 +117,7 @@ $NAV_GRAPHS_DECLARATION
         modifier: Modifier = Modifier,
         startDestination: $GENERATED_DESTINATION = ${GENERATED_NAV_GRAPH}s.root.startDestination,
         navController: NavHostController = $DEFAULT_NAV_CONTROLLER_PLACEHOLDER,
-        scaffoldState: ScaffoldState = rememberScaffoldState(),$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER
+        scaffoldState: ScaffoldState = rememberScaffoldState(),$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER$BOTTOM_SHEET_DEFAULT_PARAMS_PLACEHOLDER
         topBar: (@Composable ($GENERATED_DESTINATION) -> Unit) = {},
         bottomBar: @Composable ($GENERATED_DESTINATION) -> Unit = {},
         snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) },
@@ -190,22 +180,18 @@ private fun InnerDestinationsNavHost(
     modifier: Modifier,
     startDestination: Destination,
     situationalParametersProvider: (Destination) -> MutableMap<Class<*>, Any> = { mutableMapOf() },
-    ${INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START}contentAlignment: Alignment = Alignment.Center,
-    enterTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> EnterTransition)?,
-    exitTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> ExitTransition)?,
-    popEnterTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> EnterTransition)?,
-    popExitTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> ExitTransition)?,$INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END
+    ${INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START}animationDefaultParams: AnimationDefaultParams,$INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END
 ) {
     $NAV_HOST_METHOD_NAME(
         navController = navController,
         startDestination = startDestination.route,
         modifier = modifier,
         route = $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root.route,
-        ${ANIMATED_NAV_HOST_CALL_PARAMETERS_START}contentAlignment = contentAlignment,
-        enterTransition = enterTransition,
-        exitTransition = exitTransition,
-        popEnterTransition = popEnterTransition,
-        popExitTransition = popExitTransition,$ANIMATED_NAV_HOST_CALL_PARAMETERS_END
+        ${ANIMATED_NAV_HOST_CALL_PARAMETERS_START}contentAlignment = animationDefaultParams.contentAlignment,
+        enterTransition = animationDefaultParams.enterTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },      
+        exitTransition = animationDefaultParams.exitTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },        
+        popEnterTransition = animationDefaultParams.popEnterTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },
+        popExitTransition = animationDefaultParams.popExitTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },$ANIMATED_NAV_HOST_CALL_PARAMETERS_END
     ) {
         addNavGraphDestinations(
             navGraphSpec = $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root,
@@ -311,66 +297,5 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun addNavigation(): NavGraphBuilder.($CO
         }
     }
 }
-
-${NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START}@ExperimentalMaterialNavigationApi
-private fun NavGraphBuilder.addBottomSheetComposable(
-    destination: $GENERATED_DESTINATION,
-    navController: NavHostController,
-    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
-) {
-    bottomSheet(
-        destination.route,
-        destination.arguments,
-        destination.deepLinks
-    ) { navBackStackEntry ->
-        destination.Content(
-            navController,
-            navBackStackEntry,
-            situationalParametersProvider(destination).apply {
-                this[ColumnScope::class.java] = this@bottomSheet
-            }
-        )
-    }
-}
-
-@ExperimentalMaterialNavigationApi
-@Composable
-private fun BottomSheet(navController: NavHostController, content: @Composable () -> Unit) {
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
-    navController.navigatorProvider += bottomSheetNavigator
-
-    ModalBottomSheetLayout(bottomSheetNavigator) {
-        content()
-    }
-}$NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END
-
-${NAVIGATION_ANIMATION_FUNCTIONS_START}@ExperimentalAnimationApi
-private fun NavGraphBuilder.addAnimatedComposable(
-    animatedStyle: AnimatedDestinationStyle,
-    destination: Destination,
-    navController: NavHostController,
-    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
-) = with(animatedStyle) {
-    composable(
-        route = destination.route,
-        arguments = destination.arguments,
-        deepLinks = destination.deepLinks,
-        enterTransition = { i, t -> enterTransition(i.toDest(), t.toDest()) },
-        exitTransition = { i, t -> exitTransition(i.toDest(), t.toDest()) },
-        popEnterTransition = { i, t -> popEnterTransition(i.toDest(), t.toDest()) },
-        popExitTransition = { i, t -> popExitTransition(i.toDest(), t.toDest()) }
-    ) { navBackStackEntry ->
-        destination.Content(
-            navController,
-            navBackStackEntry,
-            situationalParametersProvider(destination).apply {
-                this[AnimatedVisibilityScope::class.java] = this@composable
-            }
-        )
-    }
-}
-
-@ExperimentalAnimationApi
-private fun NavBackStackEntry.toDest() = destination.route?.let { $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root.findDestination(it) as $GENERATED_DESTINATION }
-$NAVIGATION_ANIMATION_FUNCTIONS_END//endregion
+//endregion
 """.trimIndent()

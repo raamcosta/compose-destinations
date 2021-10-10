@@ -48,7 +48,15 @@ class SingleDestinationProcessor(
 
         outputStream.close()
 
-        return GeneratedDestination(sourceIds, qualifiedName, name, isStart, navGraphRoute, baseOptInAnnotations().filter { !it.isOptedIn }.map { it.annotationName }.toList())
+        return GeneratedDestination(
+            sourceIds = sourceIds,
+            qualifiedName = qualifiedName,
+            simpleName = name,
+            isStartDestination = isStart,
+            navGraphRoute = navGraphRoute,
+            requireOptInAnnotationNames = baseOptInAnnotations().filter { !it.isOptedIn }.map { it.annotationName }.toList(),
+            isBottomSheetStyle = destination.destinationStyleType is DestinationStyleType.BottomSheet
+        )
     }
 
     private fun baseOptInAnnotations(): List<OptInAnnotation> {

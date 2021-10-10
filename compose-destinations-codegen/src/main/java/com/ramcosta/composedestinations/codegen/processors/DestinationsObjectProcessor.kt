@@ -24,10 +24,12 @@ class DestinationsObjectProcessor(
             .adaptToAccompanistAnimation()
             .adaptToAccompanistMaterial()
             .removeAddComposableElseBlock()
+            .removeBottomSheetLayoutWrapper(generatedDestinations)
             .replace(NAV_GRAPHS_DECLARATION, navGraphsDeclaration(generatedDestinations))
             .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, defaultNavControllerPlaceholder())
             .replace(NAV_HOST_METHOD_NAME, navHostMethodName())
             .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams())
+            .replace(BOTTOM_SHEET_DEFAULT_PARAMS_PLACEHOLDER, bottomSheetDefaultParams())
             .replaceEach(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER) { index, str -> animationDefaultParamsPassToInner(index, str) }
             .replaceEach(EXPERIMENTAL_API_PLACEHOLDER) { index, str -> experimentalApiPlaceholder(index, str) }
             .replace(ADDITIONAL_IMPORTS_BLOCK, importsCode())
@@ -59,14 +61,11 @@ class DestinationsObjectProcessor(
                 .removeInstancesOf(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END)
                 .removeInstancesOf(ADD_ANIMATED_COMPOSABLE_START)
                 .removeInstancesOf(ADD_ANIMATED_COMPOSABLE_END)
-                .removeInstancesOf(NAVIGATION_ANIMATION_FUNCTIONS_START)
-                .removeInstancesOf(NAVIGATION_ANIMATION_FUNCTIONS_END)
         } else {
             removeFromTo(START_ACCOMPANIST_NAVIGATION_IMPORTS, END_ACCOMPANIST_NAVIGATION_IMPORTS)
                 .removeFromTo(ANIMATED_NAV_HOST_CALL_PARAMETERS_START, ANIMATED_NAV_HOST_CALL_PARAMETERS_END)
                 .removeFromTo(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START, INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END)
                 .removeFromTo(ADD_ANIMATED_COMPOSABLE_START, ADD_ANIMATED_COMPOSABLE_END)
-                .removeFromTo(NAVIGATION_ANIMATION_FUNCTIONS_START,NAVIGATION_ANIMATION_FUNCTIONS_END)
         }
     }
 
@@ -74,13 +73,10 @@ class DestinationsObjectProcessor(
         return if (availableDependencies.accompanistMaterial) {
             removeInstancesOf(ADD_BOTTOM_SHEET_COMPOSABLE_START)
                 .removeInstancesOf(ADD_BOTTOM_SHEET_COMPOSABLE_END)
-                .removeInstancesOf(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START)
-                .removeInstancesOf(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END)
         } else {
             removeInstancesOf(BOTTOM_SHEET_COMPOSABLE_WRAPPER)
                 .removeFromTo(ADD_BOTTOM_SHEET_COMPOSABLE_START, ADD_BOTTOM_SHEET_COMPOSABLE_END)
                 .removeFromTo(START_ACCOMPANIST_MATERIAL_IMPORTS, END_ACCOMPANIST_MATERIAL_IMPORTS)
-                .removeFromTo(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START, NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END)
         }
     }
 
@@ -91,6 +87,14 @@ class DestinationsObjectProcessor(
             removeInstancesOf(ADD_COMPOSABLE_WHEN_ELSE_START)
                 .removeInstancesOf(ADD_COMPOSABLE_WHEN_ELSE_END)
         }
+    }
+
+    private fun String.removeBottomSheetLayoutWrapper(destinations: List<GeneratedDestination>): String {
+        if (destinations.none { it.isBottomSheetStyle }) {
+            return removeInstancesOf(BOTTOM_SHEET_COMPOSABLE_WRAPPER)
+        }
+
+        return this
     }
 
     private fun defaultNavControllerPlaceholder(): String {
@@ -120,11 +124,7 @@ class DestinationsObjectProcessor(
         val animationParams = if (availableDependencies.accompanistAnimation) {
             """
 
-				contentAlignment = contentAlignment,
-				enterTransition = enterTransition,
-				exitTransition = exitTransition,
-				popEnterTransition = popEnterTransition,
-				popExitTransition = popExitTransition
+				animationDefaultParams = animationDefaultParams,
             """.trimIndent()
                 .prependIndent("\t\t\t")
         } else {
@@ -160,13 +160,19 @@ class DestinationsObjectProcessor(
         return if (availableDependencies.accompanistAnimation) {
             """
                 
-                contentAlignment: Alignment = Alignment.Center,
-                enterTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> EnterTransition)? =
-                    { _, _ -> fadeIn(animationSpec = tween(700)) },
-                exitTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> ExitTransition)? =
-                    { _, _ -> fadeOut(animationSpec = tween(700)) },
-                popEnterTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> EnterTransition)? = enterTransition,
-                popExitTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> ExitTransition)? = exitTransition,
+                animationDefaultParams: AnimationDefaultParams = AnimationDefaultParams(),
+            """.trimIndent()
+                .prependIndent("\t\t")
+        } else {
+            ""
+        }
+    }
+
+    private fun bottomSheetDefaultParams(): String {
+        return if (availableDependencies.accompanistMaterial) {
+            """
+                
+                bottomSheetParams: @Composable() (BottomSheetLayoutParams.Builder.() -> Unit),
             """.trimIndent()
                 .prependIndent("\t\t")
         } else {

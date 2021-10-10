@@ -22,7 +22,7 @@ class CodeGenProcessor(
     fun process(destinations: List<Destination>) {
         initialValidations(destinations)
 
-        CoreExtensionsProcessor(codeGenerator).process()
+        CoreExtensionsProcessor(codeGenerator, availableDependencies).process()
 
         val generatedDestinations = DestinationsProcessor(codeGenerator, logger, availableDependencies).process(destinations)
 
