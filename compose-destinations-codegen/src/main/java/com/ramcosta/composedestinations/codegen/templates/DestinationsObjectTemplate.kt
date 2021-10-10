@@ -186,8 +186,8 @@ private fun InnerDestinationsNavHost(
         navController = navController,
         startDestination = startDestination.route,
         modifier = modifier,
-        route = $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root.route,
-        ${ANIMATED_NAV_HOST_CALL_PARAMETERS_START}contentAlignment = defaultAnimationParams.contentAlignment,
+        route = $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root.route,$ANIMATED_NAV_HOST_CALL_PARAMETERS_START
+        contentAlignment = defaultAnimationParams.contentAlignment,
         enterTransition = defaultAnimationParams.enterTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },      
         exitTransition = defaultAnimationParams.exitTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },        
         popEnterTransition = defaultAnimationParams.popEnterTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },

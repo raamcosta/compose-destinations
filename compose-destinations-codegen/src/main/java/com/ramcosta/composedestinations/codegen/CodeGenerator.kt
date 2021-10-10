@@ -5,6 +5,7 @@ import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
 import com.ramcosta.composedestinations.codegen.model.Destination
+import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
 import com.ramcosta.composedestinations.codegen.writers.CoreExtensionsWriter
 import com.ramcosta.composedestinations.codegen.writers.DestinationsObjectWriter
 import com.ramcosta.composedestinations.codegen.writers.DestinationsWriter
@@ -46,6 +47,15 @@ class CodeGenerator(
 
             if (composableNames.contains(it.composableName)) {
                 throw IllegalDestinationsSetup("Destination composable names must be unique: found multiple named '${it.composableName}'")
+            }
+
+            if (it.composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME && it.destinationStyleType !is DestinationStyleType.BottomSheet) {
+                throw IllegalDestinationsSetup("${it.composableName} composable: Only destinations with style = DestinationStyle.BottomSheet may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!")
+            }
+
+            if (it.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
+                && (it.destinationStyleType !is DestinationStyleType.Animated || it.destinationStyleType.type.simpleName == "None")) {
+                throw IllegalDestinationsSetup("Only destinations with a DestinationStyle.Animated may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
             }
 
             cleanRoutes.add(it.cleanRoute)

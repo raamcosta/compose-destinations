@@ -1,9 +1,6 @@
 package com.ramcosta.composedestinations.codegen.templates
 
-import com.ramcosta.composedestinations.codegen.commons.DESTINATIONS_AGGREGATE_CLASS_NAME
-import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION
-import com.ramcosta.composedestinations.codegen.commons.GENERATED_NAV_GRAPH
-import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.*
 
 val coreAnimationsExtensionsTemplate = """
 package $PACKAGE_NAME
@@ -38,7 +35,7 @@ fun NavGraphBuilder.addAnimatedComposable(
             navController,
             navBackStackEntry,
             situationalParametersProvider(destination).apply {
-                this[AnimatedVisibilityScope::class.java] = this@composable
+                this[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java] = this@composable
             }
         )
     }

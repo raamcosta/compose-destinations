@@ -28,6 +28,7 @@ class MainActivity : ComponentActivity() {
             DestinationsTodoSampleTheme {
                 val scaffoldState = rememberScaffoldState()
                 val coroutineScope = rememberCoroutineScope()
+//                val navController = rememberNavController()
                 val navController = rememberAnimatedNavController()
 
                 Destinations.Scaffold(
