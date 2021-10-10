@@ -5,11 +5,11 @@ import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
 import com.ramcosta.composedestinations.codegen.model.Destination
-import com.ramcosta.composedestinations.codegen.processors.CoreExtensionsProcessor
-import com.ramcosta.composedestinations.codegen.processors.DestinationsObjectProcessor
-import com.ramcosta.composedestinations.codegen.processors.DestinationsProcessor
+import com.ramcosta.composedestinations.codegen.writers.CoreExtensionsWriter
+import com.ramcosta.composedestinations.codegen.writers.DestinationsObjectWriter
+import com.ramcosta.composedestinations.codegen.writers.DestinationsWriter
 
-class CodeGenProcessor(
+class CodeGenerator(
     private val logger: Logger,
     private val codeGenerator: CodeOutputStreamMaker,
     private val availableDependencies: AvailableDependencies
@@ -19,14 +19,14 @@ class CodeGenProcessor(
         requireComposeNavigation()
     }
 
-    fun process(destinations: List<Destination>) {
+    fun generate(destinations: List<Destination>) {
         initialValidations(destinations)
 
-        CoreExtensionsProcessor(codeGenerator, availableDependencies).process()
+        CoreExtensionsWriter(codeGenerator, availableDependencies).write()
 
-        val generatedDestinations = DestinationsProcessor(codeGenerator, logger, availableDependencies).process(destinations)
+        val generatedDestinations = DestinationsWriter(codeGenerator, logger, availableDependencies).write(destinations)
 
-        DestinationsObjectProcessor(codeGenerator, logger, availableDependencies).process(generatedDestinations)
+        DestinationsObjectWriter(codeGenerator, logger, availableDependencies).write(generatedDestinations)
     }
 
     private fun requireComposeNavigation() {

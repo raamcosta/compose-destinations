@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.codegen.processors
+package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
@@ -8,12 +8,12 @@ import com.ramcosta.composedestinations.codegen.templates.coreBottomSheetExtensi
 import com.ramcosta.composedestinations.codegen.templates.sealedDestinationTemplate
 import java.io.OutputStream
 
-class CoreExtensionsProcessor(
+class CoreExtensionsWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val availableDependencies: AvailableDependencies
 ) {
 
-    fun process() {
+    fun write() {
         val sealedDestSpecFile: OutputStream = codeGenerator.makeFile(
             packageName = PACKAGE_NAME,
             name = CORE_EXTENSIONS

@@ -1,20 +1,19 @@
 package com.ramcosta.composedestinations.ksp.processors
 
 import com.google.devtools.ksp.getClassDeclarationByName
-import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.ramcosta.composedestinations.codegen.CodeGenProcessor
+import com.ramcosta.composedestinations.codegen.CodeGenerator
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
 import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
 
 class Processor(
-    private val codeGenerator: CodeGenerator,
+    private val codeGenerator: KSPCodeGenerator,
     private val logger: KSPLogger,
     private val options: Map<String, String>,
 ) : SymbolProcessor {
@@ -30,11 +29,11 @@ class Processor(
         val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, functionsToDestinationsMapper)
 
         val destinations = functionsToDestinationsMapper.map(annotatedDestinations)
-        CodeGenProcessor(
+        CodeGenerator(
             kspLogger,
             kspCodeOutputStreamMaker,
             resolver.getAvailableDependencies()
-        ).process(destinations)
+        ).generate(destinations)
 
         return emptyList()
     }
@@ -58,3 +57,5 @@ class Processor(
         )
     }
 }
+
+typealias KSPCodeGenerator = com.google.devtools.ksp.processing.CodeGenerator

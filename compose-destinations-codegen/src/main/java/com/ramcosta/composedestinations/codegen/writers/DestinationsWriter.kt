@@ -1,25 +1,25 @@
-package com.ramcosta.composedestinations.codegen.processors
+package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
 
-class DestinationsProcessor(
+class DestinationsWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
     private val availableDependencies: AvailableDependencies
 ) {
 
-    fun process(destinations: List<Destination>): List<GeneratedDestination> {
+    fun write(destinations: List<Destination>): List<GeneratedDestination> {
         val generatedFiles = mutableListOf<GeneratedDestination>()
 
         destinations.forEach { destination ->
-            val generatedDestination = SingleDestinationProcessor(
+            val generatedDestination = SingleDestinationWriter(
                 codeGenerator,
                 logger,
                 availableDependencies,
                 destination
-            ).process()
+            ).write()
 
             generatedFiles.add(generatedDestination)
         }

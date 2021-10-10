@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.codegen.processors
+package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
@@ -13,7 +13,7 @@ import com.ramcosta.composedestinations.codegen.templates.ADDITIONAL_IMPORTS
 import com.ramcosta.composedestinations.codegen.templates.WITH_ARGS_METHOD
 import com.ramcosta.composedestinations.codegen.templates.destinationTemplate
 
-class SingleDestinationProcessor(
+class SingleDestinationWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
     private val availableDependencies: AvailableDependencies,
@@ -23,7 +23,7 @@ class SingleDestinationProcessor(
     private val additionalImports = mutableSetOf<String>()
     private val navArgs = destination.parameters.filter { it.type.toNavTypeCodeOrNull() != null }
 
-    fun process(): GeneratedDestination = with(destination) {
+    fun write(): GeneratedDestination = with(destination) {
         if (isStart && navArgs.any { it.isMandatory }) {
             throw IllegalDestinationsSetup("Start destinations cannot have mandatory navigation arguments! (route: \"$cleanRoute\")")
         }

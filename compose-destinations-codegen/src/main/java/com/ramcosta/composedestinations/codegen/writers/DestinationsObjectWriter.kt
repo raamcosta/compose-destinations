@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.codegen.processors
+package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
@@ -10,7 +10,7 @@ import com.ramcosta.composedestinations.codegen.templates.ADDITIONAL_IMPORTS_BLO
 import com.ramcosta.composedestinations.codegen.templates.destinationsObjectTemplate
 import java.io.OutputStream
 
-class DestinationsObjectProcessor(
+class DestinationsObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
     private val availableDependencies: AvailableDependencies
@@ -18,7 +18,7 @@ class DestinationsObjectProcessor(
 
     private val additionalImports = mutableSetOf<String>()
 
-    fun process(generatedDestinations: List<GeneratedDestination>) {
+    fun write(generatedDestinations: List<GeneratedDestination>) {
         val generatedCode = destinationsObjectTemplate
             .adaptToComposeMaterial()
             .adaptToAccompanistAnimation()
