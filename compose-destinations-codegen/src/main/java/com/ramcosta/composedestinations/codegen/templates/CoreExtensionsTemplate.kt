@@ -21,8 +21,15 @@ import androidx.compose.animation.ExperimentalAnimationApi
  */
 sealed interface $GENERATED_DESTINATION : $CORE_DESTINATION_SPEC
 
+/**
+ * Version of [$CORE_DESTINATION_ANIMATION_STYLE] used to expose methods with 
+ * [$GENERATED_DESTINATION]. 
+ * 
+ * Create subclasses to control animation behaviour when transitioning
+ * between destinations.
+ */
 @ExperimentalAnimationApi
-interface $GENERATED_ANIMATED_DESTINATION_STYLE : $CORE_DESTINATION_TRANSITIONS<$GENERATED_DESTINATION> {
+interface $GENERATED_ANIMATED_DESTINATION_STYLE : $CORE_DESTINATION_ANIMATION_STYLE<$GENERATED_DESTINATION> {
 
     override fun AnimatedContentScope<String>.enterTransition(
         initial: $GENERATED_DESTINATION?,

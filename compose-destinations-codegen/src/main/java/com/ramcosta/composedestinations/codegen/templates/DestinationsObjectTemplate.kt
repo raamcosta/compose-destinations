@@ -66,8 +66,8 @@ $ADDITIONAL_IMPORTS_BLOCK
 
 /**
  * Class generated if any Composable is annotated with `@$DESTINATION_ANNOTATION`.
- * It aggregates all [$GENERATED_DESTINATION]s and has 
- * [DestinationsNavHost]/[DestinationsScaffold] equivalent methods which
+ * It aggregates all [$GENERATED_DESTINATION]s and contains 
+ * [NavHost]/[Scaffold] equivalent methods which
  * will relay the destinations to be used in the navigation graph.
  */
 object $DESTINATIONS_AGGREGATE_CLASS_NAME {

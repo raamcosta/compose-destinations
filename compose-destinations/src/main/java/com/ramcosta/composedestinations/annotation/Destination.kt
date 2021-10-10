@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
  * `"root"` is used by default. If this destination is part of a nested nav graph, then this should
  * be used
  * @property deepLinks array of [DeepLink] which can be used to navigate to this destination
- * @property style TODO
+ * @property style class of a [DestinationStyle] subclass which is used to define the style of this destination
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)

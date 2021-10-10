@@ -26,6 +26,7 @@ sealed interface DestinationStyle {
     /**
      * Marks the destination to be shown with a bottom sheet style.
      * It requires Accompanist Material dependency.
+     *
      * Parameters of the BottomSheet Layout can be defined through the `bottomSheetParams`
      * parameter of the `Destinations.NavHost` or `Destinations.Scaffold` methods.
      */

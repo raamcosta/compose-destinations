@@ -26,7 +26,7 @@ const val CORE_NAV_DESTINATIONS_NAVIGATION = "NavControllerDestinationsNavigator
 const val CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME = "$PACKAGE_NAME.navigation.$CORE_NAV_DESTINATIONS_NAVIGATION"
 const val CORE_DESTINATION_SPEC = "DestinationSpec"
 const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
-const val CORE_DESTINATION_TRANSITIONS = "DestinationStyle.Animated"
+const val CORE_DESTINATION_ANIMATION_STYLE = "DestinationStyle.Animated"
 const val CORE_BOTTOM_SHEET_DESTINATION_STYLE = "DestinationStyle.BottomSheet"
 
 const val DESTINATIONS_AGGREGATE_CLASS_NAME = "Destinations"

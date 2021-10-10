@@ -32,6 +32,7 @@ annotation class DeepLink(
  *      id: String
  * )
  * ```
+ *
  * Since the `ProfileScreen` has an argument (`id`), the final uriPattern
  * used will be `"https://myapp.com/profile/{id}"`
  */
