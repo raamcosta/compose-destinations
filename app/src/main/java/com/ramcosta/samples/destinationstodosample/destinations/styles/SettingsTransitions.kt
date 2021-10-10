@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.transitions
+package com.ramcosta.samples.destinationstodosample.destinations.styles
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -7,7 +7,7 @@ import com.ramcosta.composedestinations.Destination
 import com.ramcosta.composedestinations.GreetingDestination
 
 @OptIn(ExperimentalAnimationApi::class)
-object ProfileTransitions : AnimatedDestinationStyle {
+object SettingsTransitions : AnimatedDestinationStyle {
 
     override fun AnimatedContentScope<String>.enterTransition(
         initial: Destination?,
@@ -28,6 +28,7 @@ object ProfileTransitions : AnimatedDestinationStyle {
         initial: Destination?,
         target: Destination?
     ): ExitTransition? {
+
         return popExitTransition(initial, target)
     }
 

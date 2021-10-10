@@ -20,8 +20,7 @@ fun Destination.DrawerContent(
 ) {
     when (this) {
         FeedDestination,
-        GreetingDestination,
-        SettingsDestination -> {
+        GreetingDestination -> {
             Text(
                 text = stringResource(id = requireTitle),
                 modifier = Modifier
@@ -34,6 +33,7 @@ fun Destination.DrawerContent(
         }
         ProfileScreenDestination,
         GoToProfileConfirmationDestination,
+        SettingsDestination,
         ThemeSettingsDestination -> {
         }
     }

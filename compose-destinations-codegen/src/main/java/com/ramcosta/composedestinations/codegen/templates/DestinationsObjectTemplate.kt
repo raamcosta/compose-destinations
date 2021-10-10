@@ -180,18 +180,18 @@ private fun InnerDestinationsNavHost(
     modifier: Modifier,
     startDestination: Destination,
     situationalParametersProvider: (Destination) -> MutableMap<Class<*>, Any> = { mutableMapOf() },
-    ${INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START}animationDefaultParams: AnimationDefaultParams,$INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END
+    ${INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START}defaultAnimationParams: DefaultAnimationParams,$INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END
 ) {
     $NAV_HOST_METHOD_NAME(
         navController = navController,
         startDestination = startDestination.route,
         modifier = modifier,
         route = $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root.route,
-        ${ANIMATED_NAV_HOST_CALL_PARAMETERS_START}contentAlignment = animationDefaultParams.contentAlignment,
-        enterTransition = animationDefaultParams.enterTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },      
-        exitTransition = animationDefaultParams.exitTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },        
-        popEnterTransition = animationDefaultParams.popEnterTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },
-        popExitTransition = animationDefaultParams.popExitTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },$ANIMATED_NAV_HOST_CALL_PARAMETERS_END
+        ${ANIMATED_NAV_HOST_CALL_PARAMETERS_START}contentAlignment = defaultAnimationParams.contentAlignment,
+        enterTransition = defaultAnimationParams.enterTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },      
+        exitTransition = defaultAnimationParams.exitTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },        
+        popEnterTransition = defaultAnimationParams.popEnterTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },
+        popExitTransition = defaultAnimationParams.popExitTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },$ANIMATED_NAV_HOST_CALL_PARAMETERS_END
     ) {
         addNavGraphDestinations(
             navGraphSpec = $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root,
@@ -229,7 +229,7 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun addComposable(
 $ADD_ANIMATED_COMPOSABLE_START
             is DestinationStyle.Animated<*> -> {
                 addAnimatedComposable(
-                    destinationStyle as AnimatedDestinationStyle,
+                    destinationStyle as DestinationStyle.Animated<DestinationSpec>,
                     destination,
                     navController,
                     situationalParametersProvider
@@ -244,8 +244,8 @@ $ADD_ANIMATED_COMPOSABLE_END$ADD_BOTTOM_SHEET_COMPOSABLE_START
                 )
             }
 $ADD_BOTTOM_SHEET_COMPOSABLE_END$ADD_COMPOSABLE_WHEN_ELSE_START
-            else -> throw RuntimeException("Should be impossible! Code gen should have failed if using a style for which you don't have the dependency")$ADD_COMPOSABLE_WHEN_ELSE_END
-        }
+            else -> throw RuntimeException("Should be impossible! Code gen should have failed if using a style for which you don't have the dependency")
+$ADD_COMPOSABLE_WHEN_ELSE_END        }
     }
 }
 

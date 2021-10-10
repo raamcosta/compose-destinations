@@ -16,7 +16,7 @@ import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.samples.destinationstodosample.destinations.transitions.ProfileTransitions
+import com.ramcosta.samples.destinationstodosample.destinations.styles.ProfileTransitions
 
 @OptIn(ExperimentalAnimationApi::class)
 @Destination(

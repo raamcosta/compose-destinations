@@ -15,10 +15,12 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
+import $PACKAGE_NAME.spec.DestinationSpec
+import $PACKAGE_NAME.spec.DestinationStyle
 
 @ExperimentalAnimationApi
 fun NavGraphBuilder.addAnimatedComposable(
-    animatedStyle: AnimatedDestinationStyle,
+    animatedStyle: DestinationStyle.Animated<DestinationSpec>,
     destination: Destination,
     navController: NavHostController,
     situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
@@ -43,7 +45,7 @@ fun NavGraphBuilder.addAnimatedComposable(
 }
 
 @ExperimentalAnimationApi
-class AnimationDefaultParams(
+class DefaultAnimationParams(
     val contentAlignment: Alignment = Alignment.Center,
     val enterTransition: (AnimatedContentScope<String>.(initial: Destination?, target: Destination?) -> EnterTransition)? =
         { _, _ -> fadeIn(animationSpec = tween(700)) },

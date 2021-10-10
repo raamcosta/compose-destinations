@@ -16,12 +16,18 @@ sealed interface DestinationStyle {
     /**
      * No special animation or style.
      * This is the default style used in case none is specified for a given Destination.
+     *
+     * If you are using Accompanist's Navigation-Animation dependency, then this default
+     * may be overridden through generated `Destinations.NavHost`
+     * or `Destinations.Scaffold` methods which will have a `defaultAnimationParams` argument.
      */
     object Default : DestinationStyle
 
     /**
      * Marks the destination to be shown with a bottom sheet style.
      * It requires Accompanist Material dependency.
+     * Parameters of the BottomSheet Layout can be defined through the `bottomSheetParams`
+     * parameter of the `Destinations.NavHost` or `Destinations.Scaffold` methods.
      */
     object BottomSheet : DestinationStyle
 
@@ -63,6 +69,22 @@ sealed interface DestinationStyle {
         ): ExitTransition? {
             return exitTransition(initial, target)
         }
+
+        /**
+         * Can be used to force no animations for certain destinations, if you've overridden
+         * the default animation with `defaultAnimationParams`.
+         */
+        object None : Animated<DestinationSpec> {
+            override fun AnimatedContentScope<String>.enterTransition(
+                initial: DestinationSpec?,
+                target: DestinationSpec?
+            ) = EnterTransition.None
+
+            override fun AnimatedContentScope<String>.exitTransition(
+                initial: DestinationSpec?,
+                target: DestinationSpec?
+            ) = ExitTransition.None
+        }
     }
 
     /**
@@ -72,10 +94,10 @@ sealed interface DestinationStyle {
      * or you can use the default values with `style = DestinationStyle.Dialog::class`
      */
     interface Dialog : DestinationStyle {
+        val properties: DialogProperties
+
         companion object Default : Dialog {
             override val properties = DialogProperties()
         }
-
-        val properties: DialogProperties
     }
 }

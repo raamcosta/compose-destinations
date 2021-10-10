@@ -28,9 +28,9 @@ class DestinationsObjectProcessor(
             .replace(NAV_GRAPHS_DECLARATION, navGraphsDeclaration(generatedDestinations))
             .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, defaultNavControllerPlaceholder())
             .replace(NAV_HOST_METHOD_NAME, navHostMethodName())
-            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams())
+            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, defaultAnimationParams())
             .replace(BOTTOM_SHEET_DEFAULT_PARAMS_PLACEHOLDER, bottomSheetDefaultParams())
-            .replaceEach(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER) { index, str -> animationDefaultParamsPassToInner(index, str) }
+            .replaceEach(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER) { index, str -> defaultAnimationParamsPassToInner(index, str) }
             .replaceEach(EXPERIMENTAL_API_PLACEHOLDER) { index, str -> experimentalApiPlaceholder(index, str) }
             .replace(ADDITIONAL_IMPORTS_BLOCK, importsCode())
 
@@ -120,11 +120,11 @@ class DestinationsObjectProcessor(
         }
     }
 
-    private fun animationDefaultParamsPassToInner(replacingIndex: Int, generatedCode: String): String {
+    private fun defaultAnimationParamsPassToInner(replacingIndex: Int, generatedCode: String): String {
         val animationParams = if (availableDependencies.accompanistAnimation) {
             """
 
-				animationDefaultParams = animationDefaultParams,
+				defaultAnimationParams = defaultAnimationParams,
             """.trimIndent()
                 .prependIndent("\t\t\t")
         } else {
@@ -156,11 +156,11 @@ class DestinationsObjectProcessor(
         return importsCode.toString()
     }
 
-    private fun animationDefaultParams(): String {
+    private fun defaultAnimationParams(): String {
         return if (availableDependencies.accompanistAnimation) {
             """
                 
-                animationDefaultParams: AnimationDefaultParams = AnimationDefaultParams(),
+                defaultAnimationParams: DefaultAnimationParams = DefaultAnimationParams(),
             """.trimIndent()
                 .prependIndent("\t\t")
         } else {
