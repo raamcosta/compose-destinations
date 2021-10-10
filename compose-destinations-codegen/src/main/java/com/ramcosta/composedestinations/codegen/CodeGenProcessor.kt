@@ -1,12 +1,11 @@
 package com.ramcosta.composedestinations.codegen
 
-import com.ramcosta.composedestinations.codegen.commons.COMPOSE_NAVIGATION
-import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
-import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
+import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
 import com.ramcosta.composedestinations.codegen.model.Destination
+import com.ramcosta.composedestinations.codegen.processors.CoreExtensionsProcessor
 import com.ramcosta.composedestinations.codegen.processors.DestinationsObjectProcessor
 import com.ramcosta.composedestinations.codegen.processors.DestinationsProcessor
 
@@ -22,6 +21,8 @@ class CodeGenProcessor(
 
     fun process(destinations: List<Destination>) {
         initialValidations(destinations)
+
+        CoreExtensionsProcessor(codeGenerator).process()
 
         val generatedDestinations = DestinationsProcessor(codeGenerator, logger, availableDependencies).process(destinations)
 

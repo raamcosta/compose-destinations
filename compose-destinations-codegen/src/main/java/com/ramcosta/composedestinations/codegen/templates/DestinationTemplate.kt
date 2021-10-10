@@ -23,7 +23,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import kotlin.reflect.KClass
 $ADDITIONAL_IMPORTS
 
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME: $GENERATED_DESTINATION {
@@ -34,7 +33,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME: $GENERATED_DE
     override fun Content(
         navController: NavController,
         navBackStackEntry: NavBackStackEntry,
-        situationalParameters: Map<KClass<*>, Any>,
+        situationalParameters: Map<Class<*>, Any>,
     ) {
         $CONTENT_FUNCTION_CODE
     }

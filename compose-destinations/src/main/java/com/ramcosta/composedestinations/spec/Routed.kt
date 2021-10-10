@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.navigation
+package com.ramcosta.composedestinations.spec
 
 /**
  * Interface for all objects that contain a route

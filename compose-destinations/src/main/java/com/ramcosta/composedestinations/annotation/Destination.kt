@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.annotation
 
-import com.ramcosta.composedestinations.DestinationStyle
+import com.ramcosta.composedestinations.spec.DestinationStyle
 import kotlin.reflect.KClass
 
 /**

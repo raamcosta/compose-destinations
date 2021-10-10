@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.DestinationStyle
+import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.GreetingDestination
 import com.ramcosta.composedestinations.ProfileScreenDestination
@@ -71,7 +71,6 @@ fun Greeting(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Destination(style = DestinationStyle.Dialog::class)
 @Composable
 fun GoToProfileConfirmation(

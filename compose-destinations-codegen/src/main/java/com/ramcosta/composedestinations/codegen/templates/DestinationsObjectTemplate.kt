@@ -8,8 +8,7 @@ const val NAV_GRAPHS_DECLARATION = "[NAV_GRAPHS_DECLARATION]"
 const val DEFAULT_NAV_CONTROLLER_PLACEHOLDER = "[DEFAULT_NAV_CONTROLLER_PLACEHOLDER]"
 const val EXPERIMENTAL_API_PLACEHOLDER = "[EXPERIMENTAL_API_PLACEHOLDER]"
 const val ANIMATION_DEFAULT_PARAMS_PLACEHOLDER = "[ANIMATION_DEFAULT_PARAMS_PLACEHOLDER]"
-const val ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1 = "[ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1]"
-const val ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2 = "[ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2]"
+const val ANIMATION_PARAMS_TO_INNER_PLACEHOLDER = "[ANIMATION_PARAMS_TO_INNER_PLACEHOLDER]"
 const val ANIMATED_NAV_HOST_CALL_PARAMETERS_START = "[ANIMATED_NAV_HOST_CALL_PARAMETERS_START]"
 const val ANIMATED_NAV_HOST_CALL_PARAMETERS_END = "[ANIMATED_NAV_HOST_CALL_PARAMETERS_END]"
 const val INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START = "[INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START]"
@@ -54,7 +53,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
-import kotlin.reflect.KClass
+import $PACKAGE_NAME.spec.DestinationSpec
+import $PACKAGE_NAME.spec.DestinationStyle
+import $PACKAGE_NAME.spec.NavGraphSpec
 $START_ACCOMPANIST_NAVIGATION_IMPORTS
 import androidx.compose.animation.core.tween
 import androidx.compose.ui.Alignment
@@ -102,7 +103,7 @@ $NAV_GRAPHS_DECLARATION
             navController = navController,
             modifier = modifier,
             startDestination = startDestination,
-            situationalParametersProvider = { mutableMapOf() },$ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1
+            situationalParametersProvider = { mutableMapOf() },$ANIMATION_PARAMS_TO_INNER_PLACEHOLDER
         )
     }
     //endregion NavHost
@@ -174,8 +175,8 @@ $NAV_GRAPHS_DECLARATION
                 modifier = modifierForDestination(destination, paddingValues),
                 startDestination = startDestination,
                 situationalParametersProvider = {
-                    mutableMapOf(ScaffoldState::class to scaffoldState)
-                },$ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2
+                    mutableMapOf(ScaffoldState::class.java to scaffoldState)
+                },$ANIMATION_PARAMS_TO_INNER_PLACEHOLDER
             )
         }
     }
@@ -188,7 +189,7 @@ private fun InnerDestinationsNavHost(
     navController: NavHostController,
     modifier: Modifier,
     startDestination: Destination,
-    situationalParametersProvider: (Destination) -> MutableMap<KClass<*>, Any> = { mutableMapOf() },
+    situationalParametersProvider: (Destination) -> MutableMap<Class<*>, Any> = { mutableMapOf() },
     ${INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START}contentAlignment: Alignment = Alignment.Center,
     enterTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> EnterTransition)?,
     exitTransition: (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> ExitTransition)?,
@@ -217,7 +218,7 @@ private fun InnerDestinationsNavHost(
 
 ${EXPERIMENTAL_API_PLACEHOLDER}private fun addComposable(
     navController: NavHostController,
-    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<KClass<*>, Any>
+    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
 ): NavGraphBuilder.($CORE_DESTINATION_SPEC) -> Unit {
     return { destination ->
         destination as $GENERATED_DESTINATION
@@ -265,7 +266,7 @@ $ADD_BOTTOM_SHEET_COMPOSABLE_END$ADD_COMPOSABLE_WHEN_ELSE_START
 ${EXPERIMENTAL_API_PLACEHOLDER}private fun NavGraphBuilder.addComposable(
     destination: $GENERATED_DESTINATION,
     navController: NavHostController,
-    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<KClass<*>, Any>
+    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
 ) {
     composable(
         route = destination.route,
@@ -284,7 +285,7 @@ private fun NavGraphBuilder.addDialogComposable(
     dialogStyle: DestinationStyle.Dialog,
     destination: $GENERATED_DESTINATION,
     navController: NavHostController,
-    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<KClass<*>, Any>
+    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
 ) {
     dialog(
         destination.route,
@@ -315,7 +316,7 @@ ${NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START}@ExperimentalMaterialNavigationApi
 private fun NavGraphBuilder.addBottomSheetComposable(
     destination: $GENERATED_DESTINATION,
     navController: NavHostController,
-    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<KClass<*>, Any>
+    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
 ) {
     bottomSheet(
         destination.route,
@@ -326,7 +327,7 @@ private fun NavGraphBuilder.addBottomSheetComposable(
             navController,
             navBackStackEntry,
             situationalParametersProvider(destination).apply {
-                this[ColumnScope::class] = this@bottomSheet
+                this[ColumnScope::class.java] = this@bottomSheet
             }
         )
     }
@@ -348,7 +349,7 @@ private fun NavGraphBuilder.addAnimatedComposable(
     animatedStyle: AnimatedDestinationStyle,
     destination: Destination,
     navController: NavHostController,
-    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<KClass<*>, Any>
+    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
 ) = with(animatedStyle) {
     composable(
         route = destination.route,
@@ -363,7 +364,7 @@ private fun NavGraphBuilder.addAnimatedComposable(
             navController,
             navBackStackEntry,
             situationalParametersProvider(destination).apply {
-                this[AnimatedVisibilityScope::class] = this@composable
+                this[AnimatedVisibilityScope::class.java] = this@composable
             }
         )
     }

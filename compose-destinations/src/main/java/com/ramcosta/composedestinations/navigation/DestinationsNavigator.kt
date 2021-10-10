@@ -2,8 +2,9 @@ package com.ramcosta.composedestinations.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
-import com.ramcosta.composedestinations.DestinationSpec
-import com.ramcosta.composedestinations.NavGraphSpec
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.Routed
 
 /**
  * Contract for a navigator of [DestinationSpec].
@@ -30,10 +31,20 @@ interface DestinationsNavigator {
  */
 object EmptyDestinationsNavigator : DestinationsNavigator {
 
-    override fun navigate(routed: Routed, builder: NavOptionsBuilder.() -> Unit) {}
+    override fun navigate(routed: Routed, builder: NavOptionsBuilder.() -> Unit) = Unit
 
-    override fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit) {}
+    override fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit) = Unit
 
-    override fun navigateUp() {}
+    override fun navigateUp() = Unit
+}
+
+/**
+ * Navigates to the [Routed].
+ */
+fun NavController.navigateTo(
+    routed: Routed,
+    navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
+) {
+    navigate(routed.route, navOptionsBuilder)
 }
 

@@ -19,133 +19,86 @@ class DestinationsObjectProcessor(
     private val additionalImports = mutableSetOf<String>()
 
     fun process(generatedDestinations: List<GeneratedDestination>) {
-        val sourceIds = mutableListOf<String>()
-        generatedDestinations.forEach {
-            sourceIds.addAll(it.sourceIds)
-        }
+        val generatedCode = destinationsObjectTemplate
+            .adaptToComposeMaterial()
+            .adaptToAccompanistAnimation()
+            .adaptToAccompanistMaterial()
+            .removeAddComposableElseBlock()
+            .replace(NAV_GRAPHS_DECLARATION, navGraphsDeclaration(generatedDestinations))
+            .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, defaultNavControllerPlaceholder())
+            .replace(NAV_HOST_METHOD_NAME, navHostMethodName())
+            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams())
+            .replaceEach(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER) { index, str -> animationDefaultParamsPassToInner(index, str) }
+            .replaceEach(EXPERIMENTAL_API_PLACEHOLDER) { index, str -> experimentalApiPlaceholder(index, str) }
+            .replace(ADDITIONAL_IMPORTS_BLOCK, importsCode())
 
         val file: OutputStream = codeGenerator.makeFile(
             packageName = PACKAGE_NAME,
             name = DESTINATIONS_AGGREGATE_CLASS_NAME,
-            sourceIds = sourceIds.toTypedArray()
+            sourceIds = sourceIds(generatedDestinations).toTypedArray()
         )
-
-        var generatedCode = destinationsObjectTemplate
-
-        if (!availableDependencies.composeMaterial) {
-            val startIndex = generatedCode.indexOf(SCAFFOLD_FUNCTION_START)
-            val endIndex = generatedCode.indexOf(SCAFFOLD_FUNCTION_END) + SCAFFOLD_FUNCTION_END.length
-
-            generatedCode = generatedCode.removeRange(startIndex, endIndex)
-
-            generatedCode = generatedCode.replace("\nimport androidx.compose.material.*", "")
-        }
-
-        if (!availableDependencies.accompanistAnimation) {
-            var startIndex = generatedCode.indexOf(START_ACCOMPANIST_NAVIGATION_IMPORTS)
-            var endIndex = generatedCode.indexOf(END_ACCOMPANIST_NAVIGATION_IMPORTS) + END_ACCOMPANIST_NAVIGATION_IMPORTS.length
-
-            generatedCode = generatedCode.removeRange(startIndex, endIndex)
-
-            startIndex = generatedCode.indexOf(ANIMATED_NAV_HOST_CALL_PARAMETERS_START)
-            endIndex = generatedCode.indexOf(ANIMATED_NAV_HOST_CALL_PARAMETERS_END) + ANIMATED_NAV_HOST_CALL_PARAMETERS_END.length
-
-            generatedCode = generatedCode.removeRange(startIndex, endIndex)
-
-            startIndex = generatedCode.indexOf(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START)
-            endIndex = generatedCode.indexOf(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END) + INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END.length
-
-            generatedCode = generatedCode.removeRange(startIndex, endIndex)
-
-            startIndex = generatedCode.indexOf(ADD_ANIMATED_COMPOSABLE_START)
-            endIndex = generatedCode.indexOf(ADD_ANIMATED_COMPOSABLE_END) + ADD_ANIMATED_COMPOSABLE_END.length
-
-            generatedCode = generatedCode.removeRange(startIndex, endIndex)
-
-            startIndex = generatedCode.indexOf(NAVIGATION_ANIMATION_FUNCTIONS_START)
-            endIndex = generatedCode.indexOf(NAVIGATION_ANIMATION_FUNCTIONS_END) + NAVIGATION_ANIMATION_FUNCTIONS_END.length
-
-            generatedCode = generatedCode.removeRange(startIndex, endIndex)
-        } else {
-            generatedCode = generatedCode
-                .replace(ANIMATED_NAV_HOST_CALL_PARAMETERS_START, "")
-                .replace(ANIMATED_NAV_HOST_CALL_PARAMETERS_END, "")
-                .replace(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START, "")
-                .replace(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END, "")
-                .replace(ADD_ANIMATED_COMPOSABLE_START, "")
-                .replace(ADD_ANIMATED_COMPOSABLE_END, "")
-                .replace(NAVIGATION_ANIMATION_FUNCTIONS_START, "")
-                .replace(NAVIGATION_ANIMATION_FUNCTIONS_END, "")
-        }
-
-        if (availableDependencies.accompanistMaterial) {
-            generatedCode = generatedCode
-                .replace(ADD_BOTTOM_SHEET_COMPOSABLE_START, "")
-                .replace(ADD_BOTTOM_SHEET_COMPOSABLE_END, "")
-                .replace(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START, "")
-                .replace(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END, "")
-        } else {
-            generatedCode = generatedCode.replace(BOTTOM_SHEET_COMPOSABLE_WRAPPER, "")
-
-            var startIndex = generatedCode.indexOf(ADD_BOTTOM_SHEET_COMPOSABLE_START)
-            var endIndex = generatedCode.indexOf(ADD_BOTTOM_SHEET_COMPOSABLE_END) + ADD_BOTTOM_SHEET_COMPOSABLE_END.length
-
-            generatedCode = generatedCode.removeRange(startIndex, endIndex)
-
-            startIndex = generatedCode.indexOf(START_ACCOMPANIST_MATERIAL_IMPORTS)
-            endIndex = generatedCode.indexOf(END_ACCOMPANIST_MATERIAL_IMPORTS) + END_ACCOMPANIST_MATERIAL_IMPORTS.length
-
-            generatedCode = generatedCode.removeRange(startIndex, endIndex)
-
-            startIndex = generatedCode.indexOf(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START)
-            endIndex = generatedCode.indexOf(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END) + NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END.length
-
-            generatedCode = generatedCode.removeRange(startIndex, endIndex)
-        }
-
-        if (availableDependencies.accompanistAnimation && availableDependencies.accompanistMaterial) {
-            val startIndex = generatedCode.indexOf(ADD_COMPOSABLE_WHEN_ELSE_START)
-            val endIndex = generatedCode.indexOf(ADD_COMPOSABLE_WHEN_ELSE_END) + ADD_COMPOSABLE_WHEN_ELSE_END.length
-
-            generatedCode = generatedCode.removeRange(startIndex, endIndex)
-        } else {
-            generatedCode = generatedCode
-                .replace(ADD_COMPOSABLE_WHEN_ELSE_START, "")
-                .replace(ADD_COMPOSABLE_WHEN_ELSE_END, "")
-        }
-
-        generatedCode = generatedCode
-            .replace(NAV_GRAPHS_DECLARATION, navGraphsDeclaration(generatedDestinations))
-            .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, if (availableDependencies.accompanistAnimation) "rememberAnimatedNavController()" else "rememberNavController()")
-            .replace(NAV_HOST_METHOD_NAME, navHostMethodName())
-            .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, animationDefaultParams())
-            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_1, animationDefaultParamsPassToInner())
-            .replace(ANIMATION_PARAMS_TO_INNER_PLACEHOLDER_2, animationDefaultParamsPassToInner().prependIndent("\t"))
-            .replaceEach(EXPERIMENTAL_API_PLACEHOLDER) { if (it > generatedCode.indexOf("//region internals")) experimentalAnimationApi().replace("\t", "") else experimentalAnimationApi() }
-            .replace(ADDITIONAL_IMPORTS_BLOCK, importsCode())
 
         file += generatedCode
         file.close()
-
-        val sealedDestSpecFile: OutputStream = codeGenerator.makeFile(
-            packageName = PACKAGE_NAME,
-            name = GENERATED_DESTINATION
-        )
-
-        sealedDestSpecFile += sealedDestinationTemplate
-
-        sealedDestSpecFile.close()
     }
 
-    private fun navHostMethodName(): String {
+    private fun String.adaptToComposeMaterial(): String {
+        if (!availableDependencies.composeMaterial) {
+            return removeFromTo(SCAFFOLD_FUNCTION_START, SCAFFOLD_FUNCTION_END)
+                .removeInstancesOf("\nimport androidx.compose.material.*")
+        }
+
+        return this
+    }
+
+    private fun String.adaptToAccompanistAnimation(): String {
         return if (availableDependencies.accompanistAnimation) {
-            "AnimatedNavHost"
+            removeInstancesOf(ANIMATED_NAV_HOST_CALL_PARAMETERS_START)
+                .removeInstancesOf(ANIMATED_NAV_HOST_CALL_PARAMETERS_END)
+                .removeInstancesOf(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START)
+                .removeInstancesOf(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END)
+                .removeInstancesOf(ADD_ANIMATED_COMPOSABLE_START)
+                .removeInstancesOf(ADD_ANIMATED_COMPOSABLE_END)
+                .removeInstancesOf(NAVIGATION_ANIMATION_FUNCTIONS_START)
+                .removeInstancesOf(NAVIGATION_ANIMATION_FUNCTIONS_END)
         } else {
-            "NavHost"
+            removeFromTo(START_ACCOMPANIST_NAVIGATION_IMPORTS, END_ACCOMPANIST_NAVIGATION_IMPORTS)
+                .removeFromTo(ANIMATED_NAV_HOST_CALL_PARAMETERS_START, ANIMATED_NAV_HOST_CALL_PARAMETERS_END)
+                .removeFromTo(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START, INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END)
+                .removeFromTo(ADD_ANIMATED_COMPOSABLE_START, ADD_ANIMATED_COMPOSABLE_END)
+                .removeFromTo(NAVIGATION_ANIMATION_FUNCTIONS_START,NAVIGATION_ANIMATION_FUNCTIONS_END)
         }
     }
 
-    private fun experimentalAnimationApi(): String {
+    private fun String.adaptToAccompanistMaterial(): String {
+        return if (availableDependencies.accompanistMaterial) {
+            removeInstancesOf(ADD_BOTTOM_SHEET_COMPOSABLE_START)
+                .removeInstancesOf(ADD_BOTTOM_SHEET_COMPOSABLE_END)
+                .removeInstancesOf(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START)
+                .removeInstancesOf(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END)
+        } else {
+            removeInstancesOf(BOTTOM_SHEET_COMPOSABLE_WRAPPER)
+                .removeFromTo(ADD_BOTTOM_SHEET_COMPOSABLE_START, ADD_BOTTOM_SHEET_COMPOSABLE_END)
+                .removeFromTo(START_ACCOMPANIST_MATERIAL_IMPORTS, END_ACCOMPANIST_MATERIAL_IMPORTS)
+                .removeFromTo(NAVIGATION_BOTTOM_SHEET_FUNCTIONS_START, NAVIGATION_BOTTOM_SHEET_FUNCTIONS_END)
+        }
+    }
+
+    private fun String.removeAddComposableElseBlock(): String {
+        return if (availableDependencies.accompanistAnimation && availableDependencies.accompanistMaterial) {
+            removeFromTo(ADD_COMPOSABLE_WHEN_ELSE_START, ADD_COMPOSABLE_WHEN_ELSE_END)
+        } else {
+            removeInstancesOf(ADD_COMPOSABLE_WHEN_ELSE_START)
+                .removeInstancesOf(ADD_COMPOSABLE_WHEN_ELSE_END)
+        }
+    }
+
+    private fun defaultNavControllerPlaceholder(): String {
+        return if (availableDependencies.accompanistAnimation) "rememberAnimatedNavController()"
+        else "rememberNavController()"
+    }
+
+    private fun experimentalApiPlaceholder(replacingIndex: Int, generatedCode: String): String {
         var result = ""
 
         if (availableDependencies.accompanistMaterial) {
@@ -156,21 +109,15 @@ class DestinationsObjectProcessor(
             result += "@ExperimentalAnimationApi\n\t"
         }
 
-        return result
-    }
-
-    private fun importsCode(): String {
-        val importsCode = StringBuilder()
-
-        additionalImports.forEach {
-            importsCode += "\nimport $it"
+        return if (replacingIndex > generatedCode.indexOf("//region internals")) {
+            result.removeInstancesOf("\t")
+        } else {
+            result
         }
-
-        return importsCode.toString()
     }
 
-    private fun animationDefaultParamsPassToInner(): String {
-        return if (availableDependencies.accompanistAnimation) {
+    private fun animationDefaultParamsPassToInner(replacingIndex: Int, generatedCode: String): String {
+        val animationParams = if (availableDependencies.accompanistAnimation) {
             """
 
 				contentAlignment = contentAlignment,
@@ -183,6 +130,30 @@ class DestinationsObjectProcessor(
         } else {
             ""
         }
+
+        return if (replacingIndex > generatedCode.indexOf("Scaffold(")) {
+            animationParams.prependIndent("\t")
+        } else {
+            animationParams
+        }
+    }
+
+    private fun navHostMethodName(): String {
+        return if (availableDependencies.accompanistAnimation) {
+            "AnimatedNavHost"
+        } else {
+            "NavHost"
+        }
+    }
+
+    private fun importsCode(): String {
+        val importsCode = StringBuilder()
+
+        additionalImports.sorted().forEach {
+            importsCode += "\nimport $it"
+        }
+
+        return importsCode.toString()
     }
 
     private fun animationDefaultParams(): String {
@@ -327,16 +298,11 @@ class DestinationsObjectProcessor(
         return code.toString()
     }
 
-    private fun String.replaceEach(toReplace: String, replaceWith: (index: Int) -> String): String {
-        var toReturn = this
-
-        while (true) {
-            val indexToChange = toReturn.indexOf(toReplace)
-            if (indexToChange == -1) break
-
-            toReturn = toReturn.replaceRange(indexToChange, indexToChange + toReplace.length, replaceWith(indexToChange))
+    private fun sourceIds(generatedDestinations: List<GeneratedDestination>): MutableList<String> {
+        val sourceIds = mutableListOf<String>()
+        generatedDestinations.forEach {
+            sourceIds.addAll(it.sourceIds)
         }
-
-        return toReturn
+        return sourceIds
     }
 }

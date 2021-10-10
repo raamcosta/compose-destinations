@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
+import com.ramcosta.composedestinations.spec.Routed
 
 /**
  * Implementation of [DestinationsNavigator] that uses

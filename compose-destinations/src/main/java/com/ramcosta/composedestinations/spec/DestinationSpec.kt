@@ -1,10 +1,8 @@
-package com.ramcosta.composedestinations
+package com.ramcosta.composedestinations.spec
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.*
 import androidx.navigation.NamedNavArgument
-import com.ramcosta.composedestinations.navigation.Routed
-import kotlin.reflect.KClass
 
 /**
  * Defines what a Destination needs to have to be able to be
@@ -31,6 +29,15 @@ interface DestinationSpec: Routed {
     val deepLinks: List<NavDeepLink> get() = emptyList()
 
     /**
+     * Style of this destination. It can be one of:
+     * - [DestinationStyle.Default]
+     * - [DestinationStyle.Animated]
+     * - [DestinationStyle.BottomSheet]
+     * - [DestinationStyle.Dialog]
+     */
+    val style: DestinationStyle get() = DestinationStyle.Default
+
+    /**
      * [Composable] function that will be called to compose
      * the destination content in the screen, when the user
      * navigates to it.
@@ -42,6 +49,6 @@ interface DestinationSpec: Routed {
     fun Content(
         navController: NavController,
         navBackStackEntry: NavBackStackEntry,
-        situationalParameters: Map<KClass<*>, Any>
+        situationalParameters: Map<Class<*>, Any>
     )
 }

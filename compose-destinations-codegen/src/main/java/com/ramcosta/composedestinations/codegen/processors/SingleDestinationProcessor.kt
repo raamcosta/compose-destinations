@@ -100,7 +100,7 @@ class SingleDestinationProcessor(
             additionalImports.add(CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME)
         }
 
-        additionalImports.forEach {
+        additionalImports.sorted().forEach {
             imports += "\nimport $it"
         }
 
@@ -188,12 +188,12 @@ class SingleDestinationProcessor(
         val receiver = when (composableReceiverSimpleName) {
             ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add(ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME)
-                "val animatedVisibilityScope = situationalParameters[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class] as? $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_VISIBILITY_SCOPE}" +
+                "val animatedVisibilityScope = situationalParameters[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java] as? $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_VISIBILITY_SCOPE}" +
                         "\n\t\tanimatedVisibilityScope."
             }
             COLUMN_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add("androidx.compose.foundation.layout.$COLUMN_SCOPE_SIMPLE_NAME")
-                "val columnScope = situationalParameters[$COLUMN_SCOPE_SIMPLE_NAME::class] as? $COLUMN_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_COLUMN_SCOPE}" +
+                "val columnScope = situationalParameters[$COLUMN_SCOPE_SIMPLE_NAME::class.java] as? $COLUMN_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_COLUMN_SCOPE}" +
                         "\n\t\tcolumnScope."
             }
             else -> {
@@ -231,7 +231,7 @@ class SingleDestinationProcessor(
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
             SCAFFOLD_STATE_QUALIFIED_NAME -> {
                 additionalImports.add("androidx.compose.material.ScaffoldState")
-                "situationalParameters[ScaffoldState::class] as? ScaffoldState ?: ${GeneratedExceptions.SCAFFOLD_STATE_MISSING}"
+                "situationalParameters[ScaffoldState::class.java] as? ScaffoldState ?: ${GeneratedExceptions.SCAFFOLD_STATE_MISSING}"
             }
             else -> {
                 if (navArgs.contains(parameter)) {
@@ -350,6 +350,7 @@ class SingleDestinationProcessor(
             throw MissingRequiredDependency("You need to include '$ACCOMPANIST_NAVIGATION_MATERIAL' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
         }
 
+        additionalImports.add("$PACKAGE_NAME.spec.DestinationStyle")
         return "\n\toverride val style = $CORE_BOTTOM_SHEET_DESTINATION_STYLE\n"
     }
 

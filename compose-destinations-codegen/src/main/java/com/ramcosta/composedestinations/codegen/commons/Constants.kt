@@ -14,6 +14,7 @@ const val DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT = "deepLinks"
 const val DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER = "@ramcosta.destinations.fullroute@" // Needs to be the same as the constant in core module
 const val DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER = "@composable-name-route" // Needs to be the same as the constant in core module's Destination
 
+const val CORE_EXTENSIONS = "CoreExtensions"
 const val GENERATED_DESTINATION = "Destination"
 const val GENERATED_NAV_GRAPH = "NavGraph"
 const val GENERATED_DESTINATION_SUFFIX = "Destination"

@@ -69,13 +69,13 @@ class KspToCodeGenDestinationsMapper(
         val ksStyleType = findArgumentValue<KSType>(DESTINATION_ANNOTATION_STYLE_ARGUMENT)
             ?: return DestinationStyleType.Default
 
-        val defaultStyle = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.DestinationStyle.Default")!!
+        val defaultStyle = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.Default")!!
                 .asType(emptyList())
         if (defaultStyle.isAssignableFrom(ksStyleType)) {
             return DestinationStyleType.Default
         }
 
-        val bottomSheet = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.DestinationStyle.BottomSheet")!!
+        val bottomSheet = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.BottomSheet")!!
                 .asType(emptyList())
         if (bottomSheet.isAssignableFrom(ksStyleType)) {
             return DestinationStyleType.BottomSheet
@@ -83,12 +83,13 @@ class KspToCodeGenDestinationsMapper(
 
         val type = ksStyleType.toType() ?: throw IllegalDestinationsSetup("Parameter $DESTINATION_ANNOTATION_STYLE_ARGUMENT of Destination annotation in composable $composableName was not resolvable: please review it.")
 
-        val dialog = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.DestinationStyle.Dialog")!!
+        val dialog = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.Dialog")!!
                 .asType(emptyList())
         if (dialog.isAssignableFrom(ksStyleType)) {
             return DestinationStyleType.Dialog(type)
         }
 
+        //then it must be animated (since animated ones implement a generated interface, it would require multi step processing which can be avoided like this)
         return DestinationStyleType.Animated(type, ksStyleType.declaration.findAllRequireOptInAnnotations())
     }
 

@@ -10,7 +10,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.Destinations
 import com.ramcosta.composedestinations.FeedDestination
-import com.ramcosta.composedestinations.navigateTo
+import com.ramcosta.composedestinations.navigation.navigateTo
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
 import kotlinx.coroutines.launch
 

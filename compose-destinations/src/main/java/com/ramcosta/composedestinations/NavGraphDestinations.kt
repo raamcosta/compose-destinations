@@ -2,6 +2,8 @@ package com.ramcosta.composedestinations
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.NavGraphSpec
 
 /**
  * Adds all destinations of the [navGraphSpec] to this
@@ -18,6 +20,29 @@ fun NavGraphBuilder.addNavGraphDestinations(
     }
 
     addNestedNavGraphs(navGraphSpec.nestedNavGraphs, navController, addComposable, addNavigation)
+}
+
+/**
+ * Finds a destination for a `route` in this navigation graph
+ * or its nested graphs.
+ * Returns `null` if there is no such destination.
+ */
+fun NavGraphSpec.findDestination(route: String): DestinationSpec? {
+    val destination = destinations[route]
+
+    if (destination != null) {
+        return destination
+    }
+
+    nestedNavGraphs.forEach {
+        val nestedDestination = it.findDestination(route)
+
+        if (nestedDestination != null) {
+            return nestedDestination
+        }
+    }
+
+    return null
 }
 
 private fun NavGraphBuilder.addNestedNavGraphs(
