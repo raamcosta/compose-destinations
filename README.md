@@ -32,7 +32,7 @@ fun ProfileScreen(
     id: Int
 ) { /*...*/ }
 ```
-Even default values are allowed.
+Default values are also allowed. They will become optional to navigate to this destination.
 
 3. Use the generated `[ComposableName]Destination.withArgs` method to navigate to them:
 
@@ -80,8 +80,9 @@ implementation 'androidx.navigation:navigation-compose:$compose_navigation_versi
 ```
 Official Compose Navigation is required.
 If you're using Compose Material, Accompanist Navigation-Animation and/or
-Accompanist Material (aka BottomSheet, currently), Compose Destinations has you covered.
-Check our [wiki](https://github.com/raamcosta/compose-destinations/wiki) to know more.
+Accompanist Material (aka BottomSheet, currently), Compose Destinations has you covered. <br/>
+Check our [wiki](https://github.com/raamcosta/compose-destinations/wiki) to know more. <br/>
+Each [release](https://github.com/raamcosta/compose-destinations/releases) contains a list of versions known to be compatible.
 
 3. And finally, you need to make sure the IDE looks at the generated folder.
 See KSP related [issue](https://github.com/google/ksp/issues/37).
