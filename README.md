@@ -72,8 +72,8 @@ plugins {
 
 2. Add the dependencies:
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:0.7.2-alpha04'
-ksp 'io.github.raamcosta.compose-destinations:ksp:0.7.2-alpha04'
+implementation 'io.github.raamcosta.compose-destinations:core:0.8.0-alpha05'
+ksp 'io.github.raamcosta.compose-destinations:ksp:0.8.0-alpha05'
 
 // official compose navigation
 implementation 'androidx.navigation:navigation-compose:$compose_navigation_version'
