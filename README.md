@@ -2,154 +2,61 @@
 
 # Compose Destinations
 
-A KSP library to improve Compose Navigation. 
-It reduces boilerplate and error-prone code. 
-Passing arguments between screens is type-safe and you won't need to update multiple source files every time you add or remove a screen, the navigation graph will be updated automatically.
+A KSP library to improve Compose Navigation. It uses KSP to generate some code which uses
+Compose Navigation under the hood to make everything happen.
+For a deeper look into all the features, check our [wiki](https://github.com/raamcosta/compose-destinations/wiki).
 
 ## Table of contents
 
 * [Usage](#usage)
 * [Setup](#setup)
-* [Going deeper](#going-deeper)
 * [Current state](#current-state)
 * [License](#license)
 
 ## Usage
 
-1. Start by annotating the Composable functions that you want to add to the navigation graph with `@Destination`.
+1. Annotate your screen Composables with `@Destination`:
 
 ```kotlin
-@Destination(route = "home", start = true)
+@Destination
 @Composable
-fun HomeScreen(
-    navController: NavController
+fun ProfileScreen() { /*...*/ }
+```
+
+2. You can simply add navigation arguments to the function declaration:
+
+```kotlin
+@Destination
+@Composable
+fun ProfileScreen(
+    id: Int
+) { /*...*/ }
+```
+Even default values are allowed.
+
+3. Use the generated `[ComposableName]Destination.withArgs` method to navigate to them:
+
+```kotlin
+@Destination
+@Composable
+fun SomeOtherScreen(
+    navigator: DestinationsNavigator
 ) {
-	//...
+    /*...*/
+    navigator.navigate(ProfileScreenDestination.withArgs(id = 7))
 }
 ```
-NOTE: You can use `DestinationsNavigator` instead of `NavController` to make these Composables testable and "previewable". Read more in [Going deeper](#Going-deeper)
+You may need to build the project so that you can import the generated Destinations (like the above `ProfileScreenDestination`)
 
-2. Build the project (f.e: Build > Make Project) to make KSP generate `HomeScreenDestination` and `Destinations` files.
-Each `@Destination` will generate a Destination object, so do this everytime you need to access new Destination objects.
-
-3. Replace your `NavHost` call with `Destinations.NavHost` (or if using a `Scaffold`, then replace it with `Destinations.Scaffold`). 
-You can also remove the builder blocks, you won't be needing them anymore.
+4. Finally, add the NavHost somewhere:
 
 ```kotlin
-Destinations.NavHost(
-    navController = myNavController
-)
+Destinations.NavHost()
 ```
-OR
-```kotlin
-Destinations.Scaffold(
-    scaffoldState = myScaffoldState
-)
-```
+This call will automatically add all annotated Composable functions as destinations of the Navigation Graph.
+`Destinations.Scaffold` is also available if you're using Compose Material. It will also include all destinations in its builder block.
 
-4. If the destination has arguments, then simply add them to the Composable function!
-
-```kotlin
-@Destination(route = "user")
-@Composable
-fun UserScreen(
-    userId: Long
-)
-```
-
-5. Then, to navigate to the User Screen, anywhere you have the `NavController` (or `DestinationsNavigator`).
-
-```kotlin
-navController.navigate(UserScreenDestination.withArgs(userId = 1))
-```
-
-That's it! No messing with `NavType`, weird routes, bundles and strings. All this will be taken care for you.
-
-6. Oh and by the way, what if the destination has default arguments? Wouldn't it be nice if you could just use Kotlin default parameters feature?
-Well, that is exactly how you do it:
-
-```kotlin
-@Destination(route = "user")
-@Composable
-fun UserScreen(
-    userId: Long,
-    isOwnUser: Boolean = false
-)
-```
-
-Now the IDE will even tell you the default arguments of the composable when calling the `withArgs` method!
-
-Notes about arguments:
-- They must be one of `String`, `Boolean`, `Int`, `Float`, `Long` to be considered navigation arguments.
-  `NavController`, `DestinationsNavigator`, `NavBackStackEntry` or `ScaffoldState` (only if you are using `Scaffold`) can also be used by all destinations.
-- Navigation arguments' default values must be resolvable from the generated `Destination` class since the code written after the "`=`" 
-  will be copied into it as is. 
-Unfortunately, this means you won't be able to use a constant or a function call as the default value of a nav argument. However, if the parameter 
-  type is not a navigation argument type, then everything is valid since it won't be considered a navigation argument of the destination.
-  For example:
-```kotlin
-@Destination(route = "greeting", start = true)
-@Composable
-fun Greeting(
-    navigator: DestinationsNavigator,
-    coroutineScope: CoroutineScope = rememberCoroutineScope() //valid because CoroutineScope is not a navigation argument type
-)
-
-@Destination(route = "user")
-@Composable
-fun UserScreen(
-    navigator: DestinationsNavigator,
-    id: Int = getDefaultUserId() //not valid because Int is a navigation argument type so we need to resolve the default value in the generated classes
-)
-
-//As a temporary workaround, you could define the argument as nullable (or lets say -1)
-@Destination(route = "user")
-@Composable
-fun UserScreen(
-  navigator: DestinationsNavigator,
-  id: Int? = null
-) {
-  //then here do:
-  val actualId = id ?: getDefaultUserId()
-}
-```
-We'll be looking for ways to improve this.
-
-#### Deep Links
-
-You can define deeps links to a destination like this:
-
-```kotlin
-@Destination(
-  route = "user",
-  deepLinks = [
-    DeepLink(
-      uriPattern = "https://myapp.com/user/{id}"
-    )
-  ]
-)
-@Composable
-fun UserScreen(
-  navigator: DestinationsNavigator,
-  id: Int
-)
-```
-You can also use the placeholder suffix `FULL_ROUTE_PLACEHOLDER` in your `uriPattern`. In the code generation process it will be replaced with the full route of the destination which contains all the destination arguments. So, for example, this would result in the same `uriPattern` as the above example:
-```kotlin
-@Destination(
-  route = "user",
-  deepLinks = [
-    DeepLink(
-      uriPattern = "https://myapp.com/$FULL_ROUTE_PLACEHOLDER"
-    )
-  ]
-)
-@Composable
-fun UserScreen(
-  navigator: DestinationsNavigator,
-  id: Int
-)
-```
+That's it! No need to worry about routes, `NavType`, bundles and strings. All that redundant and error-prone code gets generated for you.
 
 ## Setup
 
@@ -168,7 +75,13 @@ plugins {
 implementation 'io.github.raamcosta.compose-destinations:core:0.7.2-alpha04'
 ksp 'io.github.raamcosta.compose-destinations:ksp:0.7.2-alpha04'
 
+// official compose navigation
+implementation 'androidx.navigation:navigation-compose:$compose_navigation_version'
 ```
+Official Compose Navigation is required.
+If you're using Compose Material, Accompanist Navigation-Animation and/or
+Accompanist Material (aka BottomSheet, currently), Compose Destinations has you covered.
+Check our [wiki](https://github.com/raamcosta/compose-destinations/wiki) to know more.
 
 3. And finally, you need to make sure the IDE looks at the generated folder.
 See KSP related [issue](https://github.com/google/ksp/issues/37).
@@ -181,20 +94,6 @@ sourceSets {
     }
 }
 ```
-
-## Going deeper
-
-- It is good practice to not depend directly on `NavController` on your Composeables. You can choose to depend on `DestinationsNavigator` instead of `NavController`, which is an interface wrapper of `NavController` that allows to easily pass an empty implementation (one is available already `EmptyDestinationsNavigator`) for
-previews or testing. All above examples can replace `navController: NavController` with `navigator: DestinationsNavigator`, in order to make use of
-this dependency inversion principle.
-- All annotated composables will generate an implementation of `Destination` which is a sealed interface that contains the full route, navigation arguments,
-  `Content` composable function and the `withArgs` implementation.
-- `Destination` annotation can receive a `navGraph` parameter for nested navigation graphs. This will be the route of the nested graph and all destinations with the same `navGraph` will belong to it. If this parameter is not specified, then the `Destination` will belong to the root navigation graph (which is the norm when not using nested nav graphs)
-- `Scaffold` composable lambda parameters will be given a current `Destination`. This makes it trivial to have top bar, bottom bar and drawer depend on the current destination.
-- Besides the `NavHost` and `Scaffold` wrappers, the generated `Destinations` class contains all `NavGraphs`. Each `NavGraph` contains the start `Destination` as well as all its destinations and its nested `NavGraphs`.
-- If you would like to have additional properties/functions in the `Destination` (for example a "title" which will be shown to the user for each screen) you can make an extension
-  property/function of `Destination` for a similar effect. Since it is a sealed interface, a `when` expression will make sure you always have a definition for each screen (check this [file](https://github.com/raamcosta/compose-destinations/blob/main/app/src/main/java/com/ramcosta/samples/destinationstodosample/DestinationSpecExtensions.kt) for an example).
-
 
 ## Current state
 
