@@ -20,7 +20,7 @@ class NavControllerDestinationsNavigator(
         navController.navigate(route, builder)
     }
 
-    override fun navigateUp() {
-        navController.navigateUp()
+    override fun navigateUp(): Boolean {
+        return navController.navigateUp()
     }
 }

@@ -41,16 +41,34 @@ fun NavGraphBuilder.addAnimatedComposable(
     }
 }
 
+fun interface DestinationEnterTransition {
+    @ExperimentalAnimationApi
+    fun AnimatedContentScope<String>.enter(initial: Destination?, target: Destination?) : EnterTransition
+}
+
+fun interface DestinationExitTransition {
+    @ExperimentalAnimationApi
+    fun AnimatedContentScope<String>.exit(initial: Destination?, target: Destination?) : ExitTransition
+}
+
 @ExperimentalAnimationApi
 class DefaultAnimationParams(
     val contentAlignment: Alignment = Alignment.Center,
-    val enterTransition: (AnimatedContentScope<String>.(initial: Destination?, target: Destination?) -> EnterTransition)? =
-        { _, _ -> fadeIn(animationSpec = tween(700)) },
-    val exitTransition: (AnimatedContentScope<String>.(initial: Destination?, target: Destination?) -> ExitTransition)? =
-        { _, _ -> fadeOut(animationSpec = tween(700)) },
-    val popEnterTransition: (AnimatedContentScope<String>.(initial: Destination?, target: Destination?) -> EnterTransition)? = enterTransition,
-    val popExitTransition: (AnimatedContentScope<String>.(initial: Destination?, target: Destination?) -> ExitTransition)? = exitTransition,
-)
+    val enterTransition: DestinationEnterTransition? = DestinationEnterTransition { _, _ -> EnterTransition.None },
+    val exitTransition: DestinationExitTransition? = DestinationExitTransition { _, _ -> ExitTransition.None },
+    val popEnterTransition: DestinationEnterTransition? = enterTransition,
+    val popExitTransition: DestinationExitTransition? = exitTransition,
+) {
+
+    companion object {
+        val ACCOMPANIST_FADING by lazy {
+            DefaultAnimationParams(
+                enterTransition = { _, _ -> fadeIn(animationSpec = tween(700)) },
+                exitTransition = { _, _ -> fadeOut(animationSpec = tween(700)) }
+            )
+        }
+    }
+}
 
 @ExperimentalAnimationApi
 fun NavBackStackEntry.toDest() = destination.route?.let { $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root.findDestination(it) as $GENERATED_DESTINATION }

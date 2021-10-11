@@ -22,7 +22,7 @@ interface DestinationsNavigator {
 
     fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit = {})
 
-    fun navigateUp()
+    fun navigateUp(): Boolean
 }
 
 /**
@@ -35,7 +35,7 @@ object EmptyDestinationsNavigator : DestinationsNavigator {
 
     override fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit) = Unit
 
-    override fun navigateUp() = Unit
+    override fun navigateUp() = false
 }
 
 /**

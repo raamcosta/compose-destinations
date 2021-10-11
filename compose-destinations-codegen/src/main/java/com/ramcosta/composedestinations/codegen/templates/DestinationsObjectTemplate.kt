@@ -188,10 +188,10 @@ private fun InnerDestinationsNavHost(
         modifier = modifier,
         route = $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root.route,$ANIMATED_NAV_HOST_CALL_PARAMETERS_START
         contentAlignment = defaultAnimationParams.contentAlignment,
-        enterTransition = defaultAnimationParams.enterTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },      
-        exitTransition = defaultAnimationParams.exitTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },        
-        popEnterTransition = defaultAnimationParams.popEnterTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },
-        popExitTransition = defaultAnimationParams.popExitTransition?.let{ {i, t -> it(i.toDest(), t.toDest()) } },$ANIMATED_NAV_HOST_CALL_PARAMETERS_END
+        enterTransition = defaultAnimationParams.enterTransition?.run { { i, t -> enter(i.toDest(), t.toDest()) } },
+        exitTransition = defaultAnimationParams.exitTransition?.run{ {i, t -> exit(i.toDest(), t.toDest()) } },
+        popEnterTransition = defaultAnimationParams.popEnterTransition?.run{ {i, t -> enter(i.toDest(), t.toDest()) } },
+        popExitTransition = defaultAnimationParams.popExitTransition?.run{ {i, t -> exit(i.toDest(), t.toDest()) } },$ANIMATED_NAV_HOST_CALL_PARAMETERS_END
     ) {
         addNavGraphDestinations(
             navGraphSpec = $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root,

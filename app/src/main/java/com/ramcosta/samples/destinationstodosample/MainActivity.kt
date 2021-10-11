@@ -37,10 +37,7 @@ class MainActivity : ComponentActivity() {
                     bottomSheetParams = {
                         sheetShape(RoundedCornerShape(16.dp))
                     },
-                    defaultAnimationParams = DefaultAnimationParams(
-                        enterTransition = { _, _ -> fadeIn(animationSpec = tween(700)) },
-                        exitTransition = { _, _ -> fadeOut(animationSpec = tween(700)) }
-                    ),
+                    defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
                     startDestination = if (Math.random() > 0.5) FeedDestination else Destinations.NavGraphs.root.startDestination,
                     topBar = {
                         MyTopBar(
