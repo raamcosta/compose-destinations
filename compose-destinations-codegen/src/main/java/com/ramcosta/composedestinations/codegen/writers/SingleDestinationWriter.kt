@@ -235,7 +235,7 @@ class SingleDestinationWriter(
     private fun resolveArgumentForTypeAndName(parameter: Parameter): String? {
         return when (parameter.type.qualifiedName) {
             NAV_CONTROLLER_QUALIFIED_NAME -> "navController"
-            DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController)"
+            DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController, navBackStackEntry)"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
             SCAFFOLD_STATE_QUALIFIED_NAME -> {
                 additionalImports.add("androidx.compose.material.ScaffoldState")

@@ -12,16 +12,35 @@ import com.ramcosta.composedestinations.spec.Routed
  * will need one to actual navigate.
  *
  * It is meant as a dependency inversion wrapper to make
- * composables that depend on it be testable and "preview-able".
- *
- * [NavGraphSpec] and [DestinationSpec] are [Routed]
+ * Composables that depend on it be testable and "preview-able".
  */
 interface DestinationsNavigator {
 
-    fun navigate(routed: Routed, builder: NavOptionsBuilder.() -> Unit = {})
+    /**
+     * Navigates to the given [Routed] ([NavGraphSpec] and [DestinationSpec] are [Routed]).
+     *
+     * @param onlyIfResumed if true (default), will ignore the navigation action if the current `NavBackStackEntry`
+     * is not in the RESUMED state. This avoids duplicate navigation actions.
+     * @param builder [NavOptionsBuilder]
+     *
+     * @see [NavController.navigate]
+     */
+    fun navigate(routed: Routed, onlyIfResumed: Boolean = true, builder: NavOptionsBuilder.() -> Unit = {})
 
-    fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit = {})
+    /**
+     * Navigates to the given [route]
+     *
+     * @param onlyIfResumed if true (default), will ignore the navigation action if the current `NavBackStackEntry`
+     * is not in the RESUMED state. This avoids duplicate navigation actions.
+     * @param builder [NavOptionsBuilder]
+     *
+     * @see [NavController.navigate]
+     */
+    fun navigate(route: String, onlyIfResumed: Boolean = true, builder: NavOptionsBuilder.() -> Unit = {})
 
+    /**
+     * @see [NavController.navigateUp]
+     */
     fun navigateUp(): Boolean
 }
 
@@ -31,9 +50,9 @@ interface DestinationsNavigator {
  */
 object EmptyDestinationsNavigator : DestinationsNavigator {
 
-    override fun navigate(routed: Routed, builder: NavOptionsBuilder.() -> Unit) = Unit
+    override fun navigate(routed: Routed, onlyIfResumed: Boolean, builder: NavOptionsBuilder.() -> Unit) = Unit
 
-    override fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit) = Unit
+    override fun navigate(route: String, onlyIfResumed: Boolean, builder: NavOptionsBuilder.() -> Unit) = Unit
 
     override fun navigateUp() = false
 }

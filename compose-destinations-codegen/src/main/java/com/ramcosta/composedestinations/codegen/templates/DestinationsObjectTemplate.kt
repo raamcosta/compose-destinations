@@ -47,9 +47,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
+import androidx.navigation.NavDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
+import androidx.navigation.Navigator
 import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.DestinationStyle
 import $PACKAGE_NAME.spec.NavGraphSpec
@@ -76,6 +78,15 @@ object $DESTINATIONS_AGGREGATE_CLASS_NAME {
 $NAV_GRAPHS_DECLARATION
     //endregion NavGraphs
 
+    /**
+     * Wraps the correct `remember*NavController` method depending on
+     * whether animations are available or not.
+     */
+    $EXPERIMENTAL_API_PLACEHOLDER@Composable
+    fun rememberNavController(
+        vararg navigators: Navigator<out NavDestination>
+    ) = $DEFAULT_NAV_CONTROLLER_PLACEHOLDER(*navigators)
+
     //region NavHost
     /**
      * Like [androidx.navigation.compose.NavHost] but uses composables annotated with
@@ -85,7 +96,7 @@ $NAV_GRAPHS_DECLARATION
      */
     $EXPERIMENTAL_API_PLACEHOLDER@Composable
     fun NavHost(
-        navController: NavHostController = $DEFAULT_NAV_CONTROLLER_PLACEHOLDER,
+        navController: NavHostController = rememberNavController(),
         modifier: Modifier = Modifier,
         startDestination: $GENERATED_DESTINATION = ${GENERATED_NAV_GRAPH}s.root.startDestination,$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER$BOTTOM_SHEET_DEFAULT_PARAMS_PLACEHOLDER
     )$BOTTOM_SHEET_COMPOSABLE_WRAPPER {
@@ -116,7 +127,7 @@ $NAV_GRAPHS_DECLARATION
     fun Scaffold(
         modifier: Modifier = Modifier,
         startDestination: $GENERATED_DESTINATION = ${GENERATED_NAV_GRAPH}s.root.startDestination,
-        navController: NavHostController = $DEFAULT_NAV_CONTROLLER_PLACEHOLDER,
+        navController: NavHostController = rememberNavController(),
         scaffoldState: ScaffoldState = rememberScaffoldState(),$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER$BOTTOM_SHEET_DEFAULT_PARAMS_PLACEHOLDER
         topBar: (@Composable ($GENERATED_DESTINATION) -> Unit) = {},
         bottomBar: @Composable ($GENERATED_DESTINATION) -> Unit = {},

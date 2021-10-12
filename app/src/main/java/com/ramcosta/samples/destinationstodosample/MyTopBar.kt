@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.Destination
+import com.ramcosta.composedestinations.Destinations
 
 @Composable
 fun MyTopBar(
@@ -48,15 +49,17 @@ fun MyTopBar(
             color = Color.White
         )
 
-        IconButton(
-            onClick = onSettingsClick,
-            modifier = Modifier.align(Alignment.CenterEnd)
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Settings,
-                tint = Color.White,
-                contentDescription = "menu"
-            )
+        if (!Destinations.NavGraphs.settings.destinations.containsValue(destination)) {
+            IconButton(
+                onClick = onSettingsClick,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Settings,
+                    tint = Color.White,
+                    contentDescription = "menu"
+                )
+            }
         }
     }
 }

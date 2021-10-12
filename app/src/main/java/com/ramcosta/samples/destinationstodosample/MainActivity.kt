@@ -3,18 +3,18 @@ package com.ramcosta.samples.destinationstodosample
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.lifecycle.Lifecycle
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DefaultAnimationParams
 import com.ramcosta.composedestinations.Destinations
 import com.ramcosta.composedestinations.FeedDestination
 import com.ramcosta.composedestinations.navigation.navigateTo
+import com.ramcosta.composedestinations.toDest
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
 import kotlinx.coroutines.launch
 
@@ -28,8 +28,7 @@ class MainActivity : ComponentActivity() {
             DestinationsTodoSampleTheme {
                 val scaffoldState = rememberScaffoldState()
                 val coroutineScope = rememberCoroutineScope()
-//                val navController = rememberNavController()
-                val navController = rememberAnimatedNavController()
+                val navController = Destinations.rememberNavController()
 
                 Destinations.Scaffold(
                     scaffoldState = scaffoldState,
@@ -56,8 +55,12 @@ class MainActivity : ComponentActivity() {
                                 it.DrawerContent(
                                     isSelected = it == currentDestination,
                                     onDestinationClick = { clickedDestination ->
-                                        navController.navigateTo(clickedDestination)
-                                        coroutineScope.launch { scaffoldState.drawerState.close() }
+                                        if (navController.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
+                                            && navController.currentBackStackEntry?.toDest() != clickedDestination
+                                        ) {
+                                            navController.navigateTo(clickedDestination)
+                                            coroutineScope.launch { scaffoldState.drawerState.close() }
+                                        }
                                     }
                                 )
                         }

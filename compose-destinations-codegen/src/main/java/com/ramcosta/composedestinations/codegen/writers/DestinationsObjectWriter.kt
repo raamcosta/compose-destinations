@@ -98,8 +98,8 @@ class DestinationsObjectWriter(
     }
 
     private fun defaultNavControllerPlaceholder(): String {
-        return if (availableDependencies.accompanistAnimation) "rememberAnimatedNavController()"
-        else "rememberNavController()"
+        return if (availableDependencies.accompanistAnimation) "rememberAnimatedNavController"
+        else "rememberNavController"
     }
 
     private fun experimentalApiPlaceholder(replacingIndex: Int, generatedCode: String): String {

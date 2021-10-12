@@ -1,5 +1,7 @@
 package com.ramcosta.composedestinations.navigation
 
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import com.ramcosta.composedestinations.spec.Routed
@@ -9,14 +11,19 @@ import com.ramcosta.composedestinations.spec.Routed
  * a [NavController] to navigate.
  */
 class NavControllerDestinationsNavigator(
-    private val navController: NavController
+    private val navController: NavController,
+    private val navBackStackEntry: NavBackStackEntry
 ) : DestinationsNavigator {
 
-    override fun navigate(routed: Routed, builder: NavOptionsBuilder.() -> Unit) {
-        navController.navigate(routed.route, builder)
+    override fun navigate(routed: Routed, onlyIfResumed: Boolean, builder: NavOptionsBuilder.() -> Unit) {
+        navigate(routed.route, onlyIfResumed, builder)
     }
 
-    override fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit) {
+    override fun navigate(route: String, onlyIfResumed: Boolean, builder: NavOptionsBuilder.() -> Unit) {
+        if (onlyIfResumed && navBackStackEntry.lifecycle.currentState != Lifecycle.State.RESUMED) {
+            return
+        }
+
         navController.navigate(route, builder)
     }
 
