@@ -4,7 +4,7 @@
 
 A KSP library to improve Compose Navigation. It uses KSP to generate some code which uses
 Compose Navigation under the hood to make everything happen.
-For a deeper look into all the features, check our [wiki](https://github.com/raamcosta/compose-destinations/wiki).
+For a deeper look into all the features, check our [wiki](https://github.com/raamcosta/compose-destinations/wiki)(🚧).
 
 ## Table of contents
 
