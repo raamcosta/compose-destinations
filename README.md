@@ -23,7 +23,7 @@ For a deeper look into all the features, check our [wiki](https://github.com/raa
 fun ProfileScreen() { /*...*/ }
 ```
 
-2. You can simply add navigation arguments to the function declaration:
+2. Simply add navigation arguments to the function declarations:
 
 ```kotlin
 @Destination
