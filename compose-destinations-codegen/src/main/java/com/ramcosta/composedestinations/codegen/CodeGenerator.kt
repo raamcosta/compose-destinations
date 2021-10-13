@@ -50,12 +50,12 @@ class CodeGenerator(
             }
 
             if (it.composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME && it.destinationStyleType !is DestinationStyleType.BottomSheet) {
-                throw IllegalDestinationsSetup("${it.composableName} composable: Only destinations with style = DestinationStyle.BottomSheet may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!")
+                throw IllegalDestinationsSetup("${it.composableName} composable: Only destinations with a DestinationStyle.BottomSheet style may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!")
             }
 
             if (it.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
                 && (it.destinationStyleType !is DestinationStyleType.Animated || it.destinationStyleType.type.simpleName == "None")) {
-                throw IllegalDestinationsSetup("Only destinations with a DestinationStyle.Animated may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
+                throw IllegalDestinationsSetup("${it.composableName} composable: Only destinations with a DestinationStyle.Animated style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
             }
 
             cleanRoutes.add(it.cleanRoute)

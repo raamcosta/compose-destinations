@@ -20,7 +20,7 @@ package $PACKAGE_NAME
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 $ADDITIONAL_IMPORTS
@@ -31,7 +31,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME: $GENERATED_DE
     $NAV_ARGUMENTS$DEEP_LINKS$DESTINATION_STYLE
     @Composable
     override fun Content(
-        navController: NavController,
+        navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         situationalParameters: Map<Class<*>, Any>,
     ) {

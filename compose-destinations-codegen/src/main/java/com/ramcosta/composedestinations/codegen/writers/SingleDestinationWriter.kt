@@ -223,7 +223,7 @@ class SingleDestinationWriter(
                 argsCode += "\n\t\t\t${it.name} = $argumentResolver"
 
             } else if (!it.hasDefault) {
-                throw IllegalDestinationsSetup("Unresolvable argument type without default value: $it")
+                throw IllegalDestinationsSetup("Composable: $composableName - Unresolvable argument type without default value: $it")
             }
 
             if (i == parameters.lastIndex) argsCode += "\n\t\t"
@@ -234,7 +234,8 @@ class SingleDestinationWriter(
 
     private fun resolveArgumentForTypeAndName(parameter: Parameter): String? {
         return when (parameter.type.qualifiedName) {
-            NAV_CONTROLLER_QUALIFIED_NAME -> "navController"
+            NAV_CONTROLLER_QUALIFIED_NAME,
+            NAV_HOST_CONTROLLER_QUALIFIED_NAME -> "navController"
             DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController, navBackStackEntry)"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
             SCAFFOLD_STATE_QUALIFIED_NAME -> {

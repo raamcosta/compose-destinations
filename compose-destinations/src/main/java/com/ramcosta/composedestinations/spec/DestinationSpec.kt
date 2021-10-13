@@ -47,7 +47,7 @@ interface DestinationSpec: Routed {
      */
     @Composable
     fun Content(
-        navController: NavController,
+        navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         situationalParameters: Map<Class<*>, Any>
     )
