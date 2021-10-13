@@ -69,7 +69,4 @@ class DefaultAnimationParams(
         }
     }
 }
-
-@ExperimentalAnimationApi
-fun NavBackStackEntry.toDest() = destination.route?.let { $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root.findDestination(it) as $GENERATED_DESTINATION }
 """.trimIndent()

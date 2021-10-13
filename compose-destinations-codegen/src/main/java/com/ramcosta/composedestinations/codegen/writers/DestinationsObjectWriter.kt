@@ -102,7 +102,7 @@ class DestinationsObjectWriter(
 
     private fun defaultNavControllerPlaceholder(): String {
         return if (availableDependencies.accompanistAnimation) "rememberAnimatedNavController"
-        else "rememberNavController"
+        else "androidx.navigation.compose.rememberNavController"
     }
 
     private fun experimentalApiPlaceholder(replacingIndex: Int, generatedCode: String): String {

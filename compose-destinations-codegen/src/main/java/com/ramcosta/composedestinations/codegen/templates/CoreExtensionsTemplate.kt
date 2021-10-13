@@ -10,6 +10,7 @@ import androidx.navigation.NavOptionsBuilder
 import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.DestinationStyle
 import $PACKAGE_NAME.spec.NavGraphSpec
+import androidx.navigation.NavBackStackEntry
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -72,5 +73,10 @@ data class $GENERATED_NAV_GRAPH(
     override val destinations: Map<String, $GENERATED_DESTINATION>,
     override val nestedNavGraphs: List<$GENERATED_NAV_GRAPH> = emptyList()
 ): $CORE_NAV_GRAPH_SPEC
+
+/**
+ * Finds the destination correspondent to this [NavBackStackEntry], null if none is found
+ */
+fun NavBackStackEntry.toDest() = destination.route?.let { $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root.findDestination(it) as $GENERATED_DESTINATION }
 
 """.trimIndent()
