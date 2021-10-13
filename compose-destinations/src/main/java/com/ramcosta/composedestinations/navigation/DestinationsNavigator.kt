@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.navigation
 
+import androidx.annotation.MainThread
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
@@ -25,7 +26,9 @@ interface DestinationsNavigator {
      *
      * @see [NavController.navigate]
      */
-    fun navigate(routed: Routed, onlyIfResumed: Boolean = true, builder: NavOptionsBuilder.() -> Unit = {})
+    fun navigate(routed: Routed, onlyIfResumed: Boolean = true, builder: NavOptionsBuilder.() -> Unit = {}) {
+        navigate(routed.route, onlyIfResumed, builder)
+    }
 
     /**
      * Navigates to the given [route]
@@ -41,7 +44,40 @@ interface DestinationsNavigator {
     /**
      * @see [NavController.navigateUp]
      */
+    @MainThread
     fun navigateUp(): Boolean
+
+    /**
+     * @see [NavController.popBackStack]
+     */
+    @MainThread
+    fun popBackStack(): Boolean
+
+    /**
+     * @see [NavController.popBackStack]
+     */
+    @MainThread
+    fun popBackStack(routed: Routed, inclusive: Boolean, saveState: Boolean = false): Boolean {
+        return popBackStack(routed.route, inclusive, saveState)
+    }
+
+    /**
+     * @see [NavController.popBackStack]
+     */
+    @MainThread
+    fun popBackStack(route: String, inclusive: Boolean, saveState: Boolean = false): Boolean
+
+    /**
+     * @see [NavController.clearBackStack]
+     */
+    @MainThread
+    fun clearBackStack(routed: Routed): Boolean = clearBackStack(routed.route)
+
+    /**
+     * @see [NavController.clearBackStack]
+     */
+    @MainThread
+    fun clearBackStack(route: String): Boolean
 }
 
 /**
@@ -50,11 +86,15 @@ interface DestinationsNavigator {
  */
 object EmptyDestinationsNavigator : DestinationsNavigator {
 
-    override fun navigate(routed: Routed, onlyIfResumed: Boolean, builder: NavOptionsBuilder.() -> Unit) = Unit
-
     override fun navigate(route: String, onlyIfResumed: Boolean, builder: NavOptionsBuilder.() -> Unit) = Unit
 
     override fun navigateUp() = false
+
+    override fun popBackStack() = false
+
+    override fun popBackStack(route: String, inclusive: Boolean, saveState: Boolean) = false
+
+    override fun clearBackStack(route: String) = false
 }
 
 /**
