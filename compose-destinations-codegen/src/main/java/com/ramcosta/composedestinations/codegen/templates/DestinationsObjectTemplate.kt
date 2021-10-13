@@ -21,6 +21,8 @@ const val ADD_BOTTOM_SHEET_COMPOSABLE_START = "[ADD_BOTTOM_SHEET_COMPOSABLE_STAR
 const val ADD_BOTTOM_SHEET_COMPOSABLE_END = "[ADD_BOTTOM_SHEET_COMPOSABLE_END]"
 const val ADD_COMPOSABLE_WHEN_ELSE_START = "[ADD_COMPOSABLES_WHEN_ELSE_START]"
 const val ADD_COMPOSABLE_WHEN_ELSE_END = "[ADD_COMPOSABLES_WHEN_ELSE_END]"
+const val ANIMATED_VISIBILITY_TO_CONTENT_START = "[ANIMATED_VISIBILITY_TO_CONTENT_START]"
+const val ANIMATED_VISIBILITY_TO_CONTENT_END = "[ANIMATED_VISIBILITY_TO_CONTENT_END]"
 const val BOTTOM_SHEET_COMPOSABLE_WRAPPER = " = BottomSheetLayout(navController, bottomSheetParams)"
 
 const val SCAFFOLD_FUNCTION_START = "//region Scaffold"
@@ -273,7 +275,9 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun NavGraphBuilder.addComposable(
         destination.Content(
             navController,
             navBackStackEntry,
-            situationalParametersProvider(destination)
+            situationalParametersProvider(destination)$ANIMATED_VISIBILITY_TO_CONTENT_START.apply {
+                this[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java] = this@composable
+            }$ANIMATED_VISIBILITY_TO_CONTENT_END
         )
     }
 }

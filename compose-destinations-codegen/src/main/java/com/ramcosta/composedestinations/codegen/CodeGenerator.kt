@@ -49,13 +49,24 @@ class CodeGenerator(
                 throw IllegalDestinationsSetup("Destination composable names must be unique: found multiple named '${it.composableName}'")
             }
 
-            if (it.composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME && it.destinationStyleType !is DestinationStyleType.BottomSheet) {
-                throw IllegalDestinationsSetup("${it.composableName} composable: Only destinations with a DestinationStyle.BottomSheet style may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!")
+            if (it.composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME) {
+                if (!availableDependencies.accompanistMaterial) {
+                    throw IllegalDestinationsSetup("${it.composableName} composable: You need to include $ACCOMPANIST_NAVIGATION_MATERIAL dependency to use a $COLUMN_SCOPE_SIMPLE_NAME receiver!")
+                }
+
+                if (it.destinationStyleType !is DestinationStyleType.BottomSheet) {
+                    throw IllegalDestinationsSetup("${it.composableName} composable: Only destinations with a DestinationStyle.BottomSheet style may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!")
+                }
             }
 
-            if (it.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
-                && (it.destinationStyleType !is DestinationStyleType.Animated || it.destinationStyleType.type.simpleName == "None")) {
-                throw IllegalDestinationsSetup("${it.composableName} composable: Only destinations with a DestinationStyle.Animated style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
+            if (it.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
+                if (!availableDependencies.accompanistAnimation) {
+                    throw IllegalDestinationsSetup("${it.composableName} composable: You need to include $ACCOMPANIST_NAVIGATION_ANIMATION dependency to use a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
+                }
+
+                if (it.destinationStyleType is DestinationStyleType.Dialog || it.destinationStyleType is DestinationStyleType.BottomSheet) {
+                    throw IllegalDestinationsSetup("${it.composableName} composable: Only destinations with a DestinationStyle.Animated or DestinationStyle.Default style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
+                }
             }
 
             cleanRoutes.add(it.cleanRoute)

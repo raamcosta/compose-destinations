@@ -1,5 +1,8 @@
 package com.ramcosta.samples.destinationstodosample.destinations
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,9 +16,12 @@ import com.ramcosta.composedestinations.FeedDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.samples.destinationstodosample.requireTitle
 
+@OptIn(ExperimentalAnimationApi::class)
 @Destination
 @Composable
-fun Feed() {
+fun AnimatedVisibilityScope.Feed() {
+    Log.d("Feed", "running? " + transition.isRunning)
+
     Box(
         Modifier
             .fillMaxSize()
