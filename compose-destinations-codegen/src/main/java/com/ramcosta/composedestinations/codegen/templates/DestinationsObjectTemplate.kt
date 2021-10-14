@@ -192,8 +192,8 @@ private fun InnerDestinationsNavHost(
     navController: NavHostController,
     modifier: Modifier,
     startDestination: Destination,
-    situationalParametersProvider: (Destination) -> MutableMap<Class<*>, Any> = { mutableMapOf() },
-    ${INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START}defaultAnimationParams: DefaultAnimationParams,$INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END
+    situationalParametersProvider: (Destination) -> MutableMap<Class<*>, Any> = { mutableMapOf() },$INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START
+    defaultAnimationParams: DefaultAnimationParams,$INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END
 ) {
     $NAV_HOST_METHOD_NAME(
         navController = navController,
