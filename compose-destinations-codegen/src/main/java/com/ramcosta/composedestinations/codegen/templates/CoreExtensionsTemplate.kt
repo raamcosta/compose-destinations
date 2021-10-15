@@ -2,7 +2,7 @@ package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.commons.*
 
-val sealedDestinationTemplate = """
+val coreExtensionsTemplate = """
 package $PACKAGE_NAME
 
 import androidx.navigation.NavController

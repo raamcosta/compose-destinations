@@ -5,7 +5,7 @@ import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
 import com.ramcosta.composedestinations.codegen.templates.coreAnimationsExtensionsTemplate
 import com.ramcosta.composedestinations.codegen.templates.coreBottomSheetExtensionsTemplate
-import com.ramcosta.composedestinations.codegen.templates.sealedDestinationTemplate
+import com.ramcosta.composedestinations.codegen.templates.coreExtensionsTemplate
 import java.io.OutputStream
 
 class CoreExtensionsWriter(
@@ -14,14 +14,14 @@ class CoreExtensionsWriter(
 ) {
 
     fun write() {
-        val sealedDestSpecFile: OutputStream = codeGenerator.makeFile(
+        val coreExtensions: OutputStream = codeGenerator.makeFile(
             packageName = PACKAGE_NAME,
             name = CORE_EXTENSIONS
         )
 
-        sealedDestSpecFile += sealedDestinationTemplate
+        coreExtensions += coreExtensionsTemplate
 
-        sealedDestSpecFile.close()
+        coreExtensions.close()
 
         if (availableDependencies.accompanistAnimation) {
             val animationsExtension: OutputStream = codeGenerator.makeFile(
