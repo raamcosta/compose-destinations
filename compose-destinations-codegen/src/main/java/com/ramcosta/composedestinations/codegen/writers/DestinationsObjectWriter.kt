@@ -55,14 +55,14 @@ class DestinationsObjectWriter(
 
     private fun String.adaptToAccompanistAnimation(): String {
         return if (availableDependencies.accompanistAnimation) {
-            removeInstancesOf(ANIMATED_NAV_HOST_CALL_PARAMETERS_START)
-                .removeInstancesOf(ANIMATED_NAV_HOST_CALL_PARAMETERS_END)
-                .removeInstancesOf(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START)
-                .removeInstancesOf(INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END)
-                .removeInstancesOf(ADD_ANIMATED_COMPOSABLE_START)
-                .removeInstancesOf(ADD_ANIMATED_COMPOSABLE_END)
-                .removeInstancesOf(ANIMATED_VISIBILITY_TO_CONTENT_START)
-                .removeInstancesOf(ANIMATED_VISIBILITY_TO_CONTENT_END)
+            removeInstancesOf(ANIMATED_NAV_HOST_CALL_PARAMETERS_START,
+                ANIMATED_NAV_HOST_CALL_PARAMETERS_END,
+                INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START,
+                INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END,
+                ADD_ANIMATED_COMPOSABLE_START,
+                ADD_ANIMATED_COMPOSABLE_END,
+                ANIMATED_VISIBILITY_TO_CONTENT_START,
+                ANIMATED_VISIBILITY_TO_CONTENT_END)
         } else {
             removeFromTo(START_ACCOMPANIST_NAVIGATION_IMPORTS, END_ACCOMPANIST_NAVIGATION_IMPORTS)
                 .removeFromTo(ANIMATED_NAV_HOST_CALL_PARAMETERS_START, ANIMATED_NAV_HOST_CALL_PARAMETERS_END)
@@ -74,8 +74,7 @@ class DestinationsObjectWriter(
 
     private fun String.adaptToAccompanistMaterial(): String {
         return if (availableDependencies.accompanistMaterial) {
-            removeInstancesOf(ADD_BOTTOM_SHEET_COMPOSABLE_START)
-                .removeInstancesOf(ADD_BOTTOM_SHEET_COMPOSABLE_END)
+            removeInstancesOf(ADD_BOTTOM_SHEET_COMPOSABLE_START, ADD_BOTTOM_SHEET_COMPOSABLE_END)
         } else {
             removeInstancesOf(BOTTOM_SHEET_COMPOSABLE_WRAPPER)
                 .removeFromTo(ADD_BOTTOM_SHEET_COMPOSABLE_START, ADD_BOTTOM_SHEET_COMPOSABLE_END)
@@ -87,8 +86,7 @@ class DestinationsObjectWriter(
         return if (availableDependencies.accompanistAnimation && availableDependencies.accompanistMaterial) {
             removeFromTo(ADD_COMPOSABLE_WHEN_ELSE_START, ADD_COMPOSABLE_WHEN_ELSE_END)
         } else {
-            removeInstancesOf(ADD_COMPOSABLE_WHEN_ELSE_START)
-                .removeInstancesOf(ADD_COMPOSABLE_WHEN_ELSE_END)
+            removeInstancesOf(ADD_COMPOSABLE_WHEN_ELSE_START, ADD_COMPOSABLE_WHEN_ELSE_END)
         }
     }
 

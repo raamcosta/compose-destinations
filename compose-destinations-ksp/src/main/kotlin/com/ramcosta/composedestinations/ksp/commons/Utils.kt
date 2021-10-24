@@ -13,13 +13,23 @@ inline fun <reified T> KSAnnotation.findArgumentValue(name: String): T? {
     return arguments.find { it.name?.asString() == name }?.value as T?
 }
 
-fun File.readLine(lineNumber: Int): String {
+fun File.readLineAndImports(lineNumber: Int): Pair<String, List<String>> {
     val bufferedReader = BufferedReader(InputStreamReader(FileInputStream(this), Charsets.UTF_8))
     return bufferedReader
         .useLines { lines: Sequence<String> ->
-            lines
-                .take(lineNumber)
-                .last()
+            val firstNLines = lines.take(lineNumber)
+
+            val iterator = firstNLines.iterator()
+            var line = iterator.next()
+            val importsList = mutableListOf<String>()
+            while (iterator.hasNext()) {
+                line = iterator.next()
+                if (line.startsWith("import")) {
+                    importsList.add(line.removePrefix("import "))
+                }
+            }
+
+            line to importsList
         }
 }
 

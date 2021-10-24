@@ -35,7 +35,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME: $GENERATED_DE
         navBackStackEntry: NavBackStackEntry,
         situationalParameters: Map<Class<*>, Any>,
     ) {
-        $CONTENT_FUNCTION_CODE
+$CONTENT_FUNCTION_CODE
     }
     $WITH_ARGS_METHOD
 }

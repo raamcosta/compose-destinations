@@ -1,5 +1,6 @@
 package com.ramcosta.samples.destinationstodosample.destinations
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,9 @@ import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.destinations.styles.ProfileTransitions
 
+const val DEFAULT_ID = "DEFAULT_ID"
+const val DEFAULT_ID2 = 2L
+
 @OptIn(ExperimentalAnimationApi::class)
 @Destination(
     deepLinks = [
@@ -27,12 +31,13 @@ import com.ramcosta.samples.destinationstodosample.destinations.styles.ProfileTr
 )
 @Composable
 //as an example of the 4 parameter types the library can resolve
-fun ProfileScreen(
+fun AnimatedVisibilityScope.ProfileScreen(
     navController: NavController,
     navBackStackEntry: NavBackStackEntry,
     navigator: DestinationsNavigator,
     scaffoldState: ScaffoldState,
-    id: Long
+    id: String? = DEFAULT_ID,
+    id2: Long = DEFAULT_ID2
 ) {
     Box(
         modifier = Modifier
@@ -43,7 +48,8 @@ fun ProfileScreen(
             text = "Profile route: ${ProfileScreenDestination.route} " +
                     "\n\nARGS =" +
                     "\n " +
-                    "\n profile id= $id"
+                    "\n profile id= $id" +
+                    "\n profile id2= $id2"
         )
     }
 }
