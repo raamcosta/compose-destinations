@@ -20,8 +20,9 @@ interface DestinationsNavigator {
     /**
      * Navigates to the given [Routed] ([NavGraphSpec] and [DestinationSpec] are [Routed]).
      *
-     * @param onlyIfResumed if true (default), will ignore the navigation action if the current `NavBackStackEntry`
-     * is not in the RESUMED state. This avoids duplicate navigation actions.
+     * @param onlyIfResumed if true (default), will ignore the navigation action if the
+     * current `NavBackStackEntry` is not in the RESUMED state. This avoids duplicate
+     * navigation actions.
      * @param builder [NavOptionsBuilder]
      *
      * @see [NavController.navigate]

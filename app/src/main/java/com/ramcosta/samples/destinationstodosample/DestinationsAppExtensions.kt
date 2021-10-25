@@ -29,7 +29,7 @@ fun Destination.DrawerContent(
                 fontWeight = if (isSelected) FontWeight.Bold else null
             )
         }
-        ProfileScreenDestination,
+        ProfileDestination,
         GoToProfileConfirmationDestination,
         SettingsDestination,
         ThemeSettingsDestination -> {
@@ -48,7 +48,7 @@ val Destination.title
     get(): Int? {
         return when (this) {
             GreetingDestination -> R.string.greeting_screen
-            ProfileScreenDestination -> R.string.profile_screen
+            ProfileDestination -> R.string.profile_screen
             SettingsDestination -> R.string.settings_screen
             FeedDestination -> R.string.feed_screen
             ThemeSettingsDestination -> R.string.theme_settings_screen

@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.ramcosta.composedestinations.ProfileScreenDestination
+import com.ramcosta.composedestinations.ProfileDestination
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
@@ -22,15 +22,16 @@ import com.ramcosta.samples.destinationstodosample.destinations.styles.ProfileTr
 const val DEFAULT_ID = "DEFAULT_ID"
 const val DEFAULT_ID2 = 2L
 
-@OptIn(ExperimentalAnimationApi::class)
+//@OptIn(ExperimentalAnimationApi::class)
 @Destination(
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
-    style = ProfileTransitions::class
+//    style = ProfileTransitions::class
 )
 @Composable
-fun AnimatedVisibilityScope.ProfileScreen(
+fun Profile(
+//fun AnimatedVisibilityScope.Profile(
     id: String? = DEFAULT_ID,
     id2: Long = DEFAULT_ID2
 ) {
@@ -40,7 +41,7 @@ fun AnimatedVisibilityScope.ProfileScreen(
             .background(Color.Green)
     ) {
         Text(
-            text = "Profile route: ${ProfileScreenDestination.route} " +
+            text = "Profile route: ${ProfileDestination.route} " +
                     "\n\nARGS =" +
                     "\n " +
                     "\n profile id= $id" +

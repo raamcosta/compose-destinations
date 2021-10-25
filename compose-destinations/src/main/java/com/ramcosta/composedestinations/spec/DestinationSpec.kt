@@ -43,11 +43,11 @@ interface DestinationSpec: Routed {
      * navigates to it.
      *
      * [destinationDependencies] works as a container of dependencies
-     * that your screen can use. You can provide them via `destinationDependencies`
-     * argument of `DestinationsNavHost` call.
+     * that your destination can use. You can provide them via
+     * `destinationDependencies` argument of `DestinationsNavHost` call.
      *
-     * Besides, it is used internally to enable certain screen Composables
-     * to be extension functions on `ColumnScope` (for [DestinationStyle.BottomSheet] screens)
+     * Besides, it is used internally to enable certain destination Composables
+     * to be extension functions on `ColumnScope` (for [DestinationStyle.BottomSheet] destinations)
      * or `AnimatedVisibilityScope` (for [DestinationStyle.Animated]).
      */
     @Composable

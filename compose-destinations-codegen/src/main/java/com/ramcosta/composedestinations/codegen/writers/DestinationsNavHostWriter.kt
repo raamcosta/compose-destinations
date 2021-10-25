@@ -73,7 +73,7 @@ class DestinationsNavHostWriter(
 
     private fun defaultNavControllerPlaceholder(): String {
         return if (availableDependencies.accompanistAnimation) "rememberAnimatedNavController"
-        else "androidx.navigation.compose.rememberNavController"
+        else "rememberNavController"
     }
 
     private fun experimentalApiPlaceholder(): String {

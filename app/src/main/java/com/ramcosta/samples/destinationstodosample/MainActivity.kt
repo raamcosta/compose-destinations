@@ -12,7 +12,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+//import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.*
 import com.ramcosta.composedestinations.navigation.navigateTo
 import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerController
@@ -21,7 +21,7 @@ import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@ExperimentalMaterialNavigationApi
+//@ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                     DestinationsNavHost(
                         navController = navController,
                         startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
-                        defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
+//                        defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
                         modifier = Modifier.padding(paddingValues),
                         destinationDependencies = mapOf(
                             DrawerController::class.java to DrawerControllerImpl(scaffoldState.drawerState)

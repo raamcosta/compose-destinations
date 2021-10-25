@@ -27,8 +27,8 @@ sealed interface DestinationStyle {
      * Marks the destination to be shown with a bottom sheet style.
      * It requires Accompanist Material dependency.
      *
-     * Parameters of the BottomSheet Layout can be defined through the `bottomSheetParams`
-     * parameter of the `Destinations.NavHost` call.
+     * You will need to use a `ModalBottomSheetLayout` wrapping your
+     * top level Composable (usually the `DestinationsNavHost` composable).
      */
     object BottomSheet : DestinationStyle
 
@@ -37,7 +37,8 @@ sealed interface DestinationStyle {
      * when coming from or going to certain destinations.
      * It requires Accompanist Navigation Animation dependency.
      *
-     * You will need to create an object which implements this interface
+     * You will need to create an object which implements `AnimatedDestinationStyle`
+     * (generated version of this interface that exposes `Destination`)
      * and use the KClass in the [com.ramcosta.composedestinations.annotation.Destination.style]
      */
     @ExperimentalAnimationApi

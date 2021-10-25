@@ -2,7 +2,7 @@
 
 # Compose Destinations
 
-A KSP library to improve Compose Navigation. It uses KSP to generate some code which uses
+A KSP library to improve Compose Navigation. It processes annotations with KSP to generate code which uses
 Compose Navigation under the hood to make everything happen.
 For a deeper look into all the features, check our [wiki](https://github.com/raamcosta/compose-destinations/wiki)(🚧).
 
@@ -43,10 +43,10 @@ fun SomeOtherScreen(
     navigator: DestinationsNavigator
 ) {
     /*...*/
-    navigator.navigate(ProfileScreenDestination.withArgs(id = 7))
+    navigator.navigate(ProfileDestination.withArgs(id = 7))
 }
 ```
-You may need to build the project so that you can import the generated Destinations (like the above `ProfileScreenDestination`)
+You may need to build the project so that you can import the generated Destinations (like the above `ProfileDestination`)
 
 4. Finally, add the NavHost somewhere:
 
@@ -78,7 +78,7 @@ ksp 'io.github.raamcosta.compose-destinations:ksp:0.8.4-alpha05'
 implementation 'androidx.navigation:navigation-compose:$compose_navigation_version'
 ```
 Official Compose Navigation is required.
-If you're using Compose Material, Accompanist Navigation-Animation and/or
+If you're using Accompanist Navigation-Animation and/or
 Accompanist Material (aka BottomSheet, currently), Compose Destinations has you covered. <br/>
 Check our [wiki](https://github.com/raamcosta/compose-destinations/wiki) to know more. <br/>
 Each [release](https://github.com/raamcosta/compose-destinations/releases) contains a list of versions known to be compatible.

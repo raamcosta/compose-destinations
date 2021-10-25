@@ -77,8 +77,8 @@ dependencies {
         implementation(material)
         implementation(viewModel)
         implementation(navigation)
-        implementation(accompanistMaterial)
-        implementation(accompanistAnimation)
+//        implementation(accompanistMaterial)
+//        implementation(accompanistAnimation)
     }
 
     with(Deps.AndroidX) {

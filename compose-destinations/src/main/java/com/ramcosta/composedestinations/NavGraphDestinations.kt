@@ -81,12 +81,8 @@ private fun NavGraphBuilder.addNestedNavGraphs(
 ) {
     nestedNavGraphs.forEach { nestedGraph ->
         addNavigation(nestedGraph) {
-            nestedGraph.destinations.forEach {
-                addComposable(it.value)
-            }
-
-            addNestedNavGraphs(
-                nestedGraph.nestedNavGraphs,
+            addNavGraphDestinations(
+                nestedGraph,
                 navController,
                 addComposable,
                 addNavigation

@@ -16,11 +16,12 @@ import com.ramcosta.composedestinations.FeedDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.samples.destinationstodosample.requireTitle
 
-@OptIn(ExperimentalAnimationApi::class)
+//@OptIn(ExperimentalAnimationApi::class)
 @Destination
 @Composable
-fun AnimatedVisibilityScope.Feed() {
-    Log.d("Feed", "running? " + transition.isRunning)
+fun Feed() {
+//fun AnimatedVisibilityScope.Feed() {
+//    Log.d("Feed", "running? " + transition.isRunning)
 
     Box(
         Modifier

@@ -17,8 +17,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 
 /**
- * When using the code gen module, all APIs will expose
- * $GENERATED_DESTINATION which is a sealed version of [$CORE_DESTINATION_SPEC]
+ * $GENERATED_DESTINATION is a sealed version of [$CORE_DESTINATION_SPEC]
  */
 sealed interface $GENERATED_DESTINATION : $CORE_DESTINATION_SPEC
 
