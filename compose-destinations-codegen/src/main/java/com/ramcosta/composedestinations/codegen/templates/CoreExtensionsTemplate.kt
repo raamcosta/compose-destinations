@@ -77,6 +77,8 @@ data class $GENERATED_NAV_GRAPH(
 /**
  * Finds the destination correspondent to this [NavBackStackEntry], null if none is found
  */
-fun NavBackStackEntry.toDest() = destination.route?.let { $DESTINATIONS_AGGREGATE_CLASS_NAME.${GENERATED_NAV_GRAPH}s.root.findDestination(it) as $GENERATED_DESTINATION }
-
+val NavBackStackEntry.navDestination: $GENERATED_DESTINATION?
+    get() {
+        return destination.route?.let { $GENERATED_NAV_GRAPHS_OBJECT.root.findDestination(it) as $GENERATED_DESTINATION }
+    }
 """.trimIndent()

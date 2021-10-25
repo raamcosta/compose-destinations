@@ -7,8 +7,9 @@ import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
 import com.ramcosta.composedestinations.codegen.model.Destination
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
 import com.ramcosta.composedestinations.codegen.writers.CoreExtensionsWriter
-import com.ramcosta.composedestinations.codegen.writers.DestinationsObjectWriter
+import com.ramcosta.composedestinations.codegen.writers.DestinationsNavHostWriter
 import com.ramcosta.composedestinations.codegen.writers.DestinationsWriter
+import com.ramcosta.composedestinations.codegen.writers.NavGraphsObjectWriter
 
 class CodeGenerator(
     private val logger: Logger,
@@ -27,7 +28,9 @@ class CodeGenerator(
 
         val generatedDestinations = DestinationsWriter(codeGenerator, logger, availableDependencies).write(destinations)
 
-        DestinationsObjectWriter(codeGenerator, logger, availableDependencies).write(generatedDestinations)
+        NavGraphsObjectWriter(codeGenerator, logger).write(generatedDestinations)
+
+        DestinationsNavHostWriter(codeGenerator, logger, availableDependencies).write()
     }
 
     private fun requireComposeNavigation() {

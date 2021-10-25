@@ -51,10 +51,9 @@ You may need to build the project so that you can import the generated Destinati
 4. Finally, add the NavHost somewhere:
 
 ```kotlin
-Destinations.NavHost()
+DestinationsNavHost()
 ```
 This call will automatically add all annotated Composable functions as destinations of the Navigation Graph.
-`Destinations.Scaffold` is also available if you're using Compose Material. It will also include all destinations in its builder block.
 
 That's it! No need to worry about routes, `NavType`, bundles and strings. All that redundant and error-prone code gets generated for you.
 

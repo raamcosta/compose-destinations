@@ -4,7 +4,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -17,6 +16,7 @@ import com.ramcosta.composedestinations.GoToProfileConfirmationDestination
 import com.ramcosta.composedestinations.GreetingDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerController
 import com.ramcosta.samples.destinationstodosample.destinations.styles.GreetingTransitions
 import com.ramcosta.samples.destinationstodosample.requireTitle
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Greeting(
     navigator: DestinationsNavigator,
-    scaffoldState: ScaffoldState,
+    drawerController: DrawerController,
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
     Box(
@@ -60,7 +60,7 @@ fun Greeting(
 
             Button(
                 onClick = {
-                    coroutineScope.launch { scaffoldState.drawerState.open() }
+                    coroutineScope.launch { drawerController.open() }
                 }
             ) {
                 Text(text = "OPEN DRAWER")

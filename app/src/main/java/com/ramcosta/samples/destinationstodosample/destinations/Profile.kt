@@ -30,12 +30,7 @@ const val DEFAULT_ID2 = 2L
     style = ProfileTransitions::class
 )
 @Composable
-//as an example of the 4 parameter types the library can resolve
 fun AnimatedVisibilityScope.ProfileScreen(
-    navController: NavController,
-    navBackStackEntry: NavBackStackEntry,
-    navigator: DestinationsNavigator,
-    scaffoldState: ScaffoldState,
     id: String? = DEFAULT_ID,
     id2: Long = DEFAULT_ID2
 ) {

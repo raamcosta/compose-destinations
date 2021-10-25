@@ -47,15 +47,13 @@ class Processor(
 
     private fun Resolver.getAvailableDependencies(): AvailableDependencies {
         val hasAccompanistAnimations = getClassDeclarationByName("com.google.accompanist.navigation.animation.AnimatedComposeNavigator") != null
-        val hasScaffold = getClassDeclarationByName("androidx.compose.material.ScaffoldState") != null
         val hasComposeNavigation = getClassDeclarationByName("androidx.navigation.NavHost") != null
         val hasAccompanistMaterial = getClassDeclarationByName("com.google.accompanist.navigation.material.BottomSheetNavigator") != null
 
         return AvailableDependencies(
-            hasComposeNavigation,
-            hasScaffold,
-            hasAccompanistAnimations,
-            hasAccompanistMaterial
+            composeNavigation = hasComposeNavigation,
+            accompanistAnimation = hasAccompanistAnimations,
+            accompanistMaterial = hasAccompanistMaterial
         )
     }
 }

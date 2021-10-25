@@ -17,24 +17,24 @@ import $PACKAGE_NAME.spec.DestinationStyle
 
 @ExperimentalAnimationApi
 fun NavGraphBuilder.addAnimatedComposable(
-    animatedStyle: DestinationStyle.Animated<DestinationSpec>,
+    animatedStyle: AnimatedDestinationStyle,
     destination: Destination,
     navController: NavHostController,
-    situationalParametersProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
+    destinationDependenciesProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
 ) = with(animatedStyle) {
     composable(
         route = destination.route,
         arguments = destination.arguments,
         deepLinks = destination.deepLinks,
-        enterTransition = { i, t -> enterTransition(i.toDest(), t.toDest()) },
-        exitTransition = { i, t -> exitTransition(i.toDest(), t.toDest()) },
-        popEnterTransition = { i, t -> popEnterTransition(i.toDest(), t.toDest()) },
-        popExitTransition = { i, t -> popExitTransition(i.toDest(), t.toDest()) }
+        enterTransition = { i, t -> enterTransition(i.navDestination, t.navDestination) },
+        exitTransition = { i, t -> exitTransition(i.navDestination, t.navDestination) },
+        popEnterTransition = { i, t -> popEnterTransition(i.navDestination, t.navDestination) },
+        popExitTransition = { i, t -> popExitTransition(i.navDestination, t.navDestination) }
     ) { navBackStackEntry ->
         destination.Content(
             navController,
             navBackStackEntry,
-            situationalParametersProvider(destination).apply {
+            destinationDependenciesProvider(destination).apply {
                 this[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java] = this@composable
             }
         )

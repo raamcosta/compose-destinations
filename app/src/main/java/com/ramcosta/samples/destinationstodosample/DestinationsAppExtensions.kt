@@ -2,16 +2,14 @@ package com.ramcosta.samples.destinationstodosample
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.*
-import java.lang.RuntimeException
 
 @Composable
 fun Destination.DrawerContent(
@@ -36,23 +34,6 @@ fun Destination.DrawerContent(
         SettingsDestination,
         ThemeSettingsDestination -> {
         }
-    }
-}
-
-fun Destination.destinationPadding(parentPadding: PaddingValues): Modifier {
-    return when (this) {
-        ThemeSettingsDestination,
-        GreetingDestination,
-        FeedDestination,
-        GoToProfileConfirmationDestination,
-        ProfileScreenDestination -> Modifier.padding(parentPadding)
-
-        SettingsDestination -> Modifier.padding(
-            start = 0.dp,
-            end = 0.dp,
-            top = parentPadding.calculateTopPadding() + 10.dp,
-            bottom = parentPadding.calculateBottomPadding() + 10.dp
-        )
     }
 }
 

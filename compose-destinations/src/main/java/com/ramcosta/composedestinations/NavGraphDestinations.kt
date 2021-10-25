@@ -23,6 +23,34 @@ fun NavGraphBuilder.addNavGraphDestinations(
 }
 
 /**
+ * Filters all destinations of this [NavGraphSpec] and its nested nav graphs with given [predicate]
+ */
+inline fun NavGraphSpec.filterDestinations(predicate: (DestinationSpec) -> Boolean): List<DestinationSpec> {
+    return allDestinations.filter { predicate(it) }
+}
+
+/**
+ * Checks if any destination of this [NavGraphSpec] matches with given [predicate]
+ */
+inline fun NavGraphSpec.anyDestination(predicate: (DestinationSpec) -> Boolean): Boolean {
+    return allDestinations.any { predicate(it) }
+}
+
+/**
+ * Returns all [DestinationSpec]s including those of nested graphs
+ */
+val NavGraphSpec.allDestinations get(): List<DestinationSpec> {
+    val destinations = destinations
+        .values
+        .toMutableList()
+
+    nestedNavGraphs.forEach {
+        destinations.addAll(it.destinations.values)
+    }
+    return destinations
+}
+
+/**
  * Finds a destination for a `route` in this navigation graph
  * or its nested graphs.
  * Returns `null` if there is no such destination.

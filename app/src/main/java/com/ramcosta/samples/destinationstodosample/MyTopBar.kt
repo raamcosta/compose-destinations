@@ -18,11 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.Destination
-import com.ramcosta.composedestinations.Destinations
+import com.ramcosta.composedestinations.NavGraphs
 
 @Composable
-fun MyTopBar(
-    destination: Destination,
+fun Destination.TopBar(
     onDrawerClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
@@ -44,12 +43,12 @@ fun MyTopBar(
         }
 
         Text(
-            text = destination.title?.let { stringResource(it) } ?: "",
+            text = title?.let { stringResource(it) } ?: "",
             modifier = Modifier.align(Alignment.Center),
             color = Color.White
         )
 
-        if (!Destinations.NavGraphs.settings.destinations.containsValue(destination)) {
+        if (!NavGraphs.settings.destinations.containsValue(this@TopBar)) {
             IconButton(
                 onClick = onSettingsClick,
                 modifier = Modifier.align(Alignment.CenterEnd)

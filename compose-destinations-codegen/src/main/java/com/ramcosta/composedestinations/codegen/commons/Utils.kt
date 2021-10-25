@@ -36,16 +36,3 @@ fun String.removeInstancesOf(vararg toRemove: String): String {
     }
     return result
 }
-
-fun String.replaceEach(toReplace: String, replaceWith: (index: Int, currentString: String) -> String): String {
-    var toReturn = this
-
-    while (true) {
-        val indexToChange = toReturn.indexOf(toReplace)
-        if (indexToChange == -1) break
-
-        toReturn = toReturn.replaceRange(indexToChange, indexToChange + toReplace.length, replaceWith(indexToChange, toReturn))
-    }
-
-    return toReturn
-}

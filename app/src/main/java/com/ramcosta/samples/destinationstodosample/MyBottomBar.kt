@@ -15,9 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.Destination
 
 @Composable
-fun MyBottomBar(
-    destination: Destination
-) {
+fun Destination.BottomBar() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -25,7 +23,7 @@ fun MyBottomBar(
             .background(MaterialTheme.colors.primary)
     ) {
         Text(
-            text = destination.title?.let { stringResource(it) } ?: "",
+            text = title?.let { stringResource(it) } ?: "",
             modifier = Modifier.align(Alignment.Center),
             color = Color.White
         )

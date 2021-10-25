@@ -18,8 +18,8 @@ sealed interface DestinationStyle {
      * This is the default style used in case none is specified for a given Destination.
      *
      * If you are using Accompanist's Navigation-Animation dependency, then this default
-     * may be overridden through generated `Destinations.NavHost`
-     * or `Destinations.Scaffold` methods which will have a `defaultAnimationParams` argument.
+     * may be overridden through generated `DestinationsNavHost` call
+     * which will have a `defaultAnimationParams` argument.
      */
     object Default : DestinationStyle
 
@@ -28,7 +28,7 @@ sealed interface DestinationStyle {
      * It requires Accompanist Material dependency.
      *
      * Parameters of the BottomSheet Layout can be defined through the `bottomSheetParams`
-     * parameter of the `Destinations.NavHost` or `Destinations.Scaffold` methods.
+     * parameter of the `Destinations.NavHost` call.
      */
     object BottomSheet : DestinationStyle
 

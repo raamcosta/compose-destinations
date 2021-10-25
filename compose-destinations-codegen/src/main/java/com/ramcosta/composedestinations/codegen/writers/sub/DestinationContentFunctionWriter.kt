@@ -9,65 +9,46 @@ class DestinationContentFunctionWriter(
     private val additionalImports: MutableSet<String>,
 ) {
 
-    fun write(): String {
-        val contentFunctionCode = StringBuilder()
-        if (destination.parameters.any { it.type.qualifiedName == SCAFFOLD_STATE_QUALIFIED_NAME }) {
-            additionalImports.add("androidx.compose.material.ScaffoldState")
-            contentFunctionCode += "\t\tval scaffoldState = situationalParameters[ScaffoldState::class.java] as? ScaffoldState ?: ${GeneratedExceptions.SCAFFOLD_STATE_MISSING}"
-            contentFunctionCode += "\n"
-        }
-
-        val receiver = contentFunctionCode.addComposableCallReceiver()
-
-        contentFunctionCode += "\n"
-        contentFunctionCode += "\t\t${callComposableCode(receiver, emptyList())}"
-
-        return contentFunctionCode.toString()
+    fun write(): String = with(destination) {
+        val receiver = prepareReceiver()
+        return "\t\t$receiver${composableName}(${prepareArguments()})"
     }
 
-    private fun callComposableCode(receiver: String, argumentsToIgnore: List<String>): String = with(destination) {
-        return "$receiver${composableName}(${prepareArguments(argumentsToIgnore)})"
-    }
-
-    private fun StringBuilder.addComposableCallReceiver(): String {
+    private fun prepareReceiver(): String {
         return when (destination.composableReceiverSimpleName) {
             ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add(ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME)
-                this += "\t\tval animatedVisibilityScope = situationalParameters[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java] as? $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_VISIBILITY_SCOPE}\n"
-
-                "animatedVisibilityScope."
+                "val animatedVisibilityScope = destinationDependencies[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java] as? $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_VISIBILITY_SCOPE}\n" +
+                        "\t\tanimatedVisibilityScope."
             }
+
             COLUMN_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add("androidx.compose.foundation.layout.$COLUMN_SCOPE_SIMPLE_NAME")
-                this += "\t\tval columnScope = situationalParameters[$COLUMN_SCOPE_SIMPLE_NAME::class.java] as? $COLUMN_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_COLUMN_SCOPE}\n"
+                "val columnScope = destinationDependencies[$COLUMN_SCOPE_SIMPLE_NAME::class.java] as? $COLUMN_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_COLUMN_SCOPE}\n" +
+                        "\t\tcolumnScope."
+            }
 
-                "columnScope."
-            }
-            else -> {
-                ""
-            }
+            else -> ""
         }
     }
 
-    private fun prepareArguments(argumentsToIgnore: List<String>): String = with(destination) {
+    private fun prepareArguments(): String = with(destination) {
         var argsCode = ""
 
-        val filteredParams = parameters.filter { !argumentsToIgnore.contains(it.name) }
+        parameters.forEachIndexed { i, it ->
 
-        filteredParams.forEachIndexed { i, it ->
+            val resolvedArgument = resolveArgumentForTypeAndName(it)
 
-            val argumentResolver = resolveArgumentForTypeAndName(it)
-
-            if (argumentResolver != null) {
+            if (resolvedArgument != null) {
                 if (i != 0) argsCode += ", "
 
-                argsCode += "\n\t\t\t${it.name} = $argumentResolver"
+                argsCode += "\n\t\t\t${it.name} = $resolvedArgument"
 
             } else if (!it.hasDefault) {
                 throw IllegalDestinationsSetup("Composable: $composableName - Unresolvable argument type without default value: $it")
             }
 
-            if (i == filteredParams.lastIndex) argsCode += "\n\t\t"
+            if (i == parameters.lastIndex) argsCode += "\n\t\t"
         }
 
         return argsCode
@@ -79,11 +60,15 @@ class DestinationContentFunctionWriter(
             NAV_HOST_CONTROLLER_QUALIFIED_NAME, -> "navController"
             DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController, navBackStackEntry)"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
-            SCAFFOLD_STATE_QUALIFIED_NAME -> "scaffoldState"
             else -> {
                 if (navArgs.contains(parameter)) {
                     "navBackStackEntry.arguments?.${parameter.type.toNavBackStackEntryArgGetter(parameter.name)}${defaultCodeIfArgNotPresent(parameter)}"
-                } else null
+                } else if (!parameter.hasDefault) {
+                    additionalImports.add(parameter.type.qualifiedName)
+                    "destinationDependencies[${parameter.type.simpleName}::class.java] as? ${parameter.type.simpleName}? ?: ${GeneratedExceptions.missingRequestedArgument(parameter.type.simpleName, destination.composableName)}"
+                } else {
+                    null
+                }
             }
         }
     }

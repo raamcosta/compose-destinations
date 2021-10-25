@@ -33,7 +33,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME: $GENERATED_DE
     override fun Content(
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
-        situationalParameters: Map<Class<*>, Any>,
+        destinationDependencies: Map<Class<*>, Any>,
     ) {
 $CONTENT_FUNCTION_CODE
     }

@@ -4,18 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.ramcosta.composedestinations.DefaultAnimationParams
-import com.ramcosta.composedestinations.Destinations
-import com.ramcosta.composedestinations.FeedDestination
+import com.ramcosta.composedestinations.*
 import com.ramcosta.composedestinations.navigation.navigateTo
-import com.ramcosta.composedestinations.toDest
+import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerController
+import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerControllerImpl
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterialNavigationApi
@@ -28,48 +31,64 @@ class MainActivity : ComponentActivity() {
             DestinationsTodoSampleTheme {
                 val scaffoldState = rememberScaffoldState()
                 val coroutineScope = rememberCoroutineScope()
-                val navController = Destinations.rememberNavController()
+                val navController = rememberDestinationsNavController()
 
-                Destinations.Scaffold(
+                DestinationsSampleScaffold(
                     scaffoldState = scaffoldState,
                     navController = navController,
-                    bottomSheetParams = {
-                        sheetShape(RoundedCornerShape(16.dp))
-                    },
-                    defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
-                    startDestination = if (Math.random() > 0.5) FeedDestination else Destinations.NavGraphs.root.startDestination,
-                    topBar = {
-                        MyTopBar(
-                            destination = it,
+                    topBar = { destination ->
+                        destination.TopBar(
                             onDrawerClick = { coroutineScope.launch { scaffoldState.drawerState.open() } },
-                            onSettingsClick = { navController.navigateTo(Destinations.NavGraphs.settings) }
+                            onSettingsClick = { navController.navigateTo(NavGraphs.settings) }
                         )
                     },
-                    bottomBar = {
-                        MyBottomBar(destination = it)
+                    bottomBar = { destination ->
+                        destination.BottomBar()
                     },
-                    drawerContent = { currentDestination ->
-                        Destinations.NavGraphs.root.destinations.values
-                            .sortedBy { if (it == Destinations.NavGraphs.root.startDestination) 0 else 1 }
-                            .forEach {
-                                it.DrawerContent(
-                                    isSelected = it == currentDestination,
-                                    onDestinationClick = { clickedDestination ->
-                                        if (navController.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
-                                            && navController.currentBackStackEntry?.toDest() != clickedDestination
-                                        ) {
-                                            navController.navigateTo(clickedDestination)
-                                            coroutineScope.launch { scaffoldState.drawerState.close() }
-                                        }
-                                    }
-                                )
+                    drawerContent = { destination ->
+                        Drawer(
+                            destination = destination,
+                            navController = navController,
+                            coroutineScope = coroutineScope,
+                            scaffoldState = scaffoldState
+                        )
+                    },
+                ) { paddingValues ->
+                    DestinationsNavHost(
+                        navController = navController,
+                        startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
+                        defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
+                        modifier = Modifier.padding(paddingValues),
+                        destinationDependencies = mapOf(
+                            DrawerController::class.java to DrawerControllerImpl(scaffoldState.drawerState)
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun Drawer(
+        destination: Destination,
+        navController: NavHostController,
+        coroutineScope: CoroutineScope,
+        scaffoldState: ScaffoldState
+    ) {
+        NavGraphs.root.destinations.values
+            .sortedBy { if (it == NavGraphs.root.startDestination) 0 else 1 }
+            .forEach {
+                it.DrawerContent(
+                    isSelected = it == destination,
+                    onDestinationClick = { clickedDestination ->
+                        if (navController.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
+                            && navController.currentBackStackEntry?.navDestination != clickedDestination
+                        ) {
+                            navController.navigateTo(clickedDestination)
+                            coroutineScope.launch { scaffoldState.drawerState.close() }
                         }
-                    },
-                    modifierForDestination = { destination, padding ->
-                        destination.destinationPadding(parentPadding = padding)
                     }
                 )
             }
-        }
     }
 }

@@ -9,8 +9,8 @@ import kotlin.reflect.KClass
  * the full route, the nav arguments and the `Composable` function which
  * will call the annotated one, once the destination gets navigated to.
  *
- * A global `Destinations` object with all the destinations as well as a `NavHost` and
- * a `Scaffold` wrapper which will include these destinations in the navigation
+ * A global `Destinations` object with all the destinations as well as a `NavHost`
+ * wrapper which will include these destinations in the navigation
  * graph, will also be generated.
  *
  * @property route main route of this destination (by default, the name of the Composable function)

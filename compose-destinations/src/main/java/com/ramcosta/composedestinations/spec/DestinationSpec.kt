@@ -42,13 +42,18 @@ interface DestinationSpec: Routed {
      * the destination content in the screen, when the user
      * navigates to it.
      *
-     * [situationalParameters] can contain diverse things depending
-     * on the situation of the screens
+     * [destinationDependencies] works as a container of dependencies
+     * that your screen can use. You can provide them via `destinationDependencies`
+     * argument of `DestinationsNavHost` call.
+     *
+     * Besides, it is used internally to enable certain screen Composables
+     * to be extension functions on `ColumnScope` (for [DestinationStyle.BottomSheet] screens)
+     * or `AnimatedVisibilityScope` (for [DestinationStyle.Animated]).
      */
     @Composable
     fun Content(
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
-        situationalParameters: Map<Class<*>, Any>
+        destinationDependencies: Map<Class<*>, Any>
     )
 }
