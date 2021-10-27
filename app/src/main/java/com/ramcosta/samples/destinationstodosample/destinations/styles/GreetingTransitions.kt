@@ -21,7 +21,7 @@ object GreetingTransitions : AnimatedDestinationStyle {
     ): ExitTransition? {
 
         return when (target) {
-            ProfileDestination,
+            ProfileScreenDestination,
             SettingsDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { -1000 },
@@ -37,7 +37,7 @@ object GreetingTransitions : AnimatedDestinationStyle {
     ): EnterTransition? {
 
         return when (initial) {
-            ProfileDestination,
+            ProfileScreenDestination,
             SettingsDestination ->
                 slideInHorizontally(
                     initialOffsetX = { -1000 },
@@ -53,7 +53,7 @@ object GreetingTransitions : AnimatedDestinationStyle {
     ): ExitTransition? {
 
         return when (target) {
-            ProfileDestination,
+            ProfileScreenDestination,
             SettingsDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { 1000 },

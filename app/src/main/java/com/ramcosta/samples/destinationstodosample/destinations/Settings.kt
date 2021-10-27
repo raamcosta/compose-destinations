@@ -31,7 +31,7 @@ const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
     start = true,
     navGraph = SETTINGS_NAV_GRAPH,
     deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],
-//    style = SettingsTransitions::class
+    style = SettingsTransitions::class
 )
 @Composable
 fun Settings(

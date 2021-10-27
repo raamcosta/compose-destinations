@@ -5,4 +5,5 @@
     <string name="settings_screen">Settings Screen</string>
     <string name="feed_screen">Feed Screen</string>
     <string name="theme_settings_screen">Theme Settings</string>
+    <string name="counter">COUNTER = %s</string>
 </resources>

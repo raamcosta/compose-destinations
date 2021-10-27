@@ -12,11 +12,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.plusAssign
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.ramcosta.composedestinations.Destination
 import com.ramcosta.composedestinations.NavGraphs
 import com.ramcosta.composedestinations.findDestination
 
-//@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun DestinationsSampleScaffold(
     navController: NavHostController,
@@ -33,13 +36,13 @@ fun DestinationsSampleScaffold(
         ?.let { NavGraphs.root.findDestination(it) as Destination }
         ?: NavGraphs.root.startDestination
 
-//    val bottomSheetNavigator = rememberBottomSheetNavigator()
-//    navController.navigatorProvider += bottomSheetNavigator
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    navController.navigatorProvider += bottomSheetNavigator
 
-//    ModalBottomSheetLayout(
-//        bottomSheetNavigator = bottomSheetNavigator,
-//        sheetShape = RoundedCornerShape(16.dp)
-//    ) {
+    ModalBottomSheetLayout(
+        bottomSheetNavigator = bottomSheetNavigator,
+        sheetShape = RoundedCornerShape(16.dp)
+    ) {
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = { topBar(destination) },
@@ -47,5 +50,5 @@ fun DestinationsSampleScaffold(
             drawerContent = { drawerContent.invoke(this, destination) },
             content = content
         )
-//    }
+    }
 }

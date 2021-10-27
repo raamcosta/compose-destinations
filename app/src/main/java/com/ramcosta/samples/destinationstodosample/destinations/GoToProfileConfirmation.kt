@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.GoToProfileConfirmationDestination
-import com.ramcosta.composedestinations.ProfileDestination
+import com.ramcosta.composedestinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.destinations.styles.AppDialog
@@ -31,7 +31,7 @@ fun GoToProfileConfirmation(
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             onClick = {
-                navigator.navigate(ProfileDestination.withArgs(id2 = 3)) {
+                navigator.navigate(ProfileScreenDestination.withArgs(id2 = 3)) {
                     popUpTo(GoToProfileConfirmationDestination.route) {
                         inclusive = true
                     }

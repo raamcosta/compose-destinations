@@ -19,19 +19,24 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerController
 import com.ramcosta.samples.destinationstodosample.destinations.styles.GreetingTransitions
 import com.ramcosta.samples.destinationstodosample.requireTitle
+import com.ramcosta.samples.destinationstodosample.vms.GreetingUiEvents
+import com.ramcosta.samples.destinationstodosample.vms.GreetingUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import com.ramcosta.samples.destinationstodosample.R
 
 @OptIn(ExperimentalAnimationApi::class)
 @Destination(
     start = true,
-//    style = GreetingTransitions::class
+    style = GreetingTransitions::class
 )
 @Composable
 fun Greeting(
     navigator: DestinationsNavigator,
     drawerController: DrawerController,
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    uiEvents: GreetingUiEvents,
+    uiState: GreetingUiState
 ) {
     Box(
         modifier = Modifier
@@ -45,6 +50,18 @@ fun Greeting(
                 text = stringResource(id = GreetingDestination.requireTitle),
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = {
+                    uiEvents.onCounterButtonClicked()
+                }
+            ) {
+                Text(
+                    text = stringResource(R.string.counter, uiState.counter.toString())
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 

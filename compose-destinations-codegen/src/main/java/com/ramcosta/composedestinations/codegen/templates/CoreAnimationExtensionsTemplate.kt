@@ -7,11 +7,13 @@ package $PACKAGE_NAME
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
+import $PACKAGE_NAME.navigation.DependenciesContainerBuilder
 import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.DestinationStyle
 
@@ -20,7 +22,7 @@ fun NavGraphBuilder.addAnimatedComposable(
     animatedStyle: AnimatedDestinationStyle,
     destination: Destination,
     navController: NavHostController,
-    destinationDependenciesProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
 ) = with(animatedStyle) {
     composable(
         route = destination.route,
@@ -34,8 +36,9 @@ fun NavGraphBuilder.addAnimatedComposable(
         destination.Content(
             navController,
             navBackStackEntry,
-            destinationDependenciesProvider(destination).apply {
-                this[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java] = this@composable
+            {
+                add(this@composable, asType = $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java)
+                dependenciesContainerBuilder.invoke(this, destination)
             }
         )
     }

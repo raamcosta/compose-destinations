@@ -18,11 +18,10 @@ import com.ramcosta.samples.destinationstodosample.requireTitle
 @Destination(
     route = "settings/theme",
     navGraph = SETTINGS_NAV_GRAPH,
-//    style = DestinationStyle.BottomSheet::class
+    style = DestinationStyle.BottomSheet::class
 )
 @Composable
-//fun ColumnScope.ThemeSettings() {
-fun ThemeSettings() {
+fun ColumnScope.ThemeSettings() {
     Box(
         Modifier
             .fillMaxSize()

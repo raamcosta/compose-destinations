@@ -23,6 +23,8 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import $PACKAGE_NAME.navigation.DependenciesContainerBuilder
+import $PACKAGE_NAME.navigation.DestinationDependenciesContainer
 $ADDITIONAL_IMPORTS
 
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME: $GENERATED_DESTINATION {
@@ -33,7 +35,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME: $GENERATED_DE
     override fun Content(
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
-        destinationDependencies: Map<Class<*>, Any>,
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.() -> Unit
     ) {
 $CONTENT_FUNCTION_CODE
     }

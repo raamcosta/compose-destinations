@@ -43,6 +43,7 @@ import androidx.navigation.Navigator
 import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.DestinationStyle
 import $PACKAGE_NAME.spec.NavGraphSpec
+import $PACKAGE_NAME.navigation.DependenciesContainerBuilder
 $START_ACCOMPANIST_NAVIGATION_IMPORTS
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -66,7 +67,7 @@ fun $DESTINATIONS_NAV_HOST(
     startDestination: $GENERATED_DESTINATION = navGraph.startDestination,$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER
     navController: NavHostController = rememberDestinationsNavController(),
     modifier: Modifier = Modifier,
-    destinationDependencies: Map<Class<*>, Any>
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit = {}
 ) {
     $NAV_HOST_METHOD_NAME(
         navController = navController,
@@ -81,9 +82,8 @@ fun $DESTINATIONS_NAV_HOST(
     ) {
         addNavGraphDestinations(
             navGraphSpec = navGraph,
-            navController = navController,
             addNavigation = addNavigation(),   
-            addComposable = addComposable(navController) { destinationDependencies.toMutableMap() }
+            addComposable = addComposable(navController, dependenciesContainerBuilder)
         )
     }
 }
@@ -103,7 +103,7 @@ fun rememberDestinationsNavController(
 //region internals
 ${EXPERIMENTAL_API_PLACEHOLDER}private fun addComposable(
     navController: NavHostController,
-    destinationDependenciesProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
 ): NavGraphBuilder.($CORE_DESTINATION_SPEC) -> Unit {
     return { destination ->
         destination as $GENERATED_DESTINATION
@@ -113,7 +113,7 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun addComposable(
                 addComposable(
                     destination,
                     navController,
-                    destinationDependenciesProvider
+                    dependenciesContainerBuilder
                 )
             }
 
@@ -122,7 +122,7 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun addComposable(
                     destinationStyle,
                     destination,
                     navController,
-                    destinationDependenciesProvider
+                    dependenciesContainerBuilder
                 )
             }
 $ADD_ANIMATED_COMPOSABLE_START
@@ -131,7 +131,7 @@ $ADD_ANIMATED_COMPOSABLE_START
                     destinationStyle as AnimatedDestinationStyle,
                     destination,
                     navController,
-                    destinationDependenciesProvider
+                    dependenciesContainerBuilder
                 )
             }
 $ADD_ANIMATED_COMPOSABLE_END$ADD_BOTTOM_SHEET_COMPOSABLE_START
@@ -139,7 +139,7 @@ $ADD_ANIMATED_COMPOSABLE_END$ADD_BOTTOM_SHEET_COMPOSABLE_START
                 addBottomSheetComposable(
                     destination,
                     navController,
-                    destinationDependenciesProvider
+                    dependenciesContainerBuilder
                 )
             }
 $ADD_BOTTOM_SHEET_COMPOSABLE_END$ADD_COMPOSABLE_WHEN_ELSE_START
@@ -151,7 +151,7 @@ $ADD_COMPOSABLE_WHEN_ELSE_END        }
 ${EXPERIMENTAL_API_PLACEHOLDER}private fun NavGraphBuilder.addComposable(
     destination: $GENERATED_DESTINATION,
     navController: NavHostController,
-    destinationDependenciesProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
 ) {
     composable(
         route = destination.route,
@@ -161,9 +161,9 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun NavGraphBuilder.addComposable(
         destination.Content(
             navController,
             navBackStackEntry,
-            destinationDependenciesProvider(destination)$ANIMATED_VISIBILITY_TO_CONTENT_START.apply {
-                this[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java] = this@composable
-            }$ANIMATED_VISIBILITY_TO_CONTENT_END
+            { dependenciesContainerBuilder(destination)$ANIMATED_VISIBILITY_TO_CONTENT_START.apply {
+                add(this@composable, asType = $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java)
+            }$ANIMATED_VISIBILITY_TO_CONTENT_END }
         )
     }
 }
@@ -172,7 +172,7 @@ private fun NavGraphBuilder.addDialogComposable(
     dialogStyle: DestinationStyle.Dialog,
     destination: $GENERATED_DESTINATION,
     navController: NavHostController,
-    destinationDependenciesProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
 ) {
     dialog(
         destination.route,
@@ -183,7 +183,7 @@ private fun NavGraphBuilder.addDialogComposable(
         destination.Content(
             navController = navController,
             navBackStackEntry = it,
-            destinationDependencies = destinationDependenciesProvider(destination)
+            dependenciesContainerBuilder = { dependenciesContainerBuilder(destination) }
         )
     }
 }

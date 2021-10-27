@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.codegen.templates
 
+import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_SIMPLE_NAME
 import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION
 import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 
@@ -23,12 +24,13 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import $PACKAGE_NAME.spec.DestinationStyle
+import $PACKAGE_NAME.navigation.DependenciesContainerBuilder
 
 @ExperimentalMaterialNavigationApi
 fun NavGraphBuilder.addBottomSheetComposable(
     destination: $GENERATED_DESTINATION,
     navController: NavHostController,
-    destinationDependenciesProvider: ($GENERATED_DESTINATION) -> MutableMap<Class<*>, Any>
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
 ) {
     bottomSheet(
         destination.route,
@@ -38,8 +40,9 @@ fun NavGraphBuilder.addBottomSheetComposable(
         destination.Content(
             navController,
             navBackStackEntry,
-            destinationDependenciesProvider(destination).apply {
-                this[ColumnScope::class.java] = this@bottomSheet
+            {
+                add(this@bottomSheet, asType = $COLUMN_SCOPE_SIMPLE_NAME::class.java)
+                dependenciesContainerBuilder.invoke(this, destination)
             }
         )
     }

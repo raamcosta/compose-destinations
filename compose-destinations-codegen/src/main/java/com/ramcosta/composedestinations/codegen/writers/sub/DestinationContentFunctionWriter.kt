@@ -10,21 +10,29 @@ class DestinationContentFunctionWriter(
 ) {
 
     fun write(): String = with(destination) {
+        val functionCallCode = StringBuilder()
+
+        if (hasContainerArgument()) {
+            functionCallCode += "\t\tval container = DestinationDependenciesContainer().apply { dependenciesContainerBuilder() }\n"
+        }
+
         val receiver = prepareReceiver()
-        return "\t\t$receiver${composableName}(${prepareArguments()})"
+        functionCallCode += "\t\t$receiver${composableName}(${prepareArguments()})"
+
+        return functionCallCode.toString()
     }
 
     private fun prepareReceiver(): String {
         return when (destination.composableReceiverSimpleName) {
             ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add(ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME)
-                "val animatedVisibilityScope = destinationDependencies[$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java] as? $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_VISIBILITY_SCOPE}\n" +
+                "val animatedVisibilityScope = container.get<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>()\n" +
                         "\t\tanimatedVisibilityScope."
             }
 
             COLUMN_SCOPE_SIMPLE_NAME -> {
-                additionalImports.add("androidx.compose.foundation.layout.$COLUMN_SCOPE_SIMPLE_NAME")
-                "val columnScope = destinationDependencies[$COLUMN_SCOPE_SIMPLE_NAME::class.java] as? $COLUMN_SCOPE_SIMPLE_NAME ?: ${GeneratedExceptions.MISSING_COLUMN_SCOPE}\n" +
+                additionalImports.add(COLUMN_SCOPE_QUALIFIED_NAME)
+                "val columnScope = container.get<$COLUMN_SCOPE_SIMPLE_NAME>()\n" +
                         "\t\tcolumnScope."
             }
 
@@ -65,11 +73,24 @@ class DestinationContentFunctionWriter(
                     "navBackStackEntry.arguments?.${parameter.type.toNavBackStackEntryArgGetter(parameter.name)}${defaultCodeIfArgNotPresent(parameter)}"
                 } else if (!parameter.hasDefault) {
                     additionalImports.add(parameter.type.qualifiedName)
-                    "destinationDependencies[${parameter.type.simpleName}::class.java] as? ${parameter.type.simpleName}? ?: ${GeneratedExceptions.missingRequestedArgument(parameter.type.simpleName, destination.composableName)}"
+                    "container.get<${parameter.type.simpleName}>()"
                 } else {
                     null
                 }
             }
+        }
+    }
+
+    private fun hasContainerArgument(): Boolean {
+        if (destination.composableReceiverSimpleName
+            in arrayOf(COLUMN_SCOPE_SIMPLE_NAME, ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME)) {
+            return true
+        }
+
+        return destination.parameters.any { param ->
+            !param.hasDefault
+            && param !in navArgs
+            && param.type.qualifiedName !in arrayOf(NAV_CONTROLLER_QUALIFIED_NAME, NAV_HOST_CONTROLLER_QUALIFIED_NAME, DESTINATIONS_NAVIGATOR_QUALIFIED_NAME, NAV_BACK_STACK_ENTRY_QUALIFIED_NAME)
         }
     }
 

@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 
@@ -11,7 +10,6 @@ import com.ramcosta.composedestinations.spec.NavGraphSpec
  */
 fun NavGraphBuilder.addNavGraphDestinations(
     navGraphSpec: NavGraphSpec,
-    navController: NavHostController,
     addComposable: NavGraphBuilder.(DestinationSpec) -> Unit,
     addNavigation: NavGraphBuilder.(NavGraphSpec, NavGraphBuilder.() -> Unit) -> Unit
 ) {
@@ -19,7 +17,7 @@ fun NavGraphBuilder.addNavGraphDestinations(
         addComposable(destination)
     }
 
-    addNestedNavGraphs(navGraphSpec.nestedNavGraphs, navController, addComposable, addNavigation)
+    addNestedNavGraphs(navGraphSpec.nestedNavGraphs, addComposable, addNavigation)
 }
 
 /**
@@ -75,7 +73,6 @@ fun NavGraphSpec.findDestination(route: String): DestinationSpec? {
 
 private fun NavGraphBuilder.addNestedNavGraphs(
     nestedNavGraphs: List<NavGraphSpec>,
-    navController: NavHostController,
     addComposable: NavGraphBuilder.(DestinationSpec) -> Unit,
     addNavigation: NavGraphBuilder.(NavGraphSpec, NavGraphBuilder.() -> Unit) -> Unit
 ) {
@@ -83,7 +80,6 @@ private fun NavGraphBuilder.addNestedNavGraphs(
         addNavigation(nestedGraph) {
             addNavGraphDestinations(
                 nestedGraph,
-                navController,
                 addComposable,
                 addNavigation
             )

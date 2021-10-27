@@ -11,17 +11,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-//import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.*
+import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.navigation.navigateTo
 import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerController
 import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerControllerImpl
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
+import com.ramcosta.samples.destinationstodosample.vms.GreetingUiEvents
+import com.ramcosta.samples.destinationstodosample.vms.GreetingUiState
+import com.ramcosta.samples.destinationstodosample.vms.GreetingViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-//@ExperimentalMaterialNavigationApi
+@ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,14 +62,29 @@ class MainActivity : ComponentActivity() {
                     DestinationsNavHost(
                         navController = navController,
                         startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
-//                        defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
+                        defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
                         modifier = Modifier.padding(paddingValues),
-                        destinationDependencies = mapOf(
-                            DrawerController::class.java to DrawerControllerImpl(scaffoldState.drawerState)
-                        )
+                        dependenciesContainerBuilder = { destination ->
+                            add(DrawerControllerImpl(scaffoldState.drawerState), asType = DrawerController::class.java)
+
+                            AddDestinationDependencies(destination)
+                        }
                     )
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun DependenciesContainerBuilder.AddDestinationDependencies(destination: Destination) {
+        when (destination) {
+            GreetingDestination -> {
+                val vm = viewModel<GreetingViewModel>()
+                add(vm, asType = GreetingUiState::class.java)
+                add(vm, asType = GreetingUiEvents::class.java)
+            }
+
+            else -> Unit /*no op*/
         }
     }
 

@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.spec
 import androidx.compose.runtime.Composable
 import androidx.navigation.*
 import androidx.navigation.NamedNavArgument
+import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 
 /**
  * Defines what a Destination needs to have to be able to be
@@ -42,9 +43,10 @@ interface DestinationSpec: Routed {
      * the destination content in the screen, when the user
      * navigates to it.
      *
-     * [destinationDependencies] works as a container of dependencies
-     * that your destination can use. You can provide them via
-     * `destinationDependencies` argument of `DestinationsNavHost` call.
+     * [dependenciesContainerBuilder] will be called with a [DependenciesContainerBuilder]
+     * and give opportunity for other Composables on the call stack to add
+     * dependencies that can be used in this destination.
+     * You can add dependencies via `destinationDependencies` argument of `DestinationsNavHost` call.
      *
      * Besides, it is used internally to enable certain destination Composables
      * to be extension functions on `ColumnScope` (for [DestinationStyle.BottomSheet] destinations)
@@ -54,6 +56,6 @@ interface DestinationSpec: Routed {
     fun Content(
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
-        destinationDependencies: Map<Class<*>, Any>
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.() -> Unit
     )
 }
