@@ -21,7 +21,8 @@ import com.ramcosta.composedestinations.Destination
 import com.ramcosta.composedestinations.NavGraphs
 
 @Composable
-fun Destination.TopBar(
+fun TopBar(
+    destination: Destination,
     onDrawerClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
@@ -43,12 +44,12 @@ fun Destination.TopBar(
         }
 
         Text(
-            text = title?.let { stringResource(it) } ?: "",
+            text = destination.title?.let { stringResource(it) } ?: "",
             modifier = Modifier.align(Alignment.Center),
             color = Color.White
         )
 
-        if (!NavGraphs.settings.destinations.containsValue(this@TopBar)) {
+        if (!NavGraphs.settings.destinations.containsValue(destination)) {
             IconButton(
                 onClick = onSettingsClick,
                 modifier = Modifier.align(Alignment.CenterEnd)

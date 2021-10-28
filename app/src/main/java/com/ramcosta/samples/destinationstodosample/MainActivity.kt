@@ -41,34 +41,41 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             DestinationsTodoSampleTheme {
-                val appState = rememberAppState()
+                val scaffoldState = rememberScaffoldState()
+                val coroutineScope = rememberCoroutineScope()
+                val navController = rememberDestinationsNavController()
 
                 DestinationsSampleScaffold(
-                    scaffoldState = appState.scaffoldState,
-                    navController = appState.navController,
+                    scaffoldState = scaffoldState,
+                    navController = navController,
                     topBar = { destination ->
-                        destination.TopBar(
-                            onDrawerClick = { appState.coroutineScope.launch { appState.scaffoldState.drawerState.open() } },
-                            onSettingsClick = { appState.navController.navigateTo(NavGraphs.settings) }
+                        TopBar(
+                            destination = destination,
+                            onDrawerClick = { coroutineScope.launch { scaffoldState.drawerState.open() } },
+                            onSettingsClick = { navController.navigateTo(NavGraphs.settings) }
                         )
                     },
                     bottomBar = { destination ->
-                        destination.BottomBar()
+                        BottomBar(destination)
                     },
                     drawerContent = { destination ->
                         Drawer(
                             destination = destination,
-                            appState = appState
+                            navController = navController,
+                            coroutineScope = coroutineScope,
+                            scaffoldState = scaffoldState
                         )
                     },
                 ) { paddingValues ->
+                    val drawerController: DrawerController = remember(scaffoldState) { DrawerControllerImpl(scaffoldState.drawerState) }
+
                     DestinationsNavHost(
-                        navController = appState.navController,
+                        navController = navController,
                         startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
                         defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
                         modifier = Modifier.padding(paddingValues),
                         dependenciesContainerBuilder = { destination ->
-                            dependency(appState.drawerController)
+                            dependency(drawerController)
 
                             AddDestinationDependencies(destination)
                         }
@@ -100,8 +107,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun Drawer(
         destination: Destination,
-        appState: DestinationsSampleState
-    ) = with(appState) {
+        navController: NavHostController,
+        coroutineScope: CoroutineScope,
+        scaffoldState: ScaffoldState
+    ) {
         NavGraphs.root.destinations.values
             .sortedBy { if (it == NavGraphs.root.startDestination) 0 else 1 }
             .forEach {
@@ -117,26 +126,5 @@ class MainActivity : ComponentActivity() {
                     }
                 )
             }
-    }
-
-    class DestinationsSampleState(
-        val scaffoldState: ScaffoldState,
-        val coroutineScope: CoroutineScope,
-        val navController: NavHostController,
-        val drawerController: DrawerController,
-    )
-
-    @Composable
-    fun rememberAppState(
-        scaffoldState: ScaffoldState = rememberScaffoldState(),
-        coroutineScope: CoroutineScope = rememberCoroutineScope(),
-        navController: NavHostController = rememberDestinationsNavController(),
-    ): DestinationsSampleState {
-        return DestinationsSampleState(
-            scaffoldState,
-            coroutineScope,
-            navController,
-            remember(scaffoldState) { DrawerControllerImpl(scaffoldState.drawerState) }
-        )
     }
 }
