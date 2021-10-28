@@ -20,11 +20,17 @@ const val ADD_COMPOSABLE_WHEN_ELSE_END = "[ADD_COMPOSABLES_WHEN_ELSE_END]"
 const val ANIMATED_VISIBILITY_TO_CONTENT_START = "[ANIMATED_VISIBILITY_TO_CONTENT_START]"
 const val ANIMATED_VISIBILITY_TO_CONTENT_END = "[ANIMATED_VISIBILITY_TO_CONTENT_END]"
 
-const val START_ACCOMPANIST_NAVIGATION_IMPORTS = "//region accompanist navigation"
-const val END_ACCOMPANIST_NAVIGATION_IMPORTS = "//endregion accompanist navigation"
+const val START_ACCOMPANIST_NAVIGATION_IMPORTS = "//region accompanist navigation imports"
+const val END_ACCOMPANIST_NAVIGATION_IMPORTS = "//endregion accompanist navigation imports"
 
-const val START_ACCOMPANIST_MATERIAL_IMPORTS = "//region accompanist material"
-const val END_ACCOMPANIST_MATERIAL_IMPORTS = "//endregion accompanist material"
+const val START_ACCOMPANIST_MATERIAL_IMPORTS = "//region accompanist material imports"
+const val END_ACCOMPANIST_MATERIAL_IMPORTS = "//endregion accompanist material imports"
+
+const val START_ACCOMPANIST_NAVIGATION = "//region accompanist navigation"
+const val END_ACCOMPANIST_NAVIGATION = "//endregion accompanist navigation"
+
+const val START_ACCOMPANIST_MATERIAL = "//region accompanist material"
+const val END_ACCOMPANIST_MATERIAL = "//endregion accompanist material"
 
 //endregion
 
@@ -50,9 +56,13 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.NavBackStackEntry
+import com.google.accompanist.navigation.animation.composable
 $END_ACCOMPANIST_NAVIGATION_IMPORTS
 $START_ACCOMPANIST_MATERIAL_IMPORTS
+import androidx.compose.foundation.layout.ColumnScope
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.bottomSheet
 $END_ACCOMPANIST_MATERIAL_IMPORTS
 
 //region NavHost
@@ -162,9 +172,10 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun NavGraphBuilder.addComposable(
         destination.Content(
             navController,
             navBackStackEntry,
-            { dependenciesContainerBuilder(destination)$ANIMATED_VISIBILITY_TO_CONTENT_START.apply {
-                dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)
-            }$ANIMATED_VISIBILITY_TO_CONTENT_END }
+            {$ANIMATED_VISIBILITY_TO_CONTENT_START 
+                dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)$ANIMATED_VISIBILITY_TO_CONTENT_END
+                dependenciesContainerBuilder(destination)
+            }
         )
     }
 }
@@ -199,5 +210,58 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun addNavigation(): NavGraphBuilder.($CO
         }
     }
 }
+
+$START_ACCOMPANIST_NAVIGATION
+@ExperimentalAnimationApi
+private fun NavGraphBuilder.addAnimatedComposable(
+    animatedStyle: AnimatedDestinationStyle,
+    destination: Destination,
+    navController: NavHostController,
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
+) = with(animatedStyle) {
+    composable(
+        route = destination.route,
+        arguments = destination.arguments,
+        deepLinks = destination.deepLinks,
+        enterTransition = { i, t -> enterTransition(i.navDestination, t.navDestination) },
+        exitTransition = { i, t -> exitTransition(i.navDestination, t.navDestination) },
+        popEnterTransition = { i, t -> popEnterTransition(i.navDestination, t.navDestination) },
+        popExitTransition = { i, t -> popExitTransition(i.navDestination, t.navDestination) }
+    ) { navBackStackEntry ->
+        destination.Content(
+            navController,
+            navBackStackEntry,
+            {
+                dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)
+                dependenciesContainerBuilder(destination)
+            }
+        )
+    }
+}
+$END_ACCOMPANIST_NAVIGATION
+
+$START_ACCOMPANIST_MATERIAL
+@ExperimentalMaterialNavigationApi
+private fun NavGraphBuilder.addBottomSheetComposable(
+    destination: $GENERATED_DESTINATION,
+    navController: NavHostController,
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
+) {
+    bottomSheet(
+        destination.route,
+        destination.arguments,
+        destination.deepLinks
+    ) { navBackStackEntry ->
+        destination.Content(
+            navController,
+            navBackStackEntry,
+            {
+                dependency<$COLUMN_SCOPE_SIMPLE_NAME>(this@bottomSheet)
+                dependenciesContainerBuilder(destination)
+            }
+        )
+    }
+}
+$END_ACCOMPANIST_MATERIAL
 //endregion
 """.trimIndent()

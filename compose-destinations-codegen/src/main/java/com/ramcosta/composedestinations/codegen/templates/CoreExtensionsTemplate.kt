@@ -75,6 +75,7 @@ data class $GENERATED_NAV_GRAPH(
 
 /**
  * Finds the destination correspondent to this [NavBackStackEntry], null if none is found
+ * or if no route is set in this back stack entry's destination.
  */
 val NavBackStackEntry.navDestination: $GENERATED_DESTINATION?
     get() {

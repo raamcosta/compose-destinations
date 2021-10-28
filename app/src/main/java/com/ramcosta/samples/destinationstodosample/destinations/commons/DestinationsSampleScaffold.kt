@@ -47,7 +47,7 @@ fun DestinationsSampleScaffold(
             scaffoldState = scaffoldState,
             topBar = { topBar(destination) },
             bottomBar = { bottomBar(destination) },
-            drawerContent = { drawerContent.invoke(this, destination) },
+            drawerContent = { drawerContent(destination) },
             content = content
         )
     }

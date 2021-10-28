@@ -18,33 +18,6 @@ import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.DestinationStyle
 import $PACKAGE_NAME.navigation.dependency
 
-@ExperimentalAnimationApi
-fun NavGraphBuilder.addAnimatedComposable(
-    animatedStyle: AnimatedDestinationStyle,
-    destination: Destination,
-    navController: NavHostController,
-    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
-) = with(animatedStyle) {
-    composable(
-        route = destination.route,
-        arguments = destination.arguments,
-        deepLinks = destination.deepLinks,
-        enterTransition = { i, t -> enterTransition(i.navDestination, t.navDestination) },
-        exitTransition = { i, t -> exitTransition(i.navDestination, t.navDestination) },
-        popEnterTransition = { i, t -> popEnterTransition(i.navDestination, t.navDestination) },
-        popExitTransition = { i, t -> popExitTransition(i.navDestination, t.navDestination) }
-    ) { navBackStackEntry ->
-        destination.Content(
-            navController,
-            navBackStackEntry,
-            {
-                dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)
-                dependenciesContainerBuilder.invoke(this, destination)
-            }
-        )
-    }
-}
-
 fun interface DestinationEnterTransition {
     @ExperimentalAnimationApi
     fun AnimatedContentScope<String>.enter(initial: Destination?, target: Destination?) : EnterTransition

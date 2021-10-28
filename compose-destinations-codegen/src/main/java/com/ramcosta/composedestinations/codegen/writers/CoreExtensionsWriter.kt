@@ -1,10 +1,12 @@
 package com.ramcosta.composedestinations.codegen.writers
 
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.CORE_ANIMATION_EXTENSIONS
+import com.ramcosta.composedestinations.codegen.commons.CORE_EXTENSIONS
+import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
 import com.ramcosta.composedestinations.codegen.templates.coreAnimationsExtensionsTemplate
-import com.ramcosta.composedestinations.codegen.templates.coreBottomSheetExtensionsTemplate
 import com.ramcosta.composedestinations.codegen.templates.coreExtensionsTemplate
 import java.io.OutputStream
 
@@ -32,17 +34,6 @@ class CoreExtensionsWriter(
             animationsExtension += coreAnimationsExtensionsTemplate
 
             animationsExtension.close()
-        }
-
-        if (availableDependencies.accompanistMaterial) {
-            val bottomSheetExtension: OutputStream = codeGenerator.makeFile(
-                packageName = PACKAGE_NAME,
-                name = CORE_BOTTOM_SHEET_EXTENSIONS
-            )
-
-            bottomSheetExtension += coreBottomSheetExtensionsTemplate
-
-            bottomSheetExtension.close()
         }
     }
 }
