@@ -4,8 +4,12 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +39,7 @@ fun AnimatedVisibilityScope.ProfileScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Green)
+            .background(Color(0xFFFCDEC0))
     ) {
         Column(
             modifier = Modifier.align(Alignment.Center),
@@ -59,12 +63,21 @@ fun AnimatedVisibilityScope.ProfileScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
+            IconButton(
                 onClick = {
                     uiEvents.onLikeButtonClick()
                 },
+                modifier = Modifier
+                    .background(
+                        color = Color.Red,
+                        shape = RoundedCornerShape(50)
+                    )
             ) {
-                Text(text = "like")
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = "like",
+                    tint = Color.White
+                )
             }
         }
     }
