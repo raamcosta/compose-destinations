@@ -3,6 +3,7 @@
     package="com.ramcosta.samples.destinationstodosample">
 
     <application
+        android:name=".DestinationsTodoSampleApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

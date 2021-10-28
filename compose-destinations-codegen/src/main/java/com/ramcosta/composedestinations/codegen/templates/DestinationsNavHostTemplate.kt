@@ -44,6 +44,7 @@ import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.DestinationStyle
 import $PACKAGE_NAME.spec.NavGraphSpec
 import $PACKAGE_NAME.navigation.DependenciesContainerBuilder
+import $PACKAGE_NAME.navigation.dependency
 $START_ACCOMPANIST_NAVIGATION_IMPORTS
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -162,7 +163,7 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun NavGraphBuilder.addComposable(
             navController,
             navBackStackEntry,
             { dependenciesContainerBuilder(destination)$ANIMATED_VISIBILITY_TO_CONTENT_START.apply {
-                add(this@composable, asType = $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java)
+                dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)
             }$ANIMATED_VISIBILITY_TO_CONTENT_END }
         )
     }

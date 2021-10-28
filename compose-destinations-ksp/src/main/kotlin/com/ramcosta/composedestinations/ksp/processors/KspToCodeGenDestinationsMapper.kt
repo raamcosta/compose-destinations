@@ -20,25 +20,11 @@ class KspToCodeGenDestinationsMapper(
     private val sourceFilesById = mutableMapOf<String, KSFile?>()
 
     fun map(composableDestinations: Sequence<KSFunctionDeclaration>): List<Destination> {
-        return composableDestinations.mapToDestinations(
-            onAddedDestination = { ksFunction ->
-                sourceFilesById[ksFunction.containingFile!!.fileName] = ksFunction.containingFile
-            }
-        )
+        return composableDestinations.map { it.toDestination() }.toList()
     }
 
     override fun mapToKSFile(sourceId: String): KSFile? {
         return sourceFilesById[sourceId]
-    }
-
-    private fun Sequence<KSFunctionDeclaration>.mapToDestinations(
-        onAddedDestination: (ksFunction: KSFunctionDeclaration) -> Unit
-    ): List<Destination> {
-        return map { ksFunction ->
-            ksFunction
-                .toDestination()
-                .also { onAddedDestination(ksFunction) }
-        }.toList()
     }
 
     private fun KSFunctionDeclaration.toDestination(): Destination {
@@ -49,8 +35,13 @@ class KspToCodeGenDestinationsMapper(
 
         val cleanRoute = destinationAnnotation.prepareRoute(composableName)
 
+        val navArgsDelegateTypeAndFile = destinationAnnotation.getNavArgsDelegateType(composableName)?.also {
+            sourceFilesById[it.second.fileName] = it.second
+        }
+        sourceFilesById[containingFile!!.fileName] = containingFile
+
         return Destination(
-            sourceIds = listOf(containingFile!!.fileName),
+            sourceIds = listOfNotNull(containingFile!!.fileName, navArgsDelegateTypeAndFile?.second?.fileName),
             name = name,
             qualifiedName = "$PACKAGE_NAME.$name",
             composableName = composableName,
@@ -62,9 +53,35 @@ class KspToCodeGenDestinationsMapper(
             isStart = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
             navGraphRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!,
             composableReceiverSimpleName = extensionReceiver?.toString(),
-            requireOptInAnnotationNames = findAllRequireOptInAnnotations()
+            requireOptInAnnotationNames = findAllRequireOptInAnnotations(),
+            navArgsDelegateType = navArgsDelegateTypeAndFile?.first
         )
     }
+
+    private fun KSAnnotation.getNavArgsDelegateType(
+        composableName: String
+    ): Pair<NavArgsDelegateType?, KSFile>? = kotlin.runCatching {
+        val ksType = findArgumentValue<KSType>(DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT)!!
+
+        val ksClassDeclaration = ksType.declaration as KSClassDeclaration
+        if (ksClassDeclaration.qualifiedName?.asString() == "java.lang.Void") {
+            //Nothing::class (which is the default) maps to Void java class here
+            return null
+        }
+
+        val parameters = ksClassDeclaration.primaryConstructor!!
+            .parameters
+            .map { it.toParameter(composableName) }
+
+        return Pair(
+            NavArgsDelegateType(
+                parameters,
+                ksClassDeclaration.qualifiedName!!.asString(),
+                ksClassDeclaration.simpleName.asString()
+            ),
+            ksClassDeclaration.containingFile!!
+        )
+    }.getOrNull() ?: throw IllegalDestinationsSetup("There was an issue with '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' of composable '$composableName': make sure it is a class with a primary constructor.")
 
     private fun KSAnnotation.getDestinationStyleType(composableName: String): DestinationStyleType {
         val ksStyleType = findArgumentValue<KSType>(DESTINATION_ANNOTATION_STYLE_ARGUMENT)

@@ -16,6 +16,7 @@ import com.google.accompanist.navigation.animation.composable
 import $PACKAGE_NAME.navigation.DependenciesContainerBuilder
 import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.DestinationStyle
+import $PACKAGE_NAME.navigation.dependency
 
 @ExperimentalAnimationApi
 fun NavGraphBuilder.addAnimatedComposable(
@@ -37,7 +38,7 @@ fun NavGraphBuilder.addAnimatedComposable(
             navController,
             navBackStackEntry,
             {
-                add(this@composable, asType = $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME::class.java)
+                dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)
                 dependenciesContainerBuilder.invoke(this, destination)
             }
         )

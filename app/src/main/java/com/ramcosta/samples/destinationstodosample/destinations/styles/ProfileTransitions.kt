@@ -4,7 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import com.ramcosta.composedestinations.AnimatedDestinationStyle
 import com.ramcosta.composedestinations.Destination
-import com.ramcosta.composedestinations.GreetingDestination
+import com.ramcosta.composedestinations.GreetingScreenDestination
 
 @OptIn(ExperimentalAnimationApi::class)
 object ProfileTransitions : AnimatedDestinationStyle {
@@ -15,7 +15,7 @@ object ProfileTransitions : AnimatedDestinationStyle {
     ): EnterTransition? {
 
         return when (initial) {
-            GreetingDestination ->
+            GreetingScreenDestination ->
                 slideInHorizontally(
                     initialOffsetX = { 1000 },
                     animationSpec = tween(700)
@@ -37,7 +37,7 @@ object ProfileTransitions : AnimatedDestinationStyle {
     ): EnterTransition? {
 
         return when (initial) {
-            GreetingDestination ->
+            GreetingScreenDestination ->
                 slideInHorizontally(
                     initialOffsetX = { -1000 },
                     animationSpec = tween(700)
@@ -52,7 +52,7 @@ object ProfileTransitions : AnimatedDestinationStyle {
     ): ExitTransition? {
 
         return when (target) {
-            GreetingDestination ->
+            GreetingScreenDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { 1000 },
                     animationSpec = tween(700)

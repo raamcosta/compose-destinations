@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations
+package com.ramcosta.samples.destinationstodosample.destinations.greeting
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -13,14 +13,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.GoToProfileConfirmationDestination
-import com.ramcosta.composedestinations.GreetingDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerController
 import com.ramcosta.samples.destinationstodosample.destinations.styles.GreetingTransitions
-import com.ramcosta.samples.destinationstodosample.requireTitle
-import com.ramcosta.samples.destinationstodosample.vms.GreetingUiEvents
-import com.ramcosta.samples.destinationstodosample.vms.GreetingUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import com.ramcosta.samples.destinationstodosample.R
@@ -31,7 +27,7 @@ import com.ramcosta.samples.destinationstodosample.R
     style = GreetingTransitions::class
 )
 @Composable
-fun Greeting(
+fun GreetingScreen(
     navigator: DestinationsNavigator,
     drawerController: DrawerController,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -44,10 +40,13 @@ fun Greeting(
             .background(Color.Cyan)
     ) {
         Column(
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier
+                .align(Alignment.Center)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(id = GreetingDestination.requireTitle),
+                text = uiState.greeting + " Screen!",
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
@@ -55,11 +54,11 @@ fun Greeting(
 
             Button(
                 onClick = {
-                    uiEvents.onCounterButtonClicked()
+                    uiEvents.onNewGreetingClicked()
                 }
             ) {
                 Text(
-                    text = stringResource(R.string.counter, uiState.counter.toString())
+                    text = stringResource(R.string.new_greeting)
                 )
             }
 
@@ -70,7 +69,7 @@ fun Greeting(
                     navigator.navigate(GoToProfileConfirmationDestination)
                 }
             ) {
-                Text(text = "GO TO PROFILE")
+                Text(text = stringResource(R.string.go_to_profile))
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -80,7 +79,7 @@ fun Greeting(
                     coroutineScope.launch { drawerController.open() }
                 }
             ) {
-                Text(text = "OPEN DRAWER")
+                Text(text = stringResource(R.string.open_drawer))
             }
         }
     }

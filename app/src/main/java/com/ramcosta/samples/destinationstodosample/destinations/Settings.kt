@@ -19,7 +19,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.destinations.styles.SettingsTransitions
-import com.ramcosta.samples.destinationstodosample.requireTitle
+import com.ramcosta.samples.destinationstodosample.destinations.commons.requireTitle
 
 const val SETTINGS_ROUTE = "settings/main"
 const val SETTINGS_NAV_GRAPH = "settings"

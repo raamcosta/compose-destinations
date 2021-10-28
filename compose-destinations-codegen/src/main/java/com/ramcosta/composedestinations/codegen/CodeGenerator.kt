@@ -24,12 +24,11 @@ class CodeGenerator(
     fun generate(destinations: List<Destination>) {
         initialValidations(destinations)
 
-        CoreExtensionsWriter(codeGenerator, availableDependencies).write()
-
         val generatedDestinations = DestinationsWriter(codeGenerator, logger, availableDependencies).write(destinations)
 
         NavGraphsObjectWriter(codeGenerator, logger).write(generatedDestinations)
 
+        CoreExtensionsWriter(codeGenerator, availableDependencies).write()
         DestinationsNavHostWriter(codeGenerator, logger, availableDependencies).write()
     }
 

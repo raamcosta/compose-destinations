@@ -25,6 +25,7 @@ import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import $PACKAGE_NAME.spec.DestinationStyle
 import $PACKAGE_NAME.navigation.DependenciesContainerBuilder
+import $PACKAGE_NAME.navigation.dependency
 
 @ExperimentalMaterialNavigationApi
 fun NavGraphBuilder.addBottomSheetComposable(
@@ -41,7 +42,7 @@ fun NavGraphBuilder.addBottomSheetComposable(
             navController,
             navBackStackEntry,
             {
-                add(this@bottomSheet, asType = $COLUMN_SCOPE_SIMPLE_NAME::class.java)
+                dependency<$COLUMN_SCOPE_SIMPLE_NAME>(this@bottomSheet)
                 dependenciesContainerBuilder.invoke(this, destination)
             }
         )

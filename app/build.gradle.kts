@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("com.google.devtools.ksp") version Versions.ksp
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 kotlin {
@@ -63,6 +65,10 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
 
     implementation(project(mapOf("path" to ":compose-destinations")))
@@ -84,5 +90,8 @@ dependencies {
     with(Deps.AndroidX) {
         implementation(lifecycleRuntimeKtx)
         implementation(activityCompose)
+        implementation(hilt)
+        implementation(hiltComposeNavigation)
+        kapt(hiltKapt)
     }
 }

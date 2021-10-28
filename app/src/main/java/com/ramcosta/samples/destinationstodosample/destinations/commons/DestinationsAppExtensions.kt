@@ -1,15 +1,16 @@
-package com.ramcosta.samples.destinationstodosample
+package com.ramcosta.samples.destinationstodosample.destinations.commons
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.*
+import com.ramcosta.samples.destinationstodosample.R
 
 @Composable
 fun Destination.DrawerContent(
@@ -18,7 +19,7 @@ fun Destination.DrawerContent(
 ) {
     when (this) {
         FeedDestination,
-        GreetingDestination -> {
+        GreetingScreenDestination -> {
             Text(
                 text = stringResource(id = requireTitle),
                 modifier = Modifier
@@ -47,7 +48,7 @@ val Destination.requireTitle
 val Destination.title
     get(): Int? {
         return when (this) {
-            GreetingDestination -> R.string.greeting_screen
+            GreetingScreenDestination -> R.string.greeting_screen
             ProfileScreenDestination -> R.string.profile_screen
             SettingsDestination -> R.string.settings_screen
             FeedDestination -> R.string.feed_screen

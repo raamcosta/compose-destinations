@@ -8,43 +8,48 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.*
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigateTo
-import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerController
-import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerControllerImpl
+import com.ramcosta.samples.destinationstodosample.destinations.commons.*
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
-import com.ramcosta.samples.destinationstodosample.vms.GreetingUiEvents
-import com.ramcosta.samples.destinationstodosample.vms.GreetingUiState
-import com.ramcosta.samples.destinationstodosample.vms.GreetingViewModel
+import com.ramcosta.samples.destinationstodosample.destinations.greeting.GreetingUiEvents
+import com.ramcosta.samples.destinationstodosample.destinations.greeting.GreetingUiState
+import com.ramcosta.samples.destinationstodosample.destinations.greeting.GreetingViewModel
+import com.ramcosta.samples.destinationstodosample.destinations.profile.ProfileUiEvents
+import com.ramcosta.samples.destinationstodosample.destinations.profile.ProfileUiState
+import com.ramcosta.samples.destinationstodosample.destinations.profile.ProfileViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             DestinationsTodoSampleTheme {
-                val scaffoldState = rememberScaffoldState()
-                val coroutineScope = rememberCoroutineScope()
-                val navController = rememberDestinationsNavController()
+                val appState = rememberAppState()
 
                 DestinationsSampleScaffold(
-                    scaffoldState = scaffoldState,
-                    navController = navController,
+                    scaffoldState = appState.scaffoldState,
+                    navController = appState.navController,
                     topBar = { destination ->
                         destination.TopBar(
-                            onDrawerClick = { coroutineScope.launch { scaffoldState.drawerState.open() } },
-                            onSettingsClick = { navController.navigateTo(NavGraphs.settings) }
+                            onDrawerClick = { appState.coroutineScope.launch { appState.scaffoldState.drawerState.open() } },
+                            onSettingsClick = { appState.navController.navigateTo(NavGraphs.settings) }
                         )
                     },
                     bottomBar = { destination ->
@@ -53,19 +58,17 @@ class MainActivity : ComponentActivity() {
                     drawerContent = { destination ->
                         Drawer(
                             destination = destination,
-                            navController = navController,
-                            coroutineScope = coroutineScope,
-                            scaffoldState = scaffoldState
+                            appState = appState
                         )
                     },
                 ) { paddingValues ->
                     DestinationsNavHost(
-                        navController = navController,
+                        navController = appState.navController,
                         startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
                         defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
                         modifier = Modifier.padding(paddingValues),
                         dependenciesContainerBuilder = { destination ->
-                            add(DrawerControllerImpl(scaffoldState.drawerState), asType = DrawerController::class.java)
+                            dependency(appState.drawerController)
 
                             AddDestinationDependencies(destination)
                         }
@@ -78,10 +81,16 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun DependenciesContainerBuilder.AddDestinationDependencies(destination: Destination) {
         when (destination) {
-            GreetingDestination -> {
+            GreetingScreenDestination -> {
                 val vm = viewModel<GreetingViewModel>()
-                add(vm, asType = GreetingUiState::class.java)
-                add(vm, asType = GreetingUiEvents::class.java)
+                dependency<GreetingUiState>(vm)
+                dependency<GreetingUiEvents>(vm)
+            }
+
+            ProfileScreenDestination -> {
+                val vm = hiltViewModel<ProfileViewModel>()
+                dependency<ProfileUiState>(vm)
+                dependency<ProfileUiEvents>(vm)
             }
 
             else -> Unit /*no op*/
@@ -91,10 +100,8 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun Drawer(
         destination: Destination,
-        navController: NavHostController,
-        coroutineScope: CoroutineScope,
-        scaffoldState: ScaffoldState
-    ) {
+        appState: DestinationsSampleState
+    ) = with(appState) {
         NavGraphs.root.destinations.values
             .sortedBy { if (it == NavGraphs.root.startDestination) 0 else 1 }
             .forEach {
@@ -110,5 +117,26 @@ class MainActivity : ComponentActivity() {
                     }
                 )
             }
+    }
+
+    class DestinationsSampleState(
+        val scaffoldState: ScaffoldState,
+        val coroutineScope: CoroutineScope,
+        val navController: NavHostController,
+        val drawerController: DrawerController,
+    )
+
+    @Composable
+    fun rememberAppState(
+        scaffoldState: ScaffoldState = rememberScaffoldState(),
+        coroutineScope: CoroutineScope = rememberCoroutineScope(),
+        navController: NavHostController = rememberDestinationsNavController(),
+    ): DestinationsSampleState {
+        return DestinationsSampleState(
+            scaffoldState,
+            coroutineScope,
+            navController,
+            remember(scaffoldState) { DrawerControllerImpl(scaffoldState.drawerState) }
+        )
     }
 }

@@ -19,6 +19,11 @@ import kotlin.reflect.KClass
  * @property navGraph route of the navigation graph this destination is a part of.
  * `"root"` is used by default. If this destination should be part of a nested nav graph, then
  * pass the nav graph's route.
+ * @property navArgsDelegate class with a primary constructor where all navigation arguments are
+ * to be defined. Useful when the arguments are not needed in this Composable or to simplify
+ * the Composable function signature when it has a lot of navigation arguments (which should be rare).
+ * If set, the generated `Destination` class will have `argsFrom` methods that accept a `NavBackStackEntry`
+ * or a `SavedStateHandle` (useful inside a ViewModel) and return an instance of this class.
  * @property deepLinks array of [DeepLink] which can be used to navigate to this destination
  * @property style class of a [DestinationStyle] subclass which is used to define the style of this destination
  */
@@ -28,6 +33,7 @@ annotation class Destination(
     val route: String = COMPOSABLE_NAME,
     val start: Boolean = false,
     val navGraph: String = ROOT_NAV_GRAPH_ROUTE,
+    val navArgsDelegate: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
     val style: KClass<out DestinationStyle> = DestinationStyle.Default::class
 ) {

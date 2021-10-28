@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample
+package com.ramcosta.samples.destinationstodosample.destinations.commons
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

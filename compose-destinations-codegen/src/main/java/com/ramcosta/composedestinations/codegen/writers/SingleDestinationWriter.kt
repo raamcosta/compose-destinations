@@ -15,7 +15,7 @@ class SingleDestinationWriter(
 ) {
 
     private val additionalImports = mutableSetOf<String>()
-    private val navArgs = destination.parameters.filter { it.type.toNavTypeCodeOrNull() != null }
+    private val navArgs = getNavArgs()
 
     fun write(): GeneratedDestination = with(destination) {
         if (isStart && navArgs.any { it.isMandatory }) {
@@ -38,6 +38,7 @@ class SingleDestinationWriter(
             .replace(DESTINATION_STYLE, destinationStyle())
             .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
             .replace(WITH_ARGS_METHOD, withArgsMethod())
+            .replace(ARGS_FROM_METHODS, argsFromFunctions())
             .replace(ADDITIONAL_IMPORTS, additionalImports())
 
         outputStream.close()
@@ -49,8 +50,23 @@ class SingleDestinationWriter(
             isStartDestination = isStart,
             navGraphRoute = navGraphRoute,
             requireOptInAnnotationNames = baseOptInAnnotations().filter { !it.isOptedIn }.map { it.annotationName }.toList(),
-            isBottomSheetStyle = destination.destinationStyleType is DestinationStyleType.BottomSheet
         )
+    }
+
+    private fun getNavArgs(): List<Parameter> {
+        return if (destination.navArgsDelegateType == null) {
+            destination.parameters.filter { it.type.toNavTypeCodeOrNull() != null }
+        } else {
+            if (destination.navArgsDelegateType.navArgs.any { it.type.toNavTypeCodeOrNull() == null }) {
+                throw IllegalDestinationsSetup("Composable ${destination.composableName}: '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types.")
+            }
+
+            if (destination.parameters.any { it.type.toNavTypeCodeOrNull() != null }) {
+                throw IllegalDestinationsSetup("Composable ${destination.composableName}: annotated function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class.")
+            }
+
+            destination.navArgsDelegateType.navArgs
+        }
     }
 
     private fun baseOptInAnnotations(): List<OptInAnnotation> {
@@ -157,6 +173,71 @@ class SingleDestinationWriter(
             .replace("%s1", args.toString())
             .replace("%s2", replaceUnknownOrNullableArgs.toString())
             .replace("%s3", replace.toString())
+    }
+
+    private fun argsFromFunctions(): String {
+        return argsFromNavBackStackEntry() + "\n" + argsFromSavedStateHandle()
+    }
+
+    private fun argsFromNavBackStackEntry(): String = with(destination) {
+        if (navArgsDelegateType == null) {
+            return ""
+        }
+
+        additionalImports.add(navArgsDelegateType.qualifiedName)
+
+        val code = StringBuilder()
+        code += """
+                
+           |fun argsFrom(navBackStackEntry: $NAV_BACK_STACK_ENTRY_SIMPLE_NAME): ${navArgsDelegateType.simpleName} {
+           |    return ${navArgsDelegateType.simpleName}(%s2
+           |    )
+           |}
+            """.trimMargin()
+
+        val arguments = StringBuilder()
+        navArgs.forEach {
+            arguments += "\n\t\t${it.name} = "
+            arguments += DestinationContentFunctionWriter.resolveNavArg(destination,
+                additionalImports,
+                it)
+            arguments += ","
+        }
+
+        return code.toString()
+            .replace("%s2", arguments.toString())
+            .prependIndent("\t")
+    }
+
+    private fun argsFromSavedStateHandle(): String = with(destination) {
+        if (navArgsDelegateType == null) {
+            return ""
+        }
+
+        additionalImports.add(navArgsDelegateType.qualifiedName)
+        additionalImports.add(SAVED_STATE_HANDLE_QUALIFIED_NAME)
+
+        val code = StringBuilder()
+        code += """
+                
+           |fun argsFrom(savedStateHandle: $SAVED_STATE_HANDLE_SIMPLE_NAME): ${navArgsDelegateType.simpleName} {
+           |    return ${navArgsDelegateType.simpleName}(%s2
+           |    )
+           |}
+            """.trimMargin()
+
+        val arguments = StringBuilder()
+        navArgs.forEach {
+            arguments += "\n\t\t${it.name} = "
+            arguments += DestinationContentFunctionWriter.resolveNavArgFromSavedStateHandle(destination,
+                additionalImports,
+                it)
+            arguments += ","
+        }
+
+        return code.toString()
+            .replace("%s2", arguments.toString())
+            .prependIndent("\t")
     }
 
     private fun defaultValueForWithArgsFunction(it: Parameter): String {
