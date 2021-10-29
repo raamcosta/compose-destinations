@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.*
@@ -74,10 +75,10 @@ class MainActivity : ComponentActivity() {
                         startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
                         defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
                         modifier = Modifier.padding(paddingValues),
-                        dependenciesContainerBuilder = { destination ->
+                        dependenciesContainerBuilder = { navBackStackEntry ->
                             dependency(drawerController)
 
-                            AddDestinationDependencies(destination)
+                            AddDestinationDependencies(navBackStackEntry)
                         }
                     )
                 }
@@ -86,21 +87,23 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun DependenciesContainerBuilder.AddDestinationDependencies(destination: Destination) {
-        when (destination) {
-            GreetingScreenDestination -> {
-                val vm = viewModel<GreetingViewModel>()
-                dependency<GreetingUiState>(vm)
-                dependency<GreetingUiEvents>(vm)
-            }
+    private fun DependenciesContainerBuilder.AddDestinationDependencies(navBackStackEntry: NavBackStackEntry) {
+        navBackStackEntry.navDestination?.let {
+            when (it) {
+                GreetingScreenDestination -> {
+                    val vm = viewModel<GreetingViewModel>()
+                    dependency<GreetingUiState>(vm)
+                    dependency<GreetingUiEvents>(vm)
+                }
 
-            ProfileScreenDestination -> {
-                val vm = hiltViewModel<ProfileViewModel>()
-                dependency<ProfileUiState>(vm)
-                dependency<ProfileUiEvents>(vm)
-            }
+                ProfileScreenDestination -> {
+                    val vm = hiltViewModel<ProfileViewModel>()
+                    dependency<ProfileUiState>(vm)
+                    dependency<ProfileUiEvents>(vm)
+                }
 
-            else -> Unit /*no op*/
+                else -> Unit /*no op*/
+            }
         }
     }
 

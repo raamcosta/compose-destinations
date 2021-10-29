@@ -88,7 +88,7 @@ fun $DESTINATIONS_NAV_HOST(
     startDestination: $GENERATED_DESTINATION = navGraph.startDestination,$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER
     navController: NavHostController = rememberDestinationsNavController(),
     modifier: Modifier = Modifier,
-    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit = {}
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit = {}
 ) {
     $NAV_HOST_METHOD_NAME(
         navController = navController,
@@ -124,7 +124,7 @@ fun rememberDestinationsNavController(
 //region internals
 ${EXPERIMENTAL_API_PLACEHOLDER}private fun addComposable(
     navController: NavHostController,
-    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
 ): NavGraphBuilder.($CORE_DESTINATION_SPEC) -> Unit {
     return { destination ->
         destination as $GENERATED_DESTINATION
@@ -172,7 +172,7 @@ $ADD_COMPOSABLE_WHEN_ELSE_END        }
 ${EXPERIMENTAL_API_PLACEHOLDER}private fun NavGraphBuilder.addComposable(
     destination: $GENERATED_DESTINATION,
     navController: NavHostController,
-    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
 ) {
     composable(
         route = destination.route,
@@ -184,7 +184,7 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun NavGraphBuilder.addComposable(
             navBackStackEntry,
             {$ANIMATED_VISIBILITY_TO_CONTENT_START 
                 dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)$ANIMATED_VISIBILITY_TO_CONTENT_END
-                dependenciesContainerBuilder(destination)
+                dependenciesContainerBuilder(navBackStackEntry)
             }
         )
     }
@@ -194,7 +194,7 @@ private fun NavGraphBuilder.addDialogComposable(
     dialogStyle: DestinationStyle.Dialog,
     destination: $GENERATED_DESTINATION,
     navController: NavHostController,
-    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
 ) {
     dialog(
         destination.route,
@@ -205,7 +205,7 @@ private fun NavGraphBuilder.addDialogComposable(
         destination.Content(
             navController = navController,
             navBackStackEntry = it,
-            dependenciesContainerBuilder = { dependenciesContainerBuilder(destination) }
+            dependenciesContainerBuilder = { dependenciesContainerBuilder(it) }
         )
     }
 }
@@ -227,7 +227,7 @@ private fun NavGraphBuilder.addAnimatedComposable(
     animatedStyle: AnimatedDestinationStyle,
     destination: Destination,
     navController: NavHostController,
-    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
 ) = with(animatedStyle) {
     composable(
         route = destination.route,
@@ -243,7 +243,7 @@ private fun NavGraphBuilder.addAnimatedComposable(
             navBackStackEntry,
             {
                 dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)
-                dependenciesContainerBuilder(destination)
+                dependenciesContainerBuilder(navBackStackEntry)
             }
         )
     }
@@ -255,7 +255,7 @@ $START_ACCOMPANIST_MATERIAL
 private fun NavGraphBuilder.addBottomSheetComposable(
     destination: $GENERATED_DESTINATION,
     navController: NavHostController,
-    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.($GENERATED_DESTINATION) -> Unit
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
 ) {
     bottomSheet(
         destination.route,
@@ -267,7 +267,7 @@ private fun NavGraphBuilder.addBottomSheetComposable(
             navBackStackEntry,
             {
                 dependency<$COLUMN_SCOPE_SIMPLE_NAME>(this@bottomSheet)
-                dependenciesContainerBuilder(destination)
+                dependenciesContainerBuilder(navBackStackEntry)
             }
         )
     }
