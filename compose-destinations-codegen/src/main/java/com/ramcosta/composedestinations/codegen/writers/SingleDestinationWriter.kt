@@ -176,6 +176,10 @@ class SingleDestinationWriter(
     }
 
     private fun argsFromFunctions(): String {
+        if (destination.navArgsDelegateType == null) {
+            return ""
+        }
+
         return argsFromNavBackStackEntry() + "\n" + argsFromSavedStateHandle()
     }
 

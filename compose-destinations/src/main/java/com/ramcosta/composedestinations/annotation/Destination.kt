@@ -12,13 +12,13 @@ import kotlin.reflect.KClass
  * A global `NavGraphs` object with all these destinations and their nav graphs
  * is generated.
  * `DestinationsNavHost` will also be generated. It is a `NavHost` wrapper
- * which will include these destinations.
+ * which will include these destinations automatically.
  *
  * @property route main route of this destination (by default, the name of the Composable function)
  * @property start `true` if this destination is the start destination of the navigation graph
  * @property navGraph route of the navigation graph this destination is a part of.
  * `"root"` is used by default. If this destination should be part of a nested nav graph, then
- * pass the nav graph's route.
+ * pass that nav graph's route.
  * @property navArgsDelegate class with a primary constructor where all navigation arguments are
  * to be defined. Useful when the arguments are not needed in this Composable or to simplify
  * the Composable function signature when it has a lot of navigation arguments (which should be rare).
@@ -38,7 +38,7 @@ annotation class Destination(
     val style: KClass<out DestinationStyle> = DestinationStyle.Default::class
 ) {
     companion object {
-        const val COMPOSABLE_NAME = "@composable-name-route"
+        const val COMPOSABLE_NAME = "@ramcosta.destinations.composable-name-route@"
         const val ROOT_NAV_GRAPH_ROUTE = "root"
     }
 }

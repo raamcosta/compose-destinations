@@ -7,27 +7,15 @@ package $PACKAGE_NAME
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.composable
-import $PACKAGE_NAME.navigation.DependenciesContainerBuilder
-import $PACKAGE_NAME.spec.DestinationSpec
-import $PACKAGE_NAME.spec.DestinationStyle
-import $PACKAGE_NAME.navigation.dependency
 
-fun interface DestinationEnterTransition {
-    @ExperimentalAnimationApi
-    fun AnimatedContentScope<String>.enter(initial: Destination?, target: Destination?) : EnterTransition
-}
-
-fun interface DestinationExitTransition {
-    @ExperimentalAnimationApi
-    fun AnimatedContentScope<String>.exit(initial: Destination?, target: Destination?) : ExitTransition
-}
-
+/**
+ * Class that can be used to define the default animation for all Destinations with no
+ * specific style set.
+ * You can create your own and pass it to the `DestinationsNavHost` call.
+ *
+ * @see [com.google.accompanist.navigation.animation.AnimatedNavHost] for a parameters explanation
+ */
 @ExperimentalAnimationApi
 class DefaultAnimationParams(
     val contentAlignment: Alignment = Alignment.Center,
@@ -46,4 +34,15 @@ class DefaultAnimationParams(
         }
     }
 }
+
+fun interface DestinationEnterTransition {
+    @ExperimentalAnimationApi
+    fun AnimatedContentScope<String>.enter(initial: Destination?, target: Destination?) : EnterTransition
+}
+
+fun interface DestinationExitTransition {
+    @ExperimentalAnimationApi
+    fun AnimatedContentScope<String>.exit(initial: Destination?, target: Destination?) : ExitTransition
+}
+
 """.trimIndent()

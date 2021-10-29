@@ -11,6 +11,7 @@ const val ANIMATED_NAV_HOST_CALL_PARAMETERS_END = "[ANIMATED_NAV_HOST_CALL_PARAM
 const val INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START = "[INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_START]"
 const val INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END = "[INNER_NAV_HOST_CALL_ANIMATED_PARAMETERS_END]"
 const val NAV_HOST_METHOD_NAME = "[NAV_HOST_METHOD_NAME]"
+const val NAV_HOST_METHOD_QUALIFIED_NAME = "[NAV_HOST_METHOD_QUALIFIED_NAME]"
 const val ADD_ANIMATED_COMPOSABLE_START = "[ADD_ANIMATED_COMPOSABLE_START]"
 const val ADD_ANIMATED_COMPOSABLE_END = "[ADD_ANIMATED_COMPOSABLE_END]"
 const val ADD_BOTTOM_SHEET_COMPOSABLE_START = "[ADD_BOTTOM_SHEET_COMPOSABLE_START]"
@@ -67,10 +68,19 @@ $END_ACCOMPANIST_MATERIAL_IMPORTS
 
 //region NavHost
 /**
- * Like [androidx.navigation.compose.NavHost] but uses composables annotated with
- * `@$DESTINATION_ANNOTATION` to pass in as the destinations available.
+ * Like [$NAV_HOST_METHOD_QUALIFIED_NAME] but includes the destinations of [navGraph].
+ * Composables annotated with `@$DESTINATION_ANNOTATION` will belong to a [$GENERATED_NAV_GRAPH] inside [$GENERATED_NAV_GRAPHS_OBJECT].
  *
- * @see [androidx.navigation.compose.NavHost]
+ * @see [$NAV_HOST_METHOD_QUALIFIED_NAME]
+ *
+ * @param navGraph [$GENERATED_NAV_GRAPHS_OBJECT] with the destinations to add to NavHost. By default,
+ * it will be the 'root' one which is the one with all annotated destinations
+ * that don't specify other 'navGraph'
+ * @param startDestination the start destination to use
+ * @param navController [NavHostController]
+ * @param modifier [Modifier]
+ * @param dependenciesContainerBuilder lambda invoked when a destination gets navigated to. It allows
+ * the caller to contribute certain dependencies that the destination can use.
  */
 $EXPERIMENTAL_API_PLACEHOLDER@Composable
 fun $DESTINATIONS_NAV_HOST(

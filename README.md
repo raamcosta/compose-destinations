@@ -23,7 +23,7 @@ For a deeper look into all the features, check our [wiki](https://github.com/raa
 fun ProfileScreen() { /*...*/ }
 ```
 
-2. Simply add navigation arguments to the function declarations:
+2. Add navigation arguments to function declarations:
 
 ```kotlin
 @Destination
@@ -32,9 +32,14 @@ fun ProfileScreen(
     id: Int
 ) { /*...*/ }
 ```
-Default values are also allowed. They will become optional to navigate to this destination.
+Default values are allowed. Nullable values are also available for String values (limitation 
+from Compose Navigation).
+Both will become optional to navigate to this destination.
 
-3. Use the generated `[ComposableName]Destination.withArgs` method to navigate to them:
+There is an alternative way to define the destination arguments in case you don't need to use them
+inside the Composable (as is likely the case when using ViewModel). Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Navigation#defining-navigation-arguments).
+
+3. Use the generated `[ComposableName]Destination.withArgs` method to navigate to it:
 
 ```kotlin
 @Destination
@@ -46,16 +51,18 @@ fun SomeOtherScreen(
     navigator.navigate(ProfileDestination.withArgs(id = 7))
 }
 ```
-You may need to build the project so that you can import the generated Destinations (like the above `ProfileDestination`)
+You may need to build the project (or `./gradlew kspDebugKotlin`, which should be faster) to import
+the generated Destinations (like the above `ProfileDestination`)
 
-4. Finally, add the NavHost somewhere:
+4. Finally, add the NavHost call:
 
 ```kotlin
 DestinationsNavHost()
 ```
 This call will automatically add all annotated Composable functions as destinations of the Navigation Graph.
 
-That's it! No need to worry about routes, `NavType`, bundles and strings. All that redundant and error-prone code gets generated for you.
+That's it! No need to worry about routes, `NavType`, bundles and strings. All that redundant and
+error-prone code gets generated for you.
 
 ## Setup
 
@@ -81,7 +88,8 @@ Official Compose Navigation is required.
 If you're using Accompanist Navigation-Animation and/or
 Accompanist Material (aka BottomSheet, currently), Compose Destinations has you covered. <br/>
 Check our [wiki](https://github.com/raamcosta/compose-destinations/wiki) to know more. <br/>
-Each [release](https://github.com/raamcosta/compose-destinations/releases) contains a list of versions known to be compatible.
+Each [release](https://github.com/raamcosta/compose-destinations/releases) contains a list of 
+versions known to be compatible.
 
 3. And finally, you need to make sure the IDE looks at the generated folder.
 See KSP related [issue](https://github.com/google/ksp/issues/37).
@@ -98,8 +106,8 @@ sourceSets {
 ## Current state
 
 This lib is still in its alpha stage, APIs can change.
-I'm looking for all kinds of feedback, issues, feature requests and help in improving the code. So please, if you find this interesting, try it out in
-some sample projects and let me know how it goes!
+I'm looking for all kinds of feedback, issues, feature requests and help in improving the code. So
+please, if you find this interesting, try it out in some sample projects and let me know how it goes!
 
 ## License
 

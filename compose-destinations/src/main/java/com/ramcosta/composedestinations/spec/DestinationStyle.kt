@@ -39,7 +39,7 @@ sealed interface DestinationStyle {
      *
      * You will need to create an object which implements `AnimatedDestinationStyle`
      * (generated version of this interface that exposes `Destination`)
-     * and use the KClass in the [com.ramcosta.composedestinations.annotation.Destination.style]
+     * and use the KClass in [com.ramcosta.composedestinations.annotation.Destination.style]
      */
     @ExperimentalAnimationApi
     interface Animated<T : DestinationSpec> : DestinationStyle {

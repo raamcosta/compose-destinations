@@ -21,6 +21,7 @@ class DestinationsNavHostWriter(
             .removeAddComposableElseBlock()
             .replace(DEFAULT_NAV_CONTROLLER_PLACEHOLDER, defaultNavControllerPlaceholder())
             .replace(NAV_HOST_METHOD_NAME, navHostMethodName())
+            .replace(NAV_HOST_METHOD_QUALIFIED_NAME, navHostMethodQualifiedName())
             .replace(ANIMATION_DEFAULT_PARAMS_PLACEHOLDER, defaultAnimationParams())
             .replace(EXPERIMENTAL_API_PLACEHOLDER, experimentalApiPlaceholder())
 
@@ -109,6 +110,14 @@ class DestinationsNavHostWriter(
             "AnimatedNavHost"
         } else {
             "NavHost"
+        }
+    }
+
+    private fun navHostMethodQualifiedName(): String {
+        return if (availableDependencies.accompanistAnimation) {
+            "com.google.accompanist.navigation.animation.AnimatedNavHost"
+        } else {
+            "androidx.navigation.compose.NavHost"
         }
     }
 

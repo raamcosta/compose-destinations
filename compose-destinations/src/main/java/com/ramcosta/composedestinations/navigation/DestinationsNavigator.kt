@@ -10,7 +10,7 @@ import com.ramcosta.composedestinations.spec.Routed
 /**
  * Contract for a navigator of [DestinationSpec].
  * It uses components of [NavController] so implementations
- * will need one to actual navigate.
+ * will need one to do actual navigation.
  *
  * It is meant as a dependency inversion wrapper to make
  * Composables that depend on it be testable and "preview-able".
