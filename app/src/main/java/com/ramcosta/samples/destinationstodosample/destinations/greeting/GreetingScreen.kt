@@ -16,7 +16,6 @@ import com.ramcosta.composedestinations.GoToProfileConfirmationDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerController
-import com.ramcosta.samples.destinationstodosample.destinations.styles.GreetingTransitions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import com.ramcosta.samples.destinationstodosample.R

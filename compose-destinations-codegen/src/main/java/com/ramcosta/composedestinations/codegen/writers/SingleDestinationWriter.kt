@@ -287,7 +287,9 @@ class SingleDestinationWriter(
 
             code += "navArgument(\"${it.name}\") {\n\t\t\t"
             code += "type = ${it.toNavTypeCode()}\n\t\t\t"
-            code += "nullable = ${it.type.isNullable}\n\t\t"
+            if (it.type.isNullable) {
+                code += "nullable = true\n\t\t"
+            }
             code += navArgDefaultCode(it.defaultValue)
             code += "}"
 

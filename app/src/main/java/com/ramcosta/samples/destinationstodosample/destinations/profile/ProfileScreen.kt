@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
-import com.ramcosta.samples.destinationstodosample.destinations.styles.ProfileTransitions
 
 val DEFAULT_GROUP : String? = null
 const val DEFAULT_ID = 2L

@@ -73,28 +73,24 @@ $END_ACCOMPANIST_MATERIAL_IMPORTS
  *
  * @see [$NAV_HOST_METHOD_QUALIFIED_NAME]
  *
- * @param navGraph [$GENERATED_NAV_GRAPHS_OBJECT] with the destinations to add to NavHost. By default,
- * it will be the 'root' one which is the one with all annotated destinations
- * that don't specify other 'navGraph'
+ * @param modifier [Modifier]
  * @param startDestination the start destination to use
  * @param navController [NavHostController]
- * @param modifier [Modifier]
  * @param dependenciesContainerBuilder lambda invoked when a destination gets navigated to. It allows
  * the caller to contribute certain dependencies that the destination can use.
  */
 $EXPERIMENTAL_API_PLACEHOLDER@Composable
 fun $DESTINATIONS_NAV_HOST(
-    navGraph: $GENERATED_NAV_GRAPH = ${GENERATED_NAV_GRAPHS_OBJECT}.root,
-    startDestination: $GENERATED_DESTINATION = navGraph.startDestination,$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER
-    navController: NavHostController = rememberDestinationsNavController(),
     modifier: Modifier = Modifier,
+    startDestination: $GENERATED_DESTINATION = ${GENERATED_NAV_GRAPHS_OBJECT}.root.startDestination,$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER
+    navController: NavHostController = rememberDestinationsNavController(),
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit = {}
 ) {
     $NAV_HOST_METHOD_NAME(
         navController = navController,
         startDestination = startDestination.route,
         modifier = modifier,
-        route = navGraph.route,$ANIMATED_NAV_HOST_CALL_PARAMETERS_START
+        route = ${GENERATED_NAV_GRAPHS_OBJECT}.root.route,$ANIMATED_NAV_HOST_CALL_PARAMETERS_START
         contentAlignment = defaultAnimationParams.contentAlignment,
         enterTransition = defaultAnimationParams.enterTransition?.run { { i, t -> enter(i.navDestination, t.navDestination) } },
         exitTransition = defaultAnimationParams.exitTransition?.run{ {i, t -> exit(i.navDestination, t.navDestination) } },
@@ -102,7 +98,7 @@ fun $DESTINATIONS_NAV_HOST(
         popExitTransition = defaultAnimationParams.popExitTransition?.run{ {i, t -> exit(i.navDestination, t.navDestination) } },$ANIMATED_NAV_HOST_CALL_PARAMETERS_END
     ) {
         addNavGraphDestinations(
-            navGraphSpec = navGraph,
+            navGraphSpec = ${GENERATED_NAV_GRAPHS_OBJECT}.root,
             addNavigation = addNavigation(),   
             addComposable = addComposable(navController, dependenciesContainerBuilder)
         )
@@ -128,8 +124,7 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun addComposable(
 ): NavGraphBuilder.($CORE_DESTINATION_SPEC) -> Unit {
     return { destination ->
         destination as $GENERATED_DESTINATION
-        val destinationStyle = destination.style
-        when (destinationStyle) {
+        when (val destinationStyle = destination.style) {
             is DestinationStyle.Default -> {
                 addComposable(
                     destination,
@@ -181,12 +176,11 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun NavGraphBuilder.addComposable(
     ) { navBackStackEntry ->
         destination.Content(
             navController,
-            navBackStackEntry,
-            {$ANIMATED_VISIBILITY_TO_CONTENT_START 
-                dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)$ANIMATED_VISIBILITY_TO_CONTENT_END
-                dependenciesContainerBuilder(navBackStackEntry)
-            }
-        )
+            navBackStackEntry
+        ) {$ANIMATED_VISIBILITY_TO_CONTENT_START 
+            dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)$ANIMATED_VISIBILITY_TO_CONTENT_END
+            dependenciesContainerBuilder(navBackStackEntry)
+        }
     }
 }
 
@@ -201,12 +195,11 @@ private fun NavGraphBuilder.addDialogComposable(
         destination.arguments,
         destination.deepLinks,
         dialogStyle.properties
-    ) {
+    ) { navBackStackEntry ->
         destination.Content(
-            navController = navController,
-            navBackStackEntry = it,
-            dependenciesContainerBuilder = { dependenciesContainerBuilder(it) }
-        )
+            navController,
+            navBackStackEntry
+        ) { dependenciesContainerBuilder(navBackStackEntry) }
     }
 }
 
@@ -240,12 +233,11 @@ private fun NavGraphBuilder.addAnimatedComposable(
     ) { navBackStackEntry ->
         destination.Content(
             navController,
-            navBackStackEntry,
-            {
-                dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)
-                dependenciesContainerBuilder(navBackStackEntry)
-            }
-        )
+            navBackStackEntry
+        ) {
+            dependency<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>(this@composable)
+            dependenciesContainerBuilder(navBackStackEntry)
+        }
     }
 }
 $END_ACCOMPANIST_NAVIGATION
@@ -264,12 +256,11 @@ private fun NavGraphBuilder.addBottomSheetComposable(
     ) { navBackStackEntry ->
         destination.Content(
             navController,
-            navBackStackEntry,
-            {
-                dependency<$COLUMN_SCOPE_SIMPLE_NAME>(this@bottomSheet)
-                dependenciesContainerBuilder(navBackStackEntry)
-            }
-        )
+            navBackStackEntry
+        ) {
+            dependency<$COLUMN_SCOPE_SIMPLE_NAME>(this@bottomSheet)
+            dependenciesContainerBuilder(navBackStackEntry)
+        }
     }
 }
 $END_ACCOMPANIST_MATERIAL

@@ -17,7 +17,7 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.ramcosta.composedestinations.Destination
 import com.ramcosta.composedestinations.NavGraphs
-import com.ramcosta.composedestinations.findDestination
+import com.ramcosta.composedestinations.navDestination
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalMaterialApi::class)
 @Composable
@@ -29,12 +29,8 @@ fun DestinationsSampleScaffold(
     drawerContent: @Composable ColumnScope.(Destination) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
-
     val currentBackStackEntryAsState by navController.currentBackStackEntryAsState()
-
-    val destination = currentBackStackEntryAsState?.destination?.route
-        ?.let { NavGraphs.root.findDestination(it) as Destination }
-        ?: NavGraphs.root.startDestination
+    val destination = currentBackStackEntryAsState?.navDestination ?: NavGraphs.root.startDestination
 
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator

@@ -1,28 +1,36 @@
-package com.ramcosta.samples.destinationstodosample.destinations.styles
+package com.ramcosta.samples.destinationstodosample.destinations.profile
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import com.ramcosta.composedestinations.*
+import com.ramcosta.composedestinations.AnimatedDestinationStyle
+import com.ramcosta.composedestinations.Destination
+import com.ramcosta.composedestinations.GreetingScreenDestination
 
 @OptIn(ExperimentalAnimationApi::class)
-object GreetingTransitions : AnimatedDestinationStyle {
+object ProfileTransitions : AnimatedDestinationStyle {
 
     override fun AnimatedContentScope<String>.enterTransition(
         initial: Destination?,
         target: Destination?
     ): EnterTransition? {
 
-        return popEnterTransition(initial, target)
+        return when (initial) {
+            GreetingScreenDestination ->
+                slideInHorizontally(
+                    initialOffsetX = { 1000 },
+                    animationSpec = tween(700)
+                )
+            else -> null
+        }
     }
 
     override fun AnimatedContentScope<String>.exitTransition(
         initial: Destination?,
-        target: Destination?
+        target: Destination?,
     ): ExitTransition? {
 
         return when (target) {
-            ProfileScreenDestination,
-            SettingsDestination ->
+            GreetingScreenDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { -1000 },
                     animationSpec = tween(700)
@@ -37,8 +45,7 @@ object GreetingTransitions : AnimatedDestinationStyle {
     ): EnterTransition? {
 
         return when (initial) {
-            ProfileScreenDestination,
-            SettingsDestination ->
+            GreetingScreenDestination ->
                 slideInHorizontally(
                     initialOffsetX = { -1000 },
                     animationSpec = tween(700)
@@ -53,8 +60,7 @@ object GreetingTransitions : AnimatedDestinationStyle {
     ): ExitTransition? {
 
         return when (target) {
-            ProfileScreenDestination,
-            SettingsDestination ->
+            GreetingScreenDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { 1000 },
                     animationSpec = tween(700)
