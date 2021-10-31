@@ -7,13 +7,10 @@ object Versions {
     const val dependencyCheckPlugin = "0.39.0"
     const val gradlePluginVersion = "7.0.3"
 
-    const val compose = "1.0.4"
-    const val composeNavigation = "2.4.0-alpha10"
     const val composeViewModel = "2.4.0"
     const val activityCompose = "1.4.0"
 
-    const val accompanist = "0.20.0"
-    const val hilt = "2.39.1"
+    const val hilt = "2.40"
     const val hiltComposeNavigation = "1.0.0-alpha03"
 
     const val material = "1.4.0"
@@ -23,6 +20,17 @@ object Versions {
     const val ksp = "1.5.31-1.0.0"
 
     const val junit = "4.13.2"
+
+    const val compose = "1.1.0-beta01"
+    const val composeNavigation = "2.4.0-beta01"
+    const val accompanist = "0.21.0-beta"
+
+    //alternative 1:
+    /*
+    const val compose = "1.0.4"
+    const val composeNavigation = "2.4.0-alpha10"
+    const val accompanist = "0.20.0"
+    */
 }
 
 object Deps {

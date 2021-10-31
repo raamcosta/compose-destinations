@@ -78,8 +78,8 @@ plugins {
 
 2. Add the dependencies:
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:0.8.4-alpha05'
-ksp 'io.github.raamcosta.compose-destinations:ksp:0.8.4-alpha05'
+implementation 'io.github.raamcosta.compose-destinations:core:0.9.0-beta'
+ksp 'io.github.raamcosta.compose-destinations:ksp:0.9.0-beta'
 
 // official compose navigation
 implementation 'androidx.navigation:navigation-compose:$compose_navigation_version'
@@ -105,9 +105,16 @@ sourceSets {
 
 ## Current state
 
-This lib is still in its alpha stage, APIs can change.
-I'm looking for all kinds of feedback, issues, feature requests and help in improving the code. So
-please, if you find this interesting, try it out in some sample projects and let me know how it goes!
+The library is now in its beta stage, which means that, for the most part, I am happy
+with the core feature set, and if the APIs change, I will provide a migration path.
+It might have some unknown bugs (and actually it's likely), but I'm confident that 
+excluding some more exotic uses, the library is stable.
+Still, I'd love to see people try to use it and opening issues if they find any.
+Even though I am currently only one maintainer - _if you're interested in contributing
+I can give you a general overview of how the code works_ - I plan to fix any bugs in
+a timely manner and improve the stability even more going further.
+
+Any feedback and contributions are highly appreciated!
 
 ## License
 
