@@ -37,7 +37,7 @@ class SingleDestinationWriter(
             .replace(DEEP_LINKS, deepLinksDeclarationCode(composedRoute))
             .replace(DESTINATION_STYLE, destinationStyle())
             .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
-            .replace(WITH_ARGS_METHOD, withArgsMethod())
+            .addInvokeWithArgsMethod()
             .replace(ARGS_FROM_METHODS, argsFromFunctions())
             .replace(ADDITIONAL_IMPORTS, additionalImports())
 
@@ -125,22 +125,41 @@ class SingleDestinationWriter(
         return imports.toString()
     }
 
-    private fun withArgsMethod(): String {
-        if (navArgs.isEmpty()) return ""
+    private fun String.addInvokeWithArgsMethod(): String {
+        var result = this
+        if (navArgs.isEmpty()) {
+            result = result.replace(": $GENERATED_DESTINATION {", ": $GENERATED_DESTINATION, Routed {")
+        }
+
+        return result
+            .replace(ARGS_TO_ROUTED_METHOD, invokeWithArgsMethod())
+    }
+
+    private fun invokeWithArgsMethod(): String {
+        if (navArgs.isEmpty()) {
+
+            return """
+            |     
+            |    operator fun invoke() = this
+            |    
+            """.trimMargin()
+        }
 
         val args = StringBuilder()
         val replaceUnknownOrNullableArgs = StringBuilder()
+        val routeInitialVar = StringBuilder()
         val replace = StringBuilder()
 
         val template = """
         |     
-        |    fun withArgs(
+        |    operator fun invoke(
         |%s1
-        |    ): String {
-        |        var route = route
+        |    ): Routed {
         |%s2
-        |        return route
-        |%s3
+        |        return object : Routed {
+        |            override val route = %s3
+        |%s4
+        |        }
         |    }
         |    
         """.trimMargin()
@@ -149,13 +168,18 @@ class SingleDestinationWriter(
             args += "\t\t${it.name}: ${it.type.simpleName}${if (it.type.isNullable) "?" else ""}${defaultValueForWithArgsFunction(it)},"
 
             if (it.type.isNullable) {
+                if (replaceUnknownOrNullableArgs.isEmpty()) {
+                    replaceUnknownOrNullableArgs += "\t\tvar route = route\n"
+                    routeInitialVar += "route"
+                }
                 replaceUnknownOrNullableArgs += """
                    |        if (${it.name} != null) {
                    |            route = route.replace("{${it.name}}", ${it.name}${if (it.type.simpleName == "String") "" else ".toString()"})
                    |        }
+                   |        
                     """.trimMargin()
             } else {
-                replace += "\t\t\t.replace(\"{${it.name}}\", ${it.name}${if (it.type.simpleName == "String") "" else ".toString()"})"
+                replace += "\t\t\t\t.replace(\"{${it.name}}\", ${it.name}${if (it.type.simpleName == "String") "" else ".toString()"})"
             }
 
 
@@ -169,10 +193,15 @@ class SingleDestinationWriter(
             }
         }
 
+        if (routeInitialVar.isEmpty()) {
+            routeInitialVar += "this@${destination.name}.route"
+        }
+
         return template
             .replace("%s1", args.toString())
             .replace("%s2", replaceUnknownOrNullableArgs.toString())
-            .replace("%s3", replace.toString())
+            .replace("%s3", routeInitialVar.toString())
+            .replace("%s4", replace.toString())
     }
 
     private fun argsFromFunctions(): String {
@@ -286,9 +315,12 @@ class SingleDestinationWriter(
             }
 
             code += "navArgument(\"${it.name}\") {\n\t\t\t"
-            code += "type = ${it.toNavTypeCode()}\n\t\t\t"
+            code += "type = ${it.toNavTypeCode()}\n\t\t"
             if (it.type.isNullable) {
-                code += "nullable = true\n\t\t"
+                if (it.type.simpleName != "String") {
+                    throw IllegalDestinationsSetup("Composable '${destination.composableName}', argument '${it.name}': Only String navigation arguments can be nullable")
+                }
+                code += "\tnullable = true\n\t\t"
             }
             code += navArgDefaultCode(it.defaultValue)
             code += "}"

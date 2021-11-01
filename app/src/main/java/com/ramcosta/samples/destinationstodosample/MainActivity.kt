@@ -21,6 +21,7 @@ import com.ramcosta.composedestinations.*
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigateTo
+import com.ramcosta.composedestinations.spec.Routed
 import com.ramcosta.samples.destinationstodosample.destinations.commons.*
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
 import com.ramcosta.samples.destinationstodosample.destinations.greeting.GreetingUiEvents
@@ -123,7 +124,7 @@ class MainActivity : ComponentActivity() {
                         if (navController.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
                             && navController.currentBackStackEntry?.navDestination != clickedDestination
                         ) {
-                            navController.navigateTo(clickedDestination)
+                            navController.navigateTo(clickedDestination as Routed)
                             coroutineScope.launch { scaffoldState.drawerState.close() }
                         }
                     }

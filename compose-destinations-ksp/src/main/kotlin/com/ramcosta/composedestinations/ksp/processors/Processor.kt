@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.ksp.processors
 
-import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
@@ -19,7 +18,6 @@ class Processor(
     private val options: Map<String, String>,
 ) : SymbolProcessor {
 
-    @OptIn(KspExperimental::class)
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val annotatedDestinations = resolver.getComposableDestinations()
         if (!annotatedDestinations.iterator().hasNext()) {

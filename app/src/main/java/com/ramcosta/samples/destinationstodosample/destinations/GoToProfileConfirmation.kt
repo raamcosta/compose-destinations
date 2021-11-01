@@ -31,7 +31,7 @@ fun GoToProfileConfirmation(
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             onClick = {
-                navigator.navigate(ProfileScreenDestination.withArgs(id = 3, groupName = "Kotliners")) {
+                navigator.navigate(ProfileScreenDestination(id = 3, groupName = "Kotliners")) {
                     popUpTo(GoToProfileConfirmationDestination.route) {
                         inclusive = true
                     }

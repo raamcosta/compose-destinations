@@ -10,12 +10,12 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
  * added to a navigation graph and composed on the screen
  * when the user navigates to it.
  */
-interface DestinationSpec: Routed {
+interface DestinationSpec {
 
     /**
      * Full route that will be added to the navigation graph
      */
-    override val route: String
+    val route: String
 
     /**
      * All [NamedNavArgument]s that will be added to the navigation

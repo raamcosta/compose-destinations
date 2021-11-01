@@ -18,7 +18,10 @@ import com.ramcosta.composedestinations.spec.Routed
 interface DestinationsNavigator {
 
     /**
-     * Navigates to the given [Routed] ([NavGraphSpec] and [DestinationSpec] are [Routed]).
+     * Navigates to the given [Routed].
+     * [NavGraphSpec] are [Routed]. Generated `Destinations` are Routed if they don't have
+     * any navigation arguments or you can call their `invoke` method passing the arguments
+     * to get a [Routed] instance.
      *
      * @param onlyIfResumed if true (default), will ignore the navigation action if the
      * current `NavBackStackEntry` is not in the RESUMED state. This avoids duplicate
@@ -27,7 +30,11 @@ interface DestinationsNavigator {
      *
      * @see [NavController.navigate]
      */
-    fun navigate(routed: Routed, onlyIfResumed: Boolean = true, builder: NavOptionsBuilder.() -> Unit = {}) {
+    fun navigate(
+        routed: Routed,
+        onlyIfResumed: Boolean = true,
+        builder: NavOptionsBuilder.() -> Unit = {},
+    ) {
         navigate(routed.route, onlyIfResumed, builder)
     }
 
@@ -40,7 +47,11 @@ interface DestinationsNavigator {
      *
      * @see [NavController.navigate]
      */
-    fun navigate(route: String, onlyIfResumed: Boolean = true, builder: NavOptionsBuilder.() -> Unit = {})
+    fun navigate(
+        route: String,
+        onlyIfResumed: Boolean = true,
+        builder: NavOptionsBuilder.() -> Unit = {}
+    )
 
     /**
      * @see [NavController.navigateUp]
@@ -58,7 +69,11 @@ interface DestinationsNavigator {
      * @see [NavController.popBackStack]
      */
     @MainThread
-    fun popBackStack(routed: Routed, inclusive: Boolean, saveState: Boolean = false): Boolean {
+    fun popBackStack(
+        routed: Routed,
+        inclusive: Boolean,
+        saveState: Boolean = false,
+    ): Boolean {
         return popBackStack(routed.route, inclusive, saveState)
     }
 
@@ -66,7 +81,11 @@ interface DestinationsNavigator {
      * @see [NavController.popBackStack]
      */
     @MainThread
-    fun popBackStack(route: String, inclusive: Boolean, saveState: Boolean = false): Boolean
+    fun popBackStack(
+        route: String,
+        inclusive: Boolean,
+        saveState: Boolean = false,
+    ): Boolean
 
     /**
      * @see [NavController.clearBackStack]
@@ -87,13 +106,21 @@ interface DestinationsNavigator {
  */
 object EmptyDestinationsNavigator : DestinationsNavigator {
 
-    override fun navigate(route: String, onlyIfResumed: Boolean, builder: NavOptionsBuilder.() -> Unit) = Unit
+    override fun navigate(
+        route: String,
+        onlyIfResumed: Boolean,
+        builder: NavOptionsBuilder.() -> Unit,
+    ) = Unit
 
     override fun navigateUp() = false
 
     override fun popBackStack() = false
 
-    override fun popBackStack(route: String, inclusive: Boolean, saveState: Boolean) = false
+    override fun popBackStack(
+        route: String,
+        inclusive: Boolean,
+        saveState: Boolean,
+    ) = false
 
     override fun clearBackStack(route: String) = false
 }
