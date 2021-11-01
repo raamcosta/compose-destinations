@@ -3,7 +3,8 @@
 # Compose Destinations
 
 A KSP library to improve Compose Navigation. It processes annotations with KSP to generate code which uses
-Compose Navigation under the hood to make everything happen.
+Compose Navigation under the hood to make everything happen. 
+Doing so, it avoids the boilerplate and unsafe code around navigating in Compose.
 For a deeper look into all the features, check our [wiki](https://github.com/raamcosta/compose-destinations/wiki)(🚧).
 
 ## Table of contents
@@ -39,7 +40,8 @@ Both will become optional to navigate to this destination.
 There is an alternative way to define the destination arguments in case you don't need to use them
 inside the Composable (as is likely the case when using ViewModel). Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Navigation#defining-navigation-arguments).
 
-3. Use the generated `[ComposableName]Destination.withArgs` method to navigate to it:
+3. Use the generated `[ComposableName]Destination` invoke method to navigate to it. It will
+have the correct typed arguments.
 
 ```kotlin
 @Destination
@@ -48,7 +50,7 @@ fun SomeOtherScreen(
     navigator: DestinationsNavigator
 ) {
     /*...*/
-    navigator.navigate(ProfileDestination.withArgs(id = 7))
+    navigator.navigate(ProfileDestination(id = 7))
 }
 ```
 You may need to build the project (or `./gradlew kspDebugKotlin`, which should be faster) to import
@@ -78,8 +80,8 @@ plugins {
 
 2. Add the dependencies:
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:0.9.0-beta'
-ksp 'io.github.raamcosta.compose-destinations:ksp:0.9.0-beta'
+implementation 'io.github.raamcosta.compose-destinations:core:0.9.1-beta'
+ksp 'io.github.raamcosta.compose-destinations:ksp:0.9.1-beta'
 
 // official compose navigation
 implementation 'androidx.navigation:navigation-compose:$compose_navigation_version'
