@@ -18,9 +18,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.*
-import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
-import com.ramcosta.composedestinations.navigation.dependency
-import com.ramcosta.composedestinations.navigation.navigateTo
+import com.ramcosta.composedestinations.navigation.*
 import com.ramcosta.composedestinations.spec.Routed
 import com.ramcosta.samples.destinationstodosample.destinations.commons.*
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme

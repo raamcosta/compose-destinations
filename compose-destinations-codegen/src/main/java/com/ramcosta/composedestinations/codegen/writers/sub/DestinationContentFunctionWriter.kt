@@ -74,13 +74,49 @@ class DestinationContentFunctionWriter(
                     resolveNavArg(destination, additionalImports, parameter)
 
                 } else if (!parameter.hasDefault) {
-                    additionalImports.add(parameter.type.qualifiedName)
-                    "container.get<${parameter.type.simpleName}>()"
+                    if (parameter.type.qualifiedName != "kotlin.${parameter.type.simpleName}") {
+                        additionalImports.add(parameter.type.qualifiedName)
+                    }
+                    "container.get<${parameter.typeUsageCode()}>()"
                 } else {
                     null
                 }
             }
         }
+    }
+
+    private fun Parameter.typeUsageCode(): String {
+        val code = StringBuilder(type.simpleName)
+        argumentTypes.forEachIndexed { idx, it ->
+            if (idx == 0) {
+                code += "<"
+            }
+
+            val variancePrefix = variancePrefixes[idx]
+            code += if (variancePrefix == "*") {
+                "*"
+            } else {
+                if (it.qualifiedName != "kotlin.${it.simpleName}") {
+                    additionalImports.add(it.qualifiedName)
+                }
+
+                val variance = if (variancePrefix == "") {
+                    ""
+                } else {
+                    "$variancePrefix "
+                }
+
+                "$variance${it.simpleName}${if (it.isNullable) "?" else ""}"
+            }
+
+            code += if (idx == argumentTypes.lastIndex) {
+                ">"
+            } else {
+                ", "
+            }
+        }
+
+        return code.toString()
     }
 
     private fun hasContainerArgument(): Boolean {

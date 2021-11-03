@@ -13,6 +13,7 @@ object GreetingTransitions : AnimatedDestinationStyle {
     ): EnterTransition? {
 
         return when (initial) {
+            SettingsDestination,
             ProfileScreenDestination ->
                 slideInHorizontally(
                     initialOffsetX = { 1000 },

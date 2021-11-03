@@ -33,8 +33,7 @@ fun Destination.DrawerContent(
         ProfileScreenDestination,
         GoToProfileConfirmationDestination,
         SettingsDestination,
-        ThemeSettingsDestination -> {
-        }
+        ThemeSettingsDestination -> Unit
     }
 }
 

@@ -136,10 +136,16 @@ class KspToCodeGenDestinationsMapper(
 
     @OptIn(KspExperimental::class)
     private fun KSValueParameter.toParameter(composableName: String): Parameter {
+        val resolvedType = type.resolve()
+        val resolvedArgumentTypes = resolvedType.arguments.mapNotNull { it.type?.resolve()?.toType() }
+        val resolvedArgumentVariance = resolvedType.arguments.map { it.variance.label }
+
         return Parameter(
             name!!.asString(),
-            type.resolve().toType() ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
-            getDefaultValue(resolver)
+            resolvedType.toType() ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
+            getDefaultValue(resolver),
+            resolvedArgumentVariance,
+            resolvedArgumentTypes
         )
     }
 

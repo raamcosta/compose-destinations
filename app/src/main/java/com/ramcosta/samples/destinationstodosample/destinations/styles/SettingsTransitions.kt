@@ -29,7 +29,14 @@ object SettingsTransitions : AnimatedDestinationStyle {
         target: Destination?
     ): ExitTransition? {
 
-        return popExitTransition(initial, target)
+        return when (target) {
+            GreetingScreenDestination ->
+                slideOutHorizontally(
+                    targetOffsetX = { -1000 },
+                    animationSpec = tween(700)
+                )
+            else -> null
+        }
     }
 
     override fun AnimatedContentScope<String>.popEnterTransition(
