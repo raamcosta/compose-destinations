@@ -92,10 +92,10 @@ fun $DESTINATIONS_NAV_HOST(
         modifier = modifier,
         route = ${GENERATED_NAV_GRAPHS_OBJECT}.root.route,$ANIMATED_NAV_HOST_CALL_PARAMETERS_START
         contentAlignment = defaultAnimationParams.contentAlignment,
-        enterTransition = defaultAnimationParams.enterTransition?.run { { i, t -> enter(i.navDestination, t.navDestination) } },
-        exitTransition = defaultAnimationParams.exitTransition?.run{ {i, t -> exit(i.navDestination, t.navDestination) } },
-        popEnterTransition = defaultAnimationParams.popEnterTransition?.run{ {i, t -> enter(i.navDestination, t.navDestination) } },
-        popExitTransition = defaultAnimationParams.popExitTransition?.run{ {i, t -> exit(i.navDestination, t.navDestination) } },$ANIMATED_NAV_HOST_CALL_PARAMETERS_END
+        enterTransition = defaultAnimationParams.enterTransition,
+        exitTransition = defaultAnimationParams.exitTransition,
+        popEnterTransition = defaultAnimationParams.popEnterTransition,
+        popExitTransition = defaultAnimationParams.popExitTransition,
     ) {
         addNavGraphDestinations(
             navGraphSpec = ${GENERATED_NAV_GRAPHS_OBJECT}.root,
@@ -142,9 +142,9 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun addComposable(
                 )
             }
 $ADD_ANIMATED_COMPOSABLE_START
-            is DestinationStyle.Animated<*> -> {
+            is DestinationStyle.Animated -> {
                 addAnimatedComposable(
-                    destinationStyle as AnimatedDestinationStyle,
+                    destinationStyle,
                     destination,
                     navController,
                     dependenciesContainerBuilder
@@ -217,7 +217,7 @@ ${EXPERIMENTAL_API_PLACEHOLDER}private fun addNavigation(): NavGraphBuilder.($CO
 $START_ACCOMPANIST_NAVIGATION
 @ExperimentalAnimationApi
 private fun NavGraphBuilder.addAnimatedComposable(
-    animatedStyle: AnimatedDestinationStyle,
+    animatedStyle: DestinationStyle.Animated,
     destination: Destination,
     navController: NavHostController,
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
@@ -226,10 +226,10 @@ private fun NavGraphBuilder.addAnimatedComposable(
         route = destination.route,
         arguments = destination.arguments,
         deepLinks = destination.deepLinks,
-        enterTransition = { i, t -> enterTransition(i.navDestination, t.navDestination) },
-        exitTransition = { i, t -> exitTransition(i.navDestination, t.navDestination) },
-        popEnterTransition = { i, t -> popEnterTransition(i.navDestination, t.navDestination) },
-        popExitTransition = { i, t -> popExitTransition(i.navDestination, t.navDestination) }
+        enterTransition = { enterTransition() },
+        exitTransition = { exitTransition() },
+        popEnterTransition = { popEnterTransition() },
+        popExitTransition = { popExitTransition() }
     ) { navBackStackEntry ->
         destination.Content(
             navController,

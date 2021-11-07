@@ -21,16 +21,9 @@ object Versions {
 
     const val junit = "4.13.2"
 
-    const val compose = "1.1.0-beta01"
-    const val composeNavigation = "2.4.0-beta01"
-    const val accompanist = "0.21.0-beta"
-
-    //alternative 1:
-    /*
-    const val compose = "1.0.4"
-    const val composeNavigation = "2.4.0-alpha10"
-    const val accompanist = "0.20.0"
-    */
+    const val compose = "1.1.0-beta02"
+    const val composeNavigation = "2.4.0-beta02"
+    const val accompanist = "0.21.2-beta"
 }
 
 object Deps {

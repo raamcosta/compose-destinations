@@ -2,19 +2,17 @@ package com.ramcosta.samples.destinationstodosample.destinations.styles
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import com.ramcosta.composedestinations.AnimatedDestinationStyle
-import com.ramcosta.composedestinations.Destination
+import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.GreetingScreenDestination
+import com.ramcosta.composedestinations.navDestination
+import com.ramcosta.composedestinations.spec.DestinationStyle
 
 @OptIn(ExperimentalAnimationApi::class)
-object SettingsTransitions : AnimatedDestinationStyle {
+object SettingsTransitions : DestinationStyle.Animated {
 
-    override fun AnimatedContentScope<String>.enterTransition(
-        initial: Destination?,
-        target: Destination?
-    ): EnterTransition? {
+    override fun AnimatedContentScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
 
-        return when (initial) {
+        return when (initialState.navDestination) {
             GreetingScreenDestination ->
                 slideInHorizontally(
                     initialOffsetX = { 1000 },
@@ -24,12 +22,9 @@ object SettingsTransitions : AnimatedDestinationStyle {
         }
     }
 
-    override fun AnimatedContentScope<String>.exitTransition(
-        initial: Destination?,
-        target: Destination?
-    ): ExitTransition? {
+    override fun AnimatedContentScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
 
-        return when (target) {
+        return when (targetState.navDestination) {
             GreetingScreenDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { -1000 },
@@ -39,12 +34,9 @@ object SettingsTransitions : AnimatedDestinationStyle {
         }
     }
 
-    override fun AnimatedContentScope<String>.popEnterTransition(
-        initial: Destination?,
-        target: Destination?
-    ): EnterTransition? {
+    override fun AnimatedContentScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
 
-        return when (initial) {
+        return when (initialState.navDestination) {
             GreetingScreenDestination ->
                 slideInHorizontally(
                     initialOffsetX = { -1000 },
@@ -54,12 +46,9 @@ object SettingsTransitions : AnimatedDestinationStyle {
         }
     }
 
-    override fun AnimatedContentScope<String>.popExitTransition(
-        initial: Destination?,
-        target: Destination?
-    ): ExitTransition? {
+    override fun AnimatedContentScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
 
-        return when (target) {
+        return when (targetState.navDestination) {
             GreetingScreenDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { 1000 },
