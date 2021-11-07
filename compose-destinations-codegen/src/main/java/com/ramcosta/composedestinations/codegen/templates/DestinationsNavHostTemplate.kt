@@ -95,7 +95,7 @@ fun $DESTINATIONS_NAV_HOST(
         enterTransition = defaultAnimationParams.enterTransition,
         exitTransition = defaultAnimationParams.exitTransition,
         popEnterTransition = defaultAnimationParams.popEnterTransition,
-        popExitTransition = defaultAnimationParams.popExitTransition,
+        popExitTransition = defaultAnimationParams.popExitTransition,$ANIMATED_NAV_HOST_CALL_PARAMETERS_END
     ) {
         addNavGraphDestinations(
             navGraphSpec = ${GENERATED_NAV_GRAPHS_OBJECT}.root,
