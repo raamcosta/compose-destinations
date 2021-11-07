@@ -42,10 +42,11 @@ import androidx.compose.animation.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.*
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.*
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.Navigator
 import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.DestinationStyle
@@ -57,7 +58,6 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import androidx.navigation.NavBackStackEntry
 import com.google.accompanist.navigation.animation.composable
 $END_ACCOMPANIST_NAVIGATION_IMPORTS
 $START_ACCOMPANIST_MATERIAL_IMPORTS
