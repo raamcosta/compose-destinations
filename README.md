@@ -80,8 +80,8 @@ plugins {
 
 2. Add the dependencies:
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:0.9.2-beta'
-ksp 'io.github.raamcosta.compose-destinations:ksp:0.9.2-beta'
+implementation 'io.github.raamcosta.compose-destinations:core:0.9.3-beta'
+ksp 'io.github.raamcosta.compose-destinations:ksp:0.9.3-beta'
 
 // official compose navigation
 implementation 'androidx.navigation:navigation-compose:$compose_navigation_version'
@@ -99,7 +99,7 @@ An example for the debug variant would be:
 ```gradle
 sourceSets {
     //...
-    main {
+    debug {
         java.srcDir(file("build/generated/ksp/debug/kotlin"))
     }
 }
