@@ -10,7 +10,7 @@ object Versions {
     const val composeViewModel = "2.4.0"
     const val activityCompose = "1.4.0"
 
-    const val hilt = "2.40"
+    const val hilt = "2.40.1"
     const val hiltComposeNavigation = "1.0.0-alpha03"
 
     const val material = "1.4.0"

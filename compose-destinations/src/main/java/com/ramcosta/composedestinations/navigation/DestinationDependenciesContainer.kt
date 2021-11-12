@@ -40,7 +40,7 @@ class DestinationDependenciesContainer: DependenciesContainerBuilder {
         _map[asType.java] = dependency
     }
 
-    inline fun <reified T: Any> get(): T {
+    inline fun <reified T: Any> require(): T {
         return map[T::class.java] as? T? ?: throw RuntimeException("${T::class.java.simpleName} was requested, but it is not present")
     }
 }

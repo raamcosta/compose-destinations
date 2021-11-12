@@ -27,6 +27,10 @@ class NavGraphsObjectWriter(
     }
 
     private fun navGraphsDeclaration(generatedDestinations: List<GeneratedDestination>): String {
+        if (generatedDestinations.isEmpty()) {
+            return "\tval root: NavGraph = throw RuntimeException(\"No found destinations for 'root' navigation graph\")"
+        }
+
         val destinationsByNavGraph: MutableMap<String, List<GeneratedDestination>> =
             generatedDestinations
                 .groupBy { it.navGraphRoute }

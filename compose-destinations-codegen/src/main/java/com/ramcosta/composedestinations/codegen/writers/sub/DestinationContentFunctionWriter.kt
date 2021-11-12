@@ -26,13 +26,13 @@ class DestinationContentFunctionWriter(
         return when (destination.composableReceiverSimpleName) {
             ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add(ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME)
-                "val animatedVisibilityScope = container.get<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>()\n" +
+                "val animatedVisibilityScope = container.require<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>()\n" +
                         "\t\tanimatedVisibilityScope."
             }
 
             COLUMN_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add(COLUMN_SCOPE_QUALIFIED_NAME)
-                "val columnScope = container.get<$COLUMN_SCOPE_SIMPLE_NAME>()\n" +
+                "val columnScope = container.require<$COLUMN_SCOPE_SIMPLE_NAME>()\n" +
                         "\t\tcolumnScope."
             }
 
@@ -77,7 +77,7 @@ class DestinationContentFunctionWriter(
                     if (parameter.type.qualifiedName != "kotlin.${parameter.type.simpleName}") {
                         additionalImports.add(parameter.type.qualifiedName)
                     }
-                    "container.get<${parameter.typeUsageCode()}>()"
+                    "container.require<${parameter.typeUsageCode()}>()"
                 } else {
                     null
                 }
