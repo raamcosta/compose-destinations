@@ -53,8 +53,8 @@ fun SomeOtherScreen(
     navigator.navigate(ProfileDestination(id = 7))
 }
 ```
-4. You will need to build the project (or `./gradlew kspDebugKotlin`, which should be faster) to import
-the generated Destinations, like the above `ProfileDestination`.
+4. Build the project (or `./gradlew kspDebugKotlin`, which should be faster) to generate
+all the Destinations, like the above `ProfileDestination`.
 
 5. Finally, after building, add the NavHost call:
 
