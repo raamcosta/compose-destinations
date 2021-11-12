@@ -24,7 +24,7 @@ For a deeper look into all the features, check our [wiki](https://github.com/raa
 fun ProfileScreen() { /*...*/ }
 ```
 
-2. Add navigation arguments to function declarations:
+2. Add navigation arguments to the function declaration:
 
 ```kotlin
 @Destination
@@ -35,9 +35,9 @@ fun ProfileScreen(
 ```
 Default values are allowed. Nullable values are also available for String values (limitation 
 from Compose Navigation).
-Both will become optional to navigate to this destination.
+In both cases, they will become optional to navigate to this destination.
 
-There is an alternative way to define the destination arguments in case you don't need to use them
+> There is an alternative way to define the destination arguments in case you don't need to use them
 inside the Composable (as is likely the case when using ViewModel). Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Navigation#defining-navigation-arguments).
 
 3. Use the generated `[ComposableName]Destination` invoke method to navigate to it. It will
@@ -53,10 +53,10 @@ fun SomeOtherScreen(
     navigator.navigate(ProfileDestination(id = 7))
 }
 ```
-You may need to build the project (or `./gradlew kspDebugKotlin`, which should be faster) to import
-the generated Destinations (like the above `ProfileDestination`)
+4. You will need to build the project (or `./gradlew kspDebugKotlin`, which should be faster) to import
+the generated Destinations, like the above `ProfileDestination`.
 
-4. Finally, add the NavHost call:
+5. Finally, after building, add the NavHost call:
 
 ```kotlin
 DestinationsNavHost()
@@ -114,7 +114,7 @@ excluding some more exotic uses, the library is stable.
 Still, I'd love to see people try to use it and opening issues if they find any.
 Even though I am currently only one maintainer - _if you're interested in contributing
 I can give you a general overview of how the code works_ - I plan to fix any bugs in
-a timely manner and improve the stability even more going further.
+a timely manner and improve stability even more going further.
 
 Any feedback and contributions are highly appreciated!
 
