@@ -30,17 +30,19 @@ fun ProfileScreen() { /*...*/ }
 @Destination
 @Composable
 fun ProfileScreen(
-    id: Int
+    id: Int, // <-- required navigation argument
+    groupName: String?, // <-- optional navigation argument
+    isOwnUser: Boolean = false // <-- optional navigation argument
 ) { /*...*/ }
 ```
-Default values are allowed. Nullable values are also available for String values (limitation 
-from Compose Navigation).
-In both cases, they will become optional to navigate to this destination.
 
 > There is an alternative way to define the destination arguments in case you don't need to use them
-inside the Composable (as is likely the case when using ViewModel). Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Navigation#defining-navigation-arguments).
+inside the Composable (as is likely the case when using ViewModel). Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Destination-arguments#navigation-arguments-class-delegate).
 
-3. Use the generated `[ComposableName]Destination` invoke method to navigate to it. It will
+3. Build the project (or `./gradlew kspDebugKotlin`, which should be faster) to generate
+all the Destinations. With the above annotated composable, a `ProfileScreenDestination` file (that we'll use on step 4) would be generated.
+
+4. Use the generated `[ComposableName]Destination` invoke method to navigate to it. It will
 have the correct typed arguments.
 
 ```kotlin
@@ -50,13 +52,12 @@ fun SomeOtherScreen(
     navigator: DestinationsNavigator
 ) {
     /*...*/
-    navigator.navigate(ProfileDestination(id = 7))
+    navigator.navigate(ProfileScreenDestination(id = 7, groupName = "Kotlin programmers"))
 }
 ```
-4. Build the project (or `./gradlew kspDebugKotlin`, which should be faster) to generate
-all the Destinations, like the above `ProfileDestination`.
+> DestinationsNavigator is a wrapper interface to NavController that if declared as a parameter, will be provided for free by the library. NavController can also be provided in the exact same way, but it ties your composables to a specific implementation which will make it harder to test and preview. Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Navigation) 
 
-5. Finally, after building, add the NavHost call:
+5. Finally, add the NavHost call:
 
 ```kotlin
 DestinationsNavHost()
@@ -107,16 +108,13 @@ sourceSets {
 
 ## Current state
 
-The library is now in its beta stage, which means that, for the most part, I am happy
-with the core feature set, and if the APIs change, I will provide a migration path.
-It might have some unknown bugs (and actually it's likely), but I'm confident that 
-excluding some more exotic uses, the library is stable.
-Still, I'd love to see people try to use it and opening issues if they find any.
-Even though I am currently only one maintainer - _if you're interested in contributing
-I can give you a general overview of how the code works_ - I plan to fix any bugs in
-a timely manner and improve stability even more going further.
+The library is now in its beta stage, which means that I am happy
+with the core feature set. If the APIs change, I will provide a migration path.
+Please do try it and open issues if you find any.
+If you're interested in contributing, I can give you a general overview of how the code works.
+It is much simpler that what it might look like at first glance.
 
-Any feedback and contributions are highly appreciated!
+Any feedback and contributions are highly appreciated! 🙏
 
 ## License
 
