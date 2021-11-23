@@ -22,7 +22,7 @@ const val GENERATED_NAV_GRAPH = "NavGraph"
 const val GENERATED_NAV_GRAPHS_OBJECT = "NavGraphs"
 const val GENERATED_DESTINATION_SUFFIX = "Destination"
 
-const val CORE_NAV_DESTINATIONS_NAVIGATION = "NavControllerDestinationsNavigator"
+const val CORE_NAV_DESTINATIONS_NAVIGATION = "DestinationsNavController"
 const val CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME = "$PACKAGE_NAME.navigation.$CORE_NAV_DESTINATIONS_NAVIGATION"
 const val CORE_DESTINATION_SPEC = "DestinationSpec"
 const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"

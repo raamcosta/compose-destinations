@@ -10,12 +10,16 @@ import androidx.navigation.NavOptionsBuilder
  * Implementation of [DestinationsNavigator] that uses
  * a [NavController] to navigate.
  */
-class NavControllerDestinationsNavigator(
+class DestinationsNavController(
     private val navController: NavController,
-    private val navBackStackEntry: NavBackStackEntry
+    private val navBackStackEntry: NavBackStackEntry,
 ) : DestinationsNavigator {
 
-    override fun navigate(route: String, onlyIfResumed: Boolean, builder: NavOptionsBuilder.() -> Unit) {
+    override fun navigate(
+        route: String,
+        onlyIfResumed: Boolean,
+        builder: NavOptionsBuilder.() -> Unit,
+    ) {
         if (onlyIfResumed && navBackStackEntry.lifecycle.currentState != Lifecycle.State.RESUMED) {
             return
         }
@@ -34,7 +38,11 @@ class NavControllerDestinationsNavigator(
     }
 
     @MainThread
-    override fun popBackStack(route: String, inclusive: Boolean, saveState: Boolean): Boolean {
+    override fun popBackStack(
+        route: String,
+        inclusive: Boolean,
+        saveState: Boolean,
+    ): Boolean {
         return navController.popBackStack(route, inclusive, saveState)
     }
 

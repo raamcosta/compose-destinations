@@ -35,6 +35,13 @@ inline fun NavGraphSpec.anyDestination(predicate: (DestinationSpec) -> Boolean):
 }
 
 /**
+ * Checks if this [NavGraphSpec] contains given [destination]
+ */
+fun NavGraphSpec.contains(destination: DestinationSpec): Boolean {
+    return allDestinations.contains(destination)
+}
+
+/**
  * Returns all [DestinationSpec]s including those of nested graphs
  */
 val NavGraphSpec.allDestinations get(): List<DestinationSpec> {

@@ -4,8 +4,6 @@ data class Parameter(
     val name: String,
     val type: Type,
     val defaultValue: DefaultValue?,
-    val variancePrefixes: List<String>,
-    val argumentTypes: List<Type>
 ) {
     val hasDefault get() = defaultValue != null
 

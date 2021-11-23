@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.ksp.processors
 
-import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.*
@@ -134,18 +133,11 @@ class KspToCodeGenDestinationsMapper(
         )
     }
 
-    @OptIn(KspExperimental::class)
     private fun KSValueParameter.toParameter(composableName: String): Parameter {
-        val resolvedType = type.resolve()
-        val resolvedArgumentTypes = resolvedType.arguments.mapNotNull { it.type?.resolve()?.toType() }
-        val resolvedArgumentVariance = resolvedType.arguments.map { it.variance.label }
-
         return Parameter(
             name!!.asString(),
-            resolvedType.toType() ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
+            type.resolve().toType() ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
             getDefaultValue(resolver),
-            resolvedArgumentVariance,
-            resolvedArgumentTypes
         )
     }
 
