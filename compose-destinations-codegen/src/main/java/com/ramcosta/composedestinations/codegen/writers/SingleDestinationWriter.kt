@@ -6,6 +6,7 @@ import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFunctionWriter
+import com.ramcosta.composedestinations.codegen.writers.sub.NavArgResolver
 
 class SingleDestinationWriter(
     private val codeGenerator: CodeOutputStreamMaker,
@@ -28,13 +29,12 @@ class SingleDestinationWriter(
             sourceIds = sourceIds.toTypedArray()
         )
 
-        val composedRoute = constructRoute()
         outputStream += destinationTemplate
             .replace(DESTINATION_NAME, name)
             .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotations())
-            .replace(COMPOSED_ROUTE, composedRoute)
+            .replace(COMPOSED_ROUTE, constructRoute())
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
-            .replace(DEEP_LINKS, deepLinksDeclarationCode(composedRoute))
+            .replace(DEEP_LINKS, deepLinksDeclarationCode())
             .replace(DESTINATION_STYLE, destinationStyle())
             .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
             .addInvokeWithArgsMethod()
@@ -49,20 +49,21 @@ class SingleDestinationWriter(
             simpleName = name,
             isStartDestination = isStart,
             navGraphRoute = navGraphRoute,
-            requireOptInAnnotationNames = baseOptInAnnotations().filter { !it.isOptedIn }.map { it.annotationName }.toList(),
+            requireOptInAnnotationNames = baseOptInAnnotations().filter { !it.isOptedIn }
+                .map { it.annotationName }.toList(),
         )
     }
 
     private fun getNavArgs(): List<Parameter> {
         return if (destination.navArgsDelegateType == null) {
-            destination.parameters.filter { it.type.toNavTypeCodeOrNull() != null }
+            destination.parameters.filter { it.isNavArg() }
         } else {
-            if (destination.navArgsDelegateType.navArgs.any { it.type.toNavTypeCodeOrNull() == null }) {
-                throw IllegalDestinationsSetup("Composable ${destination.composableName}: '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types.")
+            if (destination.navArgsDelegateType.navArgs.any { !it.isNavArg() }) {
+                throw IllegalDestinationsSetup("Composable '${destination.composableName}': '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types.")
             }
 
-            if (destination.parameters.any { it.type.toNavTypeCodeOrNull() != null }) {
-                throw IllegalDestinationsSetup("Composable ${destination.composableName}: annotated function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class.")
+            if (destination.parameters.any { it.isNavArg() && it.type.qualifiedName != destination.navArgsDelegateType.qualifiedName }) {
+                throw IllegalDestinationsSetup("Composable '${destination.composableName}': annotated function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class.")
             }
 
             destination.navArgsDelegateType.navArgs
@@ -174,12 +175,12 @@ class SingleDestinationWriter(
                 }
                 replaceUnknownOrNullableArgs += """
                    |        if (${it.name} != null) {
-                   |            route = route.replace("{${it.name}}", ${it.name}${if (it.type.simpleName == "String") "" else ".toString()"})
+                   |            route = route.replace("{${it.name}}", ${it.stringifyForNavigation()})
                    |        }
                    |        
                     """.trimMargin()
             } else {
-                replace += "\t\t\t\t.replace(\"{${it.name}}\", ${it.name}${if (it.type.simpleName == "String") "" else ".toString()"})"
+                replace += "\t\t\t\t.replace(\"{${it.name}}\", ${it.stringifyForNavigation()})"
             }
 
 
@@ -202,6 +203,24 @@ class SingleDestinationWriter(
             .replace("%s2", replaceUnknownOrNullableArgs.toString())
             .replace("%s3", routeInitialVar.toString())
             .replace("%s4", replace.toString())
+    }
+
+    private fun Parameter.stringifyForNavigation(): String {
+        if (isComplexTypeNavArg()) {
+            additionalImports.add("com.ramcosta.composedestinations.utils.Base64Utils")
+            additionalImports.add("com.ramcosta.composedestinations.utils.Base64Utils.toBase64")
+
+            val receiver = if (type.isSerializable && type.isParcelable) {
+                additionalImports.add("android.os.Parcelable")
+                "($name as Parcelable)"
+            } else {
+                name
+            }
+
+            return "$receiver.toBase64()"
+        }
+
+        return "${name}${if (type.simpleName == "String") "" else ".toString()"}"
     }
 
     private fun argsFromFunctions(): String {
@@ -231,9 +250,7 @@ class SingleDestinationWriter(
         val arguments = StringBuilder()
         navArgs.forEach {
             arguments += "\n\t\t${it.name} = "
-            arguments += DestinationContentFunctionWriter.resolveNavArg(destination,
-                additionalImports,
-                it)
+            arguments += NavArgResolver.resolve(destination, additionalImports, it)
             arguments += ","
         }
 
@@ -262,9 +279,7 @@ class SingleDestinationWriter(
         val arguments = StringBuilder()
         navArgs.forEach {
             arguments += "\n\t\t${it.name} = "
-            arguments += DestinationContentFunctionWriter.resolveNavArgFromSavedStateHandle(destination,
-                additionalImports,
-                it)
+            arguments += NavArgResolver.resolveFromSavedStateHandle(destination, additionalImports, it)
             arguments += ","
         }
 
@@ -284,10 +299,10 @@ class SingleDestinationWriter(
         }
     }
 
-    private fun constructRoute(): String {
+    private fun constructRoute(args: List<Parameter> = navArgs): String {
         val mandatoryArgs = StringBuilder()
         val optionalArgs = StringBuilder()
-        navArgs.forEach {
+        args.forEach {
             if (it.isMandatory) {
                 mandatoryArgs += "/{${it.name}}"
             } else {
@@ -314,15 +329,16 @@ class SingleDestinationWriter(
                 code += "\n\toverride val arguments get() = listOf(\n\t\t"
             }
 
+            val toNavTypeCode = it.toNavTypeCode()
             code += "navArgument(\"${it.name}\") {\n\t\t\t"
-            code += "type = ${it.toNavTypeCode()}\n\t\t"
+            code += "type = $toNavTypeCode\n\t\t"
             if (it.type.isNullable) {
-                if (it.type.simpleName != "String") {
+                if (toNavTypeCode != "NavType.StringType") {
                     throw IllegalDestinationsSetup("Composable '${destination.composableName}', argument '${it.name}': Only String navigation arguments can be nullable")
                 }
                 code += "\tnullable = true\n\t\t"
             }
-            code += navArgDefaultCode(it.defaultValue)
+            code += navArgDefaultCode(it)
             code += "}"
 
             code += if (i != navArgs.lastIndex) {
@@ -335,7 +351,7 @@ class SingleDestinationWriter(
         return code.toString()
     }
 
-    private fun deepLinksDeclarationCode(composedRoute: String): String {
+    private fun deepLinksDeclarationCode(): String {
         val code = StringBuilder()
 
         destination.deepLinks.forEachIndexed { i, it ->
@@ -353,7 +369,7 @@ class SingleDestinationWriter(
                 code += "\tmimeType = \"${it.mimeType}\"\n\t\t"
             }
             if (it.uriPattern.isNotEmpty()) {
-                code += "\turiPattern = \"${it.uriPattern.replace(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER, composedRoute)}\"\n\t\t"
+                code += "\turiPattern = \"${it.uriPattern.replace(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER, constructRouteForDeepLinkPlaceholder())}\"\n\t\t"
             }
             code += "}"
 
@@ -365,6 +381,23 @@ class SingleDestinationWriter(
         }
 
         return code.toString()
+    }
+
+    private fun constructRouteForDeepLinkPlaceholder(): String {
+        val args = navArgs
+            .toMutableList()
+            .apply {
+                removeAll {
+                    val isComplexType = it.isComplexTypeNavArg()
+                    if (it.isMandatory && isComplexType) {
+                        throw IllegalDestinationsSetup("Composable '${destination.composableName}', arg name= '${it.name}': deep links cannot contain mandatory navigation types of complex type!")
+                    }
+
+                    isComplexType
+                }
+            }
+
+        return constructRoute(args)
     }
 
     private fun destinationStyle(): String {
@@ -409,16 +442,64 @@ class SingleDestinationWriter(
         return "\n\toverride val style = $CORE_BOTTOM_SHEET_DESTINATION_STYLE\n"
     }
 
-    private fun navArgDefaultCode(argDefault: DefaultValue?): String {
-        return if (argDefault != null) "\tdefaultValue = ${argDefault.code}\n\t\t" else ""
+    private fun navArgDefaultCode(param: Parameter): String {
+        if (param.defaultValue == null) {
+            return ""
+        }
+
+        if (param.type.isEnum) {
+            return "\tdefaultValue = ${param.defaultValue.code}.toString()\n\t\t"
+        }
+
+        if (param.isComplexTypeNavArg()) {
+            additionalImports.add("com.ramcosta.composedestinations.utils.Base64Utils.toBase64")
+
+            val defaultValueCode = if (param.type.isParcelable && param.type.isSerializable) {
+                additionalImports.add("android.os.Parcelable")
+                "(${param.defaultValue.code} as Parcelable)"
+            } else {
+                param.defaultValue.code
+            }
+            return "\tdefaultValue = $defaultValueCode.toBase64()\n\t\t"
+        }
+
+        return "\tdefaultValue = ${param.defaultValue.code}\n\t\t"
     }
 
     private fun Parameter.toNavTypeCode(): String {
-        return type.toNavTypeCodeOrNull() ?: throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${type.qualifiedName}")
+        val navTypeCode = type.toNavTypeCodeOrNull()
+        if (navTypeCode != null) {
+            return navTypeCode
+        }
+
+        if (type.isEnum || type.isParcelable || type.isSerializable) {
+            return "NavType.StringType"
+        }
+
+        throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${type.qualifiedName}")
+    }
+
+    private fun Parameter.isNavArg(): Boolean {
+        if (type.isEnum) {
+            additionalImports.add(type.qualifiedName)
+            return true
+        }
+
+        if (isComplexTypeNavArg()) {
+            additionalImports.add(type.qualifiedName)
+            return true
+        }
+
+        return type.toNavTypeCodeOrNull() != null
+    }
+
+    private fun Parameter.isComplexTypeNavArg(): Boolean {
+        return !type.isEnum
+                && (type.isParcelable || (type.isSerializable && type.toNavTypeCodeOrNull() == null))
     }
 
     private class OptInAnnotation(
         val annotationName: String,
-        val isOptedIn: Boolean
+        val isOptedIn: Boolean,
     )
 }

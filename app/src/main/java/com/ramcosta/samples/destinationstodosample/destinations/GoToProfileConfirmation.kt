@@ -13,6 +13,7 @@ import com.ramcosta.composedestinations.GoToProfileConfirmationDestination
 import com.ramcosta.composedestinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.samples.destinationstodosample.destinations.profile.Stuff
 import com.ramcosta.samples.destinationstodosample.destinations.styles.AppDialog
 
 @Destination(style = AppDialog::class)
@@ -31,7 +32,7 @@ fun GoToProfileConfirmation(
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             onClick = {
-                navigator.navigate(ProfileScreenDestination(id = 3, groupName = "Kotliners")) {
+                navigator.navigate(ProfileScreenDestination(id = 3, groupName = "Kotliners", stuff = Stuff.STUFF2)) {
                     popUpTo(GoToProfileConfirmationDestination.route) {
                         inclusive = true
                     }

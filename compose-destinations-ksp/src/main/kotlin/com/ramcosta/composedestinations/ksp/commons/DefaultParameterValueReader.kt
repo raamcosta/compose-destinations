@@ -146,11 +146,11 @@ private fun String.defaultValueCodeWithFunctionCalls(): String {
     if (idx < this.lastIndex) {
         idx++
         val textToConsider = this.removeRange(0, idx)
-        val indexCena = textToConsider.indexOfFirst { it == ' ' || it == ',' || it == '\n' || it == ')' }
+        val indexFinish = textToConsider.indexOfFirst { it == ' ' || it == ',' || it == '\n' || it == ')' }
         var idxFromRemove = idx
 
-        if (indexCena != -1) {
-            idxFromRemove += indexCena
+        if (indexFinish != -1) {
+            idxFromRemove += indexFinish
             return this.removeRange(idxFromRemove, this.length)
         }
     }
@@ -170,7 +170,7 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
     */
 
     val fileLocation = location as FileLocation
-    val lineAndImports = File(fileLocation.filePath).readLineAndImports(fileLocation.lineNumber)
+    val (line, imports) = File(fileLocation.filePath).readLineAndImports(fileLocation.lineNumber)
 
     return DefaultParameterValueReader.readDefaultValue(
         { pckg, name ->
@@ -180,9 +180,9 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
                     ResolvedSymbol(it.isPublic() || it.isInternal())
                 }
         },
-        lineAndImports.first,
+        line,
         this.containingFile!!.packageName.asString(),
-        lineAndImports.second,
+        imports,
         name!!.asString(),
         type.toString()
     )

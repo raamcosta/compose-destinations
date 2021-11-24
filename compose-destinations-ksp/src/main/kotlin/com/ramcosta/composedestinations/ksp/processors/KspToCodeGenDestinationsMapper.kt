@@ -11,10 +11,31 @@ import java.util.*
 
 class KspToCodeGenDestinationsMapper(
     private val resolver: Resolver,
-    private val logger: KspLogger
+    private val logger: KspLogger,
 ) : KSFileSourceMapper {
 
     private val humps = "(?<=.)(?=\\p{Upper})".toRegex()
+
+    private val defaultStyle by lazy {
+        resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.Default")!!
+            .asType(emptyList())
+    }
+
+    private val bottomSheet by lazy {
+        resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.BottomSheet")!!.asType(emptyList())
+    }
+
+    private val dialog by lazy {
+        resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.Dialog")!!.asType(emptyList())
+    }
+
+    private val parcelableType by lazy {
+        resolver.getClassDeclarationByName("android.os.Parcelable")!!.asType(emptyList())
+    }
+
+    private val serializableType by lazy {
+        resolver.getClassDeclarationByName("java.io.Serializable")!!.asType(emptyList())
+    }
 
     private val sourceFilesById = mutableMapOf<String, KSFile?>()
 
@@ -86,22 +107,16 @@ class KspToCodeGenDestinationsMapper(
         val ksStyleType = findArgumentValue<KSType>(DESTINATION_ANNOTATION_STYLE_ARGUMENT)
             ?: return DestinationStyleType.Default
 
-        val defaultStyle = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.Default")!!
-                .asType(emptyList())
         if (defaultStyle.isAssignableFrom(ksStyleType)) {
             return DestinationStyleType.Default
         }
 
-        val bottomSheet = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.BottomSheet")!!
-                .asType(emptyList())
         if (bottomSheet.isAssignableFrom(ksStyleType)) {
             return DestinationStyleType.BottomSheet
         }
 
         val type = ksStyleType.toType() ?: throw IllegalDestinationsSetup("Parameter $DESTINATION_ANNOTATION_STYLE_ARGUMENT of Destination annotation in composable $composableName was not resolvable: please review it.")
 
-        val dialog = resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.Dialog")!!
-                .asType(emptyList())
         if (dialog.isAssignableFrom(ksStyleType)) {
             return DestinationStyleType.Dialog(type)
         }
@@ -125,11 +140,16 @@ class KspToCodeGenDestinationsMapper(
 
     private fun KSType.toType(): Type? {
         val qualifiedName = declaration.qualifiedName ?: return null
+        val ksClassDeclaration = declaration as? KSClassDeclaration?
+        val classDeclarationType = ksClassDeclaration?.asType(emptyList())
 
         return Type(
-            declaration.simpleName.asString(),
-            qualifiedName.asString(),
-            isMarkedNullable
+            simpleName = declaration.simpleName.asString(),
+            qualifiedName = qualifiedName.asString(),
+            isNullable = isMarkedNullable,
+            isEnum = ksClassDeclaration?.classKind == ClassKind.ENUM_CLASS,
+            isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
+            isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false
         )
     }
 
