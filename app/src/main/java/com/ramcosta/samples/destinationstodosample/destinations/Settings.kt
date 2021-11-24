@@ -18,18 +18,17 @@ import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import com.ramcosta.samples.destinationstodosample.destinations.commons.Routes
 import com.ramcosta.samples.destinationstodosample.destinations.styles.SettingsTransitions
 import com.ramcosta.samples.destinationstodosample.destinations.commons.requireTitle
 
-const val SETTINGS_ROUTE = "settings/main"
-const val SETTINGS_NAV_GRAPH = "settings"
 const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 
 @OptIn(ExperimentalAnimationApi::class)
 @Destination(
-    route = SETTINGS_ROUTE,
+    route = Routes.MAIN_SETTINGS,
     start = true,
-    navGraph = SETTINGS_NAV_GRAPH,
+    navGraph = Routes.SETTINGS_NAV_GRAPH,
     deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],
     style = SettingsTransitions::class
 )
