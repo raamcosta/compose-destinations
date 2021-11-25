@@ -5,7 +5,6 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavBackStackEntry
 
 /**
  * Controls how the destination is shown when navigated to and navigated away from.
@@ -38,40 +37,55 @@ sealed interface DestinationStyle {
      * when coming from or going to certain destinations.
      * It requires Accompanist Navigation Animation dependency.
      *
-     * You will need to create an object which implements this
-     * and use its KClass in [com.ramcosta.composedestinations.annotation.Destination.style]
+     * You will need to create an object which implements `AnimatedDestinationStyle`
+     * (generated version of this interface that exposes `Destination`)
+     * and use the KClass in [com.ramcosta.composedestinations.annotation.Destination.style]
      */
     @ExperimentalAnimationApi
-    interface Animated : DestinationStyle {
+    interface Animated<T : DestinationSpec> : DestinationStyle {
 
-        fun AnimatedContentScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
+        fun AnimatedContentScope<String>.enterTransition(
+            initial: T?,
+            target: T?
+        ): EnterTransition? {
             return null
         }
 
-        fun AnimatedContentScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
+        fun AnimatedContentScope<String>.exitTransition(
+            initial: T?,
+            target: T?
+        ): ExitTransition? {
             return null
         }
 
-        fun AnimatedContentScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
-            return enterTransition()
+        fun AnimatedContentScope<String>.popEnterTransition(
+            initial: T?,
+            target: T?
+        ): EnterTransition? {
+            return enterTransition(initial, target)
         }
 
-        fun AnimatedContentScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
-            return exitTransition()
+        fun AnimatedContentScope<String>.popExitTransition(
+            initial: T?,
+            target: T?
+        ): ExitTransition? {
+            return exitTransition(initial, target)
         }
 
         /**
          * Can be used to force no animations for certain destinations, if you've overridden
          * the default animation with `defaultAnimationParams`.
          */
-        object None : Animated {
-            override fun AnimatedContentScope<NavBackStackEntry>.enterTransition(): EnterTransition {
-                return EnterTransition.None
-            }
+        object None : Animated<DestinationSpec> {
+            override fun AnimatedContentScope<String>.enterTransition(
+                initial: DestinationSpec?,
+                target: DestinationSpec?
+            ) = EnterTransition.None
 
-            override fun AnimatedContentScope<NavBackStackEntry>.exitTransition(): ExitTransition {
-                return ExitTransition.None
-            }
+            override fun AnimatedContentScope<String>.exitTransition(
+                initial: DestinationSpec?,
+                target: DestinationSpec?
+            ) = ExitTransition.None
         }
     }
 

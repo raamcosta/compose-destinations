@@ -420,7 +420,7 @@ class SingleDestinationWriter(
 
     private fun destinationStyleAnimated(destinationStyleType: DestinationStyleType.Animated): String {
         if (!availableDependencies.accompanistAnimation) {
-            throw MissingRequiredDependency("You need to include '$ACCOMPANIST_NAVIGATION_ANIMATION' to use $CORE_DESTINATION_ANIMATION_STYLE!")
+            throw MissingRequiredDependency("You need to include '$ACCOMPANIST_NAVIGATION_ANIMATION' to use $GENERATED_ANIMATED_DESTINATION_STYLE!")
         }
 
         additionalImports.add(EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME)
