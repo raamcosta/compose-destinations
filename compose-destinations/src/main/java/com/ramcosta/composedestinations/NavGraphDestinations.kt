@@ -13,7 +13,7 @@ fun NavGraphBuilder.addNavGraphDestinations(
     addComposable: NavGraphBuilder.(DestinationSpec) -> Unit,
     addNavigation: NavGraphBuilder.(NavGraphSpec, NavGraphBuilder.() -> Unit) -> Unit
 ) {
-    navGraphSpec.destinations.values.forEach { destination ->
+    navGraphSpec.destinationsByRoute.values.forEach { destination ->
         addComposable(destination)
     }
 
@@ -45,12 +45,12 @@ fun NavGraphSpec.contains(destination: DestinationSpec): Boolean {
  * Returns all [DestinationSpec]s including those of nested graphs
  */
 val NavGraphSpec.allDestinations get(): List<DestinationSpec> {
-    val destinations = destinations
+    val destinations = destinationsByRoute
         .values
         .toMutableList()
 
     nestedNavGraphs.forEach {
-        destinations.addAll(it.destinations.values)
+        destinations.addAll(it.allDestinations)
     }
     return destinations
 }
@@ -61,7 +61,7 @@ val NavGraphSpec.allDestinations get(): List<DestinationSpec> {
  * Returns `null` if there is no such destination.
  */
 fun NavGraphSpec.findDestination(route: String): DestinationSpec? {
-    val destination = destinations[route]
+    val destination = destinationsByRoute[route]
 
     if (destination != null) {
         return destination

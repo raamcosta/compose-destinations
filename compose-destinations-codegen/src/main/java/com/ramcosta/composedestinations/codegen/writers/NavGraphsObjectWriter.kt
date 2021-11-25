@@ -69,12 +69,12 @@ class NavGraphsObjectWriter(
        |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(navGraphRoute)} = $GENERATED_NAV_GRAPH(
        |        route = "$navGraphRoute",
        |        startDestination = ${startDestination},
-       |        destinations = mapOf(
+       |        destinations = listOf(
        |            $destinationsAnchor
        |        )${if (nestedNavGraphs.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"}
        |    )
         """.trimMargin()
-            .replace(destinationsAnchor, destinationsInsideMap(navGraphDestinations))
+            .replace(destinationsAnchor, destinationsInsideList(navGraphDestinations))
             .replace(nestedGraphsAnchor, nestedGraphsList(nestedNavGraphs))
             .replace(requireOptInAnnotationsAnchor, requireOptInAnnotations(navGraphDestinations))
 
@@ -123,10 +123,10 @@ class NavGraphsObjectWriter(
         return startingDestinations[0].simpleName
     }
 
-    private fun destinationsInsideMap(destinations: List<GeneratedDestination>): String {
+    private fun destinationsInsideList(destinations: List<GeneratedDestination>): String {
         val code = StringBuilder()
         destinations.forEachIndexed { i, it ->
-            code += "${it.simpleName}.route to ${it.simpleName}"
+            code += it.simpleName
 
             if (i != destinations.lastIndex)
                 code += ",\n\t\t\t"

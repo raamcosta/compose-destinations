@@ -30,16 +30,26 @@ sealed interface $GENERATED_DESTINATION : $CORE_DESTINATION_SPEC
 data class $GENERATED_NAV_GRAPH(
     override val route: String,
     override val startDestination: $GENERATED_DESTINATION,
-    override val destinations: Map<String, $GENERATED_DESTINATION>,
+    val destinations: List<$GENERATED_DESTINATION>,
     override val nestedNavGraphs: List<$GENERATED_NAV_GRAPH> = emptyList()
-): $CORE_NAV_GRAPH_SPEC
+): $CORE_NAV_GRAPH_SPEC {
+    override val destinationsByRoute = destinations.associateBy { it.route }
+}
 
 /**
- * Finds the destination correspondent to this [NavBackStackEntry], null if none is found
+ * Finds the destination correspondent to this [NavBackStackEntry] in the root NavGraph, null if none is found
  * or if no route is set in this back stack entry's destination.
  */
 val NavBackStackEntry.navDestination: $GENERATED_DESTINATION?
     get() {
-        return destination.route?.let { $GENERATED_NAV_GRAPHS_OBJECT.root.findDestination(it) as $GENERATED_DESTINATION }
+        return navDestination()
     }
+
+/**
+ * Finds the destination correspondent to this [NavBackStackEntry] in [navGraph], null if none is found
+ * or if no route is set in this back stack entry's destination.
+ */
+fun NavBackStackEntry.navDestination(navGraph: $GENERATED_NAV_GRAPH = $GENERATED_NAV_GRAPHS_OBJECT.root): $GENERATED_DESTINATION? {
+    return destination.route?.let { navGraph.findDestination(it) as $GENERATED_DESTINATION }
+}
 """.trimIndent()

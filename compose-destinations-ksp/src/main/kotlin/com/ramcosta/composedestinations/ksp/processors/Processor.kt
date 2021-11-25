@@ -7,8 +7,8 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.ramcosta.composedestinations.codegen.CodeGenerator
-import com.ramcosta.composedestinations.codegen.commons.CORE_EXTENSIONS
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_QUALIFIED
+import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION
 import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
 import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
@@ -41,8 +41,7 @@ class Processor(
     }
 
     private fun Resolver.areExtensionsAlreadyGenerated(): Boolean {
-        return getNewFiles()
-            .any { it.packageName.asString() == PACKAGE_NAME && it.fileName == "$CORE_EXTENSIONS.kt" }
+        return getClassDeclarationByName("$PACKAGE_NAME.$GENERATED_DESTINATION") != null
     }
 
     private fun Resolver.getComposableDestinations(): Sequence<KSFunctionDeclaration> {

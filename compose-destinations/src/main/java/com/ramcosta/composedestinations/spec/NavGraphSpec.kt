@@ -20,7 +20,7 @@ interface NavGraphSpec: Routed {
      * All destinations which belong to this navigation graph
      * by their route
      */
-    val destinations: Map<String, DestinationSpec>
+    val destinationsByRoute: Map<String, DestinationSpec>
 
     /**
      * Nested navigation graphs of this navigation graph.

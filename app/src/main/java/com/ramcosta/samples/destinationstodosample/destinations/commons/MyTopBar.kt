@@ -49,7 +49,7 @@ fun TopBar(
             color = Color.White
         )
 
-        if (!NavGraphs.settings.destinations.containsValue(destination)) {
+        if (!NavGraphs.settings.destinations.contains(destination)) {
             IconButton(
                 onClick = onSettingsClick,
                 modifier = Modifier.align(Alignment.CenterEnd)

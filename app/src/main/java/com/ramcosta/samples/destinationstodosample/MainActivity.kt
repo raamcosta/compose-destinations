@@ -21,7 +21,6 @@ import com.ramcosta.composedestinations.*
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigateTo
-import com.ramcosta.composedestinations.spec.Routed
 import com.ramcosta.samples.destinationstodosample.destinations.commons.*
 import com.ramcosta.samples.destinationstodosample.destinations.greeting.GreetingUiEvents
 import com.ramcosta.samples.destinationstodosample.destinations.greeting.GreetingUiState
@@ -115,7 +114,7 @@ class MainActivity : ComponentActivity() {
         coroutineScope: CoroutineScope,
         scaffoldState: ScaffoldState
     ) {
-        NavGraphs.root.destinations.values
+        NavGraphs.root.destinations
             .sortedBy { if (it == NavGraphs.root.startDestination) 0 else 1 }
             .forEach {
                 it.DrawerContent(
@@ -124,7 +123,7 @@ class MainActivity : ComponentActivity() {
                         if (navController.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
                             && navController.currentBackStackEntry?.navDestination != clickedDestination
                         ) {
-                            navController.navigateTo(clickedDestination as Routed)
+                            navController.navigate(clickedDestination.route)
                             coroutineScope.launch { scaffoldState.drawerState.close() }
                         }
                     }

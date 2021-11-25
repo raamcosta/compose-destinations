@@ -74,6 +74,7 @@ $END_ACCOMPANIST_MATERIAL_IMPORTS
  * @see [$NAV_HOST_METHOD_QUALIFIED_NAME]
  *
  * @param modifier [Modifier]
+ * @param navGraph [$GENERATED_NAV_GRAPH] to use
  * @param startDestination the start destination to use
  * @param navController [NavHostController]
  * @param dependenciesContainerBuilder lambda invoked when a destination gets navigated to. It allows
@@ -82,7 +83,8 @@ $END_ACCOMPANIST_MATERIAL_IMPORTS
 $EXPERIMENTAL_API_PLACEHOLDER@Composable
 fun $DESTINATIONS_NAV_HOST(
     modifier: Modifier = Modifier,
-    startDestination: $GENERATED_DESTINATION = ${GENERATED_NAV_GRAPHS_OBJECT}.root.startDestination,$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER
+    navGraph: $GENERATED_NAV_GRAPH = ${GENERATED_NAV_GRAPHS_OBJECT}.root,
+    startDestination: $GENERATED_DESTINATION = navGraph.startDestination,$ANIMATION_DEFAULT_PARAMS_PLACEHOLDER
     navController: NavHostController = rememberDestinationsNavController(),
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit = {}
 ) {
@@ -90,7 +92,7 @@ fun $DESTINATIONS_NAV_HOST(
         navController = navController,
         startDestination = startDestination.route,
         modifier = modifier,
-        route = ${GENERATED_NAV_GRAPHS_OBJECT}.root.route,$ANIMATED_NAV_HOST_CALL_PARAMETERS_START
+        route = navGraph.route,$ANIMATED_NAV_HOST_CALL_PARAMETERS_START
         contentAlignment = defaultAnimationParams.contentAlignment,
         enterTransition = defaultAnimationParams.enterTransition,
         exitTransition = defaultAnimationParams.exitTransition,
@@ -98,7 +100,7 @@ fun $DESTINATIONS_NAV_HOST(
         popExitTransition = defaultAnimationParams.popExitTransition,$ANIMATED_NAV_HOST_CALL_PARAMETERS_END
     ) {
         addNavGraphDestinations(
-            navGraphSpec = ${GENERATED_NAV_GRAPHS_OBJECT}.root,
+            navGraphSpec = navGraph,
             addNavigation = addNavigation(),   
             addComposable = addComposable(navController, dependenciesContainerBuilder)
         )
