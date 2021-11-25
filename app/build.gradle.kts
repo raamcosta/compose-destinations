@@ -7,8 +7,13 @@ plugins {
 }
 
 kotlin {
-    sourceSets.main {
-        kotlin.srcDir("build/generated/ksp/debug/kotlin")
+    sourceSets {
+        debug {
+            kotlin.srcDir("build/generated/ksp/debug/kotlin")
+        }
+        release {
+            kotlin.srcDir("build/generated/ksp/release/kotlin")
+        }
     }
 }
 

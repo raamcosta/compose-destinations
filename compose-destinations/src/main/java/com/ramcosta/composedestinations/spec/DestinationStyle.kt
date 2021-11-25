@@ -5,6 +5,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavBackStackEntry
 
 /**
  * Controls how the destination is shown when navigated to and navigated away from.
@@ -42,32 +43,32 @@ sealed interface DestinationStyle {
      * and use the KClass in [com.ramcosta.composedestinations.annotation.Destination.style]
      */
     @ExperimentalAnimationApi
-    interface Animated<T : DestinationSpec> : DestinationStyle {
+    interface Animated : DestinationStyle {
 
         fun AnimatedContentScope<String>.enterTransition(
-            initial: T?,
-            target: T?
+            initial: NavBackStackEntry,
+            target: NavBackStackEntry
         ): EnterTransition? {
             return null
         }
 
         fun AnimatedContentScope<String>.exitTransition(
-            initial: T?,
-            target: T?
+            initial: NavBackStackEntry,
+            target: NavBackStackEntry
         ): ExitTransition? {
             return null
         }
 
         fun AnimatedContentScope<String>.popEnterTransition(
-            initial: T?,
-            target: T?
+            initial: NavBackStackEntry,
+            target: NavBackStackEntry
         ): EnterTransition? {
             return enterTransition(initial, target)
         }
 
         fun AnimatedContentScope<String>.popExitTransition(
-            initial: T?,
-            target: T?
+            initial: NavBackStackEntry,
+            target: NavBackStackEntry
         ): ExitTransition? {
             return exitTransition(initial, target)
         }
@@ -76,15 +77,15 @@ sealed interface DestinationStyle {
          * Can be used to force no animations for certain destinations, if you've overridden
          * the default animation with `defaultAnimationParams`.
          */
-        object None : Animated<DestinationSpec> {
+        object None : Animated {
             override fun AnimatedContentScope<String>.enterTransition(
-                initial: DestinationSpec?,
-                target: DestinationSpec?
+                initial: NavBackStackEntry,
+                target: NavBackStackEntry
             ) = EnterTransition.None
 
             override fun AnimatedContentScope<String>.exitTransition(
-                initial: DestinationSpec?,
-                target: DestinationSpec?
+                initial: NavBackStackEntry,
+                target: NavBackStackEntry
             ) = ExitTransition.None
         }
     }

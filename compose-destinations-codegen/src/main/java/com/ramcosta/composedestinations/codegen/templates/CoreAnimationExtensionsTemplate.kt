@@ -8,6 +8,7 @@ package $PACKAGE_NAME
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavBackStackEntry
 
 /**
  * Class that can be used to define the default animation for all Destinations with no
@@ -37,12 +38,12 @@ class DefaultAnimationParams(
 
 fun interface DestinationEnterTransition {
     @ExperimentalAnimationApi
-    fun AnimatedContentScope<String>.enter(initial: Destination?, target: Destination?) : EnterTransition
+    fun AnimatedContentScope<String>.enter(initial: NavBackStackEntry, target: NavBackStackEntry) : EnterTransition
 }
 
 fun interface DestinationExitTransition {
     @ExperimentalAnimationApi
-    fun AnimatedContentScope<String>.exit(initial: Destination?, target: Destination?) : ExitTransition
+    fun AnimatedContentScope<String>.exit(initial: NavBackStackEntry, target: NavBackStackEntry) : ExitTransition
 }
 
 """.trimIndent()

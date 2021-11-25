@@ -2,17 +2,19 @@ package com.ramcosta.samples.destinationstodosample.destinations.greeting
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.*
+import com.ramcosta.composedestinations.spec.DestinationStyle
 
 @OptIn(ExperimentalAnimationApi::class)
-object GreetingTransitions : AnimatedDestinationStyle {
+object GreetingTransitions : DestinationStyle.Animated {
 
     override fun AnimatedContentScope<String>.enterTransition(
-        initial: Destination?,
-        target: Destination?
+        initial: NavBackStackEntry,
+        target: NavBackStackEntry
     ): EnterTransition? {
 
-        return when (initial) {
+        return when (initial.navDestination) {
             SettingsDestination,
             ProfileScreenDestination ->
                 slideInHorizontally(
@@ -24,11 +26,11 @@ object GreetingTransitions : AnimatedDestinationStyle {
     }
 
     override fun AnimatedContentScope<String>.exitTransition(
-        initial: Destination?,
-        target: Destination?
+        initial: NavBackStackEntry,
+        target: NavBackStackEntry
     ): ExitTransition? {
 
-        return when (target) {
+        return when (target.navDestination) {
             ProfileScreenDestination,
             SettingsDestination ->
                 slideOutHorizontally(
@@ -40,11 +42,11 @@ object GreetingTransitions : AnimatedDestinationStyle {
     }
 
     override fun AnimatedContentScope<String>.popEnterTransition(
-        initial: Destination?,
-        target: Destination?
+        initial: NavBackStackEntry,
+        target: NavBackStackEntry
     ): EnterTransition? {
 
-        return when (initial) {
+        return when (initial.navDestination) {
             ProfileScreenDestination,
             SettingsDestination ->
                 slideInHorizontally(
@@ -56,11 +58,11 @@ object GreetingTransitions : AnimatedDestinationStyle {
     }
 
     override fun AnimatedContentScope<String>.popExitTransition(
-        initial: Destination?,
-        target: Destination?
+        initial: NavBackStackEntry,
+        target: NavBackStackEntry
     ): ExitTransition? {
 
-        return when (target) {
+        return when (target.navDestination) {
             ProfileScreenDestination,
             SettingsDestination ->
                 slideOutHorizontally(

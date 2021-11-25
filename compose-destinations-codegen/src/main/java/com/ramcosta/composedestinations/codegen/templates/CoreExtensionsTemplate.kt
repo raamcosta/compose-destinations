@@ -22,45 +22,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 sealed interface $GENERATED_DESTINATION : $CORE_DESTINATION_SPEC
 
 /**
- * Version of [$CORE_DESTINATION_ANIMATION_STYLE] used to expose methods with 
- * [$GENERATED_DESTINATION]. 
- * 
- * Create subclasses to control animation behaviour when transitioning
- * between destinations.
- */
-@ExperimentalAnimationApi
-interface $GENERATED_ANIMATED_DESTINATION_STYLE : $CORE_DESTINATION_ANIMATION_STYLE<$GENERATED_DESTINATION> {
-
-    override fun AnimatedContentScope<String>.enterTransition(
-        initial: $GENERATED_DESTINATION?,
-        target: $GENERATED_DESTINATION?
-    ): EnterTransition? {
-        return null
-    }
-
-    override fun AnimatedContentScope<String>.exitTransition(
-        initial: $GENERATED_DESTINATION?,
-        target: $GENERATED_DESTINATION?
-    ): ExitTransition? {
-        return null
-    }
-
-    override fun AnimatedContentScope<String>.popEnterTransition(
-        initial: $GENERATED_DESTINATION?,
-        target: $GENERATED_DESTINATION?
-    ): EnterTransition? {
-        return enterTransition(initial, target)
-    }
-
-    override fun AnimatedContentScope<String>.popExitTransition(
-        initial: $GENERATED_DESTINATION?,
-        target: $GENERATED_DESTINATION?
-    ): ExitTransition? {
-        return exitTransition(initial, target)
-    }
-}
-
-/**
  * Realization of [$CORE_NAV_GRAPH_SPEC] for the app.
  * It uses [$GENERATED_DESTINATION] instead of [$CORE_DESTINATION_SPEC].
  * 
