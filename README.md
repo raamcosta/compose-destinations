@@ -87,7 +87,7 @@ ksp 'io.github.raamcosta.compose-destinations:ksp:0.9.4-beta'
 // official compose navigation
 implementation 'androidx.navigation:navigation-compose:$compose_navigation_version'
 ```
-Official Compose Navigation is required.
+> Official Compose Navigation is required.
 If you're using Accompanist Navigation-Animation and/or
 Accompanist Material (aka BottomSheet, currently), Compose Destinations has you covered. <br/>
 Check our [wiki](https://github.com/raamcosta/compose-destinations/wiki) to know more. <br/>
