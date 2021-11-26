@@ -89,7 +89,7 @@ implementation 'androidx.navigation:navigation-compose:$compose_navigation_versi
 ```
 > Official Compose Navigation is required.
 If you're using Accompanist Navigation-Animation and/or
-Accompanist Material (aka BottomSheet, currently), Compose Destinations has you covered. <br/>
+Accompanist Material (aka BottomSheet destinations, currently), Compose Destinations has you covered. <br/>
 Check our [wiki](https://github.com/raamcosta/compose-destinations/wiki) to know more. <br/>
 Each [release](https://github.com/raamcosta/compose-destinations/releases) contains a list of 
 versions known to be compatible.
