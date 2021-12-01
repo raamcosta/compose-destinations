@@ -3,6 +3,8 @@ package com.ramcosta.samples.destinationstodosample.destinations.profile
 import android.os.Parcel
 import android.os.Parcelable
 
+val DEFAULT_GROUP : String? = null
+
 data class ProfileScreenNavArgs(
     val id: Long,
     val groupName: String? = DEFAULT_GROUP,

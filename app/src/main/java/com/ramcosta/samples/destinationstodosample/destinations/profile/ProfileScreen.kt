@@ -19,9 +19,6 @@ import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 
-val DEFAULT_GROUP : String? = null
-const val DEFAULT_ID = 2L
-
 @OptIn(ExperimentalAnimationApi::class)
 @Destination(
     deepLinks = [

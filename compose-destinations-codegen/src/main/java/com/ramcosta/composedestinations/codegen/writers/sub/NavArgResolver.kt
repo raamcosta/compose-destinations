@@ -2,7 +2,7 @@ package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.commons.GeneratedExceptions
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
-import com.ramcosta.composedestinations.codegen.commons.toNavTypeCodeOrNull
+import com.ramcosta.composedestinations.codegen.commons.isPrimitive
 import com.ramcosta.composedestinations.codegen.model.Destination
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.Type
@@ -51,7 +51,7 @@ object NavArgResolver {
                 val stringToArg = "Base64Utils.base64ToParcelable(it, ${parameter.type.simpleName}.CREATOR)"
                 buildNavArgForStringifiedComplexOrEnumTypes(argGetter, stringToArg, defaultCodeIfArgNotPresent, isComposable)
             }
-            parameter.type.isSerializable && parameter.type.toNavTypeCodeOrNull() == null -> {
+            parameter.type.isSerializable && !parameter.type.isPrimitive() -> {
                 if (isComposable) additionalImports.add("androidx.compose.runtime.remember")
 
                 val stringToArg = "Base64Utils.base64ToSerializable(it)"

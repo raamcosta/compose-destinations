@@ -11,7 +11,11 @@ operator fun StringBuilder.plusAssign(str: String) {
     append(str)
 }
 
-fun Type.toNavTypeCodeOrNull(): String? {
+fun Type.isPrimitive(): Boolean {
+    return toPrimitiveNavTypeCodeOrNull() != null
+}
+
+fun Type.toPrimitiveNavTypeCodeOrNull(): String? {
     return when (qualifiedName) {
         String::class.qualifiedName -> "NavType.StringType"
         Int::class.qualifiedName -> "NavType.IntType"

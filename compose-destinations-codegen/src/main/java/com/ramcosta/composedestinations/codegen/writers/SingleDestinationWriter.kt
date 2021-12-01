@@ -369,7 +369,12 @@ class SingleDestinationWriter(
                 code += "\tmimeType = \"${it.mimeType}\"\n\t\t"
             }
             if (it.uriPattern.isNotEmpty()) {
-                code += "\turiPattern = \"${it.uriPattern.replace(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER, constructRouteForDeepLinkPlaceholder())}\"\n\t\t"
+                val uriPattern = if (it.uriPattern.contains(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER)) {
+                    it.uriPattern.replace(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER, constructRouteForDeepLinkPlaceholder())
+                } else {
+                    it.uriPattern
+                }
+                code += "\turiPattern = \"$uriPattern\"\n\t\t"
             }
             code += "}"
 
@@ -467,9 +472,9 @@ class SingleDestinationWriter(
     }
 
     private fun Parameter.toNavTypeCode(): String {
-        val navTypeCode = type.toNavTypeCodeOrNull()
-        if (navTypeCode != null) {
-            return navTypeCode
+        val primitiveNavTypeCode = type.toPrimitiveNavTypeCodeOrNull()
+        if (primitiveNavTypeCode != null) {
+            return primitiveNavTypeCode
         }
 
         if (type.isEnum || type.isParcelable || type.isSerializable) {
@@ -490,12 +495,12 @@ class SingleDestinationWriter(
             return true
         }
 
-        return type.toNavTypeCodeOrNull() != null
+        return type.isPrimitive()
     }
 
     private fun Parameter.isComplexTypeNavArg(): Boolean {
         return !type.isEnum
-                && (type.isParcelable || (type.isSerializable && type.toNavTypeCodeOrNull() == null))
+                && (type.isParcelable || (type.isSerializable && !type.isPrimitive()))
     }
 
     private class OptInAnnotation(
