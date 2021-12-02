@@ -87,7 +87,6 @@ dependencies {
         implementation(ui)
         implementation(material)
         implementation(viewModel)
-        implementation(navigation)
         implementation(accompanistMaterial)
         implementation(accompanistAnimation)
     }

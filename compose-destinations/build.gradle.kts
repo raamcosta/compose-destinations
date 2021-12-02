@@ -49,6 +49,6 @@ android {
 dependencies {
 
     with(Deps.Compose) {
-        implementation(navigation)
+        api(navigation)
     }
 }
