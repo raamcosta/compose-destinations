@@ -11,13 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.*
+import com.ramcosta.composedestinations.animations.DefaultAnimationParams
+import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigateTo
@@ -29,13 +31,11 @@ import com.ramcosta.samples.destinationstodosample.destinations.profile.ProfileU
 import com.ramcosta.samples.destinationstodosample.destinations.profile.ProfileUiState
 import com.ramcosta.samples.destinationstodosample.destinations.profile.ProfileViewModel
 import com.ramcosta.samples.destinationstodosample.ui.theme.DestinationsTodoSampleTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +44,8 @@ class MainActivity : ComponentActivity() {
             DestinationsTodoSampleTheme {
                 val scaffoldState = rememberScaffoldState()
                 val coroutineScope = rememberCoroutineScope()
-                val navController = rememberDestinationsNavController()
+                val navHostEngine = rememberAnimatedNavHostEngine(DefaultAnimationParams.ACCOMPANIST_FADING)
+                val navController = rememberAnimatedNavController()
 
                 DestinationsSampleScaffold(
                     scaffoldState = scaffoldState,
@@ -71,9 +72,10 @@ class MainActivity : ComponentActivity() {
                     val drawerController: DrawerController = remember(scaffoldState) { DrawerControllerImpl(scaffoldState.drawerState) }
 
                     DestinationsNavHost(
+                        engine = navHostEngine,
                         navController = navController,
+                        navGraph = NavGraphs.root,
                         startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
-                        defaultAnimationParams = DefaultAnimationParams.ACCOMPANIST_FADING,
                         modifier = Modifier.padding(paddingValues),
                         dependenciesContainerBuilder = { navBackStackEntry ->
                             dependency(drawerController)
@@ -97,7 +99,9 @@ class MainActivity : ComponentActivity() {
                 }
 
                 ProfileScreenDestination -> {
-                    val vm = hiltViewModel<ProfileViewModel>()
+                    val vm = viewModel<ProfileViewModel>(
+                        factory = ProfileViewModel.Factory(navBackStackEntry)
+                    )
                     dependency<ProfileUiState>(vm)
                     dependency<ProfileUiEvents>(vm)
                 }

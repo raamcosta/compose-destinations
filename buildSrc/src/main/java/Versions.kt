@@ -10,9 +10,6 @@ object Versions {
     const val composeViewModel = "2.4.0"
     const val activityCompose = "1.4.0"
 
-    const val hilt = "2.40.2"
-    const val hiltComposeNavigation = "1.0.0-beta01"
-
     const val material = "1.4.0"
     const val lifecycleKtx = "2.4.0"
     const val lifecycleRuntimeKtx = lifecycleKtx
@@ -32,7 +29,6 @@ object Deps {
         const val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
         const val dependencyCheckPlugin = "com.github.ben-manes.versions"
         const val pluginVersion = "com.android.tools.build:gradle:${Versions.gradlePluginVersion}"
-        const val hiltGradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.hilt}"
     }
 
     object Android {
@@ -42,9 +38,6 @@ object Deps {
     object AndroidX {
         const val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycleRuntimeKtx}"
         const val activityCompose = "androidx.activity:activity-compose:${Versions.activityCompose}"
-        const val hilt = "com.google.dagger:hilt-android:${Versions.hilt}"
-        const val hiltComposeNavigation = "androidx.hilt:hilt-navigation-compose:${Versions.hiltComposeNavigation}"
-        const val hiltKapt = "com.google.dagger:hilt-android-compiler:${Versions.hilt}"
     }
 
     object Compose {

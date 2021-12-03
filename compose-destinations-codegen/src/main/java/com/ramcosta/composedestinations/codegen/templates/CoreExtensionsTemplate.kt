@@ -10,6 +10,7 @@ import androidx.navigation.NavOptionsBuilder
 import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.DestinationStyle
 import $PACKAGE_NAME.spec.NavGraphSpec
+import $PACKAGE_NAME.utils.findDestination
 import androidx.navigation.NavBackStackEntry
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition

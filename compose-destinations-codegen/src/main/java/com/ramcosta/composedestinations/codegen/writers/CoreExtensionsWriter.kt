@@ -25,15 +25,15 @@ class CoreExtensionsWriter(
 
         coreExtensions.close()
 
-        if (availableDependencies.accompanistAnimation) {
-            val animationsExtension: OutputStream = codeGenerator.makeFile(
-                packageName = PACKAGE_NAME,
-                name = CORE_ANIMATION_EXTENSIONS
-            )
-
-            animationsExtension += coreAnimationsExtensionsTemplate
-
-            animationsExtension.close()
-        }
+//        if (availableDependencies.accompanistAnimation) {
+//            val animationsExtension: OutputStream = codeGenerator.makeFile(
+//                packageName = PACKAGE_NAME,
+//                name = CORE_ANIMATION_EXTENSIONS
+//            )
+//
+//            animationsExtension += coreAnimationsExtensionsTemplate
+//
+//            animationsExtension.close()
+//        }
     }
 }

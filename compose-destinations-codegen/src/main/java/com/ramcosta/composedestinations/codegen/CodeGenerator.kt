@@ -29,7 +29,7 @@ class CodeGenerator(
         NavGraphsObjectWriter(codeGenerator, logger).write(generatedDestinations)
 
         CoreExtensionsWriter(codeGenerator, availableDependencies).write()
-        DestinationsNavHostWriter(codeGenerator, logger, availableDependencies).write()
+//        DestinationsNavHostWriter(codeGenerator, logger, availableDependencies).write()
     }
 
     private fun requireComposeNavigation() {

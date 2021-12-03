@@ -2,8 +2,6 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("com.google.devtools.ksp") version Versions.ksp
-    id("kotlin-kapt")
-    id("dagger.hilt.android.plugin")
 }
 
 kotlin {
@@ -62,21 +60,9 @@ android {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    if (!incremental) {
-        //Found this by pure damn luck.. check if it makes sense
-        // (kspDebugKotlin task was failing without the if)
-        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    }
-}
-
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
 
-    implementation(project(mapOf("path" to ":compose-destinations")))
+    implementation(project(mapOf("path" to ":compose-destinations-animations")))
     ksp(project(":compose-destinations-ksp"))
 
     with(Deps.Android) {
@@ -87,15 +73,10 @@ dependencies {
         implementation(ui)
         implementation(material)
         implementation(viewModel)
-        implementation(accompanistMaterial)
-        implementation(accompanistAnimation)
     }
 
     with(Deps.AndroidX) {
         implementation(lifecycleRuntimeKtx)
         implementation(activityCompose)
-        implementation(hilt)
-        implementation(hiltComposeNavigation)
-        kapt(hiltKapt)
     }
 }
