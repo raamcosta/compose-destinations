@@ -13,7 +13,8 @@ import com.ramcosta.composedestinations.codegen.writers.NavGraphsObjectWriter
 class CodeGenerator(
     private val logger: Logger,
     private val codeGenerator: CodeOutputStreamMaker,
-    private val core: Core
+    private val core: Core,
+    private val generateNavGraphs: Boolean
 ) {
 
     fun generate(destinations: List<Destination>) {
@@ -21,46 +22,58 @@ class CodeGenerator(
 
         val generatedDestinations = DestinationsWriter(codeGenerator, logger, core).write(destinations)
 
-        NavGraphsObjectWriter(codeGenerator, logger).write(generatedDestinations)
+        if (generateNavGraphs) {
+            NavGraphsObjectWriter(codeGenerator, logger).write(generatedDestinations)
+        }
 
-        CoreExtensionsWriter(codeGenerator).write()
+        CoreExtensionsWriter(codeGenerator, generateNavGraphs).write()
     }
 
     private fun initialValidations(destinations: List<Destination>) {
         val cleanRoutes = mutableListOf<String>()
         val composableNames = mutableListOf<String>()
 
-        destinations.forEach {
-            if (cleanRoutes.contains(it.cleanRoute)) {
-                throw IllegalDestinationsSetup("Multiple Destinations with '${it.cleanRoute}' as its route name")
+        destinations.forEach { destination ->
+            if (cleanRoutes.contains(destination.cleanRoute)) {
+                throw IllegalDestinationsSetup("Multiple Destinations with '${destination.cleanRoute}' as its route name")
             }
 
-            if (composableNames.contains(it.composableName)) {
-                throw IllegalDestinationsSetup("Destination composable names must be unique: found multiple named '${it.composableName}'")
+            if (composableNames.contains(destination.composableName)) {
+                throw IllegalDestinationsSetup("Destination composable names must be unique: found multiple named '${destination.composableName}'")
             }
 
-            if (it.composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME) {
+            if (destination.composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME) {
                 if (core != Core.ANIMATIONS) {
-                    throw IllegalDestinationsSetup("${it.composableName} composable: You need to include $CORE_ANIMATIONS_DEPENDENCY dependency to use a $COLUMN_SCOPE_SIMPLE_NAME receiver!")
+                    throw IllegalDestinationsSetup("'${destination.composableName}' composable: You need to include $CORE_ANIMATIONS_DEPENDENCY dependency to use a $COLUMN_SCOPE_SIMPLE_NAME receiver!")
                 }
 
-                if (it.destinationStyleType !is DestinationStyleType.BottomSheet) {
-                    throw IllegalDestinationsSetup("${it.composableName} composable: Only destinations with a DestinationStyle.BottomSheet style may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!")
+                if (destination.destinationStyleType !is DestinationStyleType.BottomSheet) {
+                    throw IllegalDestinationsSetup("'${destination.composableName}' composable: Only destinations with a DestinationStyle.BottomSheet style may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!")
                 }
             }
 
-            if (it.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
+            if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
                 if (core != Core.ANIMATIONS) {
-                        throw IllegalDestinationsSetup("${it.composableName} composable: You need to include $CORE_ANIMATIONS_DEPENDENCY dependency to use a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
+                        throw IllegalDestinationsSetup("'${destination.composableName}' composable: You need to include $CORE_ANIMATIONS_DEPENDENCY dependency to use a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
                 }
 
-                if (it.destinationStyleType is DestinationStyleType.Dialog || it.destinationStyleType is DestinationStyleType.BottomSheet) {
-                    throw IllegalDestinationsSetup("${it.composableName} composable: Only destinations with a DestinationStyle.Animated or DestinationStyle.Default style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
+                if (destination.destinationStyleType is DestinationStyleType.Dialog || destination.destinationStyleType is DestinationStyleType.BottomSheet) {
+                    throw IllegalDestinationsSetup("'${destination.composableName}' composable: Only destinations with a DestinationStyle.Animated or DestinationStyle.Default style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
                 }
             }
 
-            cleanRoutes.add(it.cleanRoute)
-            composableNames.add(it.composableName)
+            if (!generateNavGraphs) {
+                if (destination.navGraphRoute != "root") {
+                    logger.warn("'${destination.composableName}' composable: a navGraph was set but it will be ignored. Reason: 'compose-destinations.generateNavGraphs' was set to false at ksp gradle configuration.")
+                }
+
+                if (destination.isStart) {
+                    logger.warn("'${destination.composableName}' composable: destination was set as the start destination but that will be ignored. Reason: 'compose-destinations.generateNavGraphs' was set to false at ksp gradle configuration.")
+                }
+            }
+
+            cleanRoutes.add(destination.cleanRoute)
+            composableNames.add(destination.composableName)
         }
     }
 }

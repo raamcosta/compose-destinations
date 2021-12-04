@@ -2,6 +2,11 @@ package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.commons.*
 
+const val START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR = "[START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR]"
+const val END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR = "[END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR]"
+const val START_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = "[START_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR]"
+const val END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = "[END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR]"
+
 val coreExtensionsTemplate = """
 package $PACKAGE_NAME
 
@@ -36,7 +41,7 @@ data class $GENERATED_NAV_GRAPH(
 ): $CORE_NAV_GRAPH_SPEC {
     override val destinationsByRoute = destinations.associateBy { it.route }
 }
-
+$START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
 /**
  * Finds the destination correspondent to this [NavBackStackEntry] in the root NavGraph, null if none is found
  * or if no route is set in this back stack entry's destination.
@@ -45,12 +50,12 @@ val NavBackStackEntry.navDestination: $GENERATED_DESTINATION?
     get() {
         return navDestination()
     }
-
+$END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
 /**
  * Finds the destination correspondent to this [NavBackStackEntry] in [navGraph], null if none is found
  * or if no route is set in this back stack entry's destination.
  */
-fun NavBackStackEntry.navDestination(navGraph: $GENERATED_NAV_GRAPH = $GENERATED_NAV_GRAPHS_OBJECT.root): $GENERATED_DESTINATION? {
+fun NavBackStackEntry.navDestination(navGraph: $GENERATED_NAV_GRAPH$START_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = $GENERATED_NAV_GRAPHS_OBJECT.root$END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR): $GENERATED_DESTINATION? {
     return destination.route?.let { navGraph.findDestination(it) as $GENERATED_DESTINATION }
 }
 """.trimIndent()

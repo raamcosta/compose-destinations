@@ -34,7 +34,8 @@ class Processor(
         CodeGenerator(
             logger = kspLogger,
             codeGenerator = kspCodeOutputStreamMaker,
-            core = resolver.getAvailableDependencies()
+            core = resolver.getAvailableDependencies(),
+            generateNavGraphs = options["compose-destinations.generateNavGraphs"] != "false"
         ).generate(destinations)
 
         return emptyList()
