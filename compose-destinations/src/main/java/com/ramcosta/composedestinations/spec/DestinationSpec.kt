@@ -46,7 +46,8 @@ interface DestinationSpec {
      * [dependenciesContainerBuilder] will be called with a [DependenciesContainerBuilder]
      * and give opportunity for other Composables on the call stack to add
      * dependencies that can be used in this destination.
-     * You can add dependencies via `destinationDependencies` argument of `DestinationsNavHost` call.
+     * You can add dependencies via `dependenciesContainerBuilder` argument of
+     * [com.ramcosta.composedestinations.DestinationsNavHost] call.
      *
      * Besides, it is used internally to enable certain destination Composables
      * to be extension functions on `ColumnScope` (for [DestinationStyle.BottomSheet] destinations)

@@ -5,9 +5,25 @@ import androidx.compose.animation.core.tween
 import androidx.compose.ui.Alignment
 
 /**
- * Class that can be used to define the default animation for all Destinations with no
+ * Class that can be used to define the default animations for all Destinations with no
+ * specific style set and that belong to a specific navigation graph.
+ * It is used in [com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine] call.
+ *
+ * @see [com.google.accompanist.navigation.animation.AnimatedNavHost] for a parameters explanation
+ */
+@ExperimentalAnimationApi
+class NavGraphDefaultAnimationParams(
+    val enterTransition: DestinationEnterTransition? = null,
+    val exitTransition: DestinationExitTransition? = null,
+    val popEnterTransition: DestinationEnterTransition? = enterTransition,
+    val popExitTransition: DestinationExitTransition? = exitTransition,
+)
+
+/**
+ * Class that can be used to define the default animations for all Destinations with no
  * specific style set.
- * You can create your own and pass it to the `DestinationsNavHost` call.
+ * You can create your own and pass it to the
+ * [com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine] call.
  *
  * @see [com.google.accompanist.navigation.animation.AnimatedNavHost] for a parameters explanation
  */

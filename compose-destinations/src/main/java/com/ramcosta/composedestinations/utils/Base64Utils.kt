@@ -6,6 +6,13 @@ import android.util.Base64
 import java.io.*
 import java.nio.charset.Charset
 
+/**
+ * Utilities to convert [Parcelable] (or [Serializable]) to Base64 strings and
+ * Base64 Strings back to the [Parcelable] (or [Serializable]).
+ *
+ * They'll be used internally by the generated code, if you have [Parcelable]
+ * or [Serializable] navigation arguments.
+ */
 object Base64Utils {
 
     fun Parcelable.toBase64(): String {

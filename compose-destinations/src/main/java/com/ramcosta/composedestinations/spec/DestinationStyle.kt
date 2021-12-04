@@ -18,29 +18,40 @@ sealed interface DestinationStyle {
      * No special animation or style.
      * This is the default style used in case none is specified for a given Destination.
      *
-     * If you are using Accompanist's Navigation-Animation dependency, then this default
-     * may be overridden through generated `DestinationsNavHost` call
-     * which will have a `defaultAnimationParams` argument.
+     * If you are using "io.github.raamcosta.compose-destinations:animations-core" dependency, then
+     * this default may be overridden through `rememberAnimatedNavHostEngine` call
+     * which has a `defaultAnimationParams` argument.
      */
     object Default : DestinationStyle
 
     /**
      * Marks the destination to be shown with a bottom sheet style.
-     * It requires Accompanist Material dependency.
+     * It requires "io.github.raamcosta.compose-destinations:animations-core" dependency.
      *
      * You will need to use a `ModalBottomSheetLayout` wrapping your
-     * top level Composable (usually the `DestinationsNavHost` composable).
+     * top level Composable.
+     * Example:
+     * ```
+     * val navController = rememberAnimatedNavController()
+     * val bottomSheetNavigator = rememberBottomSheetNavigator()
+     * navController.navigatorProvider += bottomSheetNavigator
+     *
+     * ModalBottomSheetLayout(
+     *     bottomSheetNavigator = bottomSheetNavigator
+     * ) {
+     *     //YOUR TOP LEVEL COMPOSABLE LIKE `DestinationsNavHost` or `Scaffold`
+     * }
+     * ```
      */
     object BottomSheet : DestinationStyle
 
     /**
      * Marks the destination to have defined enter/exit transitions
      * when coming from or going to certain destinations.
-     * It requires Accompanist Navigation Animation dependency.
+     * It requires "io.github.raamcosta.compose-destinations:animations-core" dependency.
      *
-     * You will need to create an object which implements `AnimatedDestinationStyle`
-     * (generated version of this interface that exposes `Destination`)
-     * and use the KClass in [com.ramcosta.composedestinations.annotation.Destination.style]
+     * You will need to create an object which implements this interface
+     * and use its KClass in [com.ramcosta.composedestinations.annotation.Destination.style]
      */
     @ExperimentalAnimationApi
     interface Animated : DestinationStyle {

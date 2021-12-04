@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
@@ -12,6 +13,13 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 
+/**
+ * Returns the default [NavHostEngine] to be used with normal (non-animated)
+ * core ("io.github.raamcosta.compose-destinations:core").
+ *
+ * The [NavHostEngine] is used by default in [com.ramcosta.composedestinations.DestinationsNavHost]
+ * call.
+ */
 @Composable
 fun rememberNavHostEngine(): NavHostEngine = remember {
     DefaultNavHostEngine()
@@ -27,17 +35,16 @@ internal class DefaultNavHostEngine : NavHostEngine {
     @Composable
     override fun NavHost(
         modifier: Modifier,
-        navGraph: NavGraphSpec,
+        route: String,
         startDestination: DestinationSpec,
         navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit,
         builder: NavGraphBuilder.() -> Unit
     ) {
         androidx.navigation.compose.NavHost(
             navController = navController,
             startDestination = startDestination.route,
             modifier = modifier,
-            route = navGraph.route,
+            route = route,
             builder = builder
         )
     }
@@ -76,7 +83,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
                 )
             }
 
-            else -> throw IllegalStateException("You need to use 'rememberAnimatedNavHostEngine' and pass that into the 'DestinationsNavHost' to get an engine that can use ${destinationStyle.javaClass.simpleName}")
+            else -> throw IllegalStateException("You need to use 'rememberAnimatedNavHostEngine' to get an engine that can use ${destinationStyle.javaClass.simpleName} and pass that into the 'DestinationsNavHost' ")
         }
     }
 
@@ -96,6 +103,25 @@ internal class DefaultNavHostEngine : NavHostEngine {
             ) {
                 dependenciesContainerBuilder(navBackStackEntry)
             }
+        }
+    }
+
+    private fun NavGraphBuilder.addDialogComposable(
+        dialogStyle: DestinationStyle.Dialog,
+        destination: DestinationSpec,
+        navController: NavHostController,
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
+    ) {
+        dialog(
+            destination.route,
+            destination.arguments,
+            destination.deepLinks,
+            dialogStyle.properties
+        ) { navBackStackEntry ->
+            destination.Content(
+                navController,
+                navBackStackEntry
+            ) { dependenciesContainerBuilder(navBackStackEntry) }
         }
     }
 }

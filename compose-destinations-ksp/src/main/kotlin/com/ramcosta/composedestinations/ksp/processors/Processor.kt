@@ -10,7 +10,7 @@ import com.ramcosta.composedestinations.codegen.CodeGenerator
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION
 import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
-import com.ramcosta.composedestinations.codegen.model.AvailableDependencies
+import com.ramcosta.composedestinations.codegen.model.Core
 import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
 
@@ -32,9 +32,9 @@ class Processor(
 
         val destinations = functionsToDestinationsMapper.map(annotatedDestinations)
         CodeGenerator(
-            kspLogger,
-            kspCodeOutputStreamMaker,
-            resolver.getAvailableDependencies()
+            logger = kspLogger,
+            codeGenerator = kspCodeOutputStreamMaker,
+            core = resolver.getAvailableDependencies()
         ).generate(destinations)
 
         return emptyList()
@@ -49,16 +49,14 @@ class Processor(
             .filterIsInstance<KSFunctionDeclaration>()
     }
 
-    private fun Resolver.getAvailableDependencies(): AvailableDependencies {
-        val hasAccompanistAnimations = getClassDeclarationByName("com.google.accompanist.navigation.animation.AnimatedComposeNavigator") != null
-        val hasComposeNavigation = getClassDeclarationByName("androidx.navigation.NavHost") != null
-        val hasAccompanistMaterial = getClassDeclarationByName("com.google.accompanist.navigation.material.BottomSheetNavigator") != null
+    private fun Resolver.getAvailableDependencies(): Core {
+        val isUsingAnimationsCore = getClassDeclarationByName("com.ramcosta.composedestinations.animations.AnimatedNavHostEngine") != null
 
-        return AvailableDependencies(
-            composeNavigation = hasComposeNavigation,
-            accompanistAnimation = hasAccompanistAnimations,
-            accompanistMaterial = hasAccompanistMaterial
-        )
+        return if (isUsingAnimationsCore) {
+            Core.ANIMATIONS
+        } else {
+            Core.MAIN
+        }
     }
 }
 

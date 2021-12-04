@@ -11,7 +11,7 @@ import com.ramcosta.composedestinations.codegen.writers.sub.NavArgResolver
 class SingleDestinationWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
-    private val availableDependencies: AvailableDependencies,
+    private val core: Core,
     private val destination: Destination
 ) {
 
@@ -370,7 +370,11 @@ class SingleDestinationWriter(
             }
             if (it.uriPattern.isNotEmpty()) {
                 val uriPattern = if (it.uriPattern.contains(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER)) {
-                    it.uriPattern.replace(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER, constructRouteForDeepLinkPlaceholder())
+                    if (it.uriPattern.endsWith(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER)) {
+                        it.uriPattern.replace(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER, constructRouteForDeepLinkPlaceholder())
+                    } else {
+                        throw IllegalDestinationsSetup("Composable '${destination.composableName}': deep link usage of 'FULL_ROUTE_PLACEHOLDER' must be as a suffix")
+                    }
                 } else {
                     it.uriPattern
                 }
@@ -424,8 +428,8 @@ class SingleDestinationWriter(
     }
 
     private fun destinationStyleAnimated(destinationStyleType: DestinationStyleType.Animated): String {
-        if (!availableDependencies.accompanistAnimation) {
-            throw MissingRequiredDependency("You need to include '$ACCOMPANIST_NAVIGATION_ANIMATION' to use $CORE_DESTINATION_ANIMATION_STYLE!")
+        if (core != Core.ANIMATIONS) {
+            throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_DESTINATION_ANIMATION_STYLE!")
         }
 
         additionalImports.add(EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME)
@@ -439,8 +443,8 @@ class SingleDestinationWriter(
     }
 
     private fun destinationStyleBottomSheet(): String {
-        if (!availableDependencies.accompanistMaterial) {
-            throw MissingRequiredDependency("You need to include '$ACCOMPANIST_NAVIGATION_MATERIAL' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
+        if (core != Core.ANIMATIONS) {
+            throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
         }
 
         additionalImports.add("$PACKAGE_NAME.spec.DestinationStyle")

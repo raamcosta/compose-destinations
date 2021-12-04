@@ -13,26 +13,48 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import com.ramcosta.composedestinations.spec.NavHostEngine
-import com.ramcosta.composedestinations.addDialogComposable
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.navigation.dependency
+import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 
+/**
+ * Remembers and returns an instance of a [NavHostEngine]
+ * suitable for navigation animations and bottom sheet styled
+ * destinations.
+ *
+ * @param defaultAnimationParams animations to set as default for all destinations that don't specify
+ * others via `Destination` annotation's `style` argument. If [defaultAnimationParams] is not passed
+ * in, then no animations will happen by default.
+ * @param defaultAnimationsForNestedNavGraph lambda called for each nested navigation graph that
+ * allows you to override the default animations of [defaultAnimationParams] with defaults just for
+ * that specific nested navigation graph.
+ */
 @ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
 @Composable
 fun rememberAnimatedNavHostEngine(
     defaultAnimationParams: DefaultAnimationParams = DefaultAnimationParams(),
-): NavHostEngine = remember {
-    AnimatedNavHostEngine(defaultAnimationParams)
+    defaultAnimationsForNestedNavGraph: (NavGraphSpec) -> NavGraphDefaultAnimationParams = { NavGraphDefaultAnimationParams() }
+): NavHostEngine {
+    val defaultNavHostEngine = rememberNavHostEngine()
+    return remember {
+        AnimatedNavHostEngine(
+            defaultAnimationParams,
+            defaultAnimationsForNestedNavGraph,
+            defaultNavHostEngine
+        )
+    }
 }
 
 @ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
 internal class AnimatedNavHostEngine(
-    private val defaultAnimationParams: DefaultAnimationParams
+    private val defaultAnimationParams: DefaultAnimationParams,
+    private val defaultAnimationsPerNestedNavGraph: (NavGraphSpec) -> NavGraphDefaultAnimationParams,
+    private val defaultNavHostEngine: NavHostEngine
 ) : NavHostEngine {
 
     @Composable
@@ -43,22 +65,22 @@ internal class AnimatedNavHostEngine(
     @Composable
     override fun NavHost(
         modifier: Modifier,
-        navGraph: NavGraphSpec,
+        route: String,
         startDestination: DestinationSpec,
         navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit,
         builder: NavGraphBuilder.() -> Unit
-    ) {
+    ) = with(defaultAnimationParams) {
+
         AnimatedNavHost(
             navController = navController,
             startDestination = startDestination.route,
             modifier = modifier,
-            route = navGraph.route,
-            contentAlignment = defaultAnimationParams.contentAlignment,
-            enterTransition = defaultAnimationParams.enterTransition.toAccompanist(),
-            exitTransition = defaultAnimationParams.exitTransition.toAccompanist(),
-            popEnterTransition = defaultAnimationParams.popEnterTransition.toAccompanist(),
-            popExitTransition = defaultAnimationParams.popExitTransition.toAccompanist(),
+            route = route,
+            contentAlignment = contentAlignment,
+            enterTransition = enterTransition.toAccompanist(),
+            exitTransition = exitTransition.toAccompanist(),
+            popEnterTransition = popEnterTransition.toAccompanist(),
+            popExitTransition = popExitTransition.toAccompanist(),
             builder = builder
         )
     }
@@ -66,10 +88,15 @@ internal class AnimatedNavHostEngine(
     override fun NavGraphBuilder.navigation(
         navGraph: NavGraphSpec,
         builder: NavGraphBuilder.() -> Unit
-    ) {
+    ) = with(defaultAnimationsPerNestedNavGraph(navGraph)) {
+
         navigation(
             startDestination = navGraph.startDestination.route,
             route = navGraph.route,
+            enterTransition = enterTransition.toAccompanist(),
+            exitTransition = exitTransition.toAccompanist(),
+            popEnterTransition = popEnterTransition.toAccompanist(),
+            popExitTransition = popExitTransition.toAccompanist(),
             builder = builder,
         )
     }
@@ -82,15 +109,6 @@ internal class AnimatedNavHostEngine(
         when (val destinationStyle = destination.style) {
             is DestinationStyle.Default -> {
                 addComposable(
-                    destination,
-                    navController,
-                    dependenciesContainerBuilder
-                )
-            }
-
-            is DestinationStyle.Dialog -> {
-                addDialogComposable(
-                    destinationStyle,
                     destination,
                     navController,
                     dependenciesContainerBuilder
@@ -112,6 +130,17 @@ internal class AnimatedNavHostEngine(
                     navController,
                     dependenciesContainerBuilder
                 )
+            }
+
+            is DestinationStyle.Dialog -> {
+                // We delegate this to the default NavHost Engine
+                with(defaultNavHostEngine) {
+                    composable(
+                        destination,
+                        navController,
+                        dependenciesContainerBuilder
+                    )
+                }
             }
         }
     }

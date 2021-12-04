@@ -11,21 +11,27 @@ import kotlin.reflect.KClass
  *
  * A global `NavGraphs` object with all these destinations and their nav graphs
  * is generated.
- * `DestinationsNavHost` will also be generated. It is a `NavHost` wrapper
- * which will include these destinations automatically.
+ * [com.ramcosta.composedestinations.DestinationsNavHost] is a `NavHost` wrapper
+ * which will include the destinations of the [com.ramcosta.composedestinations.spec.NavGraphSpec]
+ * you pass in.
+ * At the moment, only one [com.ramcosta.composedestinations.DestinationsNavHost] call is supported
+ * so you should pass the "root" `NavGraph` (`NavGraphs.root`).
  *
- * @property route main route of this destination (by default, the name of the Composable function)
- * @property start `true` if this destination is the start destination of the navigation graph
- * @property navGraph route of the navigation graph this destination is a part of.
+ * @param route main route of this destination (by default, the name of the Composable function)
+ * @param start `true` if this destination is the start destination of the navigation graph
+ * @param navGraph route of the navigation graph this destination is a part of.
  * `"root"` is used by default. If this destination should be part of a nested nav graph, then
  * pass that nav graph's route.
- * @property navArgsDelegate class with a primary constructor where all navigation arguments are
+ * @param navArgsDelegate class with a primary constructor where all navigation arguments are
  * to be defined. Useful when the arguments are not needed in this Composable or to simplify
  * the Composable function signature when it has a lot of navigation arguments (which should be rare).
  * If set, the generated `Destination` class will have `argsFrom` methods that accept a `NavBackStackEntry`
  * or a `SavedStateHandle` (useful inside a ViewModel) and return an instance of this class.
- * @property deepLinks array of [DeepLink] which can be used to navigate to this destination
- * @property style class of a [DestinationStyle] subclass which is used to define the style of this destination
+ * @param deepLinks array of [DeepLink] which can be used to navigate to this destination
+ * @param style class of a [DestinationStyle] subclass which is used to define the destination style:
+ * its animations OR if it is dialog destination OR a bottom sheet destination. For animations
+ * and bottom sheet, you need to use the "io.github.raamcosta.compose-destinations:animations-core"
+ * dependency instead of the normal "io.github.raamcosta.compose-destinations:core".
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)

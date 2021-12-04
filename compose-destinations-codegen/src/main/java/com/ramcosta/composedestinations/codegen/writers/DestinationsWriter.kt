@@ -7,7 +7,7 @@ import com.ramcosta.composedestinations.codegen.model.*
 class DestinationsWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
-    private val availableDependencies: AvailableDependencies
+    private val core: Core
 ) {
 
     fun write(destinations: List<Destination>): List<GeneratedDestination> {
@@ -17,7 +17,7 @@ class DestinationsWriter(
             val generatedDestination = SingleDestinationWriter(
                 codeGenerator,
                 logger,
-                availableDependencies,
+                core,
                 destination
             ).write()
 
