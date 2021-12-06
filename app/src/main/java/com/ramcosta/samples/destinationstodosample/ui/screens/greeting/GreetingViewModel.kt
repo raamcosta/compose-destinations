@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.greeting
+package com.ramcosta.samples.destinationstodosample.ui.screens.greeting
 
 import android.util.Log
 import androidx.compose.runtime.getValue

@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.profile
+package com.ramcosta.samples.destinationstodosample.ui.screens.profile
 
 import android.util.Log
 import androidx.compose.runtime.getValue

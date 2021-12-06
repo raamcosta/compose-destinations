@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.greeting
+package com.ramcosta.samples.destinationstodosample.ui.screens.greeting
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -17,7 +17,7 @@ import com.ramcosta.composedestinations.TestScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.R
-import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerController
+import com.ramcosta.samples.destinationstodosample.commons.DrawerController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

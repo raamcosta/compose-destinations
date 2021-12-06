@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.commons
+package com.ramcosta.samples.destinationstodosample.commons
 
 import androidx.compose.material.DrawerState
 

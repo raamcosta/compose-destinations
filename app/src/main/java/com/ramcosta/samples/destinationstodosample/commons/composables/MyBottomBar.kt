@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.commons
+package com.ramcosta.samples.destinationstodosample.commons.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.Destination
+import com.ramcosta.samples.destinationstodosample.commons.title
 
 @Composable
 fun BottomBar(destination: Destination) {

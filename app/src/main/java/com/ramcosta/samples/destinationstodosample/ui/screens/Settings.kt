@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations
+package com.ramcosta.samples.destinationstodosample.ui.screens
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -18,9 +18,9 @@ import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import com.ramcosta.samples.destinationstodosample.destinations.commons.Routes
-import com.ramcosta.samples.destinationstodosample.destinations.styles.SettingsTransitions
-import com.ramcosta.samples.destinationstodosample.destinations.commons.requireTitle
+import com.ramcosta.samples.destinationstodosample.commons.Routes
+import com.ramcosta.samples.destinationstodosample.ui.screens.styles.SettingsTransitions
+import com.ramcosta.samples.destinationstodosample.commons.requireTitle
 
 const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 

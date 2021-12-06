@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations
+package com.ramcosta.samples.destinationstodosample.ui.screens
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.FeedDestination
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.samples.destinationstodosample.destinations.commons.requireTitle
+import com.ramcosta.samples.destinationstodosample.commons.requireTitle
 
 @OptIn(ExperimentalAnimationApi::class)
 @Destination

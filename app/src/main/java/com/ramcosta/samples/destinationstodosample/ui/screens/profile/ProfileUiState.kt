@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.profile
+package com.ramcosta.samples.destinationstodosample.ui.screens.profile
 
 interface ProfileUiState {
     val id: Long

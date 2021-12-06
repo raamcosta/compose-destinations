@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.commons
+package com.ramcosta.samples.destinationstodosample.commons
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable

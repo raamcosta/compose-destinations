@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.commons
+package com.ramcosta.samples.destinationstodosample.commons.composables
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,7 +24,7 @@ import com.ramcosta.composedestinations.navDestination
 fun DestinationsSampleScaffold(
     navController: NavHostController,
     scaffoldState: ScaffoldState,
-    topBar: (@Composable (Destination) -> Unit),
+    topBar: @Composable (Destination) -> Unit,
     bottomBar: @Composable (Destination) -> Unit,
     drawerContent: @Composable ColumnScope.(Destination) -> Unit,
     content: @Composable (PaddingValues) -> Unit

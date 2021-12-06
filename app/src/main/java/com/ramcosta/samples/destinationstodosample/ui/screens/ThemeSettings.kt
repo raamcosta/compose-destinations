@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations
+package com.ramcosta.samples.destinationstodosample.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,8 +13,8 @@ import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.ThemeSettingsDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.spec.DestinationStyle
-import com.ramcosta.samples.destinationstodosample.destinations.commons.Routes
-import com.ramcosta.samples.destinationstodosample.destinations.commons.requireTitle
+import com.ramcosta.samples.destinationstodosample.commons.Routes
+import com.ramcosta.samples.destinationstodosample.commons.requireTitle
 
 @Destination(
     route = Routes.THEME_SETTINGS,

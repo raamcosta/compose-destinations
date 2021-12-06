@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations
+package com.ramcosta.samples.destinationstodosample.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,8 +13,8 @@ import com.ramcosta.composedestinations.GoToProfileConfirmationDestination
 import com.ramcosta.composedestinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.samples.destinationstodosample.destinations.profile.Stuff
-import com.ramcosta.samples.destinationstodosample.destinations.styles.AppDialog
+import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Stuff
+import com.ramcosta.samples.destinationstodosample.ui.screens.styles.AppDialog
 
 @Destination(style = AppDialog::class)
 @Composable

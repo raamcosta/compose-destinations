@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.styles
+package com.ramcosta.samples.destinationstodosample.ui.screens.styles
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween

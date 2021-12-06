@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations.styles
+package com.ramcosta.samples.destinationstodosample.ui.screens.styles
 
 import androidx.compose.ui.window.DialogProperties
 import com.ramcosta.composedestinations.spec.DestinationStyle

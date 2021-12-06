@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.destinations
+package com.ramcosta.samples.destinationstodosample.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.samples.destinationstodosample.destinations.profile.Stuff
-import com.ramcosta.samples.destinationstodosample.destinations.profile.Things
+import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Stuff
+import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Things
 
 @Destination
 @Composable
