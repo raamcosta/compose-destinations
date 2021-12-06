@@ -12,7 +12,7 @@ class SingleDestinationWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
     private val core: Core,
-    private val destination: Destination
+    private val destination: DestinationGeneratingParams
 ) {
 
     private val additionalImports = mutableSetOf<String>()
@@ -31,6 +31,8 @@ class SingleDestinationWriter(
 
         outputStream += destinationTemplate
             .replace(DESTINATION_NAME, name)
+            .replaceSuperclassDestination()
+            .addNavArgsDataClass()
             .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotations())
             .replace(COMPOSED_ROUTE, constructRoute())
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
@@ -62,12 +64,40 @@ class SingleDestinationWriter(
                 throw IllegalDestinationsSetup("Composable '${destination.composableName}': '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types.")
             }
 
-            if (destination.parameters.any { it.isNavArg() && it.type.qualifiedName != destination.navArgsDelegateType.qualifiedName }) {
+            if (destination.parameters.any { it.isNavArg() }) {
                 throw IllegalDestinationsSetup("Composable '${destination.composableName}': annotated function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class.")
             }
 
             destination.navArgsDelegateType.navArgs
         }
+    }
+
+    private fun String.replaceSuperclassDestination(): String {
+        if (navArgs.isEmpty()) {
+            return replace(SUPERTYPE, GENERATED_NO_ARGS_DESTINATION)
+        }
+
+        val superType = if (destination.navArgsDelegateType != null) {
+            "${GENERATED_DESTINATION}<${destination.navArgsDelegateType.simpleName}>"
+        } else {
+            "${GENERATED_DESTINATION}<${destination.name}.NavArgs>"
+        }
+
+        return replace(SUPERTYPE, superType)
+    }
+
+    private fun String.addNavArgsDataClass(): String {
+        if (navArgs.isEmpty() || destination.navArgsDelegateType != null) {
+            return removeInstancesOf(NAV_ARGS_DATA_CLASS)
+        }
+
+        val code = StringBuilder()
+        code += "\n\n"
+        code += "\tdata class NavArgs(\n"
+        code += "${innerNavArgsParametersCode(true)}\n"
+        code += "\t)"
+
+        return replace(NAV_ARGS_DATA_CLASS, code.toString())
     }
 
     private fun baseOptInAnnotations(): List<OptInAnnotation> {
@@ -127,13 +157,7 @@ class SingleDestinationWriter(
     }
 
     private fun String.addInvokeWithArgsMethod(): String {
-        var result = this
-        if (navArgs.isEmpty()) {
-            result = result.replace(": $GENERATED_DESTINATION {", ": $GENERATED_DESTINATION, Routed {")
-        }
-
-        return result
-            .replace(ARGS_TO_ROUTED_METHOD, invokeWithArgsMethod())
+        return replace(ARGS_TO_ROUTED_METHOD, invokeWithArgsMethod())
     }
 
     private fun invokeWithArgsMethod(): String {
@@ -146,7 +170,6 @@ class SingleDestinationWriter(
             """.trimMargin()
         }
 
-        val args = StringBuilder()
         val replaceUnknownOrNullableArgs = StringBuilder()
         val routeInitialVar = StringBuilder()
         val replace = StringBuilder()
@@ -166,8 +189,6 @@ class SingleDestinationWriter(
         """.trimMargin()
 
         navArgs.forEachIndexed { i, it ->
-            args += "\t\t${it.name}: ${it.type.simpleName}${if (it.type.isNullable) "?" else ""}${defaultValueForWithArgsFunction(it)},"
-
             if (it.type.isNullable) {
                 if (replaceUnknownOrNullableArgs.isEmpty()) {
                     replaceUnknownOrNullableArgs += "\t\tvar route = route\n"
@@ -185,7 +206,6 @@ class SingleDestinationWriter(
 
 
             if (i != navArgs.lastIndex) {
-                args += "\n"
                 if (it.type.isNullable) {
                     replaceUnknownOrNullableArgs += "\n"
                 } else {
@@ -199,10 +219,27 @@ class SingleDestinationWriter(
         }
 
         return template
-            .replace("%s1", args.toString())
+            .replace("%s1", innerNavArgsParametersCode())
             .replace("%s2", replaceUnknownOrNullableArgs.toString())
             .replace("%s3", routeInitialVar.toString())
             .replace("%s4", replace.toString())
+    }
+
+    private fun innerNavArgsParametersCode(prefixWithVal: Boolean = false): String {
+        val args = StringBuilder()
+        val argPrefix = if (prefixWithVal) {
+            "val "
+        } else ""
+
+        navArgs.forEachIndexed { i, it ->
+            args += "\t\t$argPrefix${it.name}: ${it.type.simpleName}${if (it.type.isNullable) "?" else ""}${defaultValueForWithArgsFunction(it)},"
+
+            if (i != navArgs.lastIndex) {
+                args += "\n"
+            }
+        }
+
+        return args.toString()
     }
 
     private fun Parameter.stringifyForNavigation(): String {
@@ -223,26 +260,27 @@ class SingleDestinationWriter(
         return "${name}${if (type.simpleName == "String") "" else ".toString()"}"
     }
 
-    private fun argsFromFunctions(): String {
-        if (destination.navArgsDelegateType == null) {
+    private fun argsFromFunctions(): String = with(destination)  {
+        if (navArgs.isEmpty()) {
             return ""
         }
 
-        return argsFromNavBackStackEntry() + "\n" + argsFromSavedStateHandle()
+        val argsType = if (navArgsDelegateType == null) {
+            "NavArgs"
+        } else {
+            additionalImports.add(navArgsDelegateType.qualifiedName)
+            navArgsDelegateType.simpleName
+        }
+
+        return argsFromNavBackStackEntry(argsType) + "\n" + argsFromSavedStateHandle(argsType)
     }
 
-    private fun argsFromNavBackStackEntry(): String = with(destination) {
-        if (navArgsDelegateType == null) {
-            return ""
-        }
-
-        additionalImports.add(navArgsDelegateType.qualifiedName)
-
+    private fun argsFromNavBackStackEntry(argsType: String): String {
         val code = StringBuilder()
         code += """
                 
-           |fun argsFrom(navBackStackEntry: $NAV_BACK_STACK_ENTRY_SIMPLE_NAME): ${navArgsDelegateType.simpleName} {
-           |    return ${navArgsDelegateType.simpleName}(%s2
+           |override fun argsFrom(navBackStackEntry: $NAV_BACK_STACK_ENTRY_SIMPLE_NAME): $argsType {
+           |    return ${argsType}(%s2
            |    )
            |}
             """.trimMargin()
@@ -259,19 +297,14 @@ class SingleDestinationWriter(
             .prependIndent("\t")
     }
 
-    private fun argsFromSavedStateHandle(): String = with(destination) {
-        if (navArgsDelegateType == null) {
-            return ""
-        }
-
-        additionalImports.add(navArgsDelegateType.qualifiedName)
+    private fun argsFromSavedStateHandle(argsType: String): String {
         additionalImports.add(SAVED_STATE_HANDLE_QUALIFIED_NAME)
 
         val code = StringBuilder()
         code += """
                 
-           |fun argsFrom(savedStateHandle: $SAVED_STATE_HANDLE_SIMPLE_NAME): ${navArgsDelegateType.simpleName} {
-           |    return ${navArgsDelegateType.simpleName}(%s2
+           |override fun argsFrom(savedStateHandle: $SAVED_STATE_HANDLE_SIMPLE_NAME): $argsType {
+           |    return ${argsType}(%s2
            |    )
            |}
             """.trimMargin()
@@ -454,6 +487,10 @@ class SingleDestinationWriter(
     private fun navArgDefaultCode(param: Parameter): String {
         if (param.defaultValue == null) {
             return ""
+        }
+
+        if (param.defaultValue.code == "null") {
+            return "\tdefaultValue = null\n\t\t"
         }
 
         if (param.type.isEnum) {

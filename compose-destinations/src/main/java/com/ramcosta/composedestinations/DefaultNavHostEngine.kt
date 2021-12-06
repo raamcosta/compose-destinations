@@ -7,7 +7,7 @@ import androidx.navigation.*
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
-import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
@@ -27,6 +27,8 @@ fun rememberNavHostEngine(): NavHostEngine = remember {
 
 internal class DefaultNavHostEngine : NavHostEngine {
 
+    override val type = NavHostEngine.Type.DEFAULT
+
     @Composable
     override fun rememberNavController(
         vararg navigators: Navigator<out NavDestination>
@@ -36,7 +38,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
     override fun NavHost(
         modifier: Modifier,
         route: String,
-        startDestination: DestinationSpec,
+        startDestination: DestinationSpec<*>,
         navController: NavHostController,
         builder: NavGraphBuilder.() -> Unit
     ) {
@@ -60,17 +62,17 @@ internal class DefaultNavHostEngine : NavHostEngine {
         )
     }
 
-    override fun NavGraphBuilder.composable(
-        destination: DestinationSpec,
+    override fun <T> NavGraphBuilder.composable(
+        destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit,
+        manualComposableCalls: ManualComposableCalls,
     ) {
         when (val destinationStyle = destination.style) {
             is DestinationStyle.Default -> {
                 addComposable(
                     destination,
                     navController,
-                    dependenciesContainerBuilder
+                    manualComposableCalls
                 )
             }
 
@@ -79,7 +81,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
                     destinationStyle,
                     destination,
                     navController,
-                    dependenciesContainerBuilder
+                    manualComposableCalls
                 )
             }
 
@@ -87,30 +89,30 @@ internal class DefaultNavHostEngine : NavHostEngine {
         }
     }
 
-    private fun NavGraphBuilder.addComposable(
-        destination: DestinationSpec,
+    private fun <T> NavGraphBuilder.addComposable(
+        destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
+        manualComposableCalls: ManualComposableCalls,
     ) {
         composable(
             route = destination.route,
             arguments = destination.arguments,
             deepLinks = destination.deepLinks
         ) { navBackStackEntry ->
-            destination.Content(
+            CallComposable(
+                destination,
                 navController,
-                navBackStackEntry
-            ) {
-                dependenciesContainerBuilder(navBackStackEntry)
-            }
+                navBackStackEntry,
+                manualComposableCalls
+            )
         }
     }
 
-    private fun NavGraphBuilder.addDialogComposable(
+    private fun <T> NavGraphBuilder.addDialogComposable(
         dialogStyle: DestinationStyle.Dialog,
-        destination: DestinationSpec,
+        destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
+        manualComposableCalls: ManualComposableCalls
     ) {
         dialog(
             destination.route,
@@ -118,10 +120,35 @@ internal class DefaultNavHostEngine : NavHostEngine {
             destination.deepLinks,
             dialogStyle.properties
         ) { navBackStackEntry ->
+            CallComposable(
+                destination,
+                navController,
+                navBackStackEntry,
+                manualComposableCalls
+            )
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    @Composable
+    private fun <T> CallComposable(
+        destination: DestinationSpec<T>,
+        navController: NavHostController,
+        navBackStackEntry: NavBackStackEntry,
+        manualComposableCalls: ManualComposableCalls
+    ) {
+        val contentLambda = manualComposableCalls[destination]
+        if (contentLambda == null) {
             destination.Content(
                 navController,
+                navBackStackEntry,
+                DestinationDependenciesContainer()
+            )
+        } else {
+            (contentLambda as @Composable (T, NavBackStackEntry) -> Unit)(
+                remember { destination.argsFrom(navBackStackEntry) },
                 navBackStackEntry
-            ) { dependenciesContainerBuilder(navBackStackEntry) }
+            )
         }
     }
 }

@@ -12,13 +12,19 @@ import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import com.ramcosta.composedestinations.spec.NavHostEngine
-import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.ComposableLambdaType
+import com.ramcosta.composedestinations.ManualComposableCalls
+import com.ramcosta.composedestinations.animations.defaults.DefaultAnimationParams
+import com.ramcosta.composedestinations.animations.defaults.DestinationEnterTransition
+import com.ramcosta.composedestinations.animations.defaults.DestinationExitTransition
+import com.ramcosta.composedestinations.animations.defaults.NavGraphDefaultAnimationParams
+import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.NavHostEngine
 
 /**
  * Remembers and returns an instance of a [NavHostEngine]
@@ -57,6 +63,8 @@ internal class AnimatedNavHostEngine(
     private val defaultNavHostEngine: NavHostEngine
 ) : NavHostEngine {
 
+    override val type = NavHostEngine.Type.ANIMATED
+
     @Composable
     override fun rememberNavController(
         vararg navigators: Navigator<out NavDestination>
@@ -66,7 +74,7 @@ internal class AnimatedNavHostEngine(
     override fun NavHost(
         modifier: Modifier,
         route: String,
-        startDestination: DestinationSpec,
+        startDestination: DestinationSpec<*>,
         navController: NavHostController,
         builder: NavGraphBuilder.() -> Unit
     ) = with(defaultAnimationParams) {
@@ -101,17 +109,17 @@ internal class AnimatedNavHostEngine(
         )
     }
 
-    override fun NavGraphBuilder.composable(
-        destination: DestinationSpec,
+    override fun <T> NavGraphBuilder.composable(
+        destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
+        manualComposableCalls: ManualComposableCalls
     ) {
         when (val destinationStyle = destination.style) {
             is DestinationStyle.Default -> {
                 addComposable(
                     destination,
                     navController,
-                    dependenciesContainerBuilder
+                    manualComposableCalls
                 )
             }
 
@@ -120,7 +128,7 @@ internal class AnimatedNavHostEngine(
                     destinationStyle,
                     destination,
                     navController,
-                    dependenciesContainerBuilder
+                    manualComposableCalls
                 )
             }
 
@@ -128,7 +136,7 @@ internal class AnimatedNavHostEngine(
                 addBottomSheetComposable(
                     destination,
                     navController,
-                    dependenciesContainerBuilder
+                    manualComposableCalls
                 )
             }
 
@@ -138,38 +146,37 @@ internal class AnimatedNavHostEngine(
                     composable(
                         destination,
                         navController,
-                        dependenciesContainerBuilder
+                        manualComposableCalls
                     )
                 }
             }
         }
     }
 
-    private fun NavGraphBuilder.addComposable(
-        destination: DestinationSpec,
+    private fun <T> NavGraphBuilder.addComposable(
+        destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
+        manualComposableCalls: ManualComposableCalls
     ) {
         composable(
             route = destination.route,
             arguments = destination.arguments,
             deepLinks = destination.deepLinks
         ) { navBackStackEntry ->
-            destination.Content(
+            CallComposable(
+                destination,
                 navController,
-                navBackStackEntry
-            ) {
-                dependency<AnimatedVisibilityScope>(this@composable)
-                dependenciesContainerBuilder(navBackStackEntry)
-            }
+                navBackStackEntry,
+                manualComposableCalls,
+            )
         }
     }
 
-    private fun NavGraphBuilder.addAnimatedComposable(
+    private fun <T> NavGraphBuilder.addAnimatedComposable(
         animatedStyle: DestinationStyle.Animated,
-        destination: DestinationSpec,
+        destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
+        manualComposableCalls: ManualComposableCalls
     ) = with(animatedStyle) {
         composable(
             route = destination.route,
@@ -180,32 +187,94 @@ internal class AnimatedNavHostEngine(
             popEnterTransition = { i, t -> popEnterTransition(i, t) },
             popExitTransition = { i, t -> popExitTransition(i, t) }
         ) { navBackStackEntry ->
-            destination.Content(
+            CallComposable(
+                destination,
                 navController,
-                navBackStackEntry
-            ) {
-                dependency<AnimatedVisibilityScope>(this@composable)
-                dependenciesContainerBuilder(navBackStackEntry)
-            }
+                navBackStackEntry,
+                manualComposableCalls
+            )
         }
     }
 
-    private fun NavGraphBuilder.addBottomSheetComposable(
-        destination: DestinationSpec,
+    private fun <T> NavGraphBuilder.addBottomSheetComposable(
+        destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit
+        manualComposableCalls: ManualComposableCalls
     ) {
         bottomSheet(
             destination.route,
             destination.arguments,
             destination.deepLinks
         ) { navBackStackEntry ->
+            CallComposable(
+                destination,
+                navController,
+                navBackStackEntry,
+                manualComposableCalls
+            )
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    @Composable
+    private fun <T> ColumnScope.CallComposable(
+        destination: DestinationSpec<T>,
+        navController: NavHostController,
+        navBackStackEntry: NavBackStackEntry,
+        manualComposableCalls: ManualComposableCalls
+    ) {
+        val typeAndLambda = manualComposableCalls[destination]
+
+        if (typeAndLambda == null) {
             destination.Content(
                 navController,
-                navBackStackEntry
-            ) {
-                dependency<ColumnScope>(this@bottomSheet)
-                dependenciesContainerBuilder(navBackStackEntry)
+                navBackStackEntry,
+                DestinationDependenciesContainer().apply { dependency(this@CallComposable) }
+            )
+        } else {
+            val (type, content) = typeAndLambda
+            if (type == ComposableLambdaType.BOTTOM_SHEET) {
+                (content as @Composable ColumnScope.(T, NavBackStackEntry) -> Unit)(
+                    remember { destination.argsFrom(navBackStackEntry) },
+                    navBackStackEntry
+                )
+            } else {
+                (content as @Composable (T, NavBackStackEntry) -> Unit)(
+                    remember { destination.argsFrom(navBackStackEntry) },
+                    navBackStackEntry
+                )
+            }
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    @Composable
+    private fun <T> AnimatedVisibilityScope.CallComposable(
+        destination: DestinationSpec<T>,
+        navController: NavHostController,
+        navBackStackEntry: NavBackStackEntry,
+        manualComposableCalls: ManualComposableCalls,
+    ) {
+        val typeAndLambda = manualComposableCalls[destination]
+
+        if (typeAndLambda == null) {
+            destination.Content(
+                navController,
+                navBackStackEntry,
+                DestinationDependenciesContainer().apply { dependency(this@CallComposable) }
+            )
+        } else {
+            val (type, content) = typeAndLambda
+            if (type == ComposableLambdaType.ANIMATED) {
+                (content as @Composable AnimatedVisibilityScope.(T, NavBackStackEntry) -> Unit)(
+                    remember { destination.argsFrom(navBackStackEntry) },
+                    navBackStackEntry
+                )
+            } else {
+                (content as @Composable (T, NavBackStackEntry) -> Unit)(
+                    remember { destination.argsFrom(navBackStackEntry) },
+                    navBackStackEntry
+                )
             }
         }
     }

@@ -3,14 +3,14 @@ package com.ramcosta.composedestinations.codegen.writers.sub
 import com.ramcosta.composedestinations.codegen.commons.GeneratedExceptions
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.isPrimitive
-import com.ramcosta.composedestinations.codegen.model.Destination
+import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.Type
 
 object NavArgResolver {
 
     fun resolve(
-        destination: Destination,
+        destination: DestinationGeneratingParams,
         additionalImports: MutableSet<String>,
         parameter: Parameter,
         isComposable: Boolean = false,
@@ -22,7 +22,7 @@ object NavArgResolver {
     )
 
     fun resolveFromSavedStateHandle(
-        destination: Destination,
+        destination: DestinationGeneratingParams,
         additionalImports: MutableSet<String>,
         parameter: Parameter,
     ) = internalResolve(
@@ -74,7 +74,7 @@ object NavArgResolver {
     }
 
     private fun Type.toSavedStateHandleArgGetter(
-        destination: Destination,
+        destination: DestinationGeneratingParams,
         argName: String,
     ): String {
         return when (qualifiedName) {
@@ -94,7 +94,7 @@ object NavArgResolver {
     }
 
     private fun Type.toNavBackStackEntryArgGetter(
-        destination: Destination,
+        destination: DestinationGeneratingParams,
         argName: String,
     ): String {
         return when (qualifiedName) {

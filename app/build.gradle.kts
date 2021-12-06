@@ -58,6 +58,12 @@ android {
     packagingOptions {
         resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
     }
+
+    // TO turn off navigation graphs generation:
+    // (if you prefer creating NavGraph instances or you prefer using the normal NavHost)
+//    ksp {
+//        arg("compose-destinations.generateNavGraphs", "false")
+//    }
 }
 
 dependencies {

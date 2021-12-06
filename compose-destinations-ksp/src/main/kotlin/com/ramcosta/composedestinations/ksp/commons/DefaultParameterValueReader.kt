@@ -174,11 +174,13 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
 
     return DefaultParameterValueReader.readDefaultValue(
         { pckg, name ->
-            resolver.getDeclarationsFromPackage(pckg)
-                .firstOrNull { it.simpleName.asString().contains(name) }
-                ?.let {
-                    ResolvedSymbol(it.isPublic() || it.isInternal())
-                }
+            kotlin.runCatching {
+                resolver.getDeclarationsFromPackage(pckg)
+                    .firstOrNull { it.simpleName.asString().contains(name) }
+                    ?.let {
+                        ResolvedSymbol(it.isPublic() || it.isInternal())
+                    }
+            }.getOrNull()
         },
         line,
         this.containingFile!!.packageName.asString(),

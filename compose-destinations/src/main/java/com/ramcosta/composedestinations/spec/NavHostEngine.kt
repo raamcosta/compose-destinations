@@ -3,7 +3,7 @@ package com.ramcosta.composedestinations.spec
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
-import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.ManualComposableCalls
 
 /**
  * Abstraction over all needed functionality to call a "NavHost-like" composable
@@ -16,6 +16,25 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
  * version of the engine which can be obtained by calling `rememberAnimatedNavHostEngine`.
  */
 interface NavHostEngine {
+
+    enum class Type {
+
+        /**
+         * The engine you get by default by using the library
+         */
+        DEFAULT,
+
+        /**
+         * The engine you get if using "io.github.raamcosta.compose-destinations:animations-core"
+         * and calling `rememberAnimatedNavHostEngine`
+         */
+        ANIMATED
+    }
+
+    /**
+     * Engine type between [Type.DEFAULT] or [Type.ANIMATED]
+     */
+    val type: Type
 
     /**
      * Returns the [NavHostController] best suited for this [NavHostEngine]
@@ -32,7 +51,7 @@ interface NavHostEngine {
     fun NavHost(
         modifier: Modifier,
         route: String,
-        startDestination: DestinationSpec,
+        startDestination: DestinationSpec<*>,
         navController: NavHostController,
         builder: NavGraphBuilder.() -> Unit
     )
@@ -48,9 +67,9 @@ interface NavHostEngine {
     /**
      * Adds a specific [DestinationSpec] to this [NavGraphBuilder]
      */
-    fun NavGraphBuilder.composable(
-        destination: DestinationSpec,
+    fun <T> NavGraphBuilder.composable(
+        destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.(NavBackStackEntry) -> Unit,
+        manualComposableCalls: ManualComposableCalls,
     )
 }

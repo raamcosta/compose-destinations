@@ -14,6 +14,8 @@ const val ARGS_TO_ROUTED_METHOD = "[ARGS_TO_ROUTED_METHOD]"
 const val ARGS_FROM_METHODS = "[ARGS_FROM_METHODS]"
 const val CONTENT_FUNCTION_CODE = "[CONTENT_FUNCTION_CODE]"
 const val REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER = "[REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER]"
+const val NAV_ARGS_DATA_CLASS = "[NAV_ARGS_DATA_CLASS]"
+const val SUPERTYPE = "[SUPERTYPE]"
 //endregion
 
 val destinationTemplate="""
@@ -24,12 +26,11 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import $PACKAGE_NAME.navigation.DependenciesContainerBuilder
 import $PACKAGE_NAME.navigation.DestinationDependenciesContainer
 import $PACKAGE_NAME.spec.Routed
 $ADDITIONAL_IMPORTS
 
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $GENERATED_DESTINATION {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $SUPERTYPE {
     $ARGS_TO_ROUTED_METHOD
     override val route = "$COMPOSED_ROUTE"
     $NAV_ARGUMENTS$DEEP_LINKS$DESTINATION_STYLE
@@ -37,10 +38,10 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $GENERATED_D
     override fun Content(
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.() -> Unit
+        dependencyContainer: DestinationDependenciesContainer
     ) {
 $CONTENT_FUNCTION_CODE
     }
-    $ARGS_FROM_METHODS
+    $ARGS_FROM_METHODS$NAV_ARGS_DATA_CLASS
 }
 """.trimIndent()

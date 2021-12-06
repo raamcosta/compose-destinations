@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.animations
+package com.ramcosta.composedestinations.animations.defaults
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween

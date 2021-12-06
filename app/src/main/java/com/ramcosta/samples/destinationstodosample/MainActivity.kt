@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
@@ -13,20 +14,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.*
-import com.ramcosta.composedestinations.animations.DefaultAnimationParams
+import com.ramcosta.composedestinations.animations.defaults.DefaultAnimationParams
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
-import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
-import com.ramcosta.composedestinations.navigation.dependency
+import com.ramcosta.composedestinations.navigation.DestinationsNavController
 import com.ramcosta.composedestinations.navigation.navigateTo
+import com.ramcosta.samples.destinationstodosample.destinations.*
 import com.ramcosta.samples.destinationstodosample.destinations.commons.*
+import com.ramcosta.samples.destinationstodosample.destinations.greeting.GreetingScreen
 import com.ramcosta.samples.destinationstodosample.destinations.greeting.GreetingUiEvents
 import com.ramcosta.samples.destinationstodosample.destinations.greeting.GreetingUiState
 import com.ramcosta.samples.destinationstodosample.destinations.greeting.GreetingViewModel
+import com.ramcosta.samples.destinationstodosample.destinations.profile.ProfileScreen
 import com.ramcosta.samples.destinationstodosample.destinations.profile.ProfileUiEvents
 import com.ramcosta.samples.destinationstodosample.destinations.profile.ProfileUiState
 import com.ramcosta.samples.destinationstodosample.destinations.profile.ProfileViewModel
@@ -44,7 +46,6 @@ class MainActivity : ComponentActivity() {
             DestinationsTodoSampleTheme {
                 val scaffoldState = rememberScaffoldState()
                 val coroutineScope = rememberCoroutineScope()
-                val navHostEngine = rememberAnimatedNavHostEngine(DefaultAnimationParams.ACCOMPANIST_FADING)
                 val navController = rememberAnimatedNavController()
 
                 DestinationsSampleScaffold(
@@ -69,19 +70,10 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                 ) { paddingValues ->
-                    val drawerController: DrawerController = remember(scaffoldState) { DrawerControllerImpl(scaffoldState.drawerState) }
-
-                    DestinationsNavHost(
-                        engine = navHostEngine,
+                    AppNavigation(
+                        scaffoldState = scaffoldState,
                         navController = navController,
-                        navGraph = NavGraphs.root,
-                        startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
-                        modifier = Modifier.padding(paddingValues),
-                        dependenciesContainerBuilder = { navBackStackEntry ->
-                            dependency(drawerController)
-
-                            AddDestinationDependencies(navBackStackEntry)
-                        }
+                        paddingValues = paddingValues
                     )
                 }
             }
@@ -89,24 +81,57 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun DependenciesContainerBuilder.AddDestinationDependencies(navBackStackEntry: NavBackStackEntry) {
-        navBackStackEntry.navDestination?.let {
-            when (it) {
-                GreetingScreenDestination -> {
-                    val vm = viewModel<GreetingViewModel>()
-                    dependency<GreetingUiState>(vm)
-                    dependency<GreetingUiEvents>(vm)
-                }
+    private fun AppNavigation(
+        scaffoldState: ScaffoldState,
+        navController: NavHostController,
+        paddingValues: PaddingValues
+    ) {
+        val drawerController: DrawerController =
+            remember(scaffoldState) { DrawerControllerImpl(scaffoldState.drawerState) }
 
-                ProfileScreenDestination -> {
-                    val vm = viewModel<ProfileViewModel>(
-                        factory = ProfileViewModel.Factory(navBackStackEntry)
-                    )
-                    dependency<ProfileUiState>(vm)
-                    dependency<ProfileUiEvents>(vm)
-                }
+        DestinationsNavHost(
+            engine = rememberAnimatedNavHostEngine(DefaultAnimationParams.ACCOMPANIST_FADING),
+            navController = navController,
+            navGraph = NavGraphs.root,
+            startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            //region This is NOT needed: this is exactly what the lib would do for us too
+            // if we didn't explicitly call this Composable
+            // It is here only as an example of getting nav args in a type safe way at this point
+            // and also so we can see the boilerplate we save for each destination
+            composable(TestScreenDestination) { navArgs, _ ->
+                TestScreen(
+                    id = navArgs.id,
+                    stuff1 = navArgs.stuff1,
+                    stuff2 = navArgs.stuff2,
+                    stuff3 = navArgs.stuff3
+                )
+            }
+            //endregion
 
-                else -> Unit /*no op*/
+            // Composables we need to call ourselves since the lib doesn't know how to get
+            // DrawerController or the *UiState and *UiEvents interfaces
+            animatedComposable(ProfileScreenDestination) { _, entry ->
+                val vm = viewModel<ProfileViewModel>(
+                    factory = ProfileViewModel.Factory(entry)
+                )
+
+                ProfileScreen(
+                    vm as ProfileUiState,
+                    vm as ProfileUiEvents
+                )
+            }
+
+            composable(GreetingScreenDestination) { entry ->
+                val vm = viewModel<GreetingViewModel>()
+
+                GreetingScreen(
+                    navigator = DestinationsNavController(navController, entry),
+                    drawerController = drawerController,
+                    uiEvents = vm as GreetingUiEvents,
+                    uiState = vm as GreetingUiState
+                )
             }
         }
     }

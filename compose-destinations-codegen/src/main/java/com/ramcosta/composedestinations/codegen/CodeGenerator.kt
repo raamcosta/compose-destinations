@@ -4,7 +4,7 @@ import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.Core
-import com.ramcosta.composedestinations.codegen.model.Destination
+import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
 import com.ramcosta.composedestinations.codegen.writers.CoreExtensionsWriter
 import com.ramcosta.composedestinations.codegen.writers.DestinationsWriter
@@ -17,7 +17,7 @@ class CodeGenerator(
     private val generateNavGraphs: Boolean
 ) {
 
-    fun generate(destinations: List<Destination>) {
+    fun generate(destinations: List<DestinationGeneratingParams>) {
         initialValidations(destinations)
 
         val generatedDestinations = DestinationsWriter(codeGenerator, logger, core).write(destinations)
@@ -29,7 +29,7 @@ class CodeGenerator(
         CoreExtensionsWriter(codeGenerator, generateNavGraphs).write()
     }
 
-    private fun initialValidations(destinations: List<Destination>) {
+    private fun initialValidations(destinations: List<DestinationGeneratingParams>) {
         val cleanRoutes = mutableListOf<String>()
         val composableNames = mutableListOf<String>()
 

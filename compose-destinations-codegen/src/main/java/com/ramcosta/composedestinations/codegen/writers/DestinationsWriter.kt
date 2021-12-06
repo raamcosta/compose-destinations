@@ -10,7 +10,7 @@ class DestinationsWriter(
     private val core: Core
 ) {
 
-    fun write(destinations: List<Destination>): List<GeneratedDestination> {
+    fun write(destinations: List<DestinationGeneratingParams>): List<GeneratedDestination> {
         val generatedFiles = mutableListOf<GeneratedDestination>()
 
         destinations.forEach { destination ->

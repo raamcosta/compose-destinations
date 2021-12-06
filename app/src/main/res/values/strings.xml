@@ -8,4 +8,5 @@
     <string name="new_greeting">New Greeting</string>
     <string name="go_to_profile">Go to Profile</string>
     <string name="open_drawer">Open drawer</string>
+    <string name="go_to_test_screen">Go to Test Screen</string>
 </resources>

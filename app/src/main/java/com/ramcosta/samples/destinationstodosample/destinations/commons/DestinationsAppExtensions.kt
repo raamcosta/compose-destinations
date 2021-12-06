@@ -33,7 +33,8 @@ fun Destination.DrawerContent(
         ProfileScreenDestination,
         GoToProfileConfirmationDestination,
         SettingsDestination,
-        ThemeSettingsDestination -> Unit
+        ThemeSettingsDestination,
+        TestScreenDestination -> Unit
     }
 }
 
@@ -53,5 +54,6 @@ val Destination.title
             FeedDestination -> R.string.feed_screen
             ThemeSettingsDestination -> R.string.theme_settings_screen
             GoToProfileConfirmationDestination -> null
+            TestScreenDestination -> null
         }
     }

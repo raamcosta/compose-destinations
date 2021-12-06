@@ -1,10 +1,11 @@
 package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.commons.*
-import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
+import com.ramcosta.composedestinations.codegen.model.Parameter
 
 class DestinationContentFunctionWriter(
-    private val destination: Destination,
+    private val destination: DestinationGeneratingParams,
     private val navArgs: List<Parameter>,
     private val additionalImports: MutableSet<String>,
 ) {
@@ -12,8 +13,9 @@ class DestinationContentFunctionWriter(
     fun write(): String = with(destination) {
         val functionCallCode = StringBuilder()
 
-        if (hasContainerArgument()) {
-            functionCallCode += "\t\tval container = DestinationDependenciesContainer().apply { dependenciesContainerBuilder() }\n"
+        if (navArgs.isNotEmpty() && destination.navArgsDelegateType == null) {
+            additionalImports.add("androidx.compose.runtime.remember")
+            functionCallCode += "\t\tval (${argNamesInLine()}) = remember { argsFrom(navBackStackEntry) }\n"
         }
 
         val receiver = prepareReceiver()
@@ -22,17 +24,21 @@ class DestinationContentFunctionWriter(
         return functionCallCode.toString()
     }
 
+    private fun argNamesInLine(): String {
+        return navArgs.joinToString(", ") { it.name }
+    }
+
     private fun prepareReceiver(): String {
         return when (destination.composableReceiverSimpleName) {
             ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add(ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME)
-                "val animatedVisibilityScope = container.require<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>()\n" +
+                "val animatedVisibilityScope = dependencyContainer.require<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>()\n" +
                         "\t\tanimatedVisibilityScope."
             }
 
             COLUMN_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add(COLUMN_SCOPE_QUALIFIED_NAME)
-                "val columnScope = container.require<$COLUMN_SCOPE_SIMPLE_NAME>()\n" +
+                "val columnScope = dependencyContainer.require<$COLUMN_SCOPE_SIMPLE_NAME>()\n" +
                         "\t\tcolumnScope."
             }
 
@@ -40,7 +46,7 @@ class DestinationContentFunctionWriter(
         }
     }
 
-    private fun Destination.prepareArguments(): String {
+    private fun DestinationGeneratingParams.prepareArguments(): String {
         var argsCode = ""
 
         parameters.forEachIndexed { i, it ->
@@ -74,31 +80,17 @@ class DestinationContentFunctionWriter(
             }
             else -> {
                 if (navArgs.contains(parameter)) {
-                    NavArgResolver.resolve(destination, additionalImports, parameter, true)
+                    parameter.name //this is resolved by argsFrom before the function
 
                 } else if (!parameter.hasDefault) {
                     if (parameter.type.qualifiedName != "kotlin.${parameter.type.simpleName}") {
                         additionalImports.add(parameter.type.qualifiedName)
                     }
-                    "container.require()"
+                    "dependencyContainer.require()"
                 } else {
                     null
                 }
             }
-        }
-    }
-
-    private fun hasContainerArgument(): Boolean {
-        if (destination.composableReceiverSimpleName
-            in arrayOf(COLUMN_SCOPE_SIMPLE_NAME, ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME)) {
-            return true
-        }
-
-        return destination.parameters.any { param ->
-            !param.hasDefault
-            && param !in navArgs
-            && param.type.qualifiedName !in arrayOf(NAV_CONTROLLER_QUALIFIED_NAME, NAV_HOST_CONTROLLER_QUALIFIED_NAME, DESTINATIONS_NAVIGATOR_QUALIFIED_NAME, NAV_BACK_STACK_ENTRY_QUALIFIED_NAME)
-            && param.type.qualifiedName != destination.navArgsDelegateType?.qualifiedName
         }
     }
 }

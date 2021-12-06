@@ -13,12 +13,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.GoToProfileConfirmationDestination
+import com.ramcosta.composedestinations.TestScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.samples.destinationstodosample.R
 import com.ramcosta.samples.destinationstodosample.destinations.commons.DrawerController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import com.ramcosta.samples.destinationstodosample.R
 
 @OptIn(ExperimentalAnimationApi::class)
 @Destination(
@@ -69,6 +70,16 @@ fun GreetingScreen(
                 }
             ) {
                 Text(text = stringResource(R.string.go_to_profile))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = {
+                    navigator.navigate(TestScreenDestination(id = "test-id"))
+                }
+            ) {
+                Text(text = stringResource(R.string.go_to_test_screen))
             }
 
             Spacer(modifier = Modifier.height(8.dp))

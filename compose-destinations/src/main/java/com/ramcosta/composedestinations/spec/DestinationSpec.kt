@@ -1,16 +1,19 @@
 package com.ramcosta.composedestinations.spec
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.*
-import androidx.navigation.NamedNavArgument
-import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 
 /**
  * Defines what a Destination needs to have to be able to be
  * added to a navigation graph and composed on the screen
  * when the user navigates to it.
+ *
+ * [T] is the type of the class that holds all navigation arguments
+ * for of this Destination.
  */
-interface DestinationSpec {
+interface DestinationSpec<T> {
 
     /**
      * Full route that will be added to the navigation graph
@@ -43,13 +46,7 @@ interface DestinationSpec {
      * the destination content in the screen, when the user
      * navigates to it.
      *
-     * [dependenciesContainerBuilder] will be called with a [DependenciesContainerBuilder]
-     * and give opportunity for other Composables on the call stack to add
-     * dependencies that can be used in this destination.
-     * You can add dependencies via `dependenciesContainerBuilder` argument of
-     * [com.ramcosta.composedestinations.DestinationsNavHost] call.
-     *
-     * Besides, it is used internally to enable certain destination Composables
+     * [dependencyContainer] is used internally to enable certain destination Composables
      * to be extension functions on `ColumnScope` (for [DestinationStyle.BottomSheet] destinations)
      * or `AnimatedVisibilityScope` (for [DestinationStyle.Animated]).
      */
@@ -57,6 +54,24 @@ interface DestinationSpec {
     fun Content(
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder.() -> Unit
+        dependencyContainer: DestinationDependenciesContainer
     )
+
+    /**
+     * Method that returns the navigation arguments class of this Composable
+     * for the [navBackStackEntry] when the destination gets navigated to.
+     */
+    fun argsFrom(navBackStackEntry: NavBackStackEntry) : T
+
+    /**
+     * Method that returns the navigation arguments class of this Composable
+     * for the [savedStateHandle]. This is useful when the [SavedStateHandle]
+     * is created with the navigation arguments, for example, inside the
+     * ViewModel.
+     *
+     * If you're manually creating the ViewModel, use the `AbstractSavedStateViewModelFactory`
+     * and pass the [NavBackStackEntry.arguments] as the second constructor parameter.
+     * If you're using something like Hilt, then that is done for you out of the box.
+     */
+    fun argsFrom(savedStateHandle: SavedStateHandle) : T
 }

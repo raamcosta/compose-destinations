@@ -14,13 +14,13 @@ interface NavGraphSpec: Routed {
     /**
      * Start destination of this navigation graph.
      */
-    val startDestination: DestinationSpec
+    val startDestination: DestinationSpec<*>
 
     /**
      * All destinations which belong to this navigation graph
      * by their route
      */
-    val destinationsByRoute: Map<String, DestinationSpec>
+    val destinationsByRoute: Map<String, DestinationSpec<*>>
 
     /**
      * Nested navigation graphs of this navigation graph.

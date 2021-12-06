@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.codegen.model
 
-data class Destination(
+data class DestinationGeneratingParams(
     val sourceIds: List<String>,
     val name: String,
     val qualifiedName: String,

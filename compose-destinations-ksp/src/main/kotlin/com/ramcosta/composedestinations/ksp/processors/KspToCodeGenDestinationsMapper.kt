@@ -39,7 +39,7 @@ class KspToCodeGenDestinationsMapper(
 
     private val sourceFilesById = mutableMapOf<String, KSFile?>()
 
-    fun map(composableDestinations: Sequence<KSFunctionDeclaration>): List<Destination> {
+    fun map(composableDestinations: Sequence<KSFunctionDeclaration>): List<DestinationGeneratingParams> {
         return composableDestinations.map { it.toDestination() }.toList()
     }
 
@@ -47,7 +47,7 @@ class KspToCodeGenDestinationsMapper(
         return sourceFilesById[sourceId]
     }
 
-    private fun KSFunctionDeclaration.toDestination(): Destination {
+    private fun KSFunctionDeclaration.toDestination(): DestinationGeneratingParams {
         val composableName = simpleName.asString()
         val name = composableName + GENERATED_DESTINATION_SUFFIX
         val destinationAnnotation = findAnnotation(DESTINATION_ANNOTATION)
@@ -60,7 +60,7 @@ class KspToCodeGenDestinationsMapper(
         }
         sourceFilesById[containingFile!!.fileName] = containingFile
 
-        return Destination(
+        return DestinationGeneratingParams(
             sourceIds = listOfNotNull(containingFile!!.fileName, navArgsDelegateTypeAndFile?.second?.fileName),
             name = name,
             qualifiedName = "$PACKAGE_NAME.$name",
