@@ -22,9 +22,9 @@ import com.ramcosta.composedestinations.spec.NavHostEngine
  * stateless object, so that you can make queries to it more easily.
  *
  *
- * @param modifier [Modifier] to apply to this Composable
- *
  * @param navGraph [NavGraphSpec] to use the [DestinationSpec]s from and register the navigation graph.
+ *
+ * @param modifier [Modifier] to apply to this Composable
  *
  * @param startDestination the start destination of the NavHost. By default, we'll use the `startDestination`
  * of the [navGraph]. This allows for one-time runtime overrides to this.
@@ -47,11 +47,11 @@ import com.ramcosta.composedestinations.spec.NavHostEngine
  */
 @Composable
 fun DestinationsNavHost(
+    navGraph: NavGraphSpec,
     modifier: Modifier = Modifier,
+    startDestination: DestinationSpec<*> = navGraph.startDestination,
     engine: NavHostEngine = rememberNavHostEngine(),
     navController: NavHostController = engine.rememberNavController(),
-    navGraph: NavGraphSpec,
-    startDestination: DestinationSpec<*> = navGraph.startDestination,
     manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit
 ) {
     engine.NavHost(

@@ -145,10 +145,10 @@ internal class DefaultNavHostEngine : NavHostEngine {
                 DestinationDependenciesContainer()
             )
         } else {
-            contentLambda as DestinationLambda.Normal<T>
-            contentLambda.content(
-                remember { destination.argsFrom(navBackStackEntry) },
-                navBackStackEntry
+            contentLambda(
+                destination = destination,
+                navBackStackEntry = navBackStackEntry,
+                receiver = null
             )
         }
     }

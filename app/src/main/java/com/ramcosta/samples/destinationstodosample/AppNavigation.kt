@@ -31,10 +31,10 @@ fun AppNavigation(
     val navHostEngine = rememberAnimatedNavHostEngine(DefaultAnimationParams.ACCOMPANIST_FADING)
 
     DestinationsNavHost(
-        engine = navHostEngine,
-        navController = navController,
         navGraph = NavGraphs.root,
         startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
+        engine = navHostEngine,
+        navController = navController,
         modifier = modifier
     ) {
         //region This is NOT needed: this is exactly what the lib would do for us too

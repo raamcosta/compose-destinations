@@ -12,7 +12,6 @@ import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import com.ramcosta.composedestinations.DestinationLambda
 import com.ramcosta.composedestinations.ManualComposableCalls
 import com.ramcosta.composedestinations.animations.defaults.DefaultAnimationParams
 import com.ramcosta.composedestinations.animations.defaults.DestinationEnterTransition
@@ -232,23 +231,11 @@ internal class AnimatedNavHostEngine(
                 DestinationDependenciesContainer().apply { dependency(this@CallComposable) }
             )
         } else {
-            when (contentWrapper) {
-                is DestinationLambda.BottomSheet<*> -> {
-                    contentWrapper as DestinationLambda.BottomSheet<T>
-                    contentWrapper.content(
-                        this,
-                        remember { destination.argsFrom(navBackStackEntry) },
-                        navBackStackEntry
-                    )
-                }
-                else -> {
-                    contentWrapper as DestinationLambda.Normal<T>
-                    contentWrapper.content(
-                        remember { destination.argsFrom(navBackStackEntry) },
-                        navBackStackEntry
-                    )
-                }
-            }
+            contentWrapper(
+                destination = destination,
+                navBackStackEntry = navBackStackEntry,
+                receiver = this
+            )
         }
     }
 
@@ -269,23 +256,11 @@ internal class AnimatedNavHostEngine(
                 DestinationDependenciesContainer().apply { dependency(this@CallComposable) }
             )
         } else {
-            when (contentWrapper) {
-                is DestinationLambda.Animated<*> -> {
-                    contentWrapper as DestinationLambda.Animated<T>
-                    contentWrapper.content(
-                        this,
-                        remember { destination.argsFrom(navBackStackEntry) },
-                        navBackStackEntry
-                    )
-                }
-                else -> {
-                    contentWrapper as DestinationLambda.Normal<T>
-                    contentWrapper.content(
-                        remember { destination.argsFrom(navBackStackEntry) },
-                        navBackStackEntry
-                    )
-                }
-            }
+            contentWrapper(
+                destination = destination,
+                navBackStackEntry = navBackStackEntry,
+                receiver = this
+            )
         }
     }
 

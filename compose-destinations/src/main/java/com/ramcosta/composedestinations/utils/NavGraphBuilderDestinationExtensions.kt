@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.utils
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -34,7 +35,7 @@ fun <T> NavGraphBuilder.composable(
         arguments,
         deepLinks
     ) {
-        content(destination.argsFrom(it), it)
+        content(remember { destination.argsFrom(it) }, it)
     }
 }
 
@@ -100,7 +101,7 @@ fun <T> NavGraphBuilder.dialogComposable(
         deepLinks,
         style.properties
     ) {
-        content(destination.argsFrom(it), it)
+        content(remember { destination.argsFrom(it) }, it)
     }
 }
 

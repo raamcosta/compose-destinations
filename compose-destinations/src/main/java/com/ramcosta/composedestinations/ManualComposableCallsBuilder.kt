@@ -9,6 +9,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavHostEngine
 
+//region default nav host
 /**
  * Registers [content] lambda as the responsible for calling
  * the Composable correspondent to [destination].
@@ -41,6 +42,27 @@ fun ManualComposableCallsBuilder.composable(
     map[destination] = DestinationLambda.Normal(auxLambda)
 }
 
+/**
+ * Registers [content] lambda as the responsible for calling
+ * the Composable correspondent to [destination].
+ *
+ * When [destination] is navigated to, [content] will be called.
+ *
+ * This is useful if you need to get the navigation arguments manually
+ * later on.
+ */
+fun ManualComposableCallsBuilder.composableWithNoArgs(
+    destination: DestinationSpec<*>,
+    content: @Composable (NavBackStackEntry) -> Unit
+) {
+    val auxLambda: (@Composable (Unit, NavBackStackEntry) -> Unit) = { _, entry ->
+        content(entry)
+    }
+    map[destination] = DestinationLambda.Normal(auxLambda, noArgs = true)
+}
+//endregion
+
+//region animated nav host engine
 /**
  * Registers [content] lambda as the responsible for calling
  * the Composable correspondent to [destination].
@@ -136,6 +158,56 @@ fun ManualComposableCallsBuilder.bottomSheetComposable(
     map[destination] = DestinationLambda.BottomSheet(auxLambda)
 }
 
+/**
+ * Registers [content] lambda as the responsible for calling
+ * the Composable correspondent to [destination].
+ *
+ * When [destination] is navigated to, [content] will be called.
+ * This is useful if you need to get the navigation arguments manually
+ * later on.
+ *
+ * Can only be called if you're using "io.github.raamcosta.compose-destinations:animations-core"
+ * and the [destination] has a [DestinationSpec.style] of [com.ramcosta.composedestinations.spec.DestinationStyle.Animated]
+ * or [com.ramcosta.composedestinations.spec.DestinationStyle.Default].
+ */
+@ExperimentalAnimationApi
+fun ManualComposableCallsBuilder.animatedComposableWithNoArgs(
+    destination: DestinationSpec<*>,
+    content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
+) {
+    validateAnimated(destination)
+
+    val auxLambda: (@Composable AnimatedVisibilityScope.(Unit, NavBackStackEntry) -> Unit) = { _, entry ->
+        content(entry)
+    }
+    map[destination] = DestinationLambda.Animated(auxLambda, noArgs = true)
+}
+
+/**
+ * Registers [content] lambda as the responsible for calling
+ * the Composable correspondent to [destination].
+ *
+ * When [destination] is navigated to, [content] will be called.
+ * This is useful if you need to get the navigation arguments manually
+ * later on.
+ *
+ * Can only be called if you're using "io.github.raamcosta.compose-destinations:animations-core"
+ * and the [destination] has a [DestinationSpec.style] of
+ * [com.ramcosta.composedestinations.spec.DestinationStyle.BottomSheet]
+ */
+fun ManualComposableCallsBuilder.bottomSheetWithNoArgs(
+    destination: DestinationSpec<*>,
+    content: @Composable ColumnScope.(NavBackStackEntry) -> Unit
+) {
+    validateBottomSheet(destination)
+
+    val auxLambda: (@Composable ColumnScope.(Unit, NavBackStackEntry) -> Unit) = { _, entry ->
+        content(entry)
+    }
+    map[destination] = DestinationLambda.BottomSheet(auxLambda, noArgs = true)
+}
+//endregion
+
 class ManualComposableCallsBuilder internal constructor(
     internal val engineType: NavHostEngine.Type
 ) {
@@ -143,21 +215,6 @@ class ManualComposableCallsBuilder internal constructor(
     internal val map: MutableMap<DestinationSpec<*>, DestinationLambda> = mutableMapOf()
 
     internal fun build() = ManualComposableCalls(map)
-}
-
-sealed class DestinationLambda {
-    class Normal<T>(
-        val content: @Composable (T, NavBackStackEntry) -> Unit
-    ) : DestinationLambda()
-
-    @ExperimentalAnimationApi
-    class Animated<T>(
-        val content: @Composable AnimatedVisibilityScope.(T, NavBackStackEntry) -> Unit
-    ) : DestinationLambda()
-
-    class BottomSheet<T>(
-        val content: @Composable ColumnScope.(T, NavBackStackEntry) -> Unit
-    ) : DestinationLambda()
 }
 
 @ExperimentalAnimationApi

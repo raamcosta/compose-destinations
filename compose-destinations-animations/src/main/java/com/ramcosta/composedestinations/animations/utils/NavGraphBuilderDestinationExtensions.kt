@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.animation.composable
@@ -41,7 +42,7 @@ fun <T> NavGraphBuilder.animatedComposable(
                 arguments = destination.arguments,
                 deepLinks = destination.deepLinks
             ) {
-                content(destination.argsFrom(it), it)
+                content(remember { destination.argsFrom(it) }, it)
             }
         }
 
@@ -55,7 +56,7 @@ fun <T> NavGraphBuilder.animatedComposable(
                 popEnterTransition = { i, t -> popEnterTransition(i, t) },
                 popExitTransition = { i, t -> popExitTransition(i, t) }
             ) {
-                content(destination.argsFrom(it), it)
+                content(remember { destination.argsFrom(it) }, it)
             }
         }
 
@@ -152,7 +153,7 @@ fun <T> NavGraphBuilder.bottomSheetComposable(
                 destination.arguments,
                 destination.deepLinks,
             ) {
-                content(destination.argsFrom(it), it)
+                content(remember { destination.argsFrom(it) }, it)
             }
         }
         is DestinationStyle.Dialog -> {
