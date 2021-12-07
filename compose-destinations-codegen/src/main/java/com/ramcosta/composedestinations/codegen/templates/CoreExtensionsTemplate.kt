@@ -10,19 +10,12 @@ const val END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = "[END_NAV_DESTINATION_ROOT_D
 val coreExtensionsTemplate = """
 package $PACKAGE_NAME
 
-import androidx.navigation.NavController
-import androidx.navigation.NavOptionsBuilder
-import $PACKAGE_NAME.spec.DestinationSpec
-import $PACKAGE_NAME.spec.Routed
-import $PACKAGE_NAME.spec.DestinationStyle
-import $PACKAGE_NAME.spec.NavGraphSpec
-import $PACKAGE_NAME.utils.findDestination
-import androidx.navigation.NavBackStackEntry
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.NavBackStackEntry
+import $PACKAGE_NAME.spec.DestinationSpec
+import $PACKAGE_NAME.spec.NavGraphSpec
+import $PACKAGE_NAME.spec.Routed
+import $PACKAGE_NAME.utils.findDestination
 
 /**
  * Handy typealias of [$GENERATED_DESTINATION] when you don't
