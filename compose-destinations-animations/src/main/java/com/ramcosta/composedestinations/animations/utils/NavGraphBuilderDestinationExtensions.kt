@@ -51,10 +51,10 @@ fun <T> NavGraphBuilder.animatedComposable(
                 route = destination.route,
                 arguments = destination.arguments,
                 deepLinks = destination.deepLinks,
-                enterTransition = { i, t -> enterTransition(i, t) },
-                exitTransition = { i, t -> exitTransition(i, t) },
-                popEnterTransition = { i, t -> popEnterTransition(i, t) },
-                popExitTransition = { i, t -> popExitTransition(i, t) }
+                enterTransition = { enterTransition() },
+                exitTransition = { exitTransition() },
+                popEnterTransition = { popEnterTransition() },
+                popExitTransition = { popExitTransition() }
             ) {
                 content(remember { destination.argsFrom(it) }, it)
             }
@@ -107,10 +107,10 @@ fun NavGraphBuilder.animatedComposable(
                 route = destination.route,
                 arguments = destination.arguments,
                 deepLinks = destination.deepLinks,
-                enterTransition = { i, t -> enterTransition(i, t) },
-                exitTransition = { i, t -> exitTransition(i, t) },
-                popEnterTransition = { i, t -> popEnterTransition(i, t) },
-                popExitTransition = { i, t -> popExitTransition(i, t) }
+                enterTransition = { enterTransition() },
+                exitTransition = { exitTransition() },
+                popEnterTransition = { popEnterTransition() },
+                popExitTransition = { popExitTransition() }
             ) {
                 content(it)
             }

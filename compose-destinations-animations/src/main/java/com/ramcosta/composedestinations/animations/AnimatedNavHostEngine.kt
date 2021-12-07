@@ -100,10 +100,10 @@ internal class AnimatedNavHostEngine(
         navigation(
             startDestination = navGraph.startDestination.route,
             route = navGraph.route,
-            enterTransition = enterTransition.toAccompanist(),
-            exitTransition = exitTransition.toAccompanist(),
-            popEnterTransition = popEnterTransition.toAccompanist(),
-            popExitTransition = popExitTransition.toAccompanist(),
+            enterTransition = enterTransition?.toAccompanist(),
+            exitTransition = exitTransition?.toAccompanist(),
+            popEnterTransition = popEnterTransition?.toAccompanist(),
+            popExitTransition = popExitTransition?.toAccompanist(),
             builder = builder,
         )
     }
@@ -181,10 +181,10 @@ internal class AnimatedNavHostEngine(
             route = destination.route,
             arguments = destination.arguments,
             deepLinks = destination.deepLinks,
-            enterTransition = { i, t -> enterTransition(i, t) },
-            exitTransition = { i, t -> exitTransition(i, t) },
-            popEnterTransition = { i, t -> popEnterTransition(i, t) },
-            popExitTransition = { i, t -> popExitTransition(i, t) }
+            enterTransition = { enterTransition() },
+            exitTransition = { exitTransition() },
+            popEnterTransition = { popEnterTransition() },
+            popExitTransition = { popExitTransition() }
         ) { navBackStackEntry ->
             CallComposable(
                 destination,
@@ -264,19 +264,11 @@ internal class AnimatedNavHostEngine(
         }
     }
 
-    private fun DestinationEnterTransition?.toAccompanist(): (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> EnterTransition)? {
-        return this?.run {
-            { initial, target ->
-                enter(initial, target)
-            }
-        }
+    private fun DestinationEnterTransition.toAccompanist(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition) {
+        return { enter() }
     }
 
-    private fun DestinationExitTransition?.toAccompanist(): (AnimatedContentScope<String>.(initial: NavBackStackEntry, target: NavBackStackEntry) -> ExitTransition)? {
-        return this?.run {
-            { initial, target ->
-                exit(initial, target)
-            }
-        }
+    private fun DestinationExitTransition.toAccompanist(): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition) {
+        return { exit() }
     }
 }

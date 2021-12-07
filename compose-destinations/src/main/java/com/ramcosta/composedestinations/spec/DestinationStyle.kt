@@ -56,32 +56,20 @@ sealed interface DestinationStyle {
     @ExperimentalAnimationApi
     interface Animated : DestinationStyle {
 
-        fun AnimatedContentScope<String>.enterTransition(
-            initial: NavBackStackEntry,
-            target: NavBackStackEntry
-        ): EnterTransition? {
+        fun AnimatedContentScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
             return null
         }
 
-        fun AnimatedContentScope<String>.exitTransition(
-            initial: NavBackStackEntry,
-            target: NavBackStackEntry
-        ): ExitTransition? {
+        fun AnimatedContentScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
             return null
         }
 
-        fun AnimatedContentScope<String>.popEnterTransition(
-            initial: NavBackStackEntry,
-            target: NavBackStackEntry
-        ): EnterTransition? {
-            return enterTransition(initial, target)
+        fun AnimatedContentScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
+            return enterTransition()
         }
 
-        fun AnimatedContentScope<String>.popExitTransition(
-            initial: NavBackStackEntry,
-            target: NavBackStackEntry
-        ): ExitTransition? {
-            return exitTransition(initial, target)
+        fun AnimatedContentScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
+            return exitTransition()
         }
 
         /**
@@ -89,15 +77,11 @@ sealed interface DestinationStyle {
          * the default animation with `defaultAnimationParams`.
          */
         object None : Animated {
-            override fun AnimatedContentScope<String>.enterTransition(
-                initial: NavBackStackEntry,
-                target: NavBackStackEntry
-            ) = EnterTransition.None
+            override fun AnimatedContentScope<NavBackStackEntry>.enterTransition() =
+                EnterTransition.None
 
-            override fun AnimatedContentScope<String>.exitTransition(
-                initial: NavBackStackEntry,
-                target: NavBackStackEntry
-            ) = ExitTransition.None
+            override fun AnimatedContentScope<NavBackStackEntry>.exitTransition() =
+                ExitTransition.None
         }
     }
 

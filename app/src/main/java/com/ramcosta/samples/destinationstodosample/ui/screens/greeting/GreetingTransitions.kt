@@ -9,12 +9,9 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
 @OptIn(ExperimentalAnimationApi::class)
 object GreetingTransitions : DestinationStyle.Animated {
 
-    override fun AnimatedContentScope<String>.enterTransition(
-        initial: NavBackStackEntry,
-        target: NavBackStackEntry
-    ): EnterTransition? {
+    override fun AnimatedContentScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
 
-        return when (initial.navDestination) {
+        return when (initialState.navDestination) {
             SettingsDestination,
             ProfileScreenDestination ->
                 slideInHorizontally(
@@ -25,12 +22,9 @@ object GreetingTransitions : DestinationStyle.Animated {
         }
     }
 
-    override fun AnimatedContentScope<String>.exitTransition(
-        initial: NavBackStackEntry,
-        target: NavBackStackEntry
-    ): ExitTransition? {
+    override fun AnimatedContentScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
 
-        return when (target.navDestination) {
+        return when (targetState.navDestination) {
             ProfileScreenDestination,
             SettingsDestination ->
                 slideOutHorizontally(
@@ -41,12 +35,9 @@ object GreetingTransitions : DestinationStyle.Animated {
         }
     }
 
-    override fun AnimatedContentScope<String>.popEnterTransition(
-        initial: NavBackStackEntry,
-        target: NavBackStackEntry
-    ): EnterTransition? {
+    override fun AnimatedContentScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
 
-        return when (initial.navDestination) {
+        return when (initialState.navDestination) {
             ProfileScreenDestination,
             SettingsDestination ->
                 slideInHorizontally(
@@ -57,12 +48,9 @@ object GreetingTransitions : DestinationStyle.Animated {
         }
     }
 
-    override fun AnimatedContentScope<String>.popExitTransition(
-        initial: NavBackStackEntry,
-        target: NavBackStackEntry
-    ): ExitTransition? {
+    override fun AnimatedContentScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
 
-        return when (target.navDestination) {
+        return when (targetState.navDestination) {
             ProfileScreenDestination,
             SettingsDestination ->
                 slideOutHorizontally(

@@ -30,17 +30,17 @@ class NavGraphDefaultAnimationParams(
 @ExperimentalAnimationApi
 class DefaultAnimationParams(
     val contentAlignment: Alignment = Alignment.Center,
-    val enterTransition: DestinationEnterTransition? = DestinationEnterTransition { _, _ -> EnterTransition.None },
-    val exitTransition: DestinationExitTransition? = DestinationExitTransition { _, _ -> ExitTransition.None },
-    val popEnterTransition: DestinationEnterTransition? = enterTransition,
-    val popExitTransition: DestinationExitTransition? = exitTransition,
+    val enterTransition: DestinationEnterTransition = DestinationEnterTransition { EnterTransition.None },
+    val exitTransition: DestinationExitTransition = DestinationExitTransition { ExitTransition.None },
+    val popEnterTransition: DestinationEnterTransition = enterTransition,
+    val popExitTransition: DestinationExitTransition = exitTransition,
 ) {
 
     companion object {
         val ACCOMPANIST_FADING by lazy {
             DefaultAnimationParams(
-                enterTransition = { _, _ -> fadeIn(animationSpec = tween(700)) },
-                exitTransition = { _, _ -> fadeOut(animationSpec = tween(700)) }
+                enterTransition = { fadeIn(animationSpec = tween(700)) },
+                exitTransition = { fadeOut(animationSpec = tween(700)) }
             )
         }
     }
