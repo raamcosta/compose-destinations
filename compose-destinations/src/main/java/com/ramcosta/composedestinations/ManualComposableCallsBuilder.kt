@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.internal.ComposableLambda
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
@@ -21,7 +20,7 @@ fun <T> ManualComposableCallsBuilder.composable(
     destination: DestinationSpec<T>,
     content: @Composable (T, NavBackStackEntry) -> Unit
 ) {
-    map[destination] = ComposableLambdaType.NORMAL to content as ComposableLambda
+    map[destination] = DestinationLambda.Normal(content)
 }
 
 /**
@@ -36,10 +35,10 @@ fun ManualComposableCallsBuilder.composable(
     destination: DestinationSpec<Unit>,
     content: @Composable (NavBackStackEntry) -> Unit
 ) {
-    map[destination] =
-        ComposableLambdaType.NORMAL to @Composable { _: Unit, entry: NavBackStackEntry ->
-            content(entry)
-        } as ComposableLambda
+    val auxLambda: (@Composable (Unit, NavBackStackEntry) -> Unit) = { _, entry ->
+        content(entry)
+    }
+    map[destination] = DestinationLambda.Normal(auxLambda)
 }
 
 /**
@@ -62,7 +61,7 @@ fun <T> ManualComposableCallsBuilder.animatedComposable(
 ) {
     validateAnimated(destination)
 
-    map[destination] = ComposableLambdaType.ANIMATED to content as ComposableLambda
+    map[destination] = DestinationLambda.Animated(content)
 }
 
 /**
@@ -88,7 +87,7 @@ fun ManualComposableCallsBuilder.animatedComposable(
         { _, entry ->
             content(entry)
         }
-    map[destination] = ComposableLambdaType.ANIMATED to auxLambda as ComposableLambda
+    map[destination] = DestinationLambda.Animated(auxLambda)
 }
 
 /**
@@ -110,7 +109,7 @@ fun <T> ManualComposableCallsBuilder.bottomSheetComposable(
 ) {
     validateBottomSheet(destination)
 
-    map[destination] = ComposableLambdaType.BOTTOM_SHEET to content as ComposableLambda
+    map[destination] = DestinationLambda.BottomSheet(content)
 }
 
 /**
@@ -134,23 +133,31 @@ fun ManualComposableCallsBuilder.bottomSheetComposable(
     val auxLambda: @Composable ColumnScope.(Unit, NavBackStackEntry) -> Unit = { _, entry ->
         content(entry)
     }
-    map[destination] = ComposableLambdaType.BOTTOM_SHEET to auxLambda as ComposableLambda
+    map[destination] = DestinationLambda.BottomSheet(auxLambda)
 }
 
 class ManualComposableCallsBuilder internal constructor(
     internal val engineType: NavHostEngine.Type
 ) {
 
-    internal val map: MutableMap<DestinationSpec<*>, Pair<ComposableLambdaType, ComposableLambda>> =
-        mutableMapOf()
+    internal val map: MutableMap<DestinationSpec<*>, DestinationLambda> = mutableMapOf()
 
     internal fun build() = ManualComposableCalls(map)
 }
 
-enum class ComposableLambdaType {
-    NORMAL,
-    ANIMATED,
-    BOTTOM_SHEET
+sealed class DestinationLambda {
+    class Normal<T>(
+        val content: @Composable (T, NavBackStackEntry) -> Unit
+    ) : DestinationLambda()
+
+    @ExperimentalAnimationApi
+    class Animated<T>(
+        val content: @Composable AnimatedVisibilityScope.(T, NavBackStackEntry) -> Unit
+    ) : DestinationLambda()
+
+    class BottomSheet<T>(
+        val content: @Composable ColumnScope.(T, NavBackStackEntry) -> Unit
+    ) : DestinationLambda()
 }
 
 @ExperimentalAnimationApi

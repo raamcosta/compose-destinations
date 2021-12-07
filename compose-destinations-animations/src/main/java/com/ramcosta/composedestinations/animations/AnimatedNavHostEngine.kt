@@ -12,7 +12,7 @@ import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import com.ramcosta.composedestinations.ComposableLambdaType
+import com.ramcosta.composedestinations.DestinationLambda
 import com.ramcosta.composedestinations.ManualComposableCalls
 import com.ramcosta.composedestinations.animations.defaults.DefaultAnimationParams
 import com.ramcosta.composedestinations.animations.defaults.DestinationEnterTransition
@@ -223,26 +223,31 @@ internal class AnimatedNavHostEngine(
         navBackStackEntry: NavBackStackEntry,
         manualComposableCalls: ManualComposableCalls
     ) {
-        val typeAndLambda = manualComposableCalls[destination]
+        val contentWrapper = manualComposableCalls[destination]
 
-        if (typeAndLambda == null) {
+        if (contentWrapper == null) {
             destination.Content(
                 navController,
                 navBackStackEntry,
                 DestinationDependenciesContainer().apply { dependency(this@CallComposable) }
             )
         } else {
-            val (type, content) = typeAndLambda
-            if (type == ComposableLambdaType.BOTTOM_SHEET) {
-                (content as @Composable ColumnScope.(T, NavBackStackEntry) -> Unit)(
-                    remember { destination.argsFrom(navBackStackEntry) },
-                    navBackStackEntry
-                )
-            } else {
-                (content as @Composable (T, NavBackStackEntry) -> Unit)(
-                    remember { destination.argsFrom(navBackStackEntry) },
-                    navBackStackEntry
-                )
+            when (contentWrapper) {
+                is DestinationLambda.BottomSheet<*> -> {
+                    contentWrapper as DestinationLambda.BottomSheet<T>
+                    contentWrapper.content(
+                        this,
+                        remember { destination.argsFrom(navBackStackEntry) },
+                        navBackStackEntry
+                    )
+                }
+                else -> {
+                    contentWrapper as DestinationLambda.Normal<T>
+                    contentWrapper.content(
+                        remember { destination.argsFrom(navBackStackEntry) },
+                        navBackStackEntry
+                    )
+                }
             }
         }
     }
@@ -255,26 +260,31 @@ internal class AnimatedNavHostEngine(
         navBackStackEntry: NavBackStackEntry,
         manualComposableCalls: ManualComposableCalls,
     ) {
-        val typeAndLambda = manualComposableCalls[destination]
+        val contentWrapper = manualComposableCalls[destination]
 
-        if (typeAndLambda == null) {
+        if (contentWrapper == null) {
             destination.Content(
                 navController,
                 navBackStackEntry,
                 DestinationDependenciesContainer().apply { dependency(this@CallComposable) }
             )
         } else {
-            val (type, content) = typeAndLambda
-            if (type == ComposableLambdaType.ANIMATED) {
-                (content as @Composable AnimatedVisibilityScope.(T, NavBackStackEntry) -> Unit)(
-                    remember { destination.argsFrom(navBackStackEntry) },
-                    navBackStackEntry
-                )
-            } else {
-                (content as @Composable (T, NavBackStackEntry) -> Unit)(
-                    remember { destination.argsFrom(navBackStackEntry) },
-                    navBackStackEntry
-                )
+            when (contentWrapper) {
+                is DestinationLambda.Animated<*> -> {
+                    contentWrapper as DestinationLambda.Animated<T>
+                    contentWrapper.content(
+                        this,
+                        remember { destination.argsFrom(navBackStackEntry) },
+                        navBackStackEntry
+                    )
+                }
+                else -> {
+                    contentWrapper as DestinationLambda.Normal<T>
+                    contentWrapper.content(
+                        remember { destination.argsFrom(navBackStackEntry) },
+                        navBackStackEntry
+                    )
+                }
             }
         }
     }

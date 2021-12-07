@@ -145,7 +145,8 @@ internal class DefaultNavHostEngine : NavHostEngine {
                 DestinationDependenciesContainer()
             )
         } else {
-            (contentLambda as @Composable (T, NavBackStackEntry) -> Unit)(
+            contentLambda as DestinationLambda.Normal<T>
+            contentLambda.content(
                 remember { destination.argsFrom(navBackStackEntry) },
                 navBackStackEntry
             )
