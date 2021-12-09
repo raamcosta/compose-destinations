@@ -37,7 +37,7 @@ fun AppNavigation(
         navController = navController,
         modifier = modifier
     ) {
-        //region This is NOT needed: this is exactly what the lib would do for us too
+        // region This is NOT needed: this is exactly what the lib would do for us too
         // if we didn't explicitly call this Composable
         // It is here only as an example of getting nav args in a type safe way at this point
         // and also so we can see the boilerplate we save for each destination
@@ -49,10 +49,13 @@ fun AppNavigation(
                 stuff3 = navArgs.stuff3
             )
         }
-        //endregion
+        // endregion
 
-        // Composables we need to call ourselves since the lib doesn't know how to get
+        // region Composables we need to call ourselves since the lib doesn't know how to get
         // DrawerController or the *UiState and *UiEvents interfaces
+
+        // animatedComposable is needed to get an AnimatedVisibilityScope to use as the receiver for our
+        // ProfileScreen
         animatedComposable(ProfileScreenDestination) { _, entry ->
             val vm = viewModel<ProfileViewModel>(
                 factory = ProfileViewModel.Factory(entry)
@@ -74,5 +77,6 @@ fun AppNavigation(
                 uiState = vm as GreetingUiState
             )
         }
+     // endregion
     }
 }
