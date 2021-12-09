@@ -52,7 +52,7 @@ fun DestinationsNavHost(
     startDestination: DestinationSpec<*> = navGraph.startDestination,
     engine: NavHostEngine = rememberNavHostEngine(),
     navController: NavHostController = engine.rememberNavController(),
-    manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit
+    manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit = {}
 ) {
     engine.NavHost(
         modifier = modifier,
