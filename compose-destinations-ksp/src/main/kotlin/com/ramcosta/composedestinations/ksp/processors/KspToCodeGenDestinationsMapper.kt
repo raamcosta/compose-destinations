@@ -73,7 +73,7 @@ class KspToCodeGenDestinationsMapper(
             isStart = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
             navGraphRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!,
             composableReceiverSimpleName = extensionReceiver?.toString(),
-            requireOptInAnnotationNames = findAllRequireOptInAnnotations(),
+            requireOptInAnnotationTypes = findAllRequireOptInAnnotations(),
             navArgsDelegateType = navArgsDelegateTypeAndFile?.first
         )
     }
@@ -144,8 +144,7 @@ class KspToCodeGenDestinationsMapper(
         val classDeclarationType = ksClassDeclaration?.asType(emptyList())
 
         return Type(
-            simpleName = declaration.simpleName.asString(),
-            qualifiedName = qualifiedName.asString(),
+            classType = ClassType(declaration.simpleName.asString(), qualifiedName.asString()),
             isNullable = isMarkedNullable,
             isEnum = ksClassDeclaration?.classKind == ClassKind.ENUM_CLASS,
             isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,

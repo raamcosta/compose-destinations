@@ -33,27 +33,28 @@ fun File.readLineAndImports(lineNumber: Int): Pair<String, List<String>> {
         }
 }
 
-fun KSAnnotated.findAllRequireOptInAnnotations(): List<String> {
-    val requireOptInAnnotations = mutableListOf<String>()
+fun KSAnnotated.findAllRequireOptInAnnotations(): List<ClassType> {
+    val requireOptInAnnotations = mutableListOf<ClassType>()
     annotations.forEach { annotation ->
         val annotationShortName = annotation.shortName.asString()
         if (annotationShortName == "Composable" || annotationShortName == "Destination") {
             return@forEach
         }
 
-        if (annotation.isRequireOptIn()) {
-            requireOptInAnnotations.add(annotationShortName)
+        val ksType = annotation.annotationType.resolve()
+        if (ksType.isRequireOptInAnnotation()) {
+            requireOptInAnnotations.add(ClassType(annotationShortName, ksType.declaration.qualifiedName!!.asString()))
         }
     }
 
     return requireOptInAnnotations
 }
 
-fun KSAnnotation.isRequireOptIn(): Boolean {
-    val annotations = annotationType.resolve().declaration.annotations
-    return annotations.any { annotation ->
-        val annotationSimpleName = annotation.annotationType.resolve().declaration.simpleName.asString()
-        annotationSimpleName == "RequiresOptIn"
-                || annotation.annotationType.annotations.any { it.isRequireOptIn() }
+fun KSType.isRequireOptInAnnotation(): Boolean {
+    return declaration.annotations.any { annotation ->
+        annotation.shortName.asString() == "RequiresOptIn"
+                || annotation.annotationType.annotations.any {
+            annotation.annotationType.resolve().isRequireOptInAnnotation()
+        }
     }
 }

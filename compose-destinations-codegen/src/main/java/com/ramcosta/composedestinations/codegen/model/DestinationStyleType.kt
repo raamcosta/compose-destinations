@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.codegen.model
 
 sealed class DestinationStyleType {
-    data class Animated(val type: Type, val requireOptInAnnotations: List<String>) : DestinationStyleType()
+    data class Animated(val type: Type, val requireOptInAnnotations: List<ClassType>) : DestinationStyleType()
 
     data class Dialog(val type: Type) : DestinationStyleType()
 

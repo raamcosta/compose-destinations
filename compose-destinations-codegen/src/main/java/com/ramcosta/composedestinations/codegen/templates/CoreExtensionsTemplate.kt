@@ -16,6 +16,7 @@ import $PACKAGE_NAME.spec.DestinationSpec
 import $PACKAGE_NAME.spec.NavGraphSpec
 import $PACKAGE_NAME.spec.Routed
 import $PACKAGE_NAME.utils.findDestination
+$ADDITIONAL_IMPORTS
 
 /**
  * Handy typealias of [$GENERATED_DESTINATION] when you don't
@@ -57,7 +58,7 @@ $START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
  * Finds the destination correspondent to this [NavBackStackEntry] in the root NavGraph, null if none is found
  * or if no route is set in this back stack entry's destination.
  */
-val NavBackStackEntry.navDestination: Destination?
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}val NavBackStackEntry.navDestination: Destination?
     get() {
         return navDestination()
     }
@@ -66,7 +67,7 @@ $END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
  * Finds the destination correspondent to this [NavBackStackEntry] in [navGraph], null if none is found
  * or if no route is set in this back stack entry's destination.
  */
-fun NavBackStackEntry.navDestination(navGraph: $GENERATED_NAV_GRAPH$START_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = $GENERATED_NAV_GRAPHS_OBJECT.root$END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR): Destination? {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}fun NavBackStackEntry.navDestination(navGraph: $GENERATED_NAV_GRAPH$START_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = $GENERATED_NAV_GRAPHS_OBJECT.root$END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR): Destination? {
     return destination.route?.let { navGraph.findDestination(it) as Destination }
 }
 """.trimIndent()

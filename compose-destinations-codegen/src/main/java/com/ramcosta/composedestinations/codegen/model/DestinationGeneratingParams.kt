@@ -13,6 +13,6 @@ data class DestinationGeneratingParams(
     val navGraphRoute: String,
     val destinationStyleType: DestinationStyleType,
     val composableReceiverSimpleName: String?,
-    val requireOptInAnnotationNames: List<String>,
+    val requireOptInAnnotationTypes: List<ClassType>,
     val navArgsDelegateType: NavArgsDelegateType?
 )

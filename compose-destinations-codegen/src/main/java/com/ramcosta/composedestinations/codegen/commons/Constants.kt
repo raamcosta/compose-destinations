@@ -1,5 +1,7 @@
 package com.ramcosta.composedestinations.codegen.commons
 
+import com.ramcosta.composedestinations.codegen.model.ClassType
+
 const val PACKAGE_NAME = "com.ramcosta.composedestinations"
 
 const val DESTINATION_ANNOTATION = "Destination"
@@ -29,8 +31,13 @@ const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
 const val CORE_DESTINATION_ANIMATION_STYLE = "DestinationStyle.Animated"
 const val CORE_BOTTOM_SHEET_DESTINATION_STYLE = "DestinationStyle.BottomSheet"
 
-const val EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME = "ExperimentalAnimationApi"
-const val EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME = "androidx.compose.animation.ExperimentalAnimationApi"
+private const val EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME = "ExperimentalAnimationApi"
+private const val EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME = "androidx.compose.animation.ExperimentalAnimationApi"
+val experimentalAnimationApiType = ClassType(
+    simpleName = EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME,
+    qualifiedName = EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME
+)
+
 const val DESTINATIONS_NAVIGATOR_QUALIFIED_NAME = "$PACKAGE_NAME.navigation.DestinationsNavigator"
 const val NAV_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavController"
 const val NAV_HOST_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavHostController"

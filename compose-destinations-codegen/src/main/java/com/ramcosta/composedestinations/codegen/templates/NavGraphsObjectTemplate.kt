@@ -9,6 +9,7 @@ const val NAV_GRAPHS_PLACEHOLDER = "[NAV_GRAPHS_PLACEHOLDER]"
 
 val navGraphsObjectTemplate = """
 package $PACKAGE_NAME
+$ADDITIONAL_IMPORTS
 
 /**
  * Class generated if any Composable is annotated with `@$GENERATED_DESTINATION`.

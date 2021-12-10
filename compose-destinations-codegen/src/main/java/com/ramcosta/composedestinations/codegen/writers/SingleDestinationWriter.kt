@@ -51,8 +51,10 @@ class SingleDestinationWriter(
             simpleName = name,
             isStartDestination = isStart,
             navGraphRoute = navGraphRoute,
-            requireOptInAnnotationNames = baseOptInAnnotations().filter { !it.isOptedIn }
-                .map { it.annotationName }.toList(),
+            requireOptInAnnotationTypes = baseOptInAnnotations()
+                .filter { !it.isOptedIn }
+                .map { it.classType }
+                .toList(),
         )
     }
 
@@ -101,15 +103,15 @@ class SingleDestinationWriter(
     }
 
     private fun baseOptInAnnotations(): List<OptInAnnotation> {
-        val optInByAnnotation = destination.requireOptInAnnotationNames.associateWithTo(mutableMapOf()) { false }
+        val optInByAnnotation = destination.requireOptInAnnotationTypes.associateWithTo(mutableMapOf()) { false }
         if (destination.destinationStyleType is DestinationStyleType.Animated) {
             optInByAnnotation.putAll(destination.destinationStyleType.requireOptInAnnotations.associateWithTo(mutableMapOf()) { false })
         }
 
         if (isRequiredReceiverExperimentalOptedIn() || isRequiredAnimationExperimentalOptedIn()) {
             // user has opted in, so we will too
-            additionalImports.add(EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME)
-            optInByAnnotation[EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME] = true
+            additionalImports.add(experimentalAnimationApiType.qualifiedName)
+            optInByAnnotation[experimentalAnimationApiType] = true
         }
 
         return optInByAnnotation.map { OptInAnnotation(it.key, it.value) }
@@ -117,12 +119,12 @@ class SingleDestinationWriter(
 
     private fun isRequiredAnimationExperimentalOptedIn(): Boolean {
         return destination.destinationStyleType is DestinationStyleType.Animated
-                && !destination.destinationStyleType.requireOptInAnnotations.contains(EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME)
+                && !destination.destinationStyleType.requireOptInAnnotations.contains(experimentalAnimationApiType)
     }
 
     private fun isRequiredReceiverExperimentalOptedIn(): Boolean {
         return destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
-                && !destination.requireOptInAnnotationNames.contains(EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME)
+                && !destination.requireOptInAnnotationTypes.contains(experimentalAnimationApiType)
     }
 
     private fun objectWideRequireOptInAnnotations(): String {
@@ -130,10 +132,11 @@ class SingleDestinationWriter(
         val optInByAnnotation = baseOptInAnnotations()
 
         optInByAnnotation.forEach {
+            additionalImports.add(it.classType.qualifiedName)
             code += if (it.isOptedIn) {
-                "@OptIn(${it.annotationName}::class)\n"
+                "@OptIn(${it.classType.simpleName}::class)\n"
             } else {
-                "@${it.annotationName}\n"
+                "@${it.classType.simpleName}\n"
             }
         }
 
@@ -465,7 +468,7 @@ class SingleDestinationWriter(
             throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_DESTINATION_ANIMATION_STYLE!")
         }
 
-        additionalImports.add(EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME)
+        additionalImports.add(experimentalAnimationApiType.qualifiedName)
         additionalImports.add(destinationStyleType.type.qualifiedName)
 
         if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
@@ -545,7 +548,7 @@ class SingleDestinationWriter(
     }
 
     private class OptInAnnotation(
-        val annotationName: String,
+        val classType: ClassType,
         val isOptedIn: Boolean,
     )
 }

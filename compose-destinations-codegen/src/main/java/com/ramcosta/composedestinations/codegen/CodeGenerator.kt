@@ -22,11 +22,11 @@ class CodeGenerator(
 
         val generatedDestinations = DestinationsWriter(codeGenerator, logger, core).write(destinations)
 
-        if (generateNavGraphs) {
+        val generatedNavGraphs = if (generateNavGraphs) {
             NavGraphsObjectWriter(codeGenerator, logger).write(generatedDestinations)
-        }
+        } else emptyList()
 
-        CoreExtensionsWriter(codeGenerator, generateNavGraphs).write()
+        CoreExtensionsWriter(codeGenerator, generatedNavGraphs).write()
     }
 
     private fun initialValidations(destinations: List<DestinationGeneratingParams>) {
