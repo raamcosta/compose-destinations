@@ -3,7 +3,7 @@
 # Compose Destinations
 
 A KSP library to improve Compose Navigation. It processes annotations with KSP to generate code which uses
-Compose Navigation under the hood. 
+Compose Navigation under the hood.
 Doing so, it avoids the boilerplate and unsafe code around navigating in Compose.
 For a deeper look into all the features, check our [wiki](https://github.com/raamcosta/compose-destinations/wiki).
 
@@ -30,9 +30,9 @@ fun ProfileScreen() { /*...*/ }
 @Destination
 @Composable
 fun ProfileScreen(
-    id: Int, // <-- required navigation argument
-    groupName: String?, // <-- optional navigation argument
-    isOwnUser: Boolean = false // <-- optional navigation argument
+   id: Int, // <-- required navigation argument
+   groupName: String?, // <-- optional navigation argument
+   isOwnUser: Boolean = false // <-- optional navigation argument
 ) { /*...*/ }
 ```
 
@@ -40,29 +40,31 @@ fun ProfileScreen(
 inside the Composable (as is likely the case when using ViewModel). Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Destination-arguments#navigation-arguments-class-delegate).
 
 3. Build the project (or `./gradlew kspDebugKotlin`, which should be faster) to generate
-all the Destinations. With the above annotated composable, a `ProfileScreenDestination` file (that we'll use on step 4) would be generated.
+   all the Destinations. With the above annotated composable, a `ProfileScreenDestination` file (that we'll use on step 4) would be generated.
 
 4. Use the generated `[ComposableName]Destination` invoke method to navigate to it. It will
-have the correct typed arguments.
+   have the correct typed arguments.
 
 ```kotlin
 @Destination
 @Composable
 fun SomeOtherScreen(
-    navigator: DestinationsNavigator
+   navigator: DestinationsNavigator
 ) {
-    /*...*/
-    navigator.navigate(ProfileScreenDestination(id = 7, groupName = "Kotlin programmers"))
+   /*...*/
+   navigator.navigate(ProfileScreenDestination(id = 7, groupName = "Kotlin programmers"))
 }
 ```
-> DestinationsNavigator is a wrapper interface to NavController that if declared as a parameter, will be provided for free by the library. NavController can also be provided in the exact same way, but it ties your composables to a specific implementation which will make it harder to test and preview. Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Navigation) 
+> DestinationsNavigator is a wrapper interface to NavController that if declared as a parameter, will be provided for free by the library. NavController can also be provided in the exact same way, but it ties your composables to a specific implementation which will make it harder to test and preview. Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Navigation)
 
 5. Finally, add the NavHost call:
 
 ```kotlin
-DestinationsNavHost()
+DestinationsNavHost(navGraph = NavGraphs.root)
 ```
-This call will automatically add all annotated Composable functions as destinations of the Navigation Graph.
+> `NavGraphs` is a generated file that describes your navigation graphs and their destinations. By default all destinations will belong to "root", but you can use the `navGraph` argument of the annotation to have certain screens in nested navigation graphs.
+
+This call adds all annotated Composable functions as destinations of the Navigation Host.
 
 That's it! No need to worry about routes, `NavType`, bundles and strings. All that redundant and
 error-prone code gets generated for you.
@@ -72,36 +74,67 @@ error-prone code gets generated for you.
 Compose destinations is available via maven central.
 
 1. Add the ksp plugin:
+<details open>
+  <summary>groovy - build.gradle(:app)</summary>
+
+```gradle
+plugins {
+    //...
+    id "com.google.devtools.ksp" version "1.5.31-1.0.0"
+}
+```
+</details>
+
+<details>
+  <summary>kotlin - build.gradle.kts(:app)</summary>  
+
 ```gradle
 plugins {
     //...
     id("com.google.devtools.ksp") version "1.5.31-1.0.0"
 }
 ```
+</details>
 
-2. Add the dependencies:
+</br>2. Add the dependencies:
+
+<details open>
+  <summary>groovy - build.gradle(:app)</summary>
+
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:0.9.4-beta'
-ksp 'io.github.raamcosta.compose-destinations:ksp:0.9.4-beta'
-
-// official compose navigation
-implementation 'androidx.navigation:navigation-compose:$compose_navigation_version'
+implementation 'io.github.raamcosta.compose-destinations:core:1.0.0-beta'
+ksp 'io.github.raamcosta.compose-destinations:ksp:1.0.0-beta'    
 ```
-> Official Compose Navigation is required.
-If you're using Accompanist Navigation-Animation and/or
-Accompanist Material (aka BottomSheet destinations, currently), Compose Destinations has you covered. <br/>
-Check our [wiki](https://github.com/raamcosta/compose-destinations/wiki) to know more. <br/>
-Each [release](https://github.com/raamcosta/compose-destinations/releases) contains a list of 
-versions known to be compatible.
+</details>
 
-3. And finally, you need to make sure the IDE looks at the generated folder.
-See KSP related [issue](https://github.com/google/ksp/issues/37).
-An example for the debug variant would be:
+<details>
+  <summary>kotlin - build.gradle.kts(:app)</summary>  
+
 ```gradle
-sourceSets {
-    //...
-    debug {
-        java.srcDir(file("build/generated/ksp/debug/kotlin"))
+implementation("io.github.raamcosta.compose-destinations:core:1.0.0-beta")
+ksp("io.github.raamcosta.compose-destinations:ksp:1.0.0-beta")
+```
+</details>
+
+> If you want to use animations between screens and/or bottom sheet screens, replace above core dependency with: </br>
+`implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
+> this will use [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation) and [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
+> Read more about the next steps to configure these features [here](https://github.com/raamcosta/compose-destinations/wiki/Styles-and-Animations)
+
+</br>3. And finally, you need to make sure the IDE looks at the generated folder.
+See KSP related [issue](https://github.com/google/ksp/issues/37).
+An example for the debug/release variant would be:
+
+groovy/kotlin - gradle.build(:app) (same level as `plugins` and `android` blocks):
+```gradle
+kotlin {
+    sourceSets {
+        debug {
+            kotlin.srcDir("build/generated/ksp/debug/kotlin")
+        }
+        release {
+            kotlin.srcDir("build/generated/ksp/release/kotlin")
+        }
     }
 }
 ```
