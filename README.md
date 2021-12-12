@@ -24,7 +24,8 @@ For a deeper look into all the features, check our [wiki](https://github.com/raa
 fun ProfileScreen() { /*...*/ }
 ```
 
-2. Add navigation arguments to the function declaration:
+2. Add navigation arguments to the function declaration: </br>
+(`Parcelable`, `Serializable` and `Enum` types are allowed!)
 
 ```kotlin
 @Destination
