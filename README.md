@@ -92,7 +92,7 @@ plugins {
 ```gradle
 plugins {
     //...
-    id("com.google.devtools.ksp") version "1.5.31-1.0.0"
+    id("com.google.devtools.ksp") version "1.5.31-1.0.0" // 1.6.0-1.0.1 if you're using kotlin 1.6.0
 }
 ```
 </details>
