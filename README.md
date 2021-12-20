@@ -92,7 +92,7 @@ plugins {
 ```gradle
 plugins {
     //...
-    id("com.google.devtools.ksp") version "1.5.31-1.0.0" // 1.6.0-1.0.1 if you're using kotlin 1.6.0
+    id("com.google.devtools.ksp") version "1.5.31-1.0.0" // Depends on your kotlin version
 }
 ```
 </details>
@@ -103,8 +103,8 @@ plugins {
   <summary>groovy - build.gradle(:app)</summary>
 
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:1.0.0-beta'
-ksp 'io.github.raamcosta.compose-destinations:ksp:1.0.0-beta'    
+implementation 'io.github.raamcosta.compose-destinations:core:1.0.1-beta'
+ksp 'io.github.raamcosta.compose-destinations:ksp:1.0.1-beta'    
 ```
 </details>
 
@@ -112,8 +112,8 @@ ksp 'io.github.raamcosta.compose-destinations:ksp:1.0.0-beta'
   <summary>kotlin - build.gradle.kts(:app)</summary>  
 
 ```gradle
-implementation("io.github.raamcosta.compose-destinations:core:1.0.0-beta")
-ksp("io.github.raamcosta.compose-destinations:ksp:1.0.0-beta")
+implementation("io.github.raamcosta.compose-destinations:core:1.0.1-beta")
+ksp("io.github.raamcosta.compose-destinations:ksp:1.0.1-beta")
 ```
 </details>
 
