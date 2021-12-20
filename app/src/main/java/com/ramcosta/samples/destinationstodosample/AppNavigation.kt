@@ -5,13 +5,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.*
-import com.ramcosta.composedestinations.animations.defaults.DefaultAnimationParams
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
+import com.ramcosta.composedestinations.animations.utils.animatedComposable
+import com.ramcosta.composedestinations.animations.utils.bottomSheetComposable
+import com.ramcosta.composedestinations.manualcomposablecalls.animatedComposable
+import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.DestinationsNavController
+import com.ramcosta.composedestinations.utils.dialogComposable
 import com.ramcosta.samples.destinationstodosample.commons.DrawerController
-import com.ramcosta.samples.destinationstodosample.ui.screens.TestScreen
+import com.ramcosta.samples.destinationstodosample.ui.screens.*
 import com.ramcosta.samples.destinationstodosample.ui.screens.greeting.GreetingScreen
 import com.ramcosta.samples.destinationstodosample.ui.screens.greeting.GreetingUiEvents
 import com.ramcosta.samples.destinationstodosample.ui.screens.greeting.GreetingUiState
@@ -28,7 +34,18 @@ fun AppNavigation(
     drawerController: DrawerController,
     navController: NavHostController,
 ) {
-    val navHostEngine = rememberAnimatedNavHostEngine(DefaultAnimationParams.ACCOMPANIST_FADING)
+    // ------- Defining default animations for root and nested nav graphs example -------
+//    val navHostEngine = rememberAnimatedNavHostEngine(
+//        rootDefaultAnimations = RootNavGraphDefaultAnimations.ACCOMPANIST_FADING,
+//        defaultAnimationsForNestedNavGraph = mapOf(
+//            NavGraphs.settings to NestedNavGraphDefaultAnimations(
+//                enterTransition = { fadeIn(animationSpec = tween(2000)) },
+//                exitTransition = { fadeOut(animationSpec = tween(2000)) }
+//            )
+//        )
+//    )
+
+    val navHostEngine = rememberAnimatedNavHostEngine()
 
     DestinationsNavHost(
         navGraph = NavGraphs.root,
@@ -41,7 +58,7 @@ fun AppNavigation(
         // if we didn't explicitly call this Composable
         // It is here only as an example of getting nav args in a type safe way at this point
         // and also so we can see the boilerplate we save for each destination
-        composable(TestScreenDestination) { navArgs, _ ->
+        composable(TestScreenDestination) {
             TestScreen(
                 id = navArgs.id,
                 stuff1 = navArgs.stuff1,
@@ -56,6 +73,79 @@ fun AppNavigation(
 
         // animatedComposable is needed to get an AnimatedVisibilityScope to use as the receiver for our
         // ProfileScreen
+        animatedComposable(ProfileScreenDestination) {
+            val vm = viewModel<ProfileViewModel>(
+                factory = ProfileViewModel.Factory(navBackStackEntry)
+            )
+
+            ProfileScreen(
+                vm as ProfileUiState,
+                vm as ProfileUiEvents
+            )
+        }
+
+        composable(GreetingScreenDestination) {
+            val vm = viewModel<GreetingViewModel>()
+
+            GreetingScreen(
+                navigator = destinationsNavigator,
+                drawerController = drawerController,
+                uiEvents = vm as GreetingUiEvents,
+                uiState = vm as GreetingUiState
+            )
+        }
+        // endregion
+    }
+}
+
+
+// ------- Without using DestinationsNavHost example -------
+@Suppress("UNUSED")
+@ExperimentalMaterialNavigationApi
+@ExperimentalAnimationApi
+@Composable
+fun SampleAppAnimatedNavHostExample(
+    modifier: Modifier,
+    navController: NavHostController,
+    drawerController: DrawerController
+) {
+    AnimatedNavHost(
+        modifier = modifier,
+        navController = navController,
+        startDestination = GreetingScreenDestination.route,
+        route = "root"
+    ) {
+
+        animatedComposable(GreetingScreenDestination) { _, entry ->
+            val vm = viewModel<GreetingViewModel>()
+
+            GreetingScreen(
+                navigator = DestinationsNavController(navController, entry),
+                drawerController = drawerController,
+                uiEvents = vm as GreetingUiEvents,
+                uiState = vm as GreetingUiState
+            )
+        }
+
+        animatedComposable(FeedDestination) {
+            Feed()
+        }
+
+        dialogComposable(GoToProfileConfirmationDestination) {
+            GoToProfileConfirmation(
+                navigator = DestinationsNavController(navController, it)
+            )
+        }
+
+        animatedComposable(TestScreenDestination) { args, _ ->
+            TestScreen(
+                id = args.id,
+                stuff1 = args.stuff1,
+                stuff2 = args.stuff2,
+                stuff3 = args.stuff3
+            )
+        }
+
         animatedComposable(ProfileScreenDestination) { _, entry ->
             val vm = viewModel<ProfileViewModel>(
                 factory = ProfileViewModel.Factory(entry)
@@ -67,16 +157,17 @@ fun AppNavigation(
             )
         }
 
-        composable(GreetingScreenDestination) { entry ->
-            val vm = viewModel<GreetingViewModel>()
+        navigation(
+            startDestination = SettingsDestination.route,
+            route = "settings"
+        ) {
+            animatedComposable(SettingsDestination) {
+                Settings(navigator = DestinationsNavController(navController, it))
+            }
 
-            GreetingScreen(
-                navigator = DestinationsNavController(navController, entry),
-                drawerController = drawerController,
-                uiEvents = vm as GreetingUiEvents,
-                uiState = vm as GreetingUiState
-            )
+            bottomSheetComposable(ThemeSettingsDestination) {
+                ThemeSettings()
+            }
         }
-     // endregion
     }
 }

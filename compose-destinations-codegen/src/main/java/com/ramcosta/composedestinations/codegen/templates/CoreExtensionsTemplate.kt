@@ -51,7 +51,7 @@ data class $GENERATED_NAV_GRAPH(
     val destinations: List<Destination>,
     override val nestedNavGraphs: List<$GENERATED_NAV_GRAPH> = emptyList()
 ): $CORE_NAV_GRAPH_SPEC {
-    override val destinationsByRoute = destinations.associateBy { it.route }
+    override val destinationsByRoute: Map<String, Destination> = destinations.associateBy { it.route }
 }
 $START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
 /**

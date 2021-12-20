@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
+import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
@@ -27,7 +29,7 @@ import com.ramcosta.composedestinations.spec.NavHostEngine
  * @param modifier [Modifier] to apply to this Composable
  *
  * @param startDestination the start destination of the NavHost. By default, we'll use the `startDestination`
- * of the [navGraph]. This allows for one-time runtime overrides to this.
+ * of the [navGraph]. This makes it possible to override that default on runtime.
  *
  * @param engine [NavHostEngine] to use. If you are not using animation features
  * (which need "io.github.raamcosta.compose-destinations:animations-core" dependency), you don't

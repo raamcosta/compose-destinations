@@ -4,6 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -12,11 +13,9 @@ import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import com.ramcosta.composedestinations.ManualComposableCalls
-import com.ramcosta.composedestinations.animations.defaults.DefaultAnimationParams
-import com.ramcosta.composedestinations.animations.defaults.DestinationEnterTransition
-import com.ramcosta.composedestinations.animations.defaults.DestinationExitTransition
-import com.ramcosta.composedestinations.animations.defaults.NavGraphDefaultAnimationParams
+import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
+import com.ramcosta.composedestinations.animations.defaults.*
+import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.rememberNavHostEngine
@@ -30,26 +29,30 @@ import com.ramcosta.composedestinations.spec.NavHostEngine
  * suitable for navigation animations and bottom sheet styled
  * destinations.
  *
- * @param defaultAnimationParams animations to set as default for all destinations that don't specify
- * others via `Destination` annotation's `style` argument. If [defaultAnimationParams] is not passed
- * in, then no animations will happen by default.
+ * @param navHostContentAlignment content alignment for the NavHost.
+ * @param rootDefaultAnimations animations to set as default for all destinations that don't specify
+ * a destination style via `Destination` annotation's `style` argument. If [rootDefaultAnimations] is not
+ * passed in, then no animations will happen by default.
  * @param defaultAnimationsForNestedNavGraph lambda called for each nested navigation graph that
- * allows you to override the default animations of [defaultAnimationParams] with defaults just for
- * that specific nested navigation graph.
+ * allows you to override the default animations of [rootDefaultAnimations] with defaults just for
+ * that specific nested navigation graph. Return null for all nested nav graphs, you don't wish
+ * to override animations for.
  */
 @ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
 @Composable
 fun rememberAnimatedNavHostEngine(
-    defaultAnimationParams: DefaultAnimationParams = DefaultAnimationParams(),
-    defaultAnimationsForNestedNavGraph: (NavGraphSpec) -> NavGraphDefaultAnimationParams = { NavGraphDefaultAnimationParams() }
+    navHostContentAlignment: Alignment = Alignment.Center,
+    rootDefaultAnimations: RootNavGraphDefaultAnimations = RootNavGraphDefaultAnimations(),
+    defaultAnimationsForNestedNavGraph: Map<NavGraphSpec, NestedNavGraphDefaultAnimations> = mapOf()
 ): NavHostEngine {
     val defaultNavHostEngine = rememberNavHostEngine()
     return remember {
         AnimatedNavHostEngine(
-            defaultAnimationParams,
-            defaultAnimationsForNestedNavGraph,
-            defaultNavHostEngine
+            navHostContentAlignment = navHostContentAlignment,
+            defaultAnimationParams = rootDefaultAnimations,
+            defaultAnimationsPerNestedNavGraph = defaultAnimationsForNestedNavGraph,
+            defaultNavHostEngine = defaultNavHostEngine
         )
     }
 }
@@ -57,8 +60,9 @@ fun rememberAnimatedNavHostEngine(
 @ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
 internal class AnimatedNavHostEngine(
-    private val defaultAnimationParams: DefaultAnimationParams,
-    private val defaultAnimationsPerNestedNavGraph: (NavGraphSpec) -> NavGraphDefaultAnimationParams,
+    private val navHostContentAlignment: Alignment,
+    private val defaultAnimationParams: RootNavGraphDefaultAnimations,
+    private val defaultAnimationsPerNestedNavGraph: Map<NavGraphSpec, NestedNavGraphDefaultAnimations>,
     private val defaultNavHostEngine: NavHostEngine
 ) : NavHostEngine {
 
@@ -83,7 +87,7 @@ internal class AnimatedNavHostEngine(
             startDestination = startDestination.route,
             modifier = modifier,
             route = route,
-            contentAlignment = contentAlignment,
+            contentAlignment = navHostContentAlignment,
             enterTransition = enterTransition.toAccompanist(),
             exitTransition = exitTransition.toAccompanist(),
             popEnterTransition = popEnterTransition.toAccompanist(),
@@ -95,15 +99,15 @@ internal class AnimatedNavHostEngine(
     override fun NavGraphBuilder.navigation(
         navGraph: NavGraphSpec,
         builder: NavGraphBuilder.() -> Unit
-    ) = with(defaultAnimationsPerNestedNavGraph(navGraph)) {
+    ) = with(defaultAnimationsPerNestedNavGraph[navGraph]) {
 
         navigation(
             startDestination = navGraph.startDestination.route,
             route = navGraph.route,
-            enterTransition = enterTransition?.toAccompanist(),
-            exitTransition = exitTransition?.toAccompanist(),
-            popEnterTransition = popEnterTransition?.toAccompanist(),
-            popExitTransition = popExitTransition?.toAccompanist(),
+            enterTransition = this?.enterTransition?.toAccompanist(),
+            exitTransition = this?.exitTransition?.toAccompanist(),
+            popEnterTransition = this?.popEnterTransition?.toAccompanist(),
+            popExitTransition = this?.popExitTransition?.toAccompanist(),
             builder = builder,
         )
     }
@@ -231,9 +235,11 @@ internal class AnimatedNavHostEngine(
                 DestinationDependenciesContainer().apply { dependency(this@CallComposable) }
             )
         } else {
+            contentWrapper as DestinationLambda<T>
             contentWrapper(
                 destination = destination,
                 navBackStackEntry = navBackStackEntry,
+                navController = navController,
                 receiver = this
             )
         }
@@ -256,9 +262,11 @@ internal class AnimatedNavHostEngine(
                 DestinationDependenciesContainer().apply { dependency(this@CallComposable) }
             )
         } else {
+            contentWrapper as DestinationLambda<T>
             contentWrapper(
                 destination = destination,
                 navBackStackEntry = navBackStackEntry,
+                navController = navController,
                 receiver = this
             )
         }

@@ -2,22 +2,14 @@ package com.ramcosta.composedestinations.animations.defaults
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.ui.Alignment
 
-/**
- * Class that can be used to define the default animations for all Destinations with no
- * specific style set and that belong to a specific navigation graph.
- * It is used in [com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine] call.
- *
- * @see [com.google.accompanist.navigation.animation.AnimatedNavHost] for a parameters explanation
- */
 @ExperimentalAnimationApi
-class NavGraphDefaultAnimationParams(
-    val enterTransition: DestinationEnterTransition? = null,
-    val exitTransition: DestinationExitTransition? = null,
-    val popEnterTransition: DestinationEnterTransition? = enterTransition,
-    val popExitTransition: DestinationExitTransition? = exitTransition,
-)
+interface NavGraphDefaultAnimationParams {
+    val enterTransition: DestinationEnterTransition?
+    val exitTransition: DestinationExitTransition?
+    val popEnterTransition: DestinationEnterTransition?
+    val popExitTransition: DestinationExitTransition?
+}
 
 /**
  * Class that can be used to define the default animations for all Destinations with no
@@ -28,17 +20,39 @@ class NavGraphDefaultAnimationParams(
  * @see [com.google.accompanist.navigation.animation.AnimatedNavHost] for a parameters explanation
  */
 @ExperimentalAnimationApi
-class DefaultAnimationParams(
-    val contentAlignment: Alignment = Alignment.Center,
-    val enterTransition: DestinationEnterTransition = DestinationEnterTransition { EnterTransition.None },
-    val exitTransition: DestinationExitTransition = DestinationExitTransition { ExitTransition.None },
-    val popEnterTransition: DestinationEnterTransition = enterTransition,
-    val popExitTransition: DestinationExitTransition = exitTransition,
-) {
-
+class RootNavGraphDefaultAnimations(
+    override val enterTransition: DestinationEnterTransition = DestinationEnterTransition { EnterTransition.None },
+    override val exitTransition: DestinationExitTransition = DestinationExitTransition { ExitTransition.None },
+    override val popEnterTransition: DestinationEnterTransition = enterTransition,
+    override val popExitTransition: DestinationExitTransition = exitTransition,
+): NavGraphDefaultAnimationParams {
     companion object {
         val ACCOMPANIST_FADING by lazy {
-            DefaultAnimationParams(
+            RootNavGraphDefaultAnimations(
+                enterTransition = { fadeIn(animationSpec = tween(700)) },
+                exitTransition = { fadeOut(animationSpec = tween(700)) }
+            )
+        }
+    }
+}
+
+/**
+ * Class that can be used to define the default animations for all Destinations with no
+ * specific style set and that belong to a specific nested navigation graph.
+ * It is used in [com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine] call.
+ *
+ * @see [com.google.accompanist.navigation.animation.navigation] for a parameters explanation
+ */
+@ExperimentalAnimationApi
+class NestedNavGraphDefaultAnimations(
+    override val enterTransition: DestinationEnterTransition? = null,
+    override val exitTransition: DestinationExitTransition? = null,
+    override val popEnterTransition: DestinationEnterTransition? = enterTransition,
+    override val popExitTransition: DestinationExitTransition? = exitTransition,
+) : NavGraphDefaultAnimationParams {
+    companion object {
+        val ACCOMPANIST_FADING by lazy {
+            NestedNavGraphDefaultAnimations(
                 enterTransition = { fadeIn(animationSpec = tween(700)) },
                 exitTransition = { fadeOut(animationSpec = tween(700)) }
             )

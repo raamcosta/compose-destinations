@@ -7,6 +7,8 @@ import androidx.navigation.*
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
+import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
+import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
@@ -145,9 +147,11 @@ internal class DefaultNavHostEngine : NavHostEngine {
                 DestinationDependenciesContainer()
             )
         } else {
+            contentLambda as DestinationLambda<T>
             contentLambda(
                 destination = destination,
                 navBackStackEntry = navBackStackEntry,
+                navController = navController,
                 receiver = null
             )
         }

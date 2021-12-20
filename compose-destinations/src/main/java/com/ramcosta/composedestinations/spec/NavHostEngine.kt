@@ -3,7 +3,7 @@ package com.ramcosta.composedestinations.spec
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
-import com.ramcosta.composedestinations.ManualComposableCalls
+import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 
 /**
  * Abstraction over all needed functionality to call a "NavHost-like" composable

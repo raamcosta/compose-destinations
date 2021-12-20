@@ -36,9 +36,11 @@ class NavGraphsObjectWriter(
     }
 
     private fun additionalImports(): String {
-        val imports = StringBuilder("\n")
+        val imports = StringBuilder()
 
-        additionalImports.sorted().forEach {
+        additionalImports.sorted().forEachIndexed { idx, it ->
+            if (idx == 0) imports += "\n"
+
             imports += "\nimport $it"
         }
 
@@ -48,9 +50,12 @@ class NavGraphsObjectWriter(
     private fun navGraphsDeclaration(navGraphsParams: List<NavGraphGeneratingParams>): String {
         val navGraphsDeclaration = StringBuilder()
 
-        navGraphsParams.forEach { navGraphParams ->
+        navGraphsParams.forEachIndexed { idx, navGraphParams ->
             navGraphsDeclaration += navGraphDeclaration(navGraphParams)
-            navGraphsDeclaration += "\n\n"
+
+            if (idx != navGraphsParams.lastIndex) {
+                navGraphsDeclaration += "\n\n"
+            }
         }
 
         return navGraphsDeclaration.toString()
