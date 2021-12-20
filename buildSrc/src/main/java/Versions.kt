@@ -3,9 +3,9 @@ object Versions {
     const val compileSdk = 31
     const val targetSdk = compileSdk
 
-    const val kotlin = "1.6.0"
+    const val kotlin = "1.6.10"
     const val dependencyCheckPlugin = "0.39.0"
-    const val gradlePluginVersion = "7.0.3"
+    const val gradlePluginVersion = "7.0.4"
 
     const val composeViewModel = "2.4.0"
     const val activityCompose = "1.4.0"
@@ -14,13 +14,14 @@ object Versions {
     const val lifecycleKtx = "2.4.0"
     const val lifecycleRuntimeKtx = lifecycleKtx
 
-    const val ksp = "1.6.0-1.0.1"
+    const val ksp = "1.6.10-1.0.2"
 
     const val junit = "4.13.2"
 
-    const val compose = "1.1.0-beta04"
-    const val composeNavigation = "2.4.0-beta02"
-    const val accompanist = "0.21.4-beta"
+    const val compose = "1.1.0-rc01"
+    const val composeCompiler = "1.1.0-rc02"
+    const val composeNavigation = "2.4.0-rc01"
+    const val accompanist = "0.21.5-rc"
 }
 
 object Deps {
