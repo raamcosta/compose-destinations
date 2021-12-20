@@ -48,7 +48,7 @@ object NavArgResolver {
             parameter.type.isParcelable -> {
                 if (isComposable) additionalImports.add("androidx.compose.runtime.remember")
 
-                val stringToArg = "Base64Utils.base64ToParcelable(it, ${parameter.type.simpleName}.CREATOR)"
+                val stringToArg = "Base64Utils.base64ToParcelable(it, ${parameter.type.simpleName}::class.java)"
                 buildNavArgForStringifiedComplexOrEnumTypes(argGetter, stringToArg, defaultCodeIfArgNotPresent, isComposable)
             }
             parameter.type.isSerializable && !parameter.type.isPrimitive() -> {

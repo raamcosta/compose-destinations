@@ -11,6 +11,10 @@ java {
     }
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+}
+
 dependencies {
     implementation(project(mapOf("path" to ":compose-destinations-codegen")))
 

@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("com.google.devtools.ksp") version Versions.ksp
+    id("kotlin-parcelize")
 }
 
 kotlin {
@@ -13,6 +14,10 @@ kotlin {
             kotlin.srcDir("build/generated/ksp/release/kotlin")
         }
     }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 }
 
 android {

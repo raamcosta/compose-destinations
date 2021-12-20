@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.utils
 
+import android.os.BadParcelableException
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Base64
@@ -24,10 +25,10 @@ object Base64Utils {
         return bytes.toBase64()
     }
 
-    fun <T> base64ToParcelable(base64: String, creator: Parcelable.Creator<T>): T {
+    fun <T> base64ToParcelable(base64: String, jClass: Class<T>): T {
         val bytes = base64.base64ToByteArray()
         val parcel = unmarshall(bytes)
-        val result = creator.createFromParcel(parcel)
+        val result = jClass.parcelableCreator.createFromParcel(parcel)
         parcel.recycle()
         return result
     }
@@ -57,10 +58,25 @@ object Base64Utils {
     }
 
     private fun String.base64ToByteArray(): ByteArray {
-        return Base64.decode(toByteArray(Charset.defaultCharset()), Base64.URL_SAFE or Base64.NO_WRAP)
+        return Base64.decode(
+            toByteArray(Charset.defaultCharset()),
+            Base64.URL_SAFE or Base64.NO_WRAP
+        )
     }
 
     private fun ByteArray.toBase64(): String {
         return Base64.encodeToString(this, Base64.URL_SAFE or Base64.NO_WRAP)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private val <T> Class<T>.parcelableCreator get() : Parcelable.Creator<T> {
+        return try {
+            val creatorField = getField("CREATOR")
+            creatorField.get(null) as Parcelable.Creator<T>
+        } catch (e: Exception) {
+            throw BadParcelableException(e)
+        } catch (t: Throwable) {
+            throw BadParcelableException(t.message)
+        }
     }
 }
