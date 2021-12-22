@@ -11,17 +11,27 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 
 /**
  * Scope given to the calls related to the [ManualComposableCallsBuilder].
- *
- * @property navBackStackEntry [NavBackStackEntry] of the current destination
- * @property navController [NavController] related to the NavHost
- * @property destinationsNavigator [DestinationsNavigator] useful to navigate from this destination
- * @property navArgs class holding the navigation arguments passed to this destination
- * or [Unit] if the destination has no arguments
  */
 interface DestinationScope<T> {
+    /**
+     * [NavBackStackEntry] of the current destination
+     */
     val navBackStackEntry: NavBackStackEntry
+
+    /**
+     * [NavController] related to the NavHost
+     */
     val navController: NavController
+
+    /**
+     * [DestinationsNavigator] useful to navigate from this destination
+     */
     val destinationsNavigator: DestinationsNavigator
+
+    /**
+     * Class holding the navigation arguments passed to this destination
+     * or [Unit] if the destination has no arguments
+     */
     val navArgs: T
 }
 
