@@ -19,8 +19,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.commons.Routes
-import com.ramcosta.samples.destinationstodosample.ui.screens.styles.SettingsTransitions
 import com.ramcosta.samples.destinationstodosample.commons.requireTitle
+import com.ramcosta.samples.destinationstodosample.ui.screens.styles.SettingsTransitions
 
 const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 

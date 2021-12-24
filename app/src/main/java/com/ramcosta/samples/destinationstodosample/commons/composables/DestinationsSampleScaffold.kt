@@ -9,6 +9,7 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.plusAssign
@@ -18,6 +19,14 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.ramcosta.composedestinations.Destination
 import com.ramcosta.composedestinations.NavGraphs
 import com.ramcosta.composedestinations.navDestination
+
+fun ArrayDeque<NavBackStackEntry>.print(prefix: String = "stack") {
+    val stack = toMutableList()
+        .filter { it.destination.route !in listOf(NavGraphs.root.route, NavGraphs.settings.route) }
+        .map { it.navDestination?.javaClass?.simpleName + "@" + it.toString().split("@")[1] }
+        .toTypedArray().contentToString()
+    println("$prefix = $stack")
+}
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalMaterialApi::class)
 @Composable
@@ -31,6 +40,8 @@ fun DestinationsSampleScaffold(
 ) {
     val currentBackStackEntryAsState by navController.currentBackStackEntryAsState()
     val destination = currentBackStackEntryAsState?.navDestination ?: NavGraphs.root.startDestination
+
+    navController.backQueue.print()
 
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator

@@ -22,10 +22,7 @@ import com.ramcosta.samples.destinationstodosample.ui.screens.greeting.GreetingS
 import com.ramcosta.samples.destinationstodosample.ui.screens.greeting.GreetingUiEvents
 import com.ramcosta.samples.destinationstodosample.ui.screens.greeting.GreetingUiState
 import com.ramcosta.samples.destinationstodosample.ui.screens.greeting.GreetingViewModel
-import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileScreen
-import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileUiEvents
-import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileUiState
-import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileViewModel
+import com.ramcosta.samples.destinationstodosample.ui.screens.profile.*
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialNavigationApi::class)
 @Composable
