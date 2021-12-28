@@ -28,7 +28,7 @@ class SingleDestinationWriter(
 
     fun write(): GeneratedDestination = with(destination) {
         val outputStream = codeGenerator.makeFile(
-            packageName = PACKAGE_NAME,
+            packageName = "$PACKAGE_NAME.destinations",
             name = name,
             sourceIds = sourceIds.toTypedArray()
         )

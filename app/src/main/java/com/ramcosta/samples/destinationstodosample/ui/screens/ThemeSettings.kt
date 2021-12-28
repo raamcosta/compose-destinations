@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.ramcosta.composedestinations.ThemeSettingsDestination
+import com.ramcosta.composedestinations.destinations.ThemeSettingsDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.samples.destinationstodosample.commons.Routes

@@ -8,7 +8,9 @@ import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 const val NAV_GRAPHS_PLACEHOLDER = "[NAV_GRAPHS_PLACEHOLDER]"
 
 val navGraphsObjectTemplate = """
-package $PACKAGE_NAME$ADDITIONAL_IMPORTS
+package $PACKAGE_NAME
+
+import ${PACKAGE_NAME}.destinations.*$ADDITIONAL_IMPORTS
 
 /**
  * Class generated if any Composable is annotated with `@Destination`.

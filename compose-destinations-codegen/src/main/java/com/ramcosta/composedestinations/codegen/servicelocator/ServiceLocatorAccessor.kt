@@ -4,10 +4,7 @@ import com.ramcosta.composedestinations.codegen.commons.DestinationWithNavArgsMa
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.Core
-import com.ramcosta.composedestinations.codegen.writers.CoreExtensionsWriter
-import com.ramcosta.composedestinations.codegen.writers.CustomNavTypesWriter
-import com.ramcosta.composedestinations.codegen.writers.DestinationsWriter
-import com.ramcosta.composedestinations.codegen.writers.NavGraphsObjectWriter
+import com.ramcosta.composedestinations.codegen.writers.*
 import com.ramcosta.composedestinations.codegen.writers.sub.NavArgResolver
 
 internal interface ServiceLocatorAccessor {
@@ -36,6 +33,10 @@ internal val ServiceLocatorAccessor.navGraphsObjectWriter get() = NavGraphsObjec
 )
 
 internal val ServiceLocatorAccessor.coreExtensionsWriter get() = CoreExtensionsWriter(
+    codeGenerator,
+)
+
+internal val ServiceLocatorAccessor.sealedDestinationWriter get() = SealedDestinationWriter(
     codeGenerator,
 )
 

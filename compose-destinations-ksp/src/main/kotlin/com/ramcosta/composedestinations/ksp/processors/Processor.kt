@@ -47,7 +47,7 @@ class Processor(
     }
 
     private fun Resolver.areExtensionsAlreadyGenerated(): Boolean {
-        return getClassDeclarationByName("$PACKAGE_NAME.$GENERATED_DESTINATION") != null
+        return getClassDeclarationByName("$PACKAGE_NAME.destinations.$GENERATED_DESTINATION") != null
     }
 
     private fun Resolver.getComposableDestinations(): Sequence<KSFunctionDeclaration> {

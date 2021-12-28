@@ -4,7 +4,7 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
-import com.ramcosta.composedestinations.Destination
+import com.ramcosta.composedestinations.destinations.Destination
 import com.ramcosta.composedestinations.NavGraphs
 import com.ramcosta.composedestinations.navDestination
 import com.ramcosta.samples.destinationstodosample.commons.DrawerContent

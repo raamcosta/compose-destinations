@@ -32,6 +32,7 @@ class CodeGenerator(
         val generatedNavGraphs = navGraphsObjectWriter.write(generatedDestinations)
 
         coreExtensionsWriter.write(generatedNavGraphs)
+        sealedDestinationWriter.write()
     }
 
     private fun initialValidations(destinations: List<DestinationGeneratingParams>) {

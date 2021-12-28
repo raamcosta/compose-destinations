@@ -10,34 +10,11 @@ const val END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = "[END_NAV_DESTINATION_ROOT_D
 val coreExtensionsTemplate = """
 package $PACKAGE_NAME
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavBackStackEntry
-import $PACKAGE_NAME.spec.DestinationSpec
+import $PACKAGE_NAME.destinations.*
 import $PACKAGE_NAME.spec.NavGraphSpec
-import $PACKAGE_NAME.spec.Routed
 import $PACKAGE_NAME.utils.findDestination
 $ADDITIONAL_IMPORTS
-
-/**
- * Handy typealias of [$GENERATED_DESTINATION] when you don't
- * care about the generic type (probably most cases for app's use)
- */
-typealias Destination = $GENERATED_DESTINATION<*>
-
-/**
- * $GENERATED_DESTINATION is a sealed version of [$CORE_DESTINATION_SPEC]
- */
-sealed interface $GENERATED_DESTINATION<T>: $CORE_DESTINATION_SPEC<T>
-
-/**
- * Interface for all $GENERATED_DESTINATION with no navigation arguments
- */
-sealed interface $GENERATED_NO_ARGS_DESTINATION: $GENERATED_DESTINATION<Unit>, Routed {
-    
-    override fun argsFrom(navBackStackEntry: NavBackStackEntry) = Unit
-
-    override fun argsFrom(savedStateHandle: SavedStateHandle) = Unit
-}
 
 /**
  * Realization of [$CORE_NAV_GRAPH_SPEC] for the app.

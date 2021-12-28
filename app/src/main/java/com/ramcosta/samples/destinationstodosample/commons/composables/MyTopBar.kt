@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.Destination
+import com.ramcosta.composedestinations.destinations.Destination
 import com.ramcosta.composedestinations.NavGraphs
 import com.ramcosta.samples.destinationstodosample.commons.title
 

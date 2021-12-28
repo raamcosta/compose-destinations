@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.codegen.templates
 
-import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION
 import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 
 //region anchors
@@ -19,7 +18,7 @@ const val SUPERTYPE = "[SUPERTYPE]"
 //endregion
 
 val destinationTemplate="""
-package $PACKAGE_NAME
+package $PACKAGE_NAME.destinations
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
