@@ -32,37 +32,50 @@ class CustomNavTypesWriter(
             .flatten()
             .toSet()
 
-        allNavTypeParams.forEach { type ->
-            type.generateCustomNavType(serializersByType[type.classType])
-        }
+        allNavTypeParams
+            .toMutableList()
+            // if we have multiple classes with equal simple name, ordering by the package length,
+            // will make it so we first create the one with the simplest package name, then
+            // the other one will have a more meaningful name deduced from the package (since it is longer)
+            .apply { sortBy { it.classType.qualifiedName.length } }
+            .forEach { type ->
+                type.generateCustomNavType(serializersByType[type.classType])
+            }
 
         return typesForNavTypeName.entries.associate { it.value to it.key }
     }
 
     private fun Type.generateCustomNavType(navTypeSerializer: NavTypeSerializer?) {
+        val navTypeName = getNavTypeName()
+
+        val className = navTypeName.replaceFirstChar { it.uppercase(Locale.getDefault()) }
         val out: OutputStream = codeGenerator.makeFile(
-            "${classType.simpleName}NavType",
+            className,
             "$PACKAGE_NAME.navtype",
         )
 
-        val navTypeName = getNavTypeName()
         typesForNavTypeName[CustomNavType(navTypeName, navTypeSerializer)] = classType
 
         if (isSerializable) {
-            generateSerializableCustomNavType(navTypeSerializer, out, navTypeName)
+            generateSerializableCustomNavType(className, navTypeSerializer, out, navTypeName)
         } else if (isParcelable) {
-            generateParcelableCustomNavType(navTypeSerializer, out, navTypeName)
+            generateParcelableCustomNavType(className, navTypeSerializer, out, navTypeName)
         }
     }
 
     private fun Type.generateSerializableCustomNavType(
+        navTypeClassName: String,
         navTypeSerializer: NavTypeSerializer?,
         out: OutputStream,
         navTypeName: String
     ) {
         out += serializableNavTypeTemplate
             .replace(NAV_TYPE_NAME, navTypeName)
-            .replace(SERIALIZER_SIMPLE_CLASS_NAME, serializableNavTypeSerializerCode(navTypeSerializer))
+            .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
+            .replace(
+                SERIALIZER_SIMPLE_CLASS_NAME,
+                serializableNavTypeSerializerCode(navTypeSerializer)
+            )
             .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, classType.simpleName)
             .replace(
                 PARSE_VALUE_CAST_TO_CLASS,
@@ -82,13 +95,18 @@ class CustomNavTypesWriter(
     }
 
     private fun Type.generateParcelableCustomNavType(
+        navTypeClassName: String,
         navTypeSerializer: NavTypeSerializer?,
         out: OutputStream,
         navTypeName: String
     ) {
         out += parcelableNavTypeTemplate
             .replace(NAV_TYPE_NAME, navTypeName)
-            .replace(SERIALIZER_SIMPLE_CLASS_NAME, parcelableNavTypeSerializerCode(navTypeSerializer))
+            .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
+            .replace(
+                SERIALIZER_SIMPLE_CLASS_NAME,
+                parcelableNavTypeSerializerCode(navTypeSerializer)
+            )
             .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, classType.simpleName)
             .replace(
                 PARSE_VALUE_CAST_TO_CLASS,
@@ -125,7 +143,10 @@ class CustomNavTypesWriter(
         return if (navTypeSerializer.classKind == ClassKind.CLASS) "$simpleName()" else simpleName
     }
 
-    private fun parcelableAdditionalImports(type: Type, customSerializer: NavTypeSerializer?): String {
+    private fun parcelableAdditionalImports(
+        type: Type,
+        customSerializer: NavTypeSerializer?
+    ): String {
         var imports = "\nimport ${type.classType.qualifiedName}"
         imports += if (customSerializer != null) {
             "\nimport ${customSerializer.serializerType.qualifiedName}"
@@ -136,7 +157,10 @@ class CustomNavTypesWriter(
         return imports
     }
 
-    private fun serializableAdditionalImports(type: Type, customSerializer: NavTypeSerializer?): String {
+    private fun serializableAdditionalImports(
+        type: Type,
+        customSerializer: NavTypeSerializer?
+    ): String {
         var imports = "\nimport ${type.classType.qualifiedName}"
         imports += if (customSerializer != null) {
             "\nimport ${customSerializer.serializerType.qualifiedName}"
@@ -148,7 +172,8 @@ class CustomNavTypesWriter(
     }
 
     private fun Type.getNavTypeName(): String {
-        val navTypeName = "${classType.simpleName.replaceFirstChar { it.lowercase(Locale.getDefault()) }}NavType"
+        val navTypeName =
+            "${classType.simpleName.replaceFirstChar { it.lowercase(Locale.getDefault()) }}NavType"
 
         val duplicateType = typesForNavTypeName.entries.find { it.key.name == navTypeName }?.value
 
@@ -168,6 +193,10 @@ class CustomNavTypesWriter(
             ""
         }
 
-        return prefix + navTypeName
+        return prefix + if (prefix.isNotEmpty()) {
+            navTypeName.replaceFirstChar { it.uppercase(Locale.getDefault()) }
+        } else {
+            navTypeName
+        }
     }
 }

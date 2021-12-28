@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.codegen.templates
 import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
 
 const val NAV_TYPE_NAME = "[NAV_TYPE_NAME]"
+const val NAV_TYPE_CLASS_SIMPLE_NAME = "[NAV_TYPE_CLASS_SIMPLE_NAME]"
 const val CLASS_SIMPLE_NAME_CAMEL_CASE = "[CLASS_SIMPLE_NAME_CAMEL_CASE]"
 const val PARSE_VALUE_CAST_TO_CLASS = "[PARSE_VALUE_CAST_TO_CLASS]"
 const val SERIALIZE_VALUE_CAST_TO_CLASS = "[SERIALIZE_VALUE_CAST_TO_CLASS]"
@@ -18,9 +19,9 @@ import android.os.Parcelable
 import $PACKAGE_NAME.navargs.parcelable.DestinationsNavType
 import $PACKAGE_NAME.navargs.parcelable.ParcelableNavTypeSerializer$ADDITIONAL_IMPORTS
 
-val $NAV_TYPE_NAME = ${CLASS_SIMPLE_NAME_CAMEL_CASE}NavType($SERIALIZER_SIMPLE_CLASS_NAME)
+val $NAV_TYPE_NAME = ${NAV_TYPE_CLASS_SIMPLE_NAME}($SERIALIZER_SIMPLE_CLASS_NAME)
 
-class ${CLASS_SIMPLE_NAME_CAMEL_CASE}NavType(
+class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
     private val stringSerializer: ParcelableNavTypeSerializer<$DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE>
 ) : DestinationsNavType<${CLASS_SIMPLE_NAME_CAMEL_CASE}?>() {
 
@@ -51,9 +52,9 @@ import java.io.Serializable
 import $PACKAGE_NAME.navargs.serializable.SerializableNavTypeSerializer
 import $PACKAGE_NAME.navargs.serializable.SerializableDestinationsNavType$ADDITIONAL_IMPORTS
 
-val $NAV_TYPE_NAME = ${CLASS_SIMPLE_NAME_CAMEL_CASE}NavType($SERIALIZER_SIMPLE_CLASS_NAME)
+val $NAV_TYPE_NAME = ${NAV_TYPE_CLASS_SIMPLE_NAME}($SERIALIZER_SIMPLE_CLASS_NAME)
 
-class ${CLASS_SIMPLE_NAME_CAMEL_CASE}NavType(
+class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
     private val stringSerializer: SerializableNavTypeSerializer<$DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE>
 ) : SerializableDestinationsNavType<${CLASS_SIMPLE_NAME_CAMEL_CASE}?>() {
 
