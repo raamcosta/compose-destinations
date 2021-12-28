@@ -161,59 +161,29 @@ class SingleDestinationWriter(
             """.trimMargin()
         }
 
-        val replaceUnknownOrNullableArgs = StringBuilder()
-        val routeInitialVar = StringBuilder()
-        val replace = StringBuilder()
-
         val template = """
         |     
         |    operator fun invoke(
         |%s1
         |    ): Routed {
-        |%s2
         |        return object : Routed {
-        |            override val route = %s3
-        |%s4
+        |            override val route = %s2
         |        }
         |    }
         |    
         """.trimMargin()
 
-        navArgs.forEachIndexed { i, it ->
-            if (it.isNullable) {
-                if (replaceUnknownOrNullableArgs.isEmpty()) {
-                    replaceUnknownOrNullableArgs += "\t\tvar route = route\n"
-                    routeInitialVar += "route"
-                }
-                replaceUnknownOrNullableArgs += """
-                   |        if (${it.name} != null) {
-                   |            route = route.replace("{${it.name}}", ${it.stringifyForNavigation()})
-                   |        }
-                   |        
-                    """.trimMargin()
-            } else {
-                replace += "\t\t\t\t.replace(\"{${it.name}}\", ${it.stringifyForNavigation()})"
-            }
+        var route = "\"${constructRoute()}\""
+            .replace("/", "\" + \n\t\t\t\t\t\"/")
+            .replace("?", "\" + \n\t\t\t\t\t\"?")
 
-
-            if (i != navArgs.lastIndex) {
-                if (it.isNullable) {
-                    replaceUnknownOrNullableArgs += "\n"
-                } else {
-                    replace += "\n"
-                }
-            }
-        }
-
-        if (routeInitialVar.isEmpty()) {
-            routeInitialVar += "this@${destination.name}.route"
+        navArgs.forEach {
+            route = route.replace("{${it.name}}", "\${${it.stringifyForNavigation()}}")
         }
 
         return template
             .replace("%s1", innerNavArgsParametersCode())
-            .replace("%s2", replaceUnknownOrNullableArgs.toString())
-            .replace("%s3", routeInitialVar.toString())
-            .replace("%s4", replace.toString())
+            .replace("%s2", route)
     }
 
     private fun innerNavArgsParametersCode(prefixWithVal: Boolean = false): String {
@@ -237,10 +207,27 @@ class SingleDestinationWriter(
         if (isComplexTypeNavArg()) {
             val navTypeName = customNavTypeByType[type.classType]!!.name
             additionalImports.add("$PACKAGE_NAME.navtype.$navTypeName")
-            return "$navTypeName.serializeValue($name)"
+
+            val (ifNullPrefix, ifNullSuffix) = if (isNullable) {
+                "$name?.let { " to " } ?: \"{${name}}\""
+            } else {
+                "" to ""
+            }
+            return "$ifNullPrefix$navTypeName.serializeValue($name)$ifNullSuffix"
         }
 
-        return "${name}${if (type.classType.simpleName == "String") "" else ".toString()"}"
+        val ifNullSuffix = if (isNullable) {
+            " ?: \"{${name}}\""
+        } else {
+            ""
+        }
+
+        if (type.classType.simpleName == "String") {
+            return "$name$ifNullSuffix"
+        }
+
+        val ifNullBeforeToString = if (isNullable) "?" else ""
+        return "${name}$ifNullBeforeToString${".toString()"}$ifNullSuffix"
     }
 
     private fun argsFromFunctions(): String = with(destination)  {
