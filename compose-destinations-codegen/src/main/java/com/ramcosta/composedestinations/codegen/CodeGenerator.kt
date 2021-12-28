@@ -3,30 +3,35 @@ package com.ramcosta.composedestinations.codegen
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.model.Core
-import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
-import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
-import com.ramcosta.composedestinations.codegen.writers.CoreExtensionsWriter
-import com.ramcosta.composedestinations.codegen.writers.DestinationsWriter
-import com.ramcosta.composedestinations.codegen.writers.NavGraphsObjectWriter
+import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.servicelocator.*
+import com.ramcosta.composedestinations.codegen.servicelocator.ServiceLocatorAccessor
+import com.ramcosta.composedestinations.codegen.servicelocator.customNavTypeWriter
+import com.ramcosta.composedestinations.codegen.servicelocator.destinationsWriter
+import com.ramcosta.composedestinations.codegen.servicelocator.navGraphsObjectWriter
 
 class CodeGenerator(
-    private val logger: Logger,
-    private val codeGenerator: CodeOutputStreamMaker,
-    private val core: Core,
-    private val generateNavGraphs: Boolean
-) {
+    override val logger: Logger,
+    override val codeGenerator: CodeOutputStreamMaker,
+    override val core: Core,
+    override val generateNavGraphs: Boolean
+): ServiceLocatorAccessor {
 
-    fun generate(destinations: List<DestinationGeneratingParams>) {
+    fun generate(
+        destinations: List<DestinationGeneratingParams>,
+        navTypeSerializers: List<NavTypeSerializer>
+    ) {
         initialValidations(destinations)
 
-        val generatedDestinations = DestinationsWriter(codeGenerator, logger, core).write(destinations)
+        val destinationsWithNavArgs = destinationWithNavArgsMapper.map(destinations)
 
-        val generatedNavGraphs = if (generateNavGraphs) {
-            NavGraphsObjectWriter(codeGenerator, logger).write(generatedDestinations)
-        } else emptyList()
+        val navTypeNamesByType = customNavTypeWriter.write(destinationsWithNavArgs, navTypeSerializers)
 
-        CoreExtensionsWriter(codeGenerator, generatedNavGraphs).write()
+        val generatedDestinations = destinationsWriter.write(destinationsWithNavArgs, navTypeNamesByType)
+
+        val generatedNavGraphs = navGraphsObjectWriter.write(generatedDestinations)
+
+        coreExtensionsWriter.write(generatedNavGraphs)
     }
 
     private fun initialValidations(destinations: List<DestinationGeneratingParams>) {
@@ -54,7 +59,7 @@ class CodeGenerator(
 
             if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
                 if (core != Core.ANIMATIONS) {
-                        throw IllegalDestinationsSetup("'${destination.composableName}' composable: You need to include $CORE_ANIMATIONS_DEPENDENCY dependency to use a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
+                    throw IllegalDestinationsSetup("'${destination.composableName}' composable: You need to include $CORE_ANIMATIONS_DEPENDENCY dependency to use a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!")
                 }
 
                 if (destination.destinationStyleType is DestinationStyleType.Dialog || destination.destinationStyleType is DestinationStyleType.BottomSheet) {

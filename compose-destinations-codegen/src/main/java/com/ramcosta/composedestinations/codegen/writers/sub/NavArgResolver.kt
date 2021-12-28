@@ -2,23 +2,20 @@ package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.commons.GeneratedExceptions
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
-import com.ramcosta.composedestinations.codegen.commons.isPrimitive
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.Type
 
-object NavArgResolver {
+class NavArgResolver {
 
     fun resolve(
         destination: DestinationGeneratingParams,
         additionalImports: MutableSet<String>,
-        parameter: Parameter,
-        isComposable: Boolean = false,
+        parameter: Parameter
     ) = internalResolve(
         argGetter = "navBackStackEntry.arguments?.${parameter.type.toNavBackStackEntryArgGetter(destination, parameter.name)}",
         additionalImports = additionalImports,
         parameter = parameter,
-        isComposable = isComposable
     )
 
     fun resolveFromSavedStateHandle(
@@ -29,66 +26,52 @@ object NavArgResolver {
         argGetter = "savedStateHandle.${parameter.type.toSavedStateHandleArgGetter(destination, parameter.name)}",
         additionalImports = additionalImports,
         parameter = parameter,
-        isComposable = false
     )
 
     private fun internalResolve(
         argGetter: String,
         additionalImports: MutableSet<String>,
         parameter: Parameter,
-        isComposable: Boolean
     ): String {
         val defaultCodeIfArgNotPresent = defaultCodeIfArgNotPresent(additionalImports, parameter)
 
-        return when {
-            parameter.type.isEnum -> {
-                val stringToArg = "${parameter.type.simpleName}.valueOf(it)"
-                buildNavArgForStringifiedComplexOrEnumTypes(argGetter, stringToArg, defaultCodeIfArgNotPresent, isComposable)
-            }
-            parameter.type.isParcelable -> {
-                if (isComposable) additionalImports.add("androidx.compose.runtime.remember")
-
-                val stringToArg = "Base64Utils.base64ToParcelable(it, ${parameter.type.simpleName}::class.java)"
-                buildNavArgForStringifiedComplexOrEnumTypes(argGetter, stringToArg, defaultCodeIfArgNotPresent, isComposable)
-            }
-            parameter.type.isSerializable && !parameter.type.isPrimitive() -> {
-                if (isComposable) additionalImports.add("androidx.compose.runtime.remember")
-
-                val stringToArg = "Base64Utils.base64ToSerializable(it)"
-                buildNavArgForStringifiedComplexOrEnumTypes(argGetter, stringToArg, defaultCodeIfArgNotPresent, isComposable)
-            }
-            else -> argGetter + defaultCodeIfArgNotPresent
+        return if (parameter.type.isEnum) {
+            val stringToArg = "${parameter.type.classType.simpleName}.valueOf(it)"
+            buildNavArgForStringifiedEnumTypes(argGetter, stringToArg, defaultCodeIfArgNotPresent)
+        } else {
+            argGetter + defaultCodeIfArgNotPresent
         }
     }
 
-    private fun buildNavArgForStringifiedComplexOrEnumTypes(
+    private fun buildNavArgForStringifiedEnumTypes(
         argGetter: String,
         stringToArgCode: String,
         defaultCodeIfArgNotPresent: String,
-        isComposable: Boolean = false,
     ): String {
-        val rememberPrefix = if (isComposable) "remember { " else ""
-        val rememberSuffix = if (isComposable) " }" else ""
-
-        return "$argGetter?.let { $rememberPrefix$stringToArgCode$rememberSuffix }$defaultCodeIfArgNotPresent"
+        return "$argGetter?.let { $stringToArgCode }$defaultCodeIfArgNotPresent"
     }
 
     private fun Type.toSavedStateHandleArgGetter(
         destination: DestinationGeneratingParams,
         argName: String,
     ): String {
-        return when (qualifiedName) {
+        return when (classType.qualifiedName) {
             String::class.qualifiedName -> "get<String>(\"$argName\")"
             Int::class.qualifiedName -> "get<Int>(\"$argName\")"
             Float::class.qualifiedName -> "get<Float>(\"$argName\")"
             Long::class.qualifiedName -> "get<Long>(\"$argName\")"
             Boolean::class.qualifiedName -> "get<Boolean>(\"$argName\")"
             else -> {
-                if (isEnum || isParcelable || isSerializable) {
-                    return "get<String>(\"$argName\")"
+                return when {
+                    isEnum -> {
+                        "get<String>(\"$argName\")"
+                    }
+                    isParcelable || isSerializable -> {
+                        "get(\"$argName\")"
+                    }
+                    else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $classType.qualifiedName")
                 }
 
-                throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $qualifiedName")
             }
         }
     }
@@ -97,18 +80,25 @@ object NavArgResolver {
         destination: DestinationGeneratingParams,
         argName: String,
     ): String {
-        return when (qualifiedName) {
+        return when (classType.qualifiedName) {
             String::class.qualifiedName -> "getString(\"$argName\")"
             Int::class.qualifiedName -> "getInt(\"$argName\")"
             Float::class.qualifiedName -> "getFloat(\"$argName\")"
             Long::class.qualifiedName -> "getLong(\"$argName\")"
             Boolean::class.qualifiedName -> "getBoolean(\"$argName\")"
             else -> {
-                if (isEnum || isParcelable || isSerializable) {
-                    return "getString(\"$argName\")"
+                return when {
+                    isParcelable -> {
+                        "getParcelable(\"$argName\")"
+                    }
+                    isEnum -> {
+                        "getString(\"$argName\")"
+                    }
+                    isSerializable -> {
+                        "getSerializable(\"$argName\") as? ${this.classType.simpleName}?"
+                    }
+                    else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${classType.qualifiedName}")
                 }
-
-                throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $qualifiedName")
             }
         }
     }
@@ -118,7 +108,7 @@ object NavArgResolver {
         parameter: Parameter,
     ): String {
         if (parameter.defaultValue == null) {
-            return if (parameter.type.isNullable) {
+            return if (parameter.isNullable) {
                 ""
             } else {
                 " ?: ${GeneratedExceptions.missingMandatoryArgument(parameter.name)}"

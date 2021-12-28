@@ -69,7 +69,7 @@ class DestinationContentFunctionWriter(
     }
 
     private fun resolveArgumentForTypeAndName(parameter: Parameter): String? {
-        return when (parameter.type.qualifiedName) {
+        return when (parameter.type.classType.qualifiedName) {
             NAV_CONTROLLER_QUALIFIED_NAME,
             NAV_HOST_CONTROLLER_QUALIFIED_NAME, -> "navController"
             DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController, navBackStackEntry)"
@@ -83,8 +83,8 @@ class DestinationContentFunctionWriter(
                     parameter.name //this is resolved by argsFrom before the function
 
                 } else if (!parameter.hasDefault) {
-                    if (parameter.type.qualifiedName != "kotlin.${parameter.type.simpleName}") {
-                        additionalImports.add(parameter.type.qualifiedName)
+                    if (parameter.type.classType.qualifiedName != "kotlin.${parameter.type.classType.simpleName}") {
+                        additionalImports.add(parameter.type.classType.qualifiedName)
                     }
                     "dependencyContainer.require()"
                 } else {

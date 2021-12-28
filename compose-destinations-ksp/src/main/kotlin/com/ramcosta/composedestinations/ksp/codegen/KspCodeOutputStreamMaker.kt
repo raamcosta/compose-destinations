@@ -11,16 +11,23 @@ class KspCodeOutputStreamMaker(
     private val sourceMapper: KSFileSourceMapper
 ) : CodeOutputStreamMaker {
 
-    override fun makeFile(name: String,
-                          packageName: String,
-                          vararg sourceIds: String
+    override fun makeFile(
+        name: String,
+        packageName: String,
+        vararg sourceIds: String
     ): OutputStream {
 
-        return codeGenerator.createNewFile(
-            dependencies = Dependencies(
+        val dependencies = if (sourceIds.isEmpty()) {
+            Dependencies.ALL_FILES
+        } else {
+            Dependencies(
                 true,
                 *sourceIds.mapNotNull { sourceMapper.mapToKSFile(it) }.toTypedArray()
-            ),
+            )
+        }
+
+        return codeGenerator.createNewFile(
+            dependencies = dependencies,
             fileName = name,
             packageName = packageName
         )

@@ -5,7 +5,9 @@ import com.ramcosta.composedestinations.codegen.model.ClassType
 const val PACKAGE_NAME = "com.ramcosta.composedestinations"
 
 const val DESTINATION_ANNOTATION = "Destination"
+const val NAV_TYPE_SERIALIZER_ANNOTATION = "NavTypeSerializer"
 const val DESTINATION_ANNOTATION_QUALIFIED = "$PACKAGE_NAME.annotation.$DESTINATION_ANNOTATION"
+const val NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED = "$PACKAGE_NAME.navargs.$NAV_TYPE_SERIALIZER_ANNOTATION"
 
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"
 const val DESTINATION_ANNOTATION_START_ARGUMENT = "start"

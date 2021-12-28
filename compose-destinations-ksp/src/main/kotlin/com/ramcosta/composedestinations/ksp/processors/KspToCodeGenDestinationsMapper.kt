@@ -145,17 +145,18 @@ class KspToCodeGenDestinationsMapper(
 
         return Type(
             classType = ClassType(declaration.simpleName.asString(), qualifiedName.asString()),
-            isNullable = isMarkedNullable,
-            isEnum = ksClassDeclaration?.classKind == ClassKind.ENUM_CLASS,
+            isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
             isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
             isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false
         )
     }
 
     private fun KSValueParameter.toParameter(composableName: String): Parameter {
+        val resolvedType = type.resolve()
         return Parameter(
             name!!.asString(),
-            type.resolve().toType() ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
+            resolvedType.toType() ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
+            resolvedType.isMarkedNullable,
             getDefaultValue(resolver),
         )
     }

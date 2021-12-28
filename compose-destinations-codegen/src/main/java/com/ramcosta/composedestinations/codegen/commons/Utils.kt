@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.codegen.commons
 
+import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.Type
 import java.io.OutputStream
 
@@ -16,7 +17,7 @@ fun Type.isPrimitive(): Boolean {
 }
 
 fun Type.toPrimitiveNavTypeCodeOrNull(): String? {
-    return when (qualifiedName) {
+    return when (classType.qualifiedName) {
         String::class.qualifiedName -> "NavType.StringType"
         Int::class.qualifiedName -> "NavType.IntType"
         Float::class.qualifiedName -> "NavType.FloatType"
@@ -24,6 +25,11 @@ fun Type.toPrimitiveNavTypeCodeOrNull(): String? {
         Boolean::class.qualifiedName -> "NavType.BoolType"
         else -> null
     }
+}
+
+fun Parameter.isComplexTypeNavArg(): Boolean {
+    return !type.isEnum
+            && (type.isParcelable || (type.isSerializable && !type.isPrimitive()))
 }
 
 fun String.removeFromTo(from: String, to: String): String {

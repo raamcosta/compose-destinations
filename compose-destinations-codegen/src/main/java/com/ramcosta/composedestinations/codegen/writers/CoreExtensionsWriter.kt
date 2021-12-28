@@ -8,10 +8,9 @@ import java.io.OutputStream
 
 class CoreExtensionsWriter(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val generatedNavGraphs: List<NavGraphGeneratingParams>,
 ) {
 
-    fun write() {
+    fun write(generatedNavGraphs: List<NavGraphGeneratingParams>) {
         val coreExtensions: OutputStream = codeGenerator.makeFile(
             packageName = PACKAGE_NAME,
             name = CORE_EXTENSIONS

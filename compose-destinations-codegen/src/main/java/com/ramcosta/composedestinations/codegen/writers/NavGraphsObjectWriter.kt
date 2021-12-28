@@ -14,11 +14,14 @@ import java.io.OutputStream
 class NavGraphsObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
+    private val generateNavGraphs: Boolean,
 ) {
 
     private val additionalImports = mutableSetOf<String>()
 
     fun write(generatedDestinations: List<GeneratedDestination>): List<NavGraphGeneratingParams> {
+        if (!generateNavGraphs) return emptyList()
+
         val file: OutputStream = codeGenerator.makeFile(
             packageName = PACKAGE_NAME,
             name = GENERATED_NAV_GRAPHS_OBJECT,
@@ -103,9 +106,9 @@ class NavGraphsObjectWriter(
     private fun navGraphFieldName(navGraphRoute: String): String {
         val regex = "[^a-zA-Z]".toRegex()
         val auxNavGraphRoute = navGraphRoute.toCharArray().toMutableList()
-        var weirdCharIndex = auxNavGraphRoute.indexOfFirst{ it.toString().matches(regex) }
+        var weirdCharIndex = auxNavGraphRoute.indexOfFirst { it.toString().matches(regex) }
 
-        while(weirdCharIndex != -1) {
+        while (weirdCharIndex != -1) {
             auxNavGraphRoute.removeAt(weirdCharIndex)
             if (weirdCharIndex >= auxNavGraphRoute.size) {
                 break
@@ -118,7 +121,10 @@ class NavGraphsObjectWriter(
         return String(auxNavGraphRoute.toCharArray())
     }
 
-    private fun startingDestination(navGraphRoute: String, generatedDestinations: List<GeneratedDestination>): String {
+    private fun startingDestination(
+        navGraphRoute: String,
+        generatedDestinations: List<GeneratedDestination>
+    ): String {
         val startingDestinations = generatedDestinations.filter { it.isStartDestination }
         if (startingDestinations.isEmpty()) {
             throw IllegalDestinationsSetup("No start destination found for nav graph $navGraphRoute!")
@@ -180,10 +186,24 @@ class NavGraphsObjectWriter(
             nestedNavGraphs.add(navGraphRoute)
 
             val requireOptInClassTypes = it.value.requireOptInAnnotationClassTypes()
-            result.add(NavGraphGeneratingParams(navGraphRoute, it.value, emptyList(), requireOptInClassTypes))
+            result.add(
+                NavGraphGeneratingParams(
+                    navGraphRoute,
+                    it.value,
+                    emptyList(),
+                    requireOptInClassTypes
+                )
+            )
         }
 
-        result.add(NavGraphGeneratingParams("root", rootDestinations.orEmpty(), nestedNavGraphs, rootDestinations.orEmpty().requireOptInAnnotationClassTypes()))
+        result.add(
+            NavGraphGeneratingParams(
+                "root",
+                rootDestinations.orEmpty(),
+                nestedNavGraphs,
+                rootDestinations.orEmpty().requireOptInAnnotationClassTypes()
+            )
+        )
 
         return result
     }
