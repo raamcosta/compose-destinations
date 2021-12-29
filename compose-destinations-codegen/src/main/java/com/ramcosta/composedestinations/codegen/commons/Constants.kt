@@ -21,7 +21,7 @@ const val DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER = "@ramcosta.destinat
 
 const val CORE_EXTENSIONS = "CoreExtensions"
 const val GENERATED_DESTINATION = "TypedDestination"
-const val GENERATED_NO_ARGS_DESTINATION = "RoutedDestination"
+const val GENERATED_NO_ARGS_DESTINATION = "DirectionDestination"
 const val GENERATED_NAV_GRAPH = "NavGraph"
 const val GENERATED_NAV_GRAPHS_OBJECT = "NavGraphs"
 const val GENERATED_DESTINATION_SUFFIX = "Destination"
@@ -30,6 +30,7 @@ const val CORE_NAV_DESTINATIONS_NAVIGATION = "DestinationsNavController"
 const val CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME = "$CORE_PACKAGE_NAME.navigation.$CORE_NAV_DESTINATIONS_NAVIGATION"
 const val CORE_DESTINATION_SPEC = "DestinationSpec"
 const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
+const val CORE_DIRECTION = "Direction"
 const val CORE_DESTINATION_ANIMATION_STYLE = "DestinationStyle.Animated"
 const val CORE_BOTTOM_SHEET_DESTINATION_STYLE = "DestinationStyle.BottomSheet"
 

@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 
 //region anchors
@@ -27,7 +28,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import $CORE_PACKAGE_NAME.navigation.DestinationDependenciesContainer
-import $CORE_PACKAGE_NAME.spec.Routed$ADDITIONAL_IMPORTS
+import $CORE_PACKAGE_NAME.spec.$CORE_DIRECTION$ADDITIONAL_IMPORTS
 
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $SUPERTYPE {
     $ARGS_TO_ROUTED_METHOD

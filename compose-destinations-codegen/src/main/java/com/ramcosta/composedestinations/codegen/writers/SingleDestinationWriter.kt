@@ -166,8 +166,8 @@ class SingleDestinationWriter(
         |     
         |    operator fun invoke(
         |%s1
-        |    ): Routed {
-        |        return object : Routed {
+        |    ): $CORE_DIRECTION {
+        |        return object : $CORE_DIRECTION {
         |            override val route = %s2
         |        }
         |    }

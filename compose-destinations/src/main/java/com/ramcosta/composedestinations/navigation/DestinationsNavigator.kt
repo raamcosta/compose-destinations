@@ -5,7 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
-import com.ramcosta.composedestinations.spec.Routed
+import com.ramcosta.composedestinations.spec.Direction
 
 /**
  * Contract for a navigator of [DestinationSpec].
@@ -18,10 +18,10 @@ import com.ramcosta.composedestinations.spec.Routed
 interface DestinationsNavigator {
 
     /**
-     * Navigates to the given [Routed].
-     * [NavGraphSpec] are [Routed]. Generated `Destinations` are Routed if they don't have
+     * Navigates to the given [Direction].
+     * [NavGraphSpec] are [Direction]. Generated `Destinations` are Direction if they don't have
      * any navigation arguments or you can call their `invoke` method passing the arguments
-     * to get a [Routed] instance.
+     * to get a [Direction] instance.
      *
      * @param onlyIfResumed if true (default), will ignore the navigation action if the
      * current `NavBackStackEntry` is not in the RESUMED state. This avoids duplicate
@@ -31,11 +31,11 @@ interface DestinationsNavigator {
      * @see [NavController.navigate]
      */
     fun navigate(
-        routed: Routed,
+        direction: Direction,
         onlyIfResumed: Boolean = true,
         builder: NavOptionsBuilder.() -> Unit = {},
     ) {
-        navigate(routed.route, onlyIfResumed, builder)
+        navigate(direction.route, onlyIfResumed, builder)
     }
 
     /**
@@ -70,11 +70,11 @@ interface DestinationsNavigator {
      */
     @MainThread
     fun popBackStack(
-        routed: Routed,
+        direction: Direction,
         inclusive: Boolean,
         saveState: Boolean = false,
     ): Boolean {
-        return popBackStack(routed.route, inclusive, saveState)
+        return popBackStack(direction.route, inclusive, saveState)
     }
 
     /**
@@ -91,7 +91,7 @@ interface DestinationsNavigator {
      * @see [NavController.clearBackStack]
      */
     @MainThread
-    fun clearBackStack(routed: Routed): Boolean = clearBackStack(routed.route)
+    fun clearBackStack(direction: Direction): Boolean = clearBackStack(direction.route)
 
     /**
      * @see [NavController.clearBackStack]
@@ -101,12 +101,12 @@ interface DestinationsNavigator {
 }
 
 /**
- * Navigates to the [Routed].
+ * Navigates to the [Direction].
  */
 fun NavController.navigateTo(
-    routed: Routed,
+    direction: Direction,
     navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
 ) {
-    navigate(routed.route, navOptionsBuilder)
+    navigate(direction.route, navOptionsBuilder)
 }
 
