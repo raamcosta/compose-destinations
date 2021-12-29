@@ -17,16 +17,16 @@ class KspToCodeGenDestinationsMapper(
     private val humps = "(?<=.)(?=\\p{Upper})".toRegex()
 
     private val defaultStyle by lazy {
-        resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.Default")!!
+        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Default")!!
             .asType(emptyList())
     }
 
     private val bottomSheet by lazy {
-        resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.BottomSheet")!!.asType(emptyList())
+        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.BottomSheet")!!.asType(emptyList())
     }
 
     private val dialog by lazy {
-        resolver.getClassDeclarationByName("com.ramcosta.composedestinations.spec.DestinationStyle.Dialog")!!.asType(emptyList())
+        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Dialog")!!.asType(emptyList())
     }
 
     private val parcelableType by lazy {
@@ -63,7 +63,7 @@ class KspToCodeGenDestinationsMapper(
         return DestinationGeneratingParams(
             sourceIds = listOfNotNull(containingFile!!.fileName, navArgsDelegateTypeAndFile?.second?.fileName),
             name = name,
-            qualifiedName = "$PACKAGE_NAME.$name",
+            qualifiedName = "$CORE_PACKAGE_NAME.$name",
             composableName = composableName,
             composableQualifiedName = qualifiedName!!.asString(),
             cleanRoute = cleanRoute,

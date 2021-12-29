@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.templates
 
-import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 
 const val NAV_TYPE_NAME = "[NAV_TYPE_NAME]"
 const val NAV_TYPE_CLASS_SIMPLE_NAME = "[NAV_TYPE_CLASS_SIMPLE_NAME]"
@@ -11,13 +12,13 @@ const val DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE = "[DESTINATIONS_NAV_TYPE_SERIAL
 const val SERIALIZER_SIMPLE_CLASS_NAME = "[SERIALIZER_SIMPLE_CLASS_NAME]"
 
 val parcelableNavTypeTemplate = """
-package $PACKAGE_NAME.navtype
+package $codeGenBasePackageName.navtype
 
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import $PACKAGE_NAME.navargs.parcelable.DestinationsNavType
-import $PACKAGE_NAME.navargs.parcelable.ParcelableNavTypeSerializer$ADDITIONAL_IMPORTS
+import $CORE_PACKAGE_NAME.navargs.parcelable.DestinationsNavType
+import $CORE_PACKAGE_NAME.navargs.parcelable.ParcelableNavTypeSerializer$ADDITIONAL_IMPORTS
 
 val $NAV_TYPE_NAME = ${NAV_TYPE_CLASS_SIMPLE_NAME}($SERIALIZER_SIMPLE_CLASS_NAME)
 
@@ -44,13 +45,13 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
 """.trimIndent()
 
 val serializableNavTypeTemplate = """
-package $PACKAGE_NAME.navtype
+package $codeGenBasePackageName.navtype
 
 import android.net.Uri
 import android.os.Bundle
 import java.io.Serializable
-import $PACKAGE_NAME.navargs.serializable.SerializableNavTypeSerializer
-import $PACKAGE_NAME.navargs.serializable.SerializableDestinationsNavType$ADDITIONAL_IMPORTS
+import $CORE_PACKAGE_NAME.navargs.serializable.SerializableNavTypeSerializer
+import $CORE_PACKAGE_NAME.navargs.serializable.SerializableDestinationsNavType$ADDITIONAL_IMPORTS
 
 val $NAV_TYPE_NAME = ${NAV_TYPE_CLASS_SIMPLE_NAME}($SERIALIZER_SIMPLE_CLASS_NAME)
 

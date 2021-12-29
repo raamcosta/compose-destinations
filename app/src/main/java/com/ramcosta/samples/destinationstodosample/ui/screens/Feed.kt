@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.ramcosta.composedestinations.destinations.FeedDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.FeedDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.samples.destinationstodosample.commons.requireTitle
 

@@ -9,8 +9,8 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.NavGraphs
-import com.ramcosta.composedestinations.destinations.*
+import com.ramcosta.samples.destinationstodosample.ui.screens.NavGraphs
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.*
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.animations.utils.animatedComposable
 import com.ramcosta.composedestinations.animations.utils.bottomSheetComposable

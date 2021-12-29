@@ -10,10 +10,7 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.ramcosta.composedestinations.codegen.CodeGenerator
 import com.ramcosta.composedestinations.codegen.commons.*
-import com.ramcosta.composedestinations.codegen.model.ClassKind
-import com.ramcosta.composedestinations.codegen.model.ClassType
-import com.ramcosta.composedestinations.codegen.model.Core
-import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
+import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
 
@@ -25,7 +22,7 @@ class Processor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val annotatedDestinations = resolver.getComposableDestinations()
-        if (!annotatedDestinations.iterator().hasNext() && resolver.areExtensionsAlreadyGenerated()) {
+        if (!annotatedDestinations.iterator().hasNext()) {
             return emptyList()
         }
 
@@ -40,14 +37,13 @@ class Processor(
             logger = kspLogger,
             codeGenerator = kspCodeOutputStreamMaker,
             core = resolver.getCoreType(),
-            generateNavGraphs = options["compose-destinations.generateNavGraphs"] != "false"
+            codeGenConfig = CodeGenConfig(
+                generateNavGraphs = options["compose-destinations.generateNavGraphs"] != "false",
+                packageName = options["compose-destinations.codeGenPackageName"]?.trim()?.removeSuffix(".")
+            )
         ).generate(destinations, navTypeSerializers)
 
         return emptyList()
-    }
-
-    private fun Resolver.areExtensionsAlreadyGenerated(): Boolean {
-        return getClassDeclarationByName("$PACKAGE_NAME.destinations.$GENERATED_DESTINATION") != null
     }
 
     private fun Resolver.getComposableDestinations(): Sequence<KSFunctionDeclaration> {
@@ -66,13 +62,13 @@ class Processor(
                 for (type in it.superTypes) {
                     val resolvedType = type.resolve()
                     if (resolvedType.declaration.qualifiedName?.asString() ==
-                        "$PACKAGE_NAME.navargs.parcelable.ParcelableNavTypeSerializer") {
+                        "$CORE_PACKAGE_NAME.navargs.parcelable.ParcelableNavTypeSerializer") {
                         superType = resolvedType
                         break
                     }
 
                     if (resolvedType.declaration.qualifiedName?.asString() ==
-                        "$PACKAGE_NAME.navargs.serializable.SerializableNavTypeSerializer") {
+                        "$CORE_PACKAGE_NAME.navargs.serializable.SerializableNavTypeSerializer") {
                         superType = resolvedType
                         break
                     }
@@ -91,7 +87,7 @@ class Processor(
     }
 
     private fun Resolver.getCoreType(): Core {
-        val isUsingAnimationsCore = getClassDeclarationByName("com.ramcosta.composedestinations.animations.AnimatedNavHostEngine") != null
+        val isUsingAnimationsCore = getClassDeclarationByName("$CORE_PACKAGE_NAME.animations.AnimatedNavHostEngine") != null
 
         return if (isUsingAnimationsCore) {
             Core.ANIMATIONS

@@ -16,9 +16,9 @@ import androidx.navigation.plusAssign
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import com.ramcosta.composedestinations.destinations.Destination
-import com.ramcosta.composedestinations.NavGraphs
-import com.ramcosta.composedestinations.navDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.Destination
+import com.ramcosta.samples.destinationstodosample.ui.screens.NavGraphs
+import com.ramcosta.samples.destinationstodosample.ui.screens.navDestination
 
 fun ArrayDeque<NavBackStackEntry>.print(prefix: String = "stack") {
     val stack = toMutableList()

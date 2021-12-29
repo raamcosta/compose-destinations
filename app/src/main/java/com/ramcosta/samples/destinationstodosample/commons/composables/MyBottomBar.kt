@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.destinations.Destination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.Destination
 import com.ramcosta.samples.destinationstodosample.commons.title
 
 @Composable

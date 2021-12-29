@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.codegen.writers
 
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.templates.*
@@ -11,7 +12,7 @@ class SealedDestinationWriter(
 
     fun write() {
         val file: OutputStream = codeGenerator.makeFile(
-            packageName = "$PACKAGE_NAME.destinations",
+            packageName = "$codeGenBasePackageName.destinations",
             name = "Destination"
         )
 

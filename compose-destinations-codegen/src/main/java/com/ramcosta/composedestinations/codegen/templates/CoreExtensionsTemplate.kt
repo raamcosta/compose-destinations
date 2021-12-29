@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.codegen.templates
 
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 
 const val START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR = "[START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR]"
@@ -8,13 +9,12 @@ const val START_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = "[START_NAV_DESTINATION_RO
 const val END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = "[END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR]"
 
 val coreExtensionsTemplate = """
-package $PACKAGE_NAME
+package $codeGenBasePackageName
 
 import androidx.navigation.NavBackStackEntry
-import $PACKAGE_NAME.destinations.*
-import $PACKAGE_NAME.spec.NavGraphSpec
-import $PACKAGE_NAME.utils.findDestination
-$ADDITIONAL_IMPORTS
+import $codeGenBasePackageName.destinations.*
+import $CORE_PACKAGE_NAME.spec.NavGraphSpec
+import $CORE_PACKAGE_NAME.utils.findDestination$ADDITIONAL_IMPORTS
 
 /**
  * Realization of [$CORE_NAV_GRAPH_SPEC] for the app.

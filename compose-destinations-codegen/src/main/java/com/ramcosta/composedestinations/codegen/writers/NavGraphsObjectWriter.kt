@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.codegen.writers
 
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
@@ -23,7 +24,7 @@ class NavGraphsObjectWriter(
         if (!generateNavGraphs) return emptyList()
 
         val file: OutputStream = codeGenerator.makeFile(
-            packageName = PACKAGE_NAME,
+            packageName = codeGenBasePackageName,
             name = GENERATED_NAV_GRAPHS_OBJECT,
             sourceIds = sourceIds(generatedDestinations).toTypedArray()
         )

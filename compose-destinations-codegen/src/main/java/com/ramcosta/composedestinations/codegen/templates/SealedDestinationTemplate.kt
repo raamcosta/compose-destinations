@@ -1,17 +1,15 @@
 package com.ramcosta.composedestinations.codegen.templates
 
-import com.ramcosta.composedestinations.codegen.commons.CORE_DESTINATION_SPEC
-import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION
-import com.ramcosta.composedestinations.codegen.commons.GENERATED_NO_ARGS_DESTINATION
-import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.commons.*
 
 val sealedDestinationTemplate = """
-package $PACKAGE_NAME.destinations
+package $codeGenBasePackageName.destinations
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavBackStackEntry
-import $PACKAGE_NAME.spec.DestinationSpec
-import $PACKAGE_NAME.spec.Routed
+import $CORE_PACKAGE_NAME.spec.DestinationSpec
+import $CORE_PACKAGE_NAME.spec.Routed
 
 /**
  * Handy typealias of [$GENERATED_DESTINATION] when you don't

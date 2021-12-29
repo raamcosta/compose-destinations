@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.writers
 
-import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.isComplexTypeNavArg
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
@@ -51,7 +52,7 @@ class CustomNavTypesWriter(
         val className = navTypeName.replaceFirstChar { it.uppercase(Locale.getDefault()) }
         val out: OutputStream = codeGenerator.makeFile(
             className,
-            "$PACKAGE_NAME.navtype",
+            "$codeGenBasePackageName.navtype",
         )
 
         typesForNavTypeName[CustomNavType(navTypeName, navTypeSerializer)] = classType
@@ -151,7 +152,7 @@ class CustomNavTypesWriter(
         imports += if (customSerializer != null) {
             "\nimport ${customSerializer.serializerType.qualifiedName}"
         } else {
-            "\nimport $PACKAGE_NAME.navargs.parcelable.DefaultParcelableNavTypeSerializer"
+            "\nimport $CORE_PACKAGE_NAME.navargs.parcelable.DefaultParcelableNavTypeSerializer"
         }
 
         return imports
@@ -165,7 +166,7 @@ class CustomNavTypesWriter(
         imports += if (customSerializer != null) {
             "\nimport ${customSerializer.serializerType.qualifiedName}"
         } else {
-            "\nimport $PACKAGE_NAME.navargs.serializable.DefaultSerializableNavTypeSerializer"
+            "\nimport $CORE_PACKAGE_NAME.navargs.serializable.DefaultSerializableNavTypeSerializer"
         }
 
         return imports

@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.templates
 
-import com.ramcosta.composedestinations.codegen.commons.PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 
 //region anchors
 const val ADDITIONAL_IMPORTS = "[ADDITIONAL_IMPORTS]"
@@ -18,16 +19,15 @@ const val SUPERTYPE = "[SUPERTYPE]"
 //endregion
 
 val destinationTemplate="""
-package $PACKAGE_NAME.destinations
+package $codeGenBasePackageName.destinations
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import $PACKAGE_NAME.navigation.DestinationDependenciesContainer
-import $PACKAGE_NAME.spec.Routed
-$ADDITIONAL_IMPORTS
+import $CORE_PACKAGE_NAME.navigation.DestinationDependenciesContainer
+import $CORE_PACKAGE_NAME.spec.Routed$ADDITIONAL_IMPORTS
 
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $SUPERTYPE {
     $ARGS_TO_ROUTED_METHOD

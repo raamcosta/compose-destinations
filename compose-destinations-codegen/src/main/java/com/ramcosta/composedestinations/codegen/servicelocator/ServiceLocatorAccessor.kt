@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.codegen.servicelocator
 import com.ramcosta.composedestinations.codegen.commons.DestinationWithNavArgsMapper
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
+import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.Core
 import com.ramcosta.composedestinations.codegen.writers.*
 import com.ramcosta.composedestinations.codegen.writers.sub.NavArgResolver
@@ -11,7 +12,7 @@ internal interface ServiceLocatorAccessor {
     val logger: Logger
     val codeGenerator: CodeOutputStreamMaker
     val core: Core
-    val generateNavGraphs: Boolean
+    val codeGenConfig: CodeGenConfig
 }
 
 internal val ServiceLocatorAccessor.customNavTypeWriter get() = CustomNavTypesWriter(
@@ -29,7 +30,7 @@ internal val ServiceLocatorAccessor.destinationsWriter get() = DestinationsWrite
 internal val ServiceLocatorAccessor.navGraphsObjectWriter get() = NavGraphsObjectWriter(
     codeGenerator,
     logger,
-    generateNavGraphs
+    codeGenConfig.generateNavGraphs
 )
 
 internal val ServiceLocatorAccessor.coreExtensionsWriter get() = CoreExtensionsWriter(

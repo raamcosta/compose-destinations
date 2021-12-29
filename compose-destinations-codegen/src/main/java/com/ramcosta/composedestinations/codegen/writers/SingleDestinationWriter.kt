@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.codegen.writers
 
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
@@ -28,7 +29,7 @@ class SingleDestinationWriter(
 
     fun write(): GeneratedDestination = with(destination) {
         val outputStream = codeGenerator.makeFile(
-            packageName = "$PACKAGE_NAME.destinations",
+            packageName = "$codeGenBasePackageName.destinations",
             name = name,
             sourceIds = sourceIds.toTypedArray()
         )
@@ -206,7 +207,7 @@ class SingleDestinationWriter(
     private fun Parameter.stringifyForNavigation(): String {
         if (isComplexTypeNavArg()) {
             val navTypeName = customNavTypeByType[type.classType]!!.name
-            additionalImports.add("$PACKAGE_NAME.navtype.$navTypeName")
+            additionalImports.add("$codeGenBasePackageName.navtype.$navTypeName")
 
             val (ifNullPrefix, ifNullSuffix) = if (isNullable) {
                 "$name?.let { " to " } ?: \"{${name}}\""
@@ -455,7 +456,7 @@ class SingleDestinationWriter(
             throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
         }
 
-        additionalImports.add("$PACKAGE_NAME.spec.DestinationStyle")
+        additionalImports.add("$CORE_PACKAGE_NAME.spec.DestinationStyle")
         return "\n\toverride val style = $CORE_BOTTOM_SHEET_DESTINATION_STYLE\n"
     }
 

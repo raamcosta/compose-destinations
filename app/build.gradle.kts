@@ -64,10 +64,13 @@ android {
         resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
     }
 
-    // TO turn off navigation graphs generation:
-    // (if you prefer creating NavGraph instances or you prefer using the normal NavHost)
 //    ksp {
+//        // To turn off navigation graphs generation:
+//        // (if you prefer creating NavGraph instances or you prefer using the normal NavHost)
 //        arg("compose-destinations.generateNavGraphs", "false")
+//
+//        // To change the package name where the generated files will be placed
+//        arg("compose-destinations.codeGenPackageName", "your.preferred.packagename")
 //    }
 }
 

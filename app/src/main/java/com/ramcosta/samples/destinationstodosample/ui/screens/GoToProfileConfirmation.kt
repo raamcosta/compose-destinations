@@ -9,8 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.destinations.GoToProfileConfirmationDestination
-import com.ramcosta.composedestinations.destinations.ProfileScreenDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToProfileConfirmationDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Stuff

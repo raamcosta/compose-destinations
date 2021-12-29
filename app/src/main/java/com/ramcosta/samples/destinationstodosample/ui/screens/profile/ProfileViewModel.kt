@@ -8,7 +8,7 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
-import com.ramcosta.composedestinations.destinations.ProfileScreenDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ProfileScreenDestination
 
 class ProfileViewModel(
     navArgs: ProfileScreenNavArgs

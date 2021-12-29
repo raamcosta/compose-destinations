@@ -5,23 +5,23 @@ import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.servicelocator.*
-import com.ramcosta.composedestinations.codegen.servicelocator.ServiceLocatorAccessor
-import com.ramcosta.composedestinations.codegen.servicelocator.customNavTypeWriter
-import com.ramcosta.composedestinations.codegen.servicelocator.destinationsWriter
-import com.ramcosta.composedestinations.codegen.servicelocator.navGraphsObjectWriter
+
+internal lateinit var codeGenBasePackageName: String
 
 class CodeGenerator(
     override val logger: Logger,
     override val codeGenerator: CodeOutputStreamMaker,
     override val core: Core,
-    override val generateNavGraphs: Boolean
-): ServiceLocatorAccessor {
+    override val codeGenConfig: CodeGenConfig
+) : ServiceLocatorAccessor {
 
     fun generate(
         destinations: List<DestinationGeneratingParams>,
         navTypeSerializers: List<NavTypeSerializer>
     ) {
         initialValidations(destinations)
+
+        codeGenBasePackageName = codeGenConfig.packageName ?: destinations.getCommonPackageNamePart()
 
         val destinationsWithNavArgs = destinationWithNavArgsMapper.map(destinations)
 
@@ -68,7 +68,7 @@ class CodeGenerator(
                 }
             }
 
-            if (!generateNavGraphs) {
+            if (!codeGenConfig.generateNavGraphs) {
                 if (destination.navGraphRoute != "root") {
                     logger.warn("'${destination.composableName}' composable: a navGraph was set but it will be ignored. Reason: 'compose-destinations.generateNavGraphs' was set to false at ksp gradle configuration.")
                 }
@@ -81,5 +81,19 @@ class CodeGenerator(
             cleanRoutes.add(destination.cleanRoute)
             composableNames.add(destination.composableName)
         }
+    }
+
+    private fun List<DestinationGeneratingParams>.getCommonPackageNamePart(): String {
+        var currentCommonPackageName = ""
+        map { it.composableQualifiedName }
+            .forEachIndexed { idx, packageName ->
+                if (idx == 0) {
+                    currentCommonPackageName = packageName
+                    return@forEachIndexed
+                }
+                currentCommonPackageName = currentCommonPackageName.commonPrefixWith(packageName)
+            }
+
+        return currentCommonPackageName.removeSuffix(".")
     }
 }

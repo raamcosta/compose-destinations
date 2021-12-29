@@ -2,12 +2,12 @@ package com.ramcosta.composedestinations.codegen.commons
 
 import com.ramcosta.composedestinations.codegen.model.ClassType
 
-const val PACKAGE_NAME = "com.ramcosta.composedestinations"
+const val CORE_PACKAGE_NAME = "com.ramcosta.composedestinations"
 
 const val DESTINATION_ANNOTATION = "Destination"
 const val NAV_TYPE_SERIALIZER_ANNOTATION = "NavTypeSerializer"
-const val DESTINATION_ANNOTATION_QUALIFIED = "$PACKAGE_NAME.annotation.$DESTINATION_ANNOTATION"
-const val NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED = "$PACKAGE_NAME.navargs.$NAV_TYPE_SERIALIZER_ANNOTATION"
+const val DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$DESTINATION_ANNOTATION"
+const val NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.navargs.$NAV_TYPE_SERIALIZER_ANNOTATION"
 
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"
 const val DESTINATION_ANNOTATION_START_ARGUMENT = "start"
@@ -27,7 +27,7 @@ const val GENERATED_NAV_GRAPHS_OBJECT = "NavGraphs"
 const val GENERATED_DESTINATION_SUFFIX = "Destination"
 
 const val CORE_NAV_DESTINATIONS_NAVIGATION = "DestinationsNavController"
-const val CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME = "$PACKAGE_NAME.navigation.$CORE_NAV_DESTINATIONS_NAVIGATION"
+const val CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME = "$CORE_PACKAGE_NAME.navigation.$CORE_NAV_DESTINATIONS_NAVIGATION"
 const val CORE_DESTINATION_SPEC = "DestinationSpec"
 const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
 const val CORE_DESTINATION_ANIMATION_STYLE = "DestinationStyle.Animated"
@@ -40,7 +40,7 @@ val experimentalAnimationApiType = ClassType(
     qualifiedName = EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME
 )
 
-const val DESTINATIONS_NAVIGATOR_QUALIFIED_NAME = "$PACKAGE_NAME.navigation.DestinationsNavigator"
+const val DESTINATIONS_NAVIGATOR_QUALIFIED_NAME = "$CORE_PACKAGE_NAME.navigation.DestinationsNavigator"
 const val NAV_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavController"
 const val NAV_HOST_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavHostController"
 const val SAVED_STATE_HANDLE_SIMPLE_NAME = "SavedStateHandle"

@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.codegen.writers
 
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.NavGraphGeneratingParams
@@ -12,7 +13,7 @@ class CoreExtensionsWriter(
 
     fun write(generatedNavGraphs: List<NavGraphGeneratingParams>) {
         val coreExtensions: OutputStream = codeGenerator.makeFile(
-            packageName = PACKAGE_NAME,
+            packageName = codeGenBasePackageName,
             name = CORE_EXTENSIONS
         )
 
@@ -26,7 +27,7 @@ class CoreExtensionsWriter(
             val additionalImports = StringBuilder()
             requireOptInAnnotationTypes.forEach {
                 annotationsCode += "@${it.simpleName}\n"
-                additionalImports += "import ${it.qualifiedName}\n"
+                additionalImports += "\nimport ${it.qualifiedName}"
             }
 
             code.replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, annotationsCode.toString())
