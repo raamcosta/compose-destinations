@@ -76,7 +76,7 @@ android {
 
 dependencies {
 
-    implementation(project(mapOf("path" to ":compose-destinations-animations")))
+    implementation(project(mapOf("path" to ":compose-destinations")))
     ksp(project(":compose-destinations-ksp"))
 
     with(Deps.Android) {

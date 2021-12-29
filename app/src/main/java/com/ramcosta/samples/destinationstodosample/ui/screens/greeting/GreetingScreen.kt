@@ -12,19 +12,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToProfileConfirmationDestination
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.TestScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.samples.destinationstodosample.R
 import com.ramcosta.samples.destinationstodosample.commons.DrawerController
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToProfileConfirmationDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.TestScreenDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Destination(
     start = true,
-    style = GreetingTransitions::class
 )
 @Composable
 fun GreetingScreen(

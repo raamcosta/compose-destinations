@@ -1,6 +1,5 @@
 package com.ramcosta.samples.destinationstodosample.ui.screens.profile
 
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,11 +23,10 @@ import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
-    style = ProfileTransitions::class,
     navArgsDelegate = ProfileScreenNavArgs::class
 )
 @Composable
-fun AnimatedVisibilityScope.ProfileScreen(
+fun ProfileScreen(
     uiState: ProfileUiState,
     uiEvents: ProfileUiEvents
 ) {
