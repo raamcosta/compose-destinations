@@ -94,6 +94,12 @@ class CodeGenerator(
                 currentCommonPackageName = currentCommonPackageName.commonPrefixWith(packageName)
             }
 
+        if (!currentCommonPackageName.endsWith(".")) {
+            currentCommonPackageName = currentCommonPackageName.split(".")
+                .dropLast(1)
+                .joinToString(".")
+        }
+
         return currentCommonPackageName.removeSuffix(".")
     }
 }
