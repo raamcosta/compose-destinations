@@ -18,7 +18,7 @@ fun Type.isPrimitive(): Boolean {
 
 fun Type.toPrimitiveNavTypeCodeOrNull(): String? {
     return when (classType.qualifiedName) {
-        String::class.qualifiedName -> "NavType.StringType"
+        String::class.qualifiedName -> CORE_STRING_NAV_TYPE
         Int::class.qualifiedName -> "NavType.IntType"
         Float::class.qualifiedName -> "NavType.FloatType"
         Long::class.qualifiedName -> "NavType.LongType"

@@ -9,10 +9,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToProfileConfirmationDestination
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToProfileConfirmationDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Stuff
 import com.ramcosta.samples.destinationstodosample.ui.screens.styles.AppDialog
 
@@ -32,7 +32,7 @@ fun GoToProfileConfirmation(
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             onClick = {
-                navigator.navigate(ProfileScreenDestination(id = 3, groupName = "Kotliners", stuff = Stuff.STUFF2)) {
+                navigator.navigate(ProfileScreenDestination(id = 3, groupName = "%02%03", stuff = Stuff.STUFF2)) {
                     popUpTo(GoToProfileConfirmationDestination.route) {
                         inclusive = true
                     }

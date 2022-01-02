@@ -224,7 +224,7 @@ class SingleDestinationWriter(
         }
 
         if (type.classType.simpleName == "String") {
-            return "$name$ifNullSuffix"
+            return "$CORE_STRING_NAV_TYPE.encodeForRoute($name, $isMandatory)$ifNullSuffix"
         }
 
         val ifNullBeforeToString = if (isNullable) "?" else ""
@@ -337,7 +337,7 @@ class SingleDestinationWriter(
             code += "navArgument(\"${it.name}\") {\n\t\t\t"
             code += "type = $toNavTypeCode\n\t\t"
             if (it.isNullable) {
-                if (toNavTypeCode != "NavType.StringType" && !it.isComplexTypeNavArg()) {
+                if (toNavTypeCode != CORE_STRING_NAV_TYPE && !it.isComplexTypeNavArg()) {
                     throw IllegalDestinationsSetup("Composable '${destination.composableName}', argument '${it.name}': Only String, Parcelable, Serializable and Enum navigation arguments can be nullable")
                 }
                 code += "\tnullable = true\n\t\t"
@@ -489,7 +489,7 @@ class SingleDestinationWriter(
 
         if (type.isEnum) {
             additionalImports.add(type.classType.qualifiedName)
-            return "NavType.StringType"
+            return CORE_STRING_NAV_TYPE
         }
 
         throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${type.classType.qualifiedName}")

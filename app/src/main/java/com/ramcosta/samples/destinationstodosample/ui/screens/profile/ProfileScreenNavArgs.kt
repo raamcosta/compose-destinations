@@ -7,12 +7,12 @@ import com.ramcosta.composedestinations.navargs.serializable.SerializableNavType
 import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
-val DEFAULT_GROUP: String? = null
+const val DEFAULT_GROUP: String = ""
 
 data class ProfileScreenNavArgs(
     val id: Long,
-    val groupName: String? = DEFAULT_GROUP,
     val stuff: Stuff = Stuff.STUFF1,
+    val groupName: String = DEFAULT_GROUP,
     val things: Things?,
     val serializableExample: SerializableExample? = null
 )
