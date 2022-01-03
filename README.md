@@ -5,9 +5,15 @@
 
 <h1 align="center"> Compose Destinations </h1>
 
-A KSP library to improve Compose Navigation. It processes annotations with KSP to generate code which uses
-Compose Navigation under the hood.
-Doing so, it avoids the boilerplate and unsafe code around navigating in Compose.
+An annotation processor library to navigate in Jetpack Compose. It generates code that uses Compose Navigation under the hood and enables you to have type safe code that is much simpler to setup.
+
+- Main features:
+    - Typesafe navigation arguments 
+    - Simple but configurable navigation graphs setup 
+    - Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
+    - Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
+    - Easy deep linking to screens
+
 For a deeper look into all the features, check our [wiki](https://github.com/raamcosta/compose-destinations/wiki).
 
 ## Usage
