@@ -148,6 +148,6 @@ The library is now in its beta stage, which means that I am happy
 with the core feature set. If the APIs change, I will provide a migration path.
 Please do try it and open issues if you find any.
 If you're interested in contributing, I can give you a general overview of how the code works.
-It is much simpler that what it might look like at first glance.
+It is much simpler than what it might look like at first glance.
 
 Any feedback and contributions are highly appreciated! 🙏
