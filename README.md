@@ -3,16 +3,23 @@
 [![Android API](https://img.shields.io/badge/api-21%2B-brightgreen.svg?style=for-the-badge)](https://android-arsenal.com/api?level=21)
 [![kotlin](https://img.shields.io/github/languages/top/raamcosta/compose-destinations.svg?style=for-the-badge&color=blueviolet)](https://kotlinlang.org/)
 
+<p align="center"> 
+   <img height="250" src="https://user-images.githubusercontent.com/80427734/147891822-5cd34c80-8dca-4d34-8278-2aa3bf36913f.png"/> 
+</p>
+
 <h1 align="center"> Compose Destinations </h1>
 
-An annotation processor library to navigate in Jetpack Compose. It generates code that uses Compose Navigation under the hood and enables you to have type safe code that is much simpler to setup.
+A KSP library that processes annotations and generates code that uses Official Jetpack Compose Navigation under the hood. It hides from you the non-type-safe and boilerplate code you would otherwise have to write. </br>
+No need to learn a whole new framework to navigate - most APIs are either the same as with the Jetpack Components or inspired by them.
 
 - Main features:
-    - Typesafe navigation arguments 
+    - Typesafe navigation arguments
     - Simple but configurable navigation graphs setup 
+    - Getting the navigation arguments from the `SavedStateHandle` (useful in ViewModels) and `NavBackStackEntry` in a type-safe way.
     - Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
     - Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
     - Easy deep linking to screens
+    - All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
 
 For a deeper look into all the features, check our [wiki](https://github.com/raamcosta/compose-destinations/wiki).
 
@@ -43,7 +50,7 @@ fun ProfileScreen(
 inside the Composable (as is likely the case when using ViewModel). Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Destination-arguments#navigation-arguments-class-delegate).
 
 3. Build the project (or `./gradlew kspDebugKotlin`, which should be faster) to generate
-   all the Destinations. With the above annotated composable, a `ProfileScreenDestination` file (that we'll use on step 4) would be generated.
+   all the Destinations. With the above annotated composable, a `ProfileScreenDestination` file (that we'll use in step 4) would be generated.
 
 4. Use the generated `[ComposableName]Destination` invoke method to navigate to it. It will
    have the correct typed arguments.
