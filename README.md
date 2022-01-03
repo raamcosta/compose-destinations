@@ -1,18 +1,14 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)
+[![Maven metadata URL](https://img.shields.io/maven-metadata/v?color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/io/github/raamcosta/compose-destinations/core/maven-metadata.xml&style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)
+[![License Apache 2.0](https://img.shields.io/github/license/raamcosta/compose-destinations.svg?style=for-the-badge&color=orange)](https://opensource.org/licenses/Apache-2.0)
+[![Android API](https://img.shields.io/badge/api-21%2B-brightgreen.svg?style=for-the-badge)](https://android-arsenal.com/api?level=21)
+[![kotlin](https://img.shields.io/github/languages/top/raamcosta/compose-destinations.svg?style=for-the-badge&color=blueviolet)](https://kotlinlang.org/)
 
-# Compose Destinations
+<h1 align="center"> Compose Destinations </h1>
 
 A KSP library to improve Compose Navigation. It processes annotations with KSP to generate code which uses
 Compose Navigation under the hood.
 Doing so, it avoids the boilerplate and unsafe code around navigating in Compose.
 For a deeper look into all the features, check our [wiki](https://github.com/raamcosta/compose-destinations/wiki).
-
-## Table of contents
-
-* [Usage](#usage)
-* [Setup](#setup)
-* [Current state](#current-state)
-* [License](#license)
 
 ## Usage
 
@@ -149,19 +145,3 @@ If you're interested in contributing, I can give you a general overview of how t
 It is much simpler that what it might look like at first glance.
 
 Any feedback and contributions are highly appreciated! 🙏
-
-## License
-
-    Copyright 2021 Rafael Costa
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
