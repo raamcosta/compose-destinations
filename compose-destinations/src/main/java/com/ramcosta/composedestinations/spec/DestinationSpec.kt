@@ -13,12 +13,12 @@ import com.ramcosta.composedestinations.navigation.DestinationDependenciesContai
  * [T] is the type of the class that holds all navigation arguments
  * for of this Destination.
  */
-interface DestinationSpec<T> {
+interface DestinationSpec<T> : RouteIdentified {
 
     /**
      * Full route that will be added to the navigation graph
      */
-    val route: String
+    override val route: String
 
     /**
      * All [NamedNavArgument]s that will be added to the navigation

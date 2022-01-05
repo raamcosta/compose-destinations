@@ -3,11 +3,12 @@ package com.ramcosta.composedestinations.spec
 /**
  * Defines a navigation graph.
  */
-interface NavGraphSpec: Direction {
+interface NavGraphSpec: Direction, RouteIdentified {
 
     /**
-     * Route for this navigation graph.
-     * It can be used to navigate to it.
+     * Route for this navigation graph which serves as
+     * its identifier.
+     * It can also be used to navigate to it.
      */
     override val route: String
 
