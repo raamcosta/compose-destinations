@@ -7,15 +7,7 @@ import kotlin.reflect.KClass
  * Marks a `Composable` function as a navigation graph destination.
  * A `Destination` will be generated for each of these which will include
  * the full route, the nav arguments and the `Composable` function which
- * will call the annotated one, once the destination gets navigated to.
- *
- * A global `NavGraphs` object with all these destinations and their nav graphs
- * is generated.
- * [com.ramcosta.composedestinations.DestinationsNavHost] is a `NavHost` wrapper
- * which will include the destinations of the [com.ramcosta.composedestinations.spec.NavGraphSpec]
- * you pass in.
- * At the moment, only one [com.ramcosta.composedestinations.DestinationsNavHost] call is supported
- * so you should pass the "root" `NavGraph` (`NavGraphs.root`).
+ * will call the annotated one, when the destination gets navigated to.
  *
  * @param route main route of this destination (by default, the name of the Composable function)
  * @param start `true` if this destination is the start destination of the navigation graph
@@ -25,11 +17,11 @@ import kotlin.reflect.KClass
  * @param navArgsDelegate class with a primary constructor where all navigation arguments are
  * to be defined. Useful when the arguments are not needed in this Composable or to simplify
  * the Composable function signature when it has a lot of navigation arguments (which should be rare).
- * If set, the generated `Destination` class will have `argsFrom` methods that accept a `NavBackStackEntry`
+ * The generated `Destination` class has `argsFrom` methods that accept a `NavBackStackEntry`
  * or a `SavedStateHandle` (useful inside a ViewModel) and return an instance of this class.
  * @param deepLinks array of [DeepLink] which can be used to navigate to this destination
  * @param style class of a [DestinationStyle] subclass which is used to define the destination style:
- * its animations OR if it is dialog destination OR a bottom sheet destination. For animations
+ * its transitions animations OR if it is dialog destination OR a bottom sheet destination. For animations
  * and bottom sheet, you need to use the "io.github.raamcosta.compose-destinations:animations-core"
  * dependency instead of the normal "io.github.raamcosta.compose-destinations:core".
  */
