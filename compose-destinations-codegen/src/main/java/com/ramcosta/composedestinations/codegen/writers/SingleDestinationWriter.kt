@@ -214,7 +214,7 @@ class SingleDestinationWriter(
             } else {
                 "" to ""
             }
-            return "$ifNullPrefix$navTypeName.serializeValue($name)$ifNullSuffix"
+            return "$ifNullPrefix$navTypeName.serializeValue($name, $isMandatory)$ifNullSuffix"
         }
 
         val ifNullSuffix = if (isNullable) {
@@ -224,7 +224,7 @@ class SingleDestinationWriter(
         }
 
         if (type.classType.simpleName == "String") {
-            return "$CORE_STRING_NAV_TYPE.encodeForRoute($name, $isMandatory)$ifNullSuffix"
+            return "$CORE_STRING_NAV_TYPE.serializeValue($name, $isMandatory)$ifNullSuffix"
         }
 
         val ifNullBeforeToString = if (isNullable) "?" else ""

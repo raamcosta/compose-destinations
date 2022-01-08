@@ -14,9 +14,9 @@ const val SERIALIZER_SIMPLE_CLASS_NAME = "[SERIALIZER_SIMPLE_CLASS_NAME]"
 val parcelableNavTypeTemplate = """
 package $codeGenBasePackageName.navtype
 
-import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import $CORE_PACKAGE_NAME.navargs.utils.encodeForRoute
 import $CORE_PACKAGE_NAME.navargs.parcelable.DestinationsNavType
 import $CORE_PACKAGE_NAME.navargs.parcelable.ParcelableNavTypeSerializer$ADDITIONAL_IMPORTS
 
@@ -38,8 +38,8 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         return stringSerializer.fromRouteString(value, ${CLASS_SIMPLE_NAME_CAMEL_CASE}::class.java)$PARSE_VALUE_CAST_TO_CLASS
     }
 
-    override fun serializeValue(value: Parcelable): String {
-        return Uri.encode(stringSerializer.toRouteString(value$SERIALIZE_VALUE_CAST_TO_CLASS))
+    override fun serializeValue(value: Parcelable, isMandatoryArg: Boolean): String {
+        return encodeForRoute(stringSerializer.toRouteString(value$SERIALIZE_VALUE_CAST_TO_CLASS), isMandatoryArg)
     }
 }
 """.trimIndent()
@@ -47,9 +47,9 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
 val serializableNavTypeTemplate = """
 package $codeGenBasePackageName.navtype
 
-import android.net.Uri
 import android.os.Bundle
 import java.io.Serializable
+import $CORE_PACKAGE_NAME.navargs.utils.encodeForRoute
 import $CORE_PACKAGE_NAME.navargs.serializable.SerializableNavTypeSerializer
 import $CORE_PACKAGE_NAME.navargs.serializable.SerializableDestinationsNavType$ADDITIONAL_IMPORTS
 
@@ -71,8 +71,8 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         return stringSerializer.fromRouteString(value)$PARSE_VALUE_CAST_TO_CLASS
     }
 
-    override fun serializeValue(value: Serializable): String {
-        return Uri.encode(stringSerializer.toRouteString(value$SERIALIZE_VALUE_CAST_TO_CLASS))
+    override fun serializeValue(value: Serializable, isMandatoryArg: Boolean): String {
+        return encodeForRoute(stringSerializer.toRouteString(value$SERIALIZE_VALUE_CAST_TO_CLASS), isMandatoryArg)
     }
 }
 """.trimIndent()

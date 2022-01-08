@@ -9,5 +9,5 @@ import java.io.Serializable
  */
 abstract class SerializableDestinationsNavType<T: Serializable?>: NavType<T>(true) {
 
-    abstract fun serializeValue(value: Serializable): String
+    abstract fun serializeValue(value: Serializable, isMandatoryArg: Boolean): String
 }

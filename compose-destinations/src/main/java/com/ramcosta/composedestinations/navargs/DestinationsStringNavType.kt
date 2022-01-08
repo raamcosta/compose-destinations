@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.navargs
 import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.NavType
+import com.ramcosta.composedestinations.navargs.utils.encodeForRoute
 
 object DestinationsStringNavType : NavType<String?>(true) {
 
@@ -25,7 +26,7 @@ object DestinationsStringNavType : NavType<String?>(true) {
         }
     }
 
-    fun encodeForRoute(value: String?, isMandatoryArg: Boolean): String? {
+    fun serializeValue(value: String?, isMandatoryArg: Boolean): String? {
         if (value == null) {
             return null
         }
@@ -34,13 +35,6 @@ object DestinationsStringNavType : NavType<String?>(true) {
             return ENCODED_EMPTY_STRING
         }
 
-        return if (!isMandatoryArg) {
-            // Non mandatory parameters are decoded twice internally for some reason
-            // So, if we want strings like "%25" to be parsed from the route correctly,
-            // we also need to encode these twice.
-            Uri.encode(Uri.encode(value))
-        } else {
-            Uri.encode(value)
-        }
+        return encodeForRoute(value, isMandatoryArg)
     }
 }
