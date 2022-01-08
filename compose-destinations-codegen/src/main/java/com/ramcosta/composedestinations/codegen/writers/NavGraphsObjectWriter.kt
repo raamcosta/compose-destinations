@@ -128,7 +128,7 @@ class NavGraphsObjectWriter(
     ): String {
         val startingDestinations = generatedDestinations.filter { it.isStartDestination }
         if (startingDestinations.isEmpty()) {
-            throw IllegalDestinationsSetup("No start destination found for nav graph $navGraphRoute!")
+            throw IllegalDestinationsSetup("Use argument `start = true` in the @Destination annotation of the $navGraphRoute nav graph's start destination!")
         }
 
         if (startingDestinations.size > 1) {

@@ -41,7 +41,7 @@ class CodeGenerator(
 
         destinations.forEach { destination ->
             if (cleanRoutes.contains(destination.cleanRoute)) {
-                throw IllegalDestinationsSetup("Multiple Destinations with '${destination.cleanRoute}' as its route name")
+                throw IllegalDestinationsSetup("Multiple Destinations with '${destination.cleanRoute}' as their route name")
             }
 
             if (composableNames.contains(destination.composableName)) {

@@ -23,7 +23,7 @@ class SingleDestinationWriter(
 
     init {
         if (destination.isStart && destination.navArgs.any { it.isMandatory }) {
-            throw IllegalDestinationsSetup("Start destinations cannot have mandatory navigation arguments! (route: \"$destination.cleanRoute\")")
+            throw IllegalDestinationsSetup("\"'${destination.composableName}' composable: Start destinations cannot have mandatory navigation arguments!")
         }
     }
 
