@@ -83,7 +83,7 @@ error-prone code gets generated for you.
 
 Compose destinations is available via maven central.
 
-1. Add the ksp plugin:
+#### 1. Add the ksp plugin:
 <details open>
   <summary>groovy - build.gradle(:app)</summary>
 
@@ -106,7 +106,8 @@ plugins {
 ```
 </details>
 
-</br>2. Add the dependencies:
+
+#### 2. Add the dependencies:
 
 <details open>
   <summary>groovy - build.gradle(:app)</summary>
@@ -131,7 +132,8 @@ ksp("io.github.raamcosta.compose-destinations:ksp:1.1.2-beta")
 > this will use [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation) and [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
 > Read more about the next steps to configure these features [here](https://github.com/raamcosta/compose-destinations/wiki/Styles-and-Animations)
 
-</br>3. And finally, you need to make sure the IDE looks at the generated folder.
+
+#### 3. And finally, you need to make sure the IDE looks at the generated folder.
 See KSP related [issue](https://github.com/google/ksp/issues/37).
 An example for the debug/release variant would be:
 
