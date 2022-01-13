@@ -1,7 +1,10 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.GENERATED_NAV_GRAPH
+import com.ramcosta.composedestinations.codegen.commons.GENERATED_NAV_GRAPHS_OBJECT
+import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.ClassType
@@ -89,7 +92,10 @@ class NavGraphsObjectWriter(
         """.trimMargin()
             .replace(destinationsAnchor, destinationsInsideList(destinations))
             .replace(nestedGraphsAnchor, nestedGraphsList(nestedNavGraphs))
-            .replace(requireOptInAnnotationsAnchor, requireOptInAnnotations(requireOptInAnnotationTypes))
+            .replace(
+                requireOptInAnnotationsAnchor,
+                requireOptInAnnotations(requireOptInAnnotationTypes)
+            )
 
     }
 
@@ -180,6 +186,7 @@ class NavGraphsObjectWriter(
             groupBy { it.navGraphRoute }.toMutableMap()
 
         val nestedNavGraphs = mutableListOf<String>()
+        val nestedNavGraphsRequireOptInAnnotations = mutableSetOf<ClassType>()
         val rootDestinations = destinationsByNavGraph.remove("root")
 
         destinationsByNavGraph.forEach {
@@ -187,22 +194,26 @@ class NavGraphsObjectWriter(
             nestedNavGraphs.add(navGraphRoute)
 
             val requireOptInClassTypes = it.value.requireOptInAnnotationClassTypes()
+            nestedNavGraphsRequireOptInAnnotations.addAll(requireOptInClassTypes)
+
             result.add(
                 NavGraphGeneratingParams(
-                    navGraphRoute,
-                    it.value,
-                    emptyList(),
-                    requireOptInClassTypes
+                    route = navGraphRoute,
+                    destinations = it.value,
+                    nestedNavGraphs = emptyList(),
+                    requireOptInAnnotationTypes = requireOptInClassTypes
                 )
             )
         }
 
         result.add(
             NavGraphGeneratingParams(
-                "root",
-                rootDestinations.orEmpty(),
-                nestedNavGraphs,
-                rootDestinations.orEmpty().requireOptInAnnotationClassTypes()
+                route = "root",
+                destinations = rootDestinations.orEmpty(),
+                nestedNavGraphs = nestedNavGraphs,
+                requireOptInAnnotationTypes = rootDestinations.orEmpty()
+                    .requireOptInAnnotationClassTypes()
+                    .apply { addAll(nestedNavGraphsRequireOptInAnnotations) }
             )
         )
 
