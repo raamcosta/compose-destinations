@@ -88,7 +88,7 @@ object DefaultParameterValueReader {
 
         if (result.length - importableAux.length > 2) {
             //we detected a function call with args, we can't resolve this
-            throw IllegalDestinationsSetup("Navigation arguments with function calls with parameters as their default value " +
+            throw IllegalDestinationsSetup("Navigation arguments using function calls with parameters as their default value " +
                 "are not currently supported (near: '$auxText')")
         }
 

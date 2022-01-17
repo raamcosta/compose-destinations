@@ -101,7 +101,10 @@ class KspToCodeGenDestinationsMapper(
             ),
             ksClassDeclaration.containingFile!!
         )
-    }.getOrNull() ?: throw IllegalDestinationsSetup("There was an issue with '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' of composable '$composableName': make sure it is a class with a primary constructor.")
+    }.getOrElse {
+        throw IllegalDestinationsSetup("There was an issue with '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT'" +
+                " of composable '$composableName': make sure it is a class with a primary constructor.", it)
+    }
 
     private fun KSAnnotation.getDestinationStyleType(composableName: String): DestinationStyleType {
         val ksStyleType = findArgumentValue<KSType>(DESTINATION_ANNOTATION_STYLE_ARGUMENT)
@@ -157,7 +160,8 @@ class KspToCodeGenDestinationsMapper(
             name!!.asString(),
             resolvedType.toType() ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
             resolvedType.isMarkedNullable,
-            getDefaultValue(resolver),
+            hasDefault,
+            lazy { getDefaultValue(resolver) },
         )
     }
 

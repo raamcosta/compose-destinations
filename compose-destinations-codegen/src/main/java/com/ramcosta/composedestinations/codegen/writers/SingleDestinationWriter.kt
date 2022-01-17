@@ -402,7 +402,8 @@ class SingleDestinationWriter(
             .apply {
                 removeAll {
                     val isComplexType = it.isComplexTypeNavArg()
-                    if (it.isMandatory && isComplexType && customNavTypeByType[it.type.classType]?.serializer == null) {
+                    val hasCustomSerializer = customNavTypeByType[it.type.classType]?.serializer != null
+                    if (it.isMandatory && isComplexType && !hasCustomSerializer) {
                         throw IllegalDestinationsSetup(
                             "Composable '${destination.composableName}', arg name= '${it.name}': " +
                                     "deep links cannot contain mandatory navigation types of complex type unless you define" +
@@ -411,7 +412,7 @@ class SingleDestinationWriter(
                         )
                     }
 
-                    isComplexType
+                    isComplexType && !it.isMandatory && !hasCustomSerializer
                 }
             }
 
@@ -460,20 +461,20 @@ class SingleDestinationWriter(
         return "\n\toverride val style = $CORE_BOTTOM_SHEET_DESTINATION_STYLE\n"
     }
 
-    private fun navArgDefaultCode(param: Parameter): String {
-        if (param.defaultValue == null) {
+    private fun navArgDefaultCode(param: Parameter): String = param.defaultValue.let { defaultValue ->
+        if (defaultValue == null) {
             return ""
         }
 
-        if (param.defaultValue.code == "null") {
+        if (defaultValue.code == "null") {
             return "\tdefaultValue = null\n\t\t"
         }
 
         if (param.type.isEnum) {
-            return "\tdefaultValue = ${param.defaultValue.code}.toString()\n\t\t"
+            return "\tdefaultValue = ${defaultValue.code}.toString()\n\t\t"
         }
 
-        return "\tdefaultValue = ${param.defaultValue.code}\n\t\t"
+        return "\tdefaultValue = ${defaultValue.code}\n\t\t"
     }
 
     private fun Parameter.toNavTypeCode(): String {

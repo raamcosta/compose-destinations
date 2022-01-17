@@ -106,8 +106,8 @@ class NavArgResolver {
     private fun defaultCodeIfArgNotPresent(
         additionalImports: MutableSet<String>,
         parameter: Parameter,
-    ): String {
-        if (parameter.defaultValue == null) {
+    ): String = parameter.defaultValue.let { defaultValue ->
+        if (defaultValue == null) {
             return if (parameter.isNullable) {
                 ""
             } else {
@@ -115,10 +115,10 @@ class NavArgResolver {
             }
         }
 
-        parameter.defaultValue.imports.forEach { additionalImports.add(it) }
+        defaultValue.imports.forEach { additionalImports.add(it) }
 
-        return if (parameter.defaultValue.code == "null") {
+        return if (defaultValue.code == "null") {
             ""
-        } else " ?: ${parameter.defaultValue.code}"
+        } else " ?: ${defaultValue.code}"
     }
 }

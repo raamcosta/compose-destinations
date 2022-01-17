@@ -49,21 +49,22 @@ class DestinationContentFunctionWriter(
     private fun DestinationGeneratingParams.prepareArguments(): String {
         var argsCode = ""
 
-        parameters.forEachIndexed { i, it ->
-
-            val resolvedArgument = resolveArgumentForTypeAndName(it)
-
-            if (resolvedArgument != null) {
-                if (i != 0) argsCode += ", "
-
-                argsCode += "\n\t\t\t${it.name} = $resolvedArgument"
-
-            } else if (!it.hasDefault) {
-                throw IllegalDestinationsSetup("Composable: $composableName - Unresolvable argument type without default value: $it")
+        val parametersToPass = parameters
+            .map {
+                it.name to resolveArgumentForTypeAndName(it)
             }
+            .filter { it.second != null }
 
-            if (i == parameters.lastIndex) argsCode += "\n\t\t"
-        }
+        parametersToPass
+            .forEachIndexed { i, (name, resolvedArgument) ->
+                if (i != 0) {
+                    argsCode += ", "
+                }
+
+                argsCode += "\n\t\t\t$name = $resolvedArgument"
+
+                if (i == parametersToPass.lastIndex) argsCode += "\n\t\t"
+            }
 
         return argsCode
     }
@@ -79,16 +80,19 @@ class DestinationContentFunctionWriter(
                 "remember { argsFrom(navBackStackEntry) }"
             }
             else -> {
-                if (navArgs.contains(parameter)) {
-                    parameter.name //this is resolved by argsFrom before the function
-
-                } else if (!parameter.hasDefault) {
-                    if (parameter.type.classType.qualifiedName != "kotlin.${parameter.type.classType.simpleName}") {
-                        additionalImports.add(parameter.type.classType.qualifiedName)
+                when {
+                    navArgs.contains(parameter) -> {
+                        parameter.name //this is resolved by argsFrom before the function
                     }
-                    "dependencyContainer.require()"
-                } else {
-                    null
+
+                    !parameter.hasDefault -> {
+                        if (parameter.type.classType.qualifiedName != "kotlin.${parameter.type.classType.simpleName}") {
+                            additionalImports.add(parameter.type.classType.qualifiedName)
+                        }
+                        "dependencyContainer.require()"
+                    }
+
+                    else -> null
                 }
             }
         }
