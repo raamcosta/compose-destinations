@@ -4,7 +4,7 @@ object Versions {
     const val targetSdk = compileSdk
 
     const val kotlin = "1.6.10"
-    const val dependencyCheckPlugin = "0.39.0"
+    const val dependencyCheckPlugin = "0.41.0"
     const val gradlePluginVersion = "7.0.4"
 
     const val composeViewModel = "2.4.0"

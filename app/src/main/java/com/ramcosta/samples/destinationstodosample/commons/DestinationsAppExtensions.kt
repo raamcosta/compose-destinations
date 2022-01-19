@@ -13,9 +13,9 @@ import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.*
 import com.ramcosta.samples.destinationstodosample.R
 
 @Composable
-fun Destination.DrawerContent(
+fun DirectionDestination.DrawerContent(
     isSelected: Boolean,
-    onDestinationClick: (Destination) -> Unit
+    onDestinationClick: (DirectionDestination) -> Unit
 ) {
     when (this) {
         FeedDestination,
@@ -30,11 +30,9 @@ fun Destination.DrawerContent(
                 fontWeight = if (isSelected) FontWeight.Bold else null
             )
         }
-        ProfileScreenDestination,
         GoToProfileConfirmationDestination,
         SettingsDestination,
-        ThemeSettingsDestination,
-        TestScreenDestination -> Unit
+        ThemeSettingsDestination -> Unit
     }
 }
 
