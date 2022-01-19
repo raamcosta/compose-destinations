@@ -19,10 +19,7 @@ import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.rememberNavHostEngine
-import com.ramcosta.composedestinations.spec.DestinationSpec
-import com.ramcosta.composedestinations.spec.DestinationStyle
-import com.ramcosta.composedestinations.spec.NavGraphSpec
-import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.*
 
 /**
  * Remembers and returns an instance of a [NavHostEngine]
@@ -77,14 +74,14 @@ internal class AnimatedNavHostEngine(
     override fun NavHost(
         modifier: Modifier,
         route: String,
-        startDestination: DestinationSpec<*>,
+        startRoute: Route,
         navController: NavHostController,
         builder: NavGraphBuilder.() -> Unit
     ) = with(defaultAnimationParams) {
 
         AnimatedNavHost(
             navController = navController,
-            startDestination = startDestination.route,
+            startDestination = startRoute.route,
             modifier = modifier,
             route = route,
             contentAlignment = navHostContentAlignment,
@@ -102,7 +99,7 @@ internal class AnimatedNavHostEngine(
     ) = with(defaultAnimationsPerNestedNavGraph[navGraph]) {
 
         navigation(
-            startDestination = navGraph.startDestination.route,
+            startDestination = navGraph.startRoute.route,
             route = navGraph.route,
             enterTransition = this?.enterTransition?.toAccompanist(),
             exitTransition = this?.exitTransition?.toAccompanist(),

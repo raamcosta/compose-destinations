@@ -2,7 +2,21 @@ package com.ramcosta.composedestinations.utils
 
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.Route
 
+
+/**
+ * If this [Route] is a [DestinationSpec], returns it
+ *
+ * If this [Route] is a [NavGraphSpec], returns its
+ * start [DestinationSpec].
+ */
+val Route.startDestinationSpec get(): DestinationSpec<*> {
+    return when (this) {
+        is DestinationSpec<*> -> this
+        is NavGraphSpec -> startRoute.startDestinationSpec
+    }
+}
 
 /**
  * Filters all destinations of this [NavGraphSpec] and its nested nav graphs with given [predicate]

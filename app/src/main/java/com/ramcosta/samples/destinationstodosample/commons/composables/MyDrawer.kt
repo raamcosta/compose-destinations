@@ -19,7 +19,7 @@ fun MyDrawer(
     scaffoldState: ScaffoldState
 ) {
     NavGraphs.root.destinations
-        .sortedBy { if (it == NavGraphs.root.startDestination) 0 else 1 }
+        .sortedBy { if (it == NavGraphs.root.startRoute) 0 else 1 }
         .forEach {
             it.DrawerContent(
                 isSelected = it == destination,

@@ -3,19 +3,18 @@ package com.ramcosta.composedestinations.spec
 /**
  * Defines a navigation graph.
  */
-interface NavGraphSpec: Direction, RouteIdentified {
+interface NavGraphSpec: Direction, Route {
 
     /**
-     * Route for this navigation graph which serves as
-     * its identifier.
-     * It can also be used to navigate to it.
+     * Route string for this navigation graph which serves as
+     * its [Route] identifier and its [Direction].
      */
     override val route: String
 
     /**
-     * Start destination of this navigation graph.
+     * Start [Route] of this navigation graph.
      */
-    val startDestination: DestinationSpec<*>
+    val startRoute: Route
 
     /**
      * All destinations which belong to this navigation graph

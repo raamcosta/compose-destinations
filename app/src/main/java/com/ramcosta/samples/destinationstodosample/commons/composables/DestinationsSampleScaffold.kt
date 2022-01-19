@@ -16,9 +16,10 @@ import androidx.navigation.plusAssign
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.Destination
 import com.ramcosta.samples.destinationstodosample.ui.screens.NavGraphs
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.Destination
 import com.ramcosta.samples.destinationstodosample.ui.screens.navDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.startDestination
 
 fun ArrayDeque<NavBackStackEntry>.print(prefix: String = "stack") {
     val stack = toMutableList()
@@ -39,7 +40,8 @@ fun DestinationsSampleScaffold(
     content: @Composable (PaddingValues) -> Unit
 ) {
     val currentBackStackEntryAsState by navController.currentBackStackEntryAsState()
-    val destination = currentBackStackEntryAsState?.navDestination ?: NavGraphs.root.startDestination
+    val destination = currentBackStackEntryAsState?.navDestination
+        ?: NavGraphs.root.startRoute.startDestination
 
     navController.backQueue.print()
 

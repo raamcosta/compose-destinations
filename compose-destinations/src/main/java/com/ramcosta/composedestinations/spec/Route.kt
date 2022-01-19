@@ -5,13 +5,12 @@ package com.ramcosta.composedestinations.spec
  * are identified by a route.
  *
  * All [DestinationSpec] and [NavGraphSpec] are
- * [RouteIdentified] because they are registered in a
- * navigation graph with this id.
+ * [Route].
  *
- * [RouteIdentified] instances are not suited to navigate
+ * [Route] instances are not suited to navigate
  * to unless they're also [Direction].
  */
-interface RouteIdentified {
+sealed interface Route {
 
     val route: String
 }

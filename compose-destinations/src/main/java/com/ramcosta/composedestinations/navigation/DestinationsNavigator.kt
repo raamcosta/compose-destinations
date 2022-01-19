@@ -6,7 +6,7 @@ import androidx.navigation.NavOptionsBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Direction
-import com.ramcosta.composedestinations.spec.RouteIdentified
+import com.ramcosta.composedestinations.spec.Route
 
 /**
  * Contract for a navigator of [DestinationSpec].
@@ -71,11 +71,11 @@ interface DestinationsNavigator {
      */
     @MainThread
     fun popBackStack(
-        routeId: RouteIdentified,
+        route: Route,
         inclusive: Boolean,
         saveState: Boolean = false,
     ): Boolean {
-        return popBackStack(routeId.route, inclusive, saveState)
+        return popBackStack(route.route, inclusive, saveState)
     }
 
     /**
@@ -92,7 +92,7 @@ interface DestinationsNavigator {
      * @see [NavController.clearBackStack]
      */
     @MainThread
-    fun clearBackStack(routeId: RouteIdentified): Boolean = clearBackStack(routeId.route)
+    fun clearBackStack(route: Route): Boolean = clearBackStack(route.route)
 
     /**
      * @see [NavController.clearBackStack]

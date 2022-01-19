@@ -48,7 +48,7 @@ fun AppNavigation(
 
     DestinationsNavHost(
         navGraph = NavGraphs.root,
-        startDestination = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startDestination,
+        startRoute = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startRoute,
         engine = navHostEngine,
         navController = navController,
         modifier = modifier

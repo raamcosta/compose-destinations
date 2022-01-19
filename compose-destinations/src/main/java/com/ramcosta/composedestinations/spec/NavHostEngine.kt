@@ -51,7 +51,7 @@ interface NavHostEngine {
     fun NavHost(
         modifier: Modifier,
         route: String,
-        startDestination: DestinationSpec<*>,
+        startRoute: Route,
         navController: NavHostController,
         builder: NavGraphBuilder.() -> Unit
     )

@@ -9,6 +9,7 @@ import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCa
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.Route
 
 /**
  * Like [androidx.navigation.compose.NavHost] but includes the destinations of [navGraph].
@@ -28,7 +29,7 @@ import com.ramcosta.composedestinations.spec.NavHostEngine
  *
  * @param modifier [Modifier] to apply to this Composable
  *
- * @param startDestination the start destination of the NavHost. By default, we'll use the `startDestination`
+ * @param startRoute the start destination of the NavHost. By default, we'll use the `startDestination`
  * of the [navGraph]. This makes it possible to override that default on runtime.
  *
  * @param engine [NavHostEngine] to use. If you are not using animation features
@@ -51,7 +52,7 @@ import com.ramcosta.composedestinations.spec.NavHostEngine
 fun DestinationsNavHost(
     navGraph: NavGraphSpec,
     modifier: Modifier = Modifier,
-    startDestination: DestinationSpec<*> = navGraph.startDestination,
+    startRoute: Route = navGraph.startRoute,
     engine: NavHostEngine = rememberNavHostEngine(),
     navController: NavHostController = engine.rememberNavController(),
     manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit = {}
@@ -59,7 +60,7 @@ fun DestinationsNavHost(
     engine.NavHost(
         modifier = modifier,
         route = navGraph.route,
-        startDestination = startDestination,
+        startRoute = startRoute,
         navController = navController,
     ) {
         addNavGraphDestinations(

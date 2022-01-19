@@ -84,7 +84,7 @@ class NavGraphsObjectWriter(
         return """
        |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(route)} = $GENERATED_NAV_GRAPH(
        |        route = "$route",
-       |        startDestination = ${startDestination},
+       |        startRoute = ${startDestination},
        |        destinations = listOf(
        |            $destinationsAnchor
        |        )${if (nestedNavGraphs.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"}
@@ -134,11 +134,11 @@ class NavGraphsObjectWriter(
     ): String {
         val startingDestinations = generatedDestinations.filter { it.isStartDestination }
         if (startingDestinations.isEmpty()) {
-            throw IllegalDestinationsSetup("Use argument `start = true` in the @Destination annotation of the $navGraphRoute nav graph's start destination!")
+            throw IllegalDestinationsSetup("Use argument `start = true` in the @Destination annotation of the '$navGraphRoute' nav graph's start destination!")
         }
 
         if (startingDestinations.size > 1) {
-            throw IllegalDestinationsSetup("Found ${startingDestinations.size} start destinations in $navGraphRoute nav graph, only one is allowed!")
+            throw IllegalDestinationsSetup("Found ${startingDestinations.size} start destinations in '$navGraphRoute' nav graph, only one is allowed!")
         }
 
         return startingDestinations[0].simpleName
