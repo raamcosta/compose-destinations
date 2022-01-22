@@ -9,7 +9,7 @@
 
 <h1 align="center"> Compose Destinations </h1>
 
-A KSP library that processes annotations and generates code that uses Official Jetpack Compose Navigation under the hood. It hides from you the non-type-safe and boilerplate code you would otherwise have to write. </br>
+A KSP library that processes annotations and generates code that uses Official Jetpack Compose Navigation under the hood. It hides the complex, non-type-safe and boilerplate code you would have to write otherwise. </br>
 No need to learn a whole new framework to navigate - most APIs are either the same as with the Jetpack Components or inspired by them.
 
 - Main features:
@@ -83,14 +83,20 @@ error-prone code gets generated for you.
 
 Compose destinations is available via maven central.
 
-#### 1. Add the ksp plugin:
+#### 1. Add the KSP plugin:
+
+> The version you chose for the KSP plugin depends on the Kotlin version your project uses. </br>
+You can check https://github.com/google/ksp/releases for the list of KSP versions, then pick the last release that matches your Kotlin version.
+Example:
+If you're using `1.5.31` Kotlin version, then the last KSP version is `1.5.31-1.0.1`.
+
 <details open>
   <summary>groovy - build.gradle(:app)</summary>
 
 ```gradle
 plugins {
     //...
-    id 'com.google.devtools.ksp' version '1.5.31-1.0.0' // Depends on your kotlin version
+    id 'com.google.devtools.ksp' version '1.5.31-1.0.1' // Depends on your kotlin version
 }
 ```
 </details>
@@ -101,7 +107,7 @@ plugins {
 ```gradle
 plugins {
     //...
-    id("com.google.devtools.ksp") version "1.5.31-1.0.0" // Depends on your kotlin version
+    id("com.google.devtools.ksp") version "1.5.31-1.0.1" // Depends on your kotlin version
 }
 ```
 </details>
