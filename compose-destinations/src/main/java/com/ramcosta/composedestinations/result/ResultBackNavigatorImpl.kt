@@ -1,0 +1,21 @@
+package com.ramcosta.composedestinations.result
+
+import androidx.navigation.NavController
+import com.ramcosta.composedestinations.spec.DestinationSpec
+
+class ResultBackNavigatorImpl<R>(
+    private val navController: NavController,
+    resultOriginType: Class<out DestinationSpec<*>>,
+    resultType: Class<R>
+) : ResultBackNavigator<R> {
+
+    private val resultKey = resultKey(resultOriginType, resultType)
+
+    override fun navigateBack(result: R) {
+        navController.previousBackStackEntry
+            ?.savedStateHandle
+            ?.set(resultKey, result)
+
+        navController.navigateUp()
+    }
+}
