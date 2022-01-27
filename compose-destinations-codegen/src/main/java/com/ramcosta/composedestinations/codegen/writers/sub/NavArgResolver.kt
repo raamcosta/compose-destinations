@@ -108,7 +108,7 @@ class NavArgResolver {
         parameter: Parameter,
     ): String = parameter.defaultValue.let { defaultValue ->
         if (defaultValue == null) {
-            return if (parameter.isNullable) {
+            return if (parameter.type.isNullable) {
                 ""
             } else {
                 " ?: ${GeneratedExceptions.missingMandatoryArgument(parameter.name)}"

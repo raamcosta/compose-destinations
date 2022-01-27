@@ -7,6 +7,7 @@ import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
 import com.ramcosta.composedestinations.ksp.commons.*
+import java.io.File
 import java.util.*
 
 class KspToCodeGenDestinationsMapper(
@@ -118,7 +119,7 @@ class KspToCodeGenDestinationsMapper(
             return DestinationStyleType.BottomSheet
         }
 
-        val type = ksStyleType.toType() ?: throw IllegalDestinationsSetup("Parameter $DESTINATION_ANNOTATION_STYLE_ARGUMENT of Destination annotation in composable $composableName was not resolvable: please review it.")
+        val type = ksStyleType.toType(location) ?: throw IllegalDestinationsSetup("Parameter $DESTINATION_ANNOTATION_STYLE_ARGUMENT of Destination annotation in composable $composableName was not resolvable: please review it.")
 
         if (dialog.isAssignableFrom(ksStyleType)) {
             return DestinationStyleType.Dialog(type)
@@ -141,28 +142,66 @@ class KspToCodeGenDestinationsMapper(
         )
     }
 
-    private fun KSType.toType(): Type? {
+    private fun KSType.toType(location: Location): Type? {
         val qualifiedName = declaration.qualifiedName ?: return null
-        val ksClassDeclaration = declaration as? KSClassDeclaration?
+        val typeAliasType = getTypeAlias()
+
+        val ksClassDeclaration = if (typeAliasType != null) {
+            typeAliasType.declaration as? KSClassDeclaration?
+        } else {
+            declaration as? KSClassDeclaration?
+        }
         val classDeclarationType = ksClassDeclaration?.asType(emptyList())
 
         return Type(
             classType = ClassType(declaration.simpleName.asString(), qualifiedName.asString()),
+            genericTypes = genericTypes(location),
+            isNullable = isMarkedNullable,
             isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
             isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
             isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false
         )
     }
 
+    private fun KSType.genericTypes(location: Location): List<GenericType> {
+        return arguments.mapNotNull { typeArg ->
+            if (typeArg.variance == Variance.STAR) {
+                return@mapNotNull StarGenericType
+            }
+            val resolvedType = typeArg.type?.resolve()
+
+            if (resolvedType?.isError == true) {
+                return@mapNotNull ErrorGenericType(lazy { getErrorLine(location) })
+            }
+
+            resolvedType?.toType(location)?.let { TypedGenericType(it, typeArg.variance.label) }
+        }
+    }
+
     private fun KSValueParameter.toParameter(composableName: String): Parameter {
         val resolvedType = type.resolve()
+
         return Parameter(
             name!!.asString(),
-            resolvedType.toType() ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
-            resolvedType.isMarkedNullable,
+            resolvedType.toType(location) ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
             hasDefault,
             lazy { getDefaultValue(resolver) },
         )
+    }
+
+    private fun getErrorLine(location: Location): String {
+        val fileLocation = location as FileLocation
+        return File(fileLocation.filePath).readLine(fileLocation.lineNumber)
+    }
+
+    private fun KSType.getTypeAlias(): KSType? {
+        val declaration = declaration
+        val typeAliasType = if (declaration is KSTypeAlias) {
+            declaration.type.resolve()
+        } else {
+            null
+        }
+        return typeAliasType
     }
 
     private fun String.toSnakeCase() = replace(humps, "_").lowercase(Locale.getDefault())

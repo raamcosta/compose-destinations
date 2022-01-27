@@ -194,7 +194,7 @@ class SingleDestinationWriter(
         } else ""
 
         navArgs.forEachIndexed { i, it ->
-            args += "\t\t$argPrefix${it.name}: ${it.type.classType.simpleName}${if (it.isNullable) "?" else ""}${defaultValueForWithArgsFunction(it)},"
+            args += "\t\t$argPrefix${it.name}: ${it.type.toTypeCode()}${defaultValueForWithArgsFunction(it)},"
 
             if (i != navArgs.lastIndex) {
                 args += "\n"
@@ -209,7 +209,7 @@ class SingleDestinationWriter(
             val navTypeName = customNavTypeByType[type.classType]!!.name
             additionalImports.add("$codeGenBasePackageName.navtype.$navTypeName")
 
-            val (ifNullPrefix, ifNullSuffix) = if (isNullable) {
+            val (ifNullPrefix, ifNullSuffix) = if (type.isNullable) {
                 "$name?.let { " to " } ?: \"{${name}}\""
             } else {
                 "" to ""
@@ -217,7 +217,7 @@ class SingleDestinationWriter(
             return "$ifNullPrefix$navTypeName.serializeValue($name, $isMandatory)$ifNullSuffix"
         }
 
-        val ifNullSuffix = if (isNullable) {
+        val ifNullSuffix = if (type.isNullable) {
             " ?: \"{${name}}\""
         } else {
             ""
@@ -227,7 +227,7 @@ class SingleDestinationWriter(
             return "$CORE_STRING_NAV_TYPE.serializeValue($name, $isMandatory)$ifNullSuffix"
         }
 
-        val ifNullBeforeToString = if (isNullable) "?" else ""
+        val ifNullBeforeToString = if (type.isNullable) "?" else ""
         return "${name}$ifNullBeforeToString${".toString()"}$ifNullSuffix"
     }
 
@@ -296,7 +296,7 @@ class SingleDestinationWriter(
         return when {
             it.hasDefault -> " = ${it.defaultValue?.code}"
 
-            it.isNullable -> " = null"
+            it.type.isNullable -> " = null"
 
             else -> ""
 
@@ -336,7 +336,7 @@ class SingleDestinationWriter(
             val toNavTypeCode = it.toNavTypeCode()
             code += "navArgument(\"${it.name}\") {\n\t\t\t"
             code += "type = $toNavTypeCode\n\t\t"
-            if (it.isNullable) {
+            if (it.type.isNullable) {
                 if (toNavTypeCode != CORE_STRING_NAV_TYPE && !it.isComplexTypeNavArg()) {
                     throw IllegalDestinationsSetup("Composable '${destination.composableName}', argument '${it.name}': Only String, Parcelable, Serializable and Enum navigation arguments can be nullable")
                 }

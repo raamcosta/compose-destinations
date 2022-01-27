@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.codegen.commons
 
-import com.ramcosta.composedestinations.codegen.model.Parameter
-import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.model.*
 import java.io.OutputStream
 
 operator fun OutputStream.plusAssign(str: String) {
@@ -12,19 +11,47 @@ operator fun StringBuilder.plusAssign(str: String) {
     append(str)
 }
 
+fun Type.toTypeCode(): String {
+    if (genericTypes.isEmpty()) {
+        return "${classType.simpleName}${if (isNullable) "?" else ""}"
+    }
+
+    return "${classType.simpleName}<${genericTypes.toTypesCode()}>${if (isNullable) "?" else ""}"
+}
+
+fun List<GenericType>.toTypesCode(): String {
+    return joinToString(", ") { it.toTypeCode() }
+}
+
+fun GenericType.toTypeCode(): String {
+    return when (this) {
+        is StarGenericType -> varianceLabel
+        is TypedGenericType -> "$varianceLabel${if(varianceLabel.isEmpty()) "" else " "}${type.toTypeCode()}"
+        is ErrorGenericType -> "ERROR"
+    }
+}
+
+fun Type.addToImports(additionalImports: MutableSet<String>) {
+    additionalImports.add(classType.qualifiedName)
+    genericTypes.filterIsInstance<TypedGenericType>().forEach {
+        it.type.addToImports(additionalImports)
+    }
+}
+
 fun Type.isPrimitive(): Boolean {
     return toPrimitiveNavTypeCodeOrNull() != null
 }
 
+val primitiveTypes = mapOf(
+    String::class.qualifiedName to CORE_STRING_NAV_TYPE,
+    Int::class.qualifiedName to "NavType.IntType",
+    Float::class.qualifiedName to "NavType.FloatType",
+    Long::class.qualifiedName to "NavType.LongType",
+    Boolean::class.qualifiedName to "NavType.BoolType",
+)
+
 fun Type.toPrimitiveNavTypeCodeOrNull(): String? {
-    return when (classType.qualifiedName) {
-        String::class.qualifiedName -> CORE_STRING_NAV_TYPE
-        Int::class.qualifiedName -> "NavType.IntType"
-        Float::class.qualifiedName -> "NavType.FloatType"
-        Long::class.qualifiedName -> "NavType.LongType"
-        Boolean::class.qualifiedName -> "NavType.BoolType"
-        else -> null
-    }
+    return primitiveTypes[classType.qualifiedName]
 }
 
 fun Parameter.isComplexTypeNavArg(): Boolean {

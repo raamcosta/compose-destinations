@@ -73,8 +73,16 @@ class DestinationContentFunctionWriter(
         return when (parameter.type.classType.qualifiedName) {
             NAV_CONTROLLER_QUALIFIED_NAME,
             NAV_HOST_CONTROLLER_QUALIFIED_NAME, -> "navController"
-            DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController, navBackStackEntry)"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
+            DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController, navBackStackEntry)"
+            RESULT_RECIPIENT_QUALIFIED_NAME -> {
+                additionalImports.add("$CORE_PACKAGE_NAME.result.resultRecipient")
+                "resultRecipient(navBackStackEntry)"
+            }
+            RESULT_BACK_NAVIGATOR_QUALIFIED_NAME -> {
+                additionalImports.add("$CORE_PACKAGE_NAME.result.resultBackNavigator")
+                "resultBackNavigator(navController, this)"
+            }
             destination.navArgsDelegateType?.qualifiedName -> {
                 additionalImports.add("androidx.compose.runtime.remember")
                 "remember { argsFrom(navBackStackEntry) }"

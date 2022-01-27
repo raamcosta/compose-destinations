@@ -33,6 +33,16 @@ fun File.readLineAndImports(lineNumber: Int): Pair<String, List<String>> {
         }
 }
 
+fun File.readLine(lineNumber: Int): String {
+    val bufferedReader = BufferedReader(InputStreamReader(FileInputStream(this), Charsets.UTF_8))
+    return bufferedReader
+        .useLines { lines: Sequence<String> ->
+            lines
+                .take(lineNumber)
+                .last()
+        }
+}
+
 fun KSAnnotated.findAllRequireOptInAnnotations(): List<ClassType> {
     val requireOptInAnnotations = mutableListOf<ClassType>()
     annotations.forEach { annotation ->

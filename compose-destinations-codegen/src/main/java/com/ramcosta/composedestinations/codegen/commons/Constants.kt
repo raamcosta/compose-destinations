@@ -43,6 +43,8 @@ val experimentalAnimationApiType = ClassType(
 )
 
 const val DESTINATIONS_NAVIGATOR_QUALIFIED_NAME = "$CORE_PACKAGE_NAME.navigation.DestinationsNavigator"
+const val RESULT_BACK_NAVIGATOR_QUALIFIED_NAME = "$CORE_PACKAGE_NAME.result.ResultBackNavigator"
+const val RESULT_RECIPIENT_QUALIFIED_NAME = "$CORE_PACKAGE_NAME.result.ResultRecipient"
 const val NAV_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavController"
 const val NAV_HOST_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavHostController"
 const val SAVED_STATE_HANDLE_SIMPLE_NAME = "SavedStateHandle"
