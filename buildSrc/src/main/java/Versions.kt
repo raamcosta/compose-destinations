@@ -5,12 +5,12 @@ object Versions {
 
     const val kotlin = "1.6.10"
     const val dependencyCheckPlugin = "0.41.0"
-    const val gradlePluginVersion = "7.0.4"
+    const val gradlePluginVersion = "7.1.0"
 
     const val composeViewModel = "2.4.0"
     const val activityCompose = "1.4.0"
 
-    const val material = "1.4.0"
+    const val material = "1.5.0"
     const val lifecycleKtx = "2.4.0"
     const val lifecycleRuntimeKtx = lifecycleKtx
 
@@ -18,9 +18,9 @@ object Versions {
 
     const val junit = "4.13.2"
 
-    const val compose = "1.1.0-rc01"
-    const val composeCompiler = "1.1.0-rc02"
-    const val composeNavigation = "2.4.0-rc01"
+    const val compose = "1.1.0-rc03"
+    const val composeCompiler = compose
+    const val composeNavigation = "2.4.0"
     const val accompanist = "0.22.0-rc"
 }
 
