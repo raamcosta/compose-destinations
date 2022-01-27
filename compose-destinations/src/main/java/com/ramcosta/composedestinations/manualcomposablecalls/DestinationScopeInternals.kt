@@ -9,6 +9,11 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavController
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
+/**
+ * Internal details, public only for inline functions.
+ *
+ *  @see [DestinationScope].
+ */
 open class DestinationScopeImpl<T>(
     val destination: DestinationSpec<T>,
     override val navBackStackEntry: NavBackStackEntry,

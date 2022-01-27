@@ -5,10 +5,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
+import com.ramcosta.composedestinations.animations.utils.animatedComposable
+import com.ramcosta.composedestinations.animations.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.manualcomposablecalls.*
+import com.ramcosta.composedestinations.navigation.DestinationsNavController
+import com.ramcosta.composedestinations.result.resultBackNavigator
+import com.ramcosta.composedestinations.result.resultRecipient
+import com.ramcosta.composedestinations.utils.dialogComposable
 import com.ramcosta.samples.destinationstodosample.commons.DrawerController
 import com.ramcosta.samples.destinationstodosample.ui.screens.*
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.*
@@ -94,74 +102,86 @@ fun AppNavigation(
 }
 
 // ------- Without using DestinationsNavHost example -------
-//@Suppress("UNUSED")
-//@ExperimentalMaterialNavigationApi
-//@ExperimentalAnimationApi
-//@Composable
-//fun SampleAppAnimatedNavHostExample(
-//    modifier: Modifier,
-//    navController: NavHostController,
-//    drawerController: DrawerController
-//) {
-//    AnimatedNavHost(
-//        modifier = modifier,
-//        navController = navController,
-//        startDestination = GreetingScreenDestination.route,
-//        route = "root"
-//    ) {
-//
-//        animatedComposable(GreetingScreenDestination) { _, entry ->
-//            val vm = viewModel<GreetingViewModel>()
-//
-//            GreetingScreen(
-//                navigator = DestinationsNavController(navController, entry),
-//                drawerController = drawerController,
-//                uiEvents = vm as GreetingUiEvents,
-//                uiState = vm as GreetingUiState
-//            )
-//        }
-//
-//        animatedComposable(FeedDestination) {
-//            Feed()
-//        }
-//
-//        dialogComposable(GoToProfileConfirmationDestination) {
-//            GoToProfileConfirmation(
-//                navigator = DestinationsNavController(navController, it)
-//            )
-//        }
-//
-//        animatedComposable(TestScreenDestination) { args, _ ->
-//            TestScreen(
-//                id = args.id,
-//                stuff1 = args.stuff1,
-//                stuff2 = args.stuff2,
-//                stuff3 = args.stuff3
-//            )
-//        }
-//
-//        animatedComposable(ProfileScreenDestination) { _, entry ->
-//            val vm = viewModel<ProfileViewModel>(
-//                factory = ProfileViewModel.Factory(entry)
-//            )
-//
-//            ProfileScreen(
-//                vm as ProfileUiState,
-//                vm as ProfileUiEvents
-//            )
-//        }
-//
-//        navigation(
-//            startDestination = SettingsDestination.route,
-//            route = "settings"
-//        ) {
-//            animatedComposable(SettingsDestination) {
-//                Settings(navigator = DestinationsNavController(navController, it), DefaultResultArgument(it))
-//            }
-//
-//            bottomSheetComposable(ThemeSettingsDestination) {
-//                ThemeSettings(navController)
-//            }
-//        }
-//    }
-//}
+@Suppress("UNUSED")
+@ExperimentalMaterialNavigationApi
+@ExperimentalAnimationApi
+@Composable
+fun SampleAppAnimatedNavHostExample(
+    modifier: Modifier,
+    navController: NavHostController,
+    drawerController: DrawerController
+) {
+    AnimatedNavHost(
+        modifier = modifier,
+        navController = navController,
+        startDestination = GreetingScreenDestination.route,
+        route = "root"
+    ) {
+
+        animatedComposable(GreetingScreenDestination) { _, entry ->
+            val vm = viewModel<GreetingViewModel>()
+
+            GreetingScreen(
+                navigator = DestinationsNavController(navController, entry),
+                drawerController = drawerController,
+                uiEvents = vm as GreetingUiEvents,
+                uiState = vm as GreetingUiState,
+                resultRecipient = resultRecipient(entry)
+            )
+        }
+
+        animatedComposable(FeedDestination) {
+            Feed()
+        }
+
+        dialogComposable(GoToProfileConfirmationDestination) {
+            GoToProfileConfirmation(
+                resultNavigator = resultBackNavigator(
+                    navController = navController,
+                    destinationSpec = GoToProfileConfirmationDestination
+                )
+            )
+        }
+
+        animatedComposable(TestScreenDestination) { args, _ ->
+            TestScreen(
+                id = args.id,
+                stuff1 = args.stuff1,
+                stuff2 = args.stuff2,
+                stuff3 = args.stuff3
+            )
+        }
+
+        animatedComposable(ProfileScreenDestination) { _, entry ->
+            val vm = viewModel<ProfileViewModel>(
+                factory = ProfileViewModel.Factory(entry)
+            )
+
+            ProfileScreen(
+                vm as ProfileUiState,
+                vm as ProfileUiEvents
+            )
+        }
+
+        navigation(
+            startDestination = SettingsDestination.route,
+            route = "settings"
+        ) {
+            animatedComposable(SettingsDestination) {
+                Settings(
+                    navigator = DestinationsNavController(navController, it),
+                    themeSettingsResultRecipient = resultRecipient(it)
+                )
+            }
+
+            bottomSheetComposable(ThemeSettingsDestination) {
+                ThemeSettings(
+                    resultNavigator = resultBackNavigator(
+                        navController = navController,
+                        destinationSpec = ThemeSettingsDestination
+                    )
+                )
+            }
+        }
+    }
+}

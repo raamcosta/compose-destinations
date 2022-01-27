@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -40,10 +39,16 @@ interface DestinationScope<T> {
     val navArgs: T
 }
 
+/**
+ * Returns a well typed [ResultBackNavigator] for this [DestinationScope]
+ */
 @Composable
 inline fun <reified R> DestinationScope<*>.resultBackNavigator(): ResultBackNavigator<R> =
     resultBackNavigator(navController, (this as DestinationScopeImpl<*>).destination)
 
+/**
+ * Returns a well typed [ResultRecipient] for this [DestinationScope]
+ */
 @Composable
 inline fun <reified D : DestinationSpec<*>, reified R> DestinationScope<*>.resultRecipient(): ResultRecipient<D, R> =
     resultRecipient(navBackStackEntry)

@@ -12,6 +12,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
+/**
+ * Internal details, public only for inline functions.
+ *
+ *  @see [ResultRecipient].
+ */
 class ResultRecipientImpl<D : DestinationSpec<*>, R>(
     private val navBackStackEntry: NavBackStackEntry,
     resultOriginType: Class<D>,
@@ -21,18 +26,14 @@ class ResultRecipientImpl<D : DestinationSpec<*>, R>(
     private val resultKey = resultKey(resultOriginType, resultType)
 
     @Composable
-    override fun onResult(lambda: (R) -> Unit) {
-        println("DestinationResultRecipientImpl observe called")
+    override fun onResult(listener: (R) -> Unit) {
         DisposableEffect(key1 = Unit) {
-            println("SideEffect INSIDE")
-            println("DestinationResultRecipientImpl -> resultName = $resultKey")
-
             navBackStackEntry.lifecycle.addObserver(object : LifecycleEventObserver {
                 override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                     when (event) {
                         Lifecycle.Event.ON_RESUME -> {
                             if (navBackStackEntry.savedStateHandle.contains(resultKey)) {
-                                lambda(navBackStackEntry.savedStateHandle.remove<R>(resultKey) as R)
+                                listener(navBackStackEntry.savedStateHandle.remove<R>(resultKey) as R)
                             }
                         }
 
@@ -45,29 +46,7 @@ class ResultRecipientImpl<D : DestinationSpec<*>, R>(
                 }
             })
 
-//            navBackStackEntry
-//                .savedStateHandle
-//                .getLiveData<R>(resultName, null)
-//                .observe(navBackStackEntry) { result ->
-//                    if (result != null) {
-//                        navBackStackEntry.savedStateHandle.set<R>(resultName, null)
-//                        navBackStackEntry.lifecycle.addObserver(object : LifecycleEventObserver {
-//                            override fun onStateChanged(
-//                                source: LifecycleOwner,
-//                                event: Lifecycle.Event
-//                            ) {
-//                                if (event == Lifecycle.Event.ON_RESUME) {
-//                                    navBackStackEntry.lifecycle.removeObserver(this)
-//                                    lambda(result)
-//                                }
-//                            }
-//                        })
-//                    }
-//                }
-
-            onDispose {
-                println("SideEffect onDispose")
-            }
+            onDispose { }
         }
     }
 }
