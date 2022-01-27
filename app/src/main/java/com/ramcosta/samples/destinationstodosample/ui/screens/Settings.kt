@@ -12,14 +12,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.SettingsDestination
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ThemeSettingsDestination
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import com.ramcosta.composedestinations.result.EmptyResultRecipient
+import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.samples.destinationstodosample.commons.Routes
 import com.ramcosta.samples.destinationstodosample.commons.requireTitle
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.SettingsDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ThemeSettingsDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExample
 import com.ramcosta.samples.destinationstodosample.ui.screens.styles.SettingsTransitions
 
 const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
@@ -35,7 +38,12 @@ const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 @Composable
 fun Settings(
     navigator: DestinationsNavigator,
+    themeSettingsResultRecipient: ResultRecipient<ThemeSettingsDestination, SerializableExample>
 ) {
+    themeSettingsResultRecipient.onResult {
+        println("result = $it")
+    }
+
     Box(
         Modifier
             .fillMaxSize()
@@ -63,5 +71,8 @@ fun Settings(
 //@Preview
 @Composable
 fun SettingsPreview() {
-    Settings(EmptyDestinationsNavigator)
+    Settings(
+        EmptyDestinationsNavigator,
+        EmptyResultRecipient()
+    )
 }

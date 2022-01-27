@@ -37,7 +37,10 @@ fun DestinationsSampleApp() {
                 )
             },
             bottomBar = { destination ->
-                BottomBar(destination)
+                BottomBar(
+                    destination = destination,
+                    navigateUp = { navController.navigateUp() }
+                )
             },
             drawerContent = { destination ->
                 MyDrawer(

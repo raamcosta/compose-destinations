@@ -1,5 +1,6 @@
 package com.ramcosta.samples.destinationstodosample.ui.screens.greeting
 
+import android.os.Bundle
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,12 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToProfileConfirmationDestination
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.TestScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.samples.destinationstodosample.R
 import com.ramcosta.samples.destinationstodosample.commons.DrawerController
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToProfileConfirmationDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ProfileScreenDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.TestScreenDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Stuff
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -32,8 +36,22 @@ fun GreetingScreen(
     drawerController: DrawerController,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     uiEvents: GreetingUiEvents,
-    uiState: GreetingUiState
+    uiState: GreetingUiState,
+    resultRecipient: ResultRecipient<GoToProfileConfirmationDestination, Boolean>
 ) {
+    resultRecipient.onResult { confirmed ->
+        println("go? $confirmed")
+        if (confirmed) {
+            navigator.navigate(
+                ProfileScreenDestination(
+                    id = 3,
+                    groupName = "%02%03",
+                    stuff = Stuff.STUFF2,
+                )
+            )
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
