@@ -31,13 +31,6 @@ fun GenericType.toTypeCode(): String {
     }
 }
 
-fun Type.addToImports(additionalImports: MutableSet<String>) {
-    additionalImports.add(classType.qualifiedName)
-    genericTypes.filterIsInstance<TypedGenericType>().forEach {
-        it.type.addToImports(additionalImports)
-    }
-}
-
 fun Type.isPrimitive(): Boolean {
     return toPrimitiveNavTypeCodeOrNull() != null
 }
