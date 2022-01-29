@@ -38,7 +38,7 @@ class SingleDestinationWriter(
             .replace(DESTINATION_NAME, name)
             .replaceSuperclassDestination()
             .addNavArgsDataClass()
-            .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotations())
+            .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
             .replace(COMPOSED_ROUTE, constructRoute())
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
             .replace(DEEP_LINKS, deepLinksDeclarationCode())
@@ -56,7 +56,7 @@ class SingleDestinationWriter(
             simpleName = name,
             isStartDestination = isStart,
             navGraphRoute = navGraphRoute,
-            requireOptInAnnotationTypes = baseOptInAnnotations()
+            requireOptInAnnotationTypes = gatherOptInAnnotations()
                 .filter { !it.isOptedIn }
                 .map { it.classType }
                 .toList(),
@@ -91,8 +91,18 @@ class SingleDestinationWriter(
         return replace(NAV_ARGS_DATA_CLASS, code.toString())
     }
 
-    private fun baseOptInAnnotations(): List<OptInAnnotation> {
+    private fun gatherOptInAnnotations(): List<OptInAnnotation> {
         val optInByAnnotation = destination.requireOptInAnnotationTypes.associateWithTo(mutableMapOf()) { false }
+
+        destination.parameters.forEach { param ->
+            optInByAnnotation.putAll(
+                param.requireOptInAnnotations.associateWith { requireOptInType ->
+                    // if the destination itself doesn't need this annotation, then it was opted in
+                    !destination.requireOptInAnnotationTypes.contains(requireOptInType)
+                }
+            )
+        }
+
         if (destination.destinationStyleType is DestinationStyleType.Animated) {
             optInByAnnotation.putAll(destination.destinationStyleType.requireOptInAnnotations.associateWithTo(mutableMapOf()) { false })
         }
@@ -116,9 +126,9 @@ class SingleDestinationWriter(
                 && !destination.requireOptInAnnotationTypes.contains(experimentalAnimationApiType)
     }
 
-    private fun objectWideRequireOptInAnnotations(): String {
+    private fun objectWideRequireOptInAnnotationsCode(): String {
         val code = StringBuilder()
-        val optInByAnnotation = baseOptInAnnotations()
+        val optInByAnnotation = gatherOptInAnnotations()
 
         optInByAnnotation.forEach {
             additionalImports.add(it.classType.qualifiedName)

@@ -44,7 +44,7 @@ fun ColumnScope.ThemeSettings(
             Button(
                 onClick = {
                     resultNavigator.navigateBack(
-                        result = SerializableExample("RESULTAMOS!!", "THING2")
+                        result = SerializableExample("RESULT!!", "THING2")
                     )
                 }
             ) {

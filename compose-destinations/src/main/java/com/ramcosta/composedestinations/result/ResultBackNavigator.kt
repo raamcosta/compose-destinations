@@ -17,7 +17,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  *
  * Type safety related limitations (compile time enforced):
  * - [R] must be one of String, Boolean, Float, Int, Long, Serializable, or Parcelable.
- * Nullable is also accepted.
+ * They can be nullable.
  * - [R] type cannot have type arguments itself (f.e you can't use Array<String> even though it is Serializable)
  * - Each annotated Composable can have at most one parameter of type [ResultBackNavigator]
  *

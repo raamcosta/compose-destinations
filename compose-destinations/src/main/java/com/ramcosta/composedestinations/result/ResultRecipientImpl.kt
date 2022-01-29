@@ -6,6 +6,8 @@ package com.ramcosta.composedestinations.result
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -27,13 +29,15 @@ class ResultRecipientImpl<D : DestinationSpec<*>, R>(
 
     @Composable
     override fun onResult(listener: (R) -> Unit) {
+        val currentListener by rememberUpdatedState(listener)
+
         DisposableEffect(key1 = Unit) {
-            navBackStackEntry.lifecycle.addObserver(object : LifecycleEventObserver {
+            val observer = object : LifecycleEventObserver {
                 override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                     when (event) {
                         Lifecycle.Event.ON_RESUME -> {
                             if (navBackStackEntry.savedStateHandle.contains(resultKey)) {
-                                listener(navBackStackEntry.savedStateHandle.remove<R>(resultKey) as R)
+                                currentListener(navBackStackEntry.savedStateHandle.remove<R>(resultKey) as R)
                             }
                         }
 
@@ -44,9 +48,13 @@ class ResultRecipientImpl<D : DestinationSpec<*>, R>(
                         else -> Unit
                     }
                 }
-            })
+            }
 
-            onDispose { }
+            navBackStackEntry.lifecycle.addObserver(observer)
+
+            onDispose {
+                navBackStackEntry.lifecycle.removeObserver(observer)
+            }
         }
     }
 }

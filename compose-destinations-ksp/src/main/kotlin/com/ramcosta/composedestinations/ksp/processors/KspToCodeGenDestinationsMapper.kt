@@ -185,7 +185,8 @@ class KspToCodeGenDestinationsMapper(
             name!!.asString(),
             resolvedType.toType(location) ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
             hasDefault,
-            lazy { getDefaultValue(resolver) },
+            resolvedType.declaration.findAllRequireOptInAnnotations(),
+            lazy { getDefaultValue(resolver) }
         )
     }
 

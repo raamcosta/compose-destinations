@@ -1,6 +1,5 @@
 package com.ramcosta.samples.destinationstodosample.ui.screens.greeting
 
-import android.os.Bundle
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
