@@ -96,7 +96,7 @@ class SingleDestinationWriter(
 
         destination.parameters.forEach { param ->
             optInByAnnotation.putAll(
-                param.requireOptInAnnotations.associateWith { requireOptInType ->
+                param.type.recursiveRequireOptInAnnotations().associateWith { requireOptInType ->
                     // if the destination itself doesn't need this annotation, then it was opted in
                     !destination.requireOptInAnnotationTypes.contains(requireOptInType)
                 }
@@ -130,13 +130,16 @@ class SingleDestinationWriter(
         val code = StringBuilder()
         val optInByAnnotation = gatherOptInAnnotations()
 
-        optInByAnnotation.forEach {
-            additionalImports.add(it.classType.qualifiedName)
-            code += if (it.isOptedIn) {
-                "@OptIn(${it.classType.simpleName}::class)\n"
-            } else {
-                "@${it.classType.simpleName}\n"
-            }
+        val (optedIns, nonOptedIns) = optInByAnnotation
+            .onEach { additionalImports.add(it.classType.qualifiedName) }
+            .partition { it.isOptedIn }
+
+        nonOptedIns.forEach {
+            code += "@${it.classType.simpleName}\n"
+        }
+
+        if (optedIns.isNotEmpty()) {
+            code += "@OptIn(${optedIns.joinToString(", ") { "${it.classType.simpleName}::class" }})\n"
         }
 
         return code.toString()

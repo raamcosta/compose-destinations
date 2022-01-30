@@ -4,7 +4,6 @@ class Parameter(
     val name: String,
     val type: Type,
     val hasDefault: Boolean,
-    val requireOptInAnnotations: List<ClassType>,
     lazyDefaultValue: Lazy<DefaultValue?>,
 ) {
     val defaultValue: DefaultValue? by lazyDefaultValue
@@ -21,7 +20,6 @@ class Parameter(
             name != other.name -> false
             type != other.type -> false
             hasDefault != other.hasDefault -> false
-            requireOptInAnnotations != other.requireOptInAnnotations -> false
             else -> true
         }
     }
@@ -30,11 +28,10 @@ class Parameter(
         var result = name.hashCode()
         result = 31 * result + type.hashCode()
         result = 31 * result + hasDefault.hashCode()
-        result = 31 * result + requireOptInAnnotations.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "Parameter(name='$name', type=$type, hasDefault=$hasDefault, requireOptInAnnotations=$requireOptInAnnotations)"
+        return "Parameter(name='$name', type=$type, hasDefault=$hasDefault)"
     }
 }

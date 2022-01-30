@@ -11,6 +11,19 @@ operator fun StringBuilder.plusAssign(str: String) {
     append(str)
 }
 
+fun Type.recursiveRequireOptInAnnotations(): List<ClassType> {
+    val mutableList = requireOptInAnnotations.toMutableList()
+    genericTypes.forEach {
+        when (it) {
+            is TypedGenericType -> mutableList.addAll(it.type.recursiveRequireOptInAnnotations())
+            is ErrorGenericType,
+            is StarGenericType -> Unit
+        }
+    }
+
+    return mutableList
+}
+
 fun Type.toTypeCode(): String {
     if (genericTypes.isEmpty()) {
         return "${classType.simpleName}${if (isNullable) "?" else ""}"

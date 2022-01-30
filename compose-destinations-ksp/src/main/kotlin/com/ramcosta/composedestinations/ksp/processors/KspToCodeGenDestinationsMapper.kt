@@ -156,6 +156,7 @@ class KspToCodeGenDestinationsMapper(
         return Type(
             classType = ClassType(declaration.simpleName.asString(), qualifiedName.asString()),
             genericTypes = genericTypes(location),
+            requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
             isNullable = isMarkedNullable,
             isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
             isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
@@ -185,7 +186,6 @@ class KspToCodeGenDestinationsMapper(
             name!!.asString(),
             resolvedType.toType(location) ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
             hasDefault,
-            resolvedType.declaration.findAllRequireOptInAnnotations(),
             lazy { getDefaultValue(resolver) }
         )
     }
