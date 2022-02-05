@@ -205,5 +205,5 @@ class KspToCodeGenDestinationsMapper(
         return typeAliasType
     }
 
-    private fun String.toSnakeCase() = replace(humps, "_").lowercase(Locale.getDefault())
+    private fun String.toSnakeCase() = replace(humps, "_").lowercase(Locale.US)
 }

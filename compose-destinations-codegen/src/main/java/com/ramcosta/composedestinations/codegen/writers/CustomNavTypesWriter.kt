@@ -28,7 +28,10 @@ class CustomNavTypesWriter(
             .map {
                 it.navArgs
                     .filter { it.isComplexTypeNavArg() }
-                    .map { it.type }
+                    .map {
+                        //we don't want to consider types different due to different nullability here
+                        it.type.copy(isNullable = false)
+                    }
             }
             .flatten()
             .toSet()
@@ -49,7 +52,7 @@ class CustomNavTypesWriter(
     private fun Type.generateCustomNavType(navTypeSerializer: NavTypeSerializer?) {
         val navTypeName = getNavTypeName()
 
-        val className = navTypeName.replaceFirstChar { it.uppercase(Locale.getDefault()) }
+        val className = navTypeName.replaceFirstChar { it.uppercase(Locale.US) }
         val out: OutputStream = codeGenerator.makeFile(
             className,
             "$codeGenBasePackageName.navtype",
@@ -174,7 +177,7 @@ class CustomNavTypesWriter(
 
     private fun Type.getNavTypeName(): String {
         val navTypeName =
-            "${classType.simpleName.replaceFirstChar { it.lowercase(Locale.getDefault()) }}NavType"
+            "${classType.simpleName.replaceFirstChar { it.lowercase(Locale.US) }}NavType"
 
         val duplicateType = typesForNavTypeName.entries.find { it.key.name == navTypeName }?.value
 
@@ -195,7 +198,7 @@ class CustomNavTypesWriter(
         }
 
         return prefix + if (prefix.isNotEmpty()) {
-            navTypeName.replaceFirstChar { it.uppercase(Locale.getDefault()) }
+            navTypeName.replaceFirstChar { it.uppercase(Locale.US) }
         } else {
             navTypeName
         }
