@@ -13,11 +13,9 @@ import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.animations.defaults.*
-import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
-import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
-import com.ramcosta.composedestinations.navigation.dependency
+import com.ramcosta.composedestinations.manualcomposablecalls.*
+import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.spec.*
 
@@ -112,6 +110,7 @@ internal class AnimatedNavHostEngine(
     override fun <T> NavGraphBuilder.composable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
     ) {
         when (val destinationStyle = destination.style) {
@@ -119,6 +118,7 @@ internal class AnimatedNavHostEngine(
                 addComposable(
                     destination,
                     navController,
+                    dependenciesContainerBuilder,
                     manualComposableCalls
                 )
             }
@@ -128,6 +128,7 @@ internal class AnimatedNavHostEngine(
                     destinationStyle,
                     destination,
                     navController,
+                    dependenciesContainerBuilder,
                     manualComposableCalls
                 )
             }
@@ -136,6 +137,7 @@ internal class AnimatedNavHostEngine(
                 addBottomSheetComposable(
                     destination,
                     navController,
+                    dependenciesContainerBuilder,
                     manualComposableCalls
                 )
             }
@@ -146,6 +148,7 @@ internal class AnimatedNavHostEngine(
                     composable(
                         destination,
                         navController,
+                        dependenciesContainerBuilder,
                         manualComposableCalls
                     )
                 }
@@ -156,8 +159,11 @@ internal class AnimatedNavHostEngine(
     private fun <T> NavGraphBuilder.addComposable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
     ) {
+        val contentWrapper = manualComposableCalls[destination.routeId]
+
         composable(
             route = destination.route,
             arguments = destination.arguments,
@@ -167,7 +173,8 @@ internal class AnimatedNavHostEngine(
                 destination,
                 navController,
                 navBackStackEntry,
-                manualComposableCalls,
+                dependenciesContainerBuilder,
+                contentWrapper,
             )
         }
     }
@@ -176,6 +183,7 @@ internal class AnimatedNavHostEngine(
         animatedStyle: DestinationStyle.Animated,
         destination: DestinationSpec<T>,
         navController: NavHostController,
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
     ) = with(animatedStyle) {
         composable(
@@ -187,11 +195,14 @@ internal class AnimatedNavHostEngine(
             popEnterTransition = { popEnterTransition() },
             popExitTransition = { popExitTransition() }
         ) { navBackStackEntry ->
+            val contentWrapper = manualComposableCalls[destination.routeId]
+
             CallComposable(
                 destination,
                 navController,
                 navBackStackEntry,
-                manualComposableCalls
+                dependenciesContainerBuilder,
+                contentWrapper
             )
         }
     }
@@ -199,8 +210,11 @@ internal class AnimatedNavHostEngine(
     private fun <T> NavGraphBuilder.addBottomSheetComposable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
     ) {
+        val contentWrapper = manualComposableCalls[destination.routeId]
+
         bottomSheet(
             destination.route,
             destination.arguments,
@@ -210,7 +224,8 @@ internal class AnimatedNavHostEngine(
                 destination,
                 navController,
                 navBackStackEntry,
-                manualComposableCalls
+                dependenciesContainerBuilder,
+                contentWrapper
             )
         }
     }
@@ -221,24 +236,23 @@ internal class AnimatedNavHostEngine(
         destination: DestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
-        manualComposableCalls: ManualComposableCalls
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
+        contentWrapper: DestinationLambda<*>?
     ) {
-        val contentWrapper = manualComposableCalls[destination]
+        val scope = remember {
+            BottomSheetDestinationScopeImpl(
+                destination,
+                navBackStackEntry,
+                navController,
+                this
+            )
+        }
 
         if (contentWrapper == null) {
-            destination.Content(
-                navController,
-                navBackStackEntry,
-                DestinationDependenciesContainer().apply { dependency(this@CallComposable) }
-            )
+            with(destination) { scope.Content(dependenciesContainerBuilder) }
         } else {
             contentWrapper as DestinationLambda<T>
-            contentWrapper(
-                destination = destination,
-                navBackStackEntry = navBackStackEntry,
-                navController = navController,
-                receiver = this
-            )
+            contentWrapper(scope)
         }
     }
 
@@ -248,24 +262,24 @@ internal class AnimatedNavHostEngine(
         destination: DestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
-        manualComposableCalls: ManualComposableCalls,
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
+        contentWrapper: DestinationLambda<*>?,
     ) {
-        val contentWrapper = manualComposableCalls[destination]
+
+        val scope = remember {
+            AnimatedDestinationScopeImpl(
+                destination,
+                navBackStackEntry,
+                navController,
+                this
+            )
+        }
 
         if (contentWrapper == null) {
-            destination.Content(
-                navController,
-                navBackStackEntry,
-                DestinationDependenciesContainer().apply { dependency(this@CallComposable) }
-            )
+            with(destination) { scope.Content(dependenciesContainerBuilder) }
         } else {
             contentWrapper as DestinationLambda<T>
-            contentWrapper(
-                destination = destination,
-                navBackStackEntry = navBackStackEntry,
-                navController = navController,
-                receiver = this
-            )
+            contentWrapper(scope)
         }
     }
 

@@ -14,6 +14,7 @@ import com.ramcosta.composedestinations.animations.utils.animatedComposable
 import com.ramcosta.composedestinations.animations.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.manualcomposablecalls.*
 import com.ramcosta.composedestinations.navigation.DestinationsNavController
+import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.result.resultBackNavigator
 import com.ramcosta.composedestinations.result.resultRecipient
 import com.ramcosta.composedestinations.utils.dialogComposable
@@ -54,7 +55,10 @@ fun AppNavigation(
         startRoute = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startRoute,
         engine = navHostEngine,
         navController = navController,
-        modifier = modifier
+        modifier = modifier,
+        dependenciesContainerBuilder = {
+            dependency(drawerController)
+        }
     ) {
         // region This is NOT needed: this is exactly what the lib would do for us too
         // if we didn't explicitly call this Composable

@@ -3,7 +3,8 @@ package com.ramcosta.composedestinations.spec
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.*
-import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
+import com.ramcosta.composedestinations.manualcomposablecalls.DestinationScope
+import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 
 /**
  * Defines what a Destination needs to have to be able to be
@@ -14,6 +15,11 @@ import com.ramcosta.composedestinations.navigation.DestinationDependenciesContai
  * for of this Destination.
  */
 interface DestinationSpec<T> : Route {
+
+    /**
+     * Id part of the route - basically the [route] without argument info
+     */
+    val routeId: String
 
     /**
      * Full route that will be added to the navigation graph
@@ -45,16 +51,10 @@ interface DestinationSpec<T> : Route {
      * [Composable] function that will be called to compose
      * the destination content in the screen, when the user
      * navigates to it.
-     *
-     * [dependencyContainer] is used internally to enable certain destination Composables
-     * to be extension functions on `ColumnScope` (for [DestinationStyle.BottomSheet] destinations)
-     * or `AnimatedVisibilityScope` (for [DestinationStyle.Animated]).
      */
     @Composable
-    fun Content(
-        navController: NavHostController,
-        navBackStackEntry: NavBackStackEntry,
-        dependencyContainer: DestinationDependenciesContainer
+    fun DestinationScope<T>.Content(
+        dependenciesContainerBuilder: DependenciesContainerBuilder<T>.() -> Unit
     )
 
     /**

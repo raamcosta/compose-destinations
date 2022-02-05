@@ -39,7 +39,9 @@ class SingleDestinationWriter(
             .replaceSuperclassDestination()
             .addNavArgsDataClass()
             .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
-            .replace(COMPOSED_ROUTE, constructRoute())
+            .replace(ROUTE_ID, destination.cleanRoute)
+            .replace(NAV_ARGS_CLASS_SIMPLE_NAME, navArgsDataClassName())
+            .replace(COMPOSED_ROUTE, constructRouteFieldCode())
             .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
             .replace(DEEP_LINKS, deepLinksDeclarationCode())
             .replace(DESTINATION_STYLE, destinationStyle())
@@ -249,14 +251,18 @@ class SingleDestinationWriter(
             return ""
         }
 
-        val argsType = if (navArgsDelegateType == null) {
-            "NavArgs"
+        val argsType = navArgsDataClassName()
+
+        return argsFromNavBackStackEntry(argsType) + "\n" + argsFromSavedStateHandle(argsType)
+    }
+
+    private fun navArgsDataClassName(): String = with(destination) {
+        return if (navArgsDelegateType == null) {
+            if (navArgs.isEmpty()) "Unit" else "NavArgs"
         } else {
             additionalImports.add(navArgsDelegateType.qualifiedName)
             navArgsDelegateType.simpleName
         }
-
-        return argsFromNavBackStackEntry(argsType) + "\n" + argsFromSavedStateHandle(argsType)
     }
 
     private fun argsFromNavBackStackEntry(argsType: String): String {
@@ -316,6 +322,16 @@ class SingleDestinationWriter(
         }
     }
 
+    private fun constructRouteFieldCode(): String {
+        val route = constructRoute()
+
+        return if (navArgs.isEmpty()) {
+            route
+        } else {
+            "\"$route\""
+        }
+    }
+
     private fun constructRoute(args: List<Parameter> = navArgs): String {
         val mandatoryArgs = StringBuilder()
         val optionalArgs = StringBuilder()
@@ -327,7 +343,8 @@ class SingleDestinationWriter(
             }
         }
 
-        return destination.cleanRoute + mandatoryArgs.toString() + optionalArgs.toString()
+        return if (args.isEmpty()) "routeId"
+        else "\$routeId$mandatoryArgs$optionalArgs"
     }
 
     private fun contentFunctionCode(): String {

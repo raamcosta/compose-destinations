@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
+import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 
 /**
  * Abstraction over all needed functionality to call a "NavHost-like" composable
@@ -70,6 +71,7 @@ interface NavHostEngine {
     fun <T> NavGraphBuilder.composable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     )
 }

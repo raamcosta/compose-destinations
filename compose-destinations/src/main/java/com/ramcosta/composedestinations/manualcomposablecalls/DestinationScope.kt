@@ -17,6 +17,9 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  * Scope given to the calls related to the [ManualComposableCallsBuilder].
  */
 interface DestinationScope<T> {
+
+    val destination: DestinationSpec<T>
+
     /**
      * [NavBackStackEntry] of the current destination
      */

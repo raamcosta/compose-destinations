@@ -15,7 +15,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  *  @see [DestinationScope].
  */
 open class DestinationScopeImpl<T>(
-    val destination: DestinationSpec<T>,
+    override val destination: DestinationSpec<T>,
     override val navBackStackEntry: NavBackStackEntry,
     override val navController: NavController,
 ): DestinationScope<T> {
@@ -29,7 +29,7 @@ open class DestinationScopeImpl<T>(
 }
 
 @ExperimentalAnimationApi
-internal class AnimatedDestinationScopeImpl<T>(
+class AnimatedDestinationScopeImpl<T>(
     destination: DestinationSpec<T>,
     navBackStackEntry: NavBackStackEntry,
     navController: NavController,
@@ -40,7 +40,7 @@ internal class AnimatedDestinationScopeImpl<T>(
     navController,
 ), AnimatedDestinationScope<T>, AnimatedVisibilityScope by animatedVisibilityScope
 
-internal class BottomSheetDestinationScopeImpl<T>(
+class BottomSheetDestinationScopeImpl<T>(
     destination: DestinationSpec<T>,
     navBackStackEntry: NavBackStackEntry,
     navController: NavController,

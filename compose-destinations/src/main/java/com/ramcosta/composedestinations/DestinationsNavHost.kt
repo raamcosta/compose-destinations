@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
+import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
@@ -55,6 +56,7 @@ fun DestinationsNavHost(
     startRoute: Route = navGraph.startRoute,
     engine: NavHostEngine = rememberNavHostEngine(),
     navController: NavHostController = engine.rememberNavController(),
+    dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit = {},
     manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit = {}
 ) {
     engine.NavHost(
@@ -67,7 +69,8 @@ fun DestinationsNavHost(
             engine = engine,
             navGraphSpec = navGraph,
             navController = navController,
-            manualComposableCalls = ManualComposableCallsBuilder(engine.type)
+            dependenciesContainerBuilder = dependenciesContainerBuilder,
+            manualComposableCalls = ManualComposableCallsBuilder(engine.type, navGraph)
                 .apply { manualComposableCallsBuilder() }
                 .build(),
         )
@@ -80,6 +83,7 @@ private fun NavGraphBuilder.addNavGraphDestinations(
     engine: NavHostEngine,
     navGraphSpec: NavGraphSpec,
     navController: NavHostController,
+    dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
     manualComposableCalls: ManualComposableCalls,
 ): Unit = with(engine) {
 
@@ -87,6 +91,7 @@ private fun NavGraphBuilder.addNavGraphDestinations(
         composable(
             destination,
             navController,
+            dependenciesContainerBuilder,
             manualComposableCalls
         )
     }
@@ -95,6 +100,7 @@ private fun NavGraphBuilder.addNavGraphDestinations(
         engine = engine,
         nestedNavGraphs = navGraphSpec.nestedNavGraphs,
         navController = navController,
+        dependenciesContainerBuilder = dependenciesContainerBuilder,
         manualComposableCalls = manualComposableCalls
     )
 }
@@ -103,6 +109,7 @@ private fun NavGraphBuilder.addNestedNavGraphs(
     engine: NavHostEngine,
     nestedNavGraphs: List<NavGraphSpec>,
     navController: NavHostController,
+    dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
     manualComposableCalls: ManualComposableCalls,
 ): Unit = with(engine) {
 
@@ -112,6 +119,7 @@ private fun NavGraphBuilder.addNestedNavGraphs(
                 engine = engine,
                 navGraphSpec = nestedGraph,
                 navController = navController,
+                dependenciesContainerBuilder = dependenciesContainerBuilder,
                 manualComposableCalls = manualComposableCalls,
             )
         }

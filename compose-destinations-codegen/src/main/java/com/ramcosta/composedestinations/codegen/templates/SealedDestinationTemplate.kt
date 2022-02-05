@@ -9,7 +9,7 @@ package $codeGenBasePackageName.destinations
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavBackStackEntry
 import $CORE_PACKAGE_NAME.spec.DestinationSpec
-import $CORE_PACKAGE_NAME.spec.$CORE_DIRECTION
+import $CORE_PACKAGE_NAME.spec.DirectionDestinationSpec
 
 /**
  * Handy typealias of [$GENERATED_DESTINATION] when you don't
@@ -25,7 +25,7 @@ sealed interface $GENERATED_DESTINATION<T>: $CORE_DESTINATION_SPEC<T>
 /**
  * Interface for all $GENERATED_DESTINATION with no navigation arguments
  */
-sealed interface $GENERATED_NO_ARGS_DESTINATION: $GENERATED_DESTINATION<Unit>, $CORE_DIRECTION {
+sealed interface $GENERATED_NO_ARGS_DESTINATION: $GENERATED_DESTINATION<Unit>, DirectionDestinationSpec {
     
     override fun argsFrom(navBackStackEntry: NavBackStackEntry) = Unit
 

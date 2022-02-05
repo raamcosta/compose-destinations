@@ -2,9 +2,12 @@ package com.ramcosta.composedestinations.manualcomposablecalls
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.utils.allDestinations
 
 /**
  * Registers [content] lambda as the responsible for calling
@@ -18,7 +21,10 @@ fun <T> ManualComposableCallsBuilder.composable(
     destination: DestinationSpec<T>,
     content: @Composable DestinationScope<T>.() -> Unit
 ) {
-    map[destination] = DestinationLambda.Normal(content)
+    add(
+        lambda = DestinationLambda.Normal(content),
+        destination = destination,
+    )
 }
 
 /**
@@ -42,7 +48,10 @@ fun <T> ManualComposableCallsBuilder.animatedComposable(
 ) {
     validateAnimated(destination)
 
-    map[destination] = DestinationLambda.Animated(content)
+    add(
+        lambda = DestinationLambda.Animated(content),
+        destination = destination,
+    )
 }
 
 /**
@@ -65,16 +74,34 @@ fun <T> ManualComposableCallsBuilder.bottomSheetComposable(
 ) {
     validateBottomSheet(destination)
 
-    map[destination] = DestinationLambda.BottomSheet(content)
+    add(
+        lambda = DestinationLambda.BottomSheet(content),
+        destination = destination,
+    )
 }
 
 class ManualComposableCallsBuilder internal constructor(
-    internal val engineType: NavHostEngine.Type
+    internal val engineType: NavHostEngine.Type,
+    navGraph: NavGraphSpec
 ) {
 
-    internal val map: MutableMap<DestinationSpec<*>, DestinationLambda<*>> = mutableMapOf()
+    private val map: MutableMap<String, DestinationLambda<*>> = mutableMapOf()
+    private val dynamicDestinationsBySingletonDestination: Map<DestinationSpec<*>, List<DynamicDestinationSpec<*>>> =
+        navGraph.allDestinations
+            .filterIsInstance<DynamicDestinationSpec<*>>()
+            .groupBy { it.delegate }
 
     internal fun build() = ManualComposableCalls(map)
+
+    internal fun add(
+        lambda: DestinationLambda<*>,
+        destination: DestinationSpec<*>,
+    ) {
+        map[destination.routeId] = lambda
+        dynamicDestinationsBySingletonDestination[destination]?.forEach {
+            map[it.routeId] = lambda
+        }
+    }
 }
 
 @ExperimentalAnimationApi

@@ -8,8 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
+import com.ramcosta.composedestinations.manualcomposablecalls.DestinationScopeImpl
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
-import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
+import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.*
 
 /**
@@ -64,6 +65,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
     override fun <T> NavGraphBuilder.composable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     ) {
         when (val destinationStyle = destination.style) {
@@ -71,6 +73,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
                 addComposable(
                     destination,
                     navController,
+                    dependenciesContainerBuilder,
                     manualComposableCalls
                 )
             }
@@ -80,6 +83,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
                     destinationStyle,
                     destination,
                     navController,
+                    dependenciesContainerBuilder,
                     manualComposableCalls
                 )
             }
@@ -91,8 +95,11 @@ internal class DefaultNavHostEngine : NavHostEngine {
     private fun <T> NavGraphBuilder.addComposable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     ) {
+        val contentLambda = manualComposableCalls[destination.routeId]
+
         composable(
             route = destination.route,
             arguments = destination.arguments,
@@ -102,7 +109,8 @@ internal class DefaultNavHostEngine : NavHostEngine {
                 destination,
                 navController,
                 navBackStackEntry,
-                manualComposableCalls
+                dependenciesContainerBuilder,
+                contentLambda
             )
         }
     }
@@ -111,8 +119,11 @@ internal class DefaultNavHostEngine : NavHostEngine {
         dialogStyle: DestinationStyle.Dialog,
         destination: DestinationSpec<T>,
         navController: NavHostController,
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
     ) {
+        val contentLambda = manualComposableCalls[destination.routeId]
+
         dialog(
             destination.route,
             destination.arguments,
@@ -123,7 +134,8 @@ internal class DefaultNavHostEngine : NavHostEngine {
                 destination,
                 navController,
                 navBackStackEntry,
-                manualComposableCalls
+                dependenciesContainerBuilder,
+                contentLambda
             )
         }
     }
@@ -134,23 +146,22 @@ internal class DefaultNavHostEngine : NavHostEngine {
         destination: DestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
-        manualComposableCalls: ManualComposableCalls
+        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
+        contentLambda: DestinationLambda<*>?
     ) {
-        val contentLambda = manualComposableCalls[destination]
-        if (contentLambda == null) {
-            destination.Content(
-                navController,
+        val scope = remember {
+            DestinationScopeImpl(
+                destination,
                 navBackStackEntry,
-                DestinationDependenciesContainer()
+                navController
             )
+        }
+
+        if (contentLambda == null) {
+            with(destination) { scope.Content(dependenciesContainerBuilder) }
         } else {
             contentLambda as DestinationLambda<T>
-            contentLambda(
-                destination = destination,
-                navBackStackEntry = navBackStackEntry,
-                navController = navController,
-                receiver = null
-            )
+            contentLambda(scope)
         }
     }
 }

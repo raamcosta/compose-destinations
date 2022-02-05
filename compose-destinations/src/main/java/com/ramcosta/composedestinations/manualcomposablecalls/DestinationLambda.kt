@@ -1,24 +1,15 @@
 package com.ramcosta.composedestinations.manualcomposablecalls
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
-import com.ramcosta.composedestinations.spec.DestinationSpec
 
 @SuppressLint("ComposableNaming")
 sealed class DestinationLambda<T> {
 
     @Composable
     abstract operator fun invoke(
-        destination: DestinationSpec<T>,
-        navBackStackEntry: NavBackStackEntry,
-        navController: NavController,
-        receiver: Any?,
+        destinationScope: DestinationScope<T>
     )
 
     class Normal<T>(
@@ -27,20 +18,9 @@ sealed class DestinationLambda<T> {
 
         @Composable
         override operator fun invoke(
-            destination: DestinationSpec<T>,
-            navBackStackEntry: NavBackStackEntry,
-            navController: NavController,
-            receiver: Any?
+            destinationScope: DestinationScope<T>
         ) {
-            val scope = remember {
-                DestinationScopeImpl(
-                    destination,
-                    navBackStackEntry,
-                    navController
-                )
-            }
-
-            scope.content()
+            destinationScope.content()
         }
     }
 
@@ -51,21 +31,9 @@ sealed class DestinationLambda<T> {
 
         @Composable
         override operator fun invoke(
-            destination: DestinationSpec<T>,
-            navBackStackEntry: NavBackStackEntry,
-            navController: NavController,
-            receiver: Any?
+            destinationScope: DestinationScope<T>
         ) {
-            val scope = remember {
-                AnimatedDestinationScopeImpl(
-                    destination,
-                    navBackStackEntry,
-                    navController,
-                    (receiver as AnimatedVisibilityScope),
-                )
-            }
-
-            scope.content()
+            (destinationScope as AnimatedDestinationScope<T>).content()
         }
     }
 
@@ -75,21 +43,9 @@ sealed class DestinationLambda<T> {
 
         @Composable
         override operator fun invoke(
-            destination: DestinationSpec<T>,
-            navBackStackEntry: NavBackStackEntry,
-            navController: NavController,
-            receiver: Any?
+            destinationScope: DestinationScope<T>
         ) {
-            val scope = remember {
-                BottomSheetDestinationScopeImpl(
-                    destination,
-                    navBackStackEntry,
-                    navController,
-                    (receiver as ColumnScope),
-                )
-            }
-
-            scope.content()
+            (destinationScope as BottomSheetDestinationScope<T>).content()
         }
     }
 }

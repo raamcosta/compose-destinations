@@ -13,13 +13,18 @@ class DestinationContentFunctionWriter(
     fun write(): String = with(destination) {
         val functionCallCode = StringBuilder()
 
-        if (navArgs.isNotEmpty() && destination.navArgsDelegateType == null) {
+        val (args, needsDependencyContainer) = prepareArguments()
+        if (needsDependencyContainer) {
             additionalImports.add("androidx.compose.runtime.remember")
-            functionCallCode += "\t\tval (${argNamesInLine()}) = remember { argsFrom(navBackStackEntry) }\n"
+            functionCallCode += "\t\tval dependencyContainer = remember { DestinationDependenciesContainer(this).apply { dependenciesContainerBuilder() } }\n"
+        }
+
+        if (navArgs.isNotEmpty() && destination.navArgsDelegateType == null) {
+            functionCallCode += "\t\tval (${argNamesInLine()}) = navArgs\n"
         }
 
         val receiver = prepareReceiver()
-        functionCallCode += "\t\t$receiver${composableName}(${prepareArguments()})"
+        functionCallCode += "\t\t$receiver${composableName}($args)"
 
         return functionCallCode.toString()
     }
@@ -32,13 +37,13 @@ class DestinationContentFunctionWriter(
         return when (destination.composableReceiverSimpleName) {
             ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add(ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME)
-                "val animatedVisibilityScope = dependencyContainer.require<$ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME>()\n" +
+                "val animatedVisibilityScope = (this as $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME)\n" +
                         "\t\tanimatedVisibilityScope."
             }
 
             COLUMN_SCOPE_SIMPLE_NAME -> {
                 additionalImports.add(COLUMN_SCOPE_QUALIFIED_NAME)
-                "val columnScope = dependencyContainer.require<$COLUMN_SCOPE_SIMPLE_NAME>()\n" +
+                "val columnScope = (this as $COLUMN_SCOPE_SIMPLE_NAME)\n" +
                         "\t\tcolumnScope."
             }
 
@@ -46,12 +51,16 @@ class DestinationContentFunctionWriter(
         }
     }
 
-    private fun DestinationGeneratingParams.prepareArguments(): String {
+    private fun DestinationGeneratingParams.prepareArguments(): Pair<String, Boolean> {
         var argsCode = ""
+        var anyArgNeedsDepContainer = false
 
         val parametersToPass = parameters
             .map {
-                it.name to resolveArgumentForTypeAndName(it)
+                val (arg, argNeedsDepContainer) = resolveArgumentForTypeAndName(it)
+                anyArgNeedsDepContainer = anyArgNeedsDepContainer || argNeedsDepContainer
+
+                it.name to arg
             }
             .filter { it.second != null }
 
@@ -66,26 +75,26 @@ class DestinationContentFunctionWriter(
                 if (i == parametersToPass.lastIndex) argsCode += "\n\t\t"
             }
 
-        return argsCode
+        return argsCode to anyArgNeedsDepContainer
     }
 
-    private fun resolveArgumentForTypeAndName(parameter: Parameter): String? {
-        return when (parameter.type.classType.qualifiedName) {
+    private fun resolveArgumentForTypeAndName(parameter: Parameter): Pair<String?, Boolean> {
+        var needsDependencyContainer = false
+        val arg = when (parameter.type.classType.qualifiedName) {
             NAV_CONTROLLER_QUALIFIED_NAME,
             NAV_HOST_CONTROLLER_QUALIFIED_NAME, -> "navController"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
             DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController, navBackStackEntry)"
             RESULT_RECIPIENT_QUALIFIED_NAME -> {
-                additionalImports.add("$CORE_PACKAGE_NAME.result.resultRecipient")
-                "resultRecipient(navBackStackEntry)"
+                additionalImports.add("$CORE_PACKAGE_NAME.manualcomposablecalls.resultRecipient")
+                "resultRecipient()"
             }
             RESULT_BACK_NAVIGATOR_QUALIFIED_NAME -> {
-                additionalImports.add("$CORE_PACKAGE_NAME.result.resultBackNavigator")
-                "resultBackNavigator(navController, this)"
+                additionalImports.add("$CORE_PACKAGE_NAME.manualcomposablecalls.resultBackNavigator")
+                "resultBackNavigator()"
             }
             destination.navArgsDelegateType?.qualifiedName -> {
-                additionalImports.add("androidx.compose.runtime.remember")
-                "remember { argsFrom(navBackStackEntry) }"
+                "navArgs"
             }
             else -> {
                 when {
@@ -94,6 +103,7 @@ class DestinationContentFunctionWriter(
                     }
 
                     !parameter.hasDefault -> {
+                        needsDependencyContainer = true
                         if (parameter.type.classType.qualifiedName != "kotlin.${parameter.type.classType.simpleName}") {
                             additionalImports.add(parameter.type.classType.qualifiedName)
                         }
@@ -104,5 +114,7 @@ class DestinationContentFunctionWriter(
                 }
             }
         }
+
+        return arg to needsDependencyContainer
     }
 }
