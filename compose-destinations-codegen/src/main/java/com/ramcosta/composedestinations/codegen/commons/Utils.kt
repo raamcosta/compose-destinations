@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.codegen.commons
 
 import com.ramcosta.composedestinations.codegen.model.*
 import java.io.OutputStream
+import java.util.*
 
 operator fun OutputStream.plusAssign(str: String) {
     write(str.toByteArray())
@@ -79,3 +80,6 @@ fun String.removeInstancesOf(vararg toRemove: String): String {
     }
     return result
 }
+
+private val humps = "(?<=.)(?=\\p{Upper})".toRegex()
+fun String.toSnakeCase() = replace(humps, "_").lowercase(Locale.US)

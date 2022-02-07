@@ -37,10 +37,7 @@ class Processor(
             logger = kspLogger,
             codeGenerator = kspCodeOutputStreamMaker,
             core = resolver.getCoreType(),
-            codeGenConfig = CodeGenConfig(
-                generateNavGraphs = options["compose-destinations.generateNavGraphs"] != "false",
-                packageName = options["compose-destinations.codeGenPackageName"]?.trim()?.removeSuffix(".")
-            )
+            codeGenConfig = ConfigParser(options).parse()
         ).generate(destinations, navTypeSerializers)
 
         return emptyList()

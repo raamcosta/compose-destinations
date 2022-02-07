@@ -15,8 +15,6 @@ class KspToCodeGenDestinationsMapper(
     private val logger: KspLogger,
 ) : KSFileSourceMapper {
 
-    private val humps = "(?<=.)(?=\\p{Upper})".toRegex()
-
     private val defaultStyle by lazy {
         resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Default")!!
             .asType(emptyList())
@@ -204,6 +202,4 @@ class KspToCodeGenDestinationsMapper(
         }
         return typeAliasType
     }
-
-    private fun String.toSnakeCase() = replace(humps, "_").lowercase(Locale.US)
 }

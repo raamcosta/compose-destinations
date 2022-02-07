@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.generatedDestination
 
 const val NAV_GRAPHS_PLACEHOLDER = "[NAV_GRAPHS_PLACEHOLDER]"
 
@@ -12,7 +13,7 @@ import ${codeGenBasePackageName}.destinations.*$ADDITIONAL_IMPORTS
 
 /**
  * Class generated if any Composable is annotated with `@Destination`.
- * It aggregates all [$GENERATED_DESTINATION]s in their [$GENERATED_NAV_GRAPH]s.
+ * It aggregates all [$generatedDestination]s in their [$GENERATED_NAV_GRAPH]s.
  */
 object $GENERATED_NAV_GRAPHS_OBJECT {
 

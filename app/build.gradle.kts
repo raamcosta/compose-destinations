@@ -64,10 +64,23 @@ android {
         resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
     }
 
+    // Possible Compose Destinations configs:
 //    ksp {
-//        // To turn off navigation graphs generation:
-//        // (if you prefer creating NavGraph instances or you prefer using the normal NavHost)
-//        arg("compose-destinations.generateNavGraphs", "false")
+//        // Module name.
+//        // It will be used as the generated sealed Destinations prefix
+//        arg("compose-destinations.moduleName", "featureX")
+//
+//        // Can be:
+//        // - "destinations":
+//        // Generates the destinations and exposes a list with all of them. Doesn't generate any nav graphs
+//        //
+//        // - "navgraphs":
+//        // Generates destinations and nav graph(s) individually without nesting any of them
+//        //
+//        // - "singlemodule" (default):
+//        // Generates destinations and nav graphs nesting all graphs inside the default "root" one.
+//        // Also creates a CoreExtensions.kt file with useful utilities for a single module case.
+//        arg("compose-destinations.mode", "destinations")
 //
 //        // To change the package name where the generated files will be placed
 //        arg("compose-destinations.codeGenPackageName", "your.preferred.packagename")

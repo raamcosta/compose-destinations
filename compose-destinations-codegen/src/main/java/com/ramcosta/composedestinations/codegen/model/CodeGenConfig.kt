@@ -1,6 +1,11 @@
 package com.ramcosta.composedestinations.codegen.model
 
 data class CodeGenConfig(
-    val generateNavGraphs: Boolean,
-    val packageName: String?
+    val packageName: String?,
+    val moduleName: String?,
+    val mode: CodeGenMode,
 )
+
+enum class CodeGenMode {
+    NavGraphs, Destinations, SingleModule
+}

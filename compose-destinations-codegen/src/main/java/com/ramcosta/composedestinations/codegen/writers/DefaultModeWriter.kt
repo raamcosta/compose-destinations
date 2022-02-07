@@ -1,10 +1,7 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.GENERATED_NAV_GRAPH
-import com.ramcosta.composedestinations.codegen.commons.GENERATED_NAV_GRAPHS_OBJECT
-import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
-import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.ClassType
@@ -15,17 +12,14 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
 import java.io.OutputStream
 
-class NavGraphsObjectWriter(
+class DefaultModeWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
-    private val generateNavGraphs: Boolean,
 ) {
 
     private val additionalImports = mutableSetOf<String>()
 
     fun write(generatedDestinations: List<GeneratedDestination>): List<NavGraphGeneratingParams> {
-        if (!generateNavGraphs) return emptyList()
-
         val file: OutputStream = codeGenerator.makeFile(
             packageName = codeGenBasePackageName,
             name = GENERATED_NAV_GRAPHS_OBJECT,
@@ -128,22 +122,6 @@ class NavGraphsObjectWriter(
         return String(auxNavGraphRoute.toCharArray())
     }
 
-    private fun startingDestination(
-        navGraphRoute: String,
-        generatedDestinations: List<GeneratedDestination>
-    ): String {
-        val startingDestinations = generatedDestinations.filter { it.isStartDestination }
-        if (startingDestinations.isEmpty()) {
-            throw IllegalDestinationsSetup("Use argument `start = true` in the @Destination annotation of the '$navGraphRoute' nav graph's start destination!")
-        }
-
-        if (startingDestinations.size > 1) {
-            throw IllegalDestinationsSetup("Found ${startingDestinations.size} start destinations in '$navGraphRoute' nav graph, only one is allowed!")
-        }
-
-        return startingDestinations[0].simpleName
-    }
-
     private fun destinationsInsideList(destinations: List<GeneratedDestination>): String {
         val code = StringBuilder()
         destinations.forEachIndexed { i, it ->
@@ -170,14 +148,6 @@ class NavGraphsObjectWriter(
         }
 
         return code.toString()
-    }
-
-    private fun sourceIds(generatedDestinations: List<GeneratedDestination>): MutableList<String> {
-        val sourceIds = mutableListOf<String>()
-        generatedDestinations.forEach {
-            sourceIds.addAll(it.sourceIds)
-        }
-        return sourceIds
     }
 
     private fun List<GeneratedDestination>.mapToNavGraphs(): List<NavGraphGeneratingParams> {

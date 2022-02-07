@@ -2,6 +2,11 @@ package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.generatedDestination
+import com.ramcosta.composedestinations.codegen.generatedNoArgsDestination
+import com.ramcosta.composedestinations.codegen.moduleName
+
+val typeAliasDestination = "${moduleName}Destination"
 
 val sealedDestinationTemplate = """
 package $codeGenBasePackageName.destinations
@@ -12,20 +17,20 @@ import $CORE_PACKAGE_NAME.spec.DestinationSpec
 import $CORE_PACKAGE_NAME.spec.DirectionDestinationSpec
 
 /**
- * Handy typealias of [$GENERATED_DESTINATION] when you don't
+ * Handy typealias of [$generatedDestination] when you don't
  * care about the generic type (probably most cases for app's use)
  */
-typealias Destination = $GENERATED_DESTINATION<*>
+typealias $typeAliasDestination = $generatedDestination<*>
 
 /**
- * $GENERATED_DESTINATION is a sealed version of [$CORE_DESTINATION_SPEC]
+ * $generatedDestination is a sealed version of [$CORE_DESTINATION_SPEC]
  */
-sealed interface $GENERATED_DESTINATION<T>: $CORE_DESTINATION_SPEC<T>
+sealed interface $generatedDestination<T>: $CORE_DESTINATION_SPEC<T>
 
 /**
- * Interface for all $GENERATED_DESTINATION with no navigation arguments
+ * Interface for all $generatedDestination with no navigation arguments
  */
-sealed interface $GENERATED_NO_ARGS_DESTINATION: $GENERATED_DESTINATION<Unit>, DirectionDestinationSpec {
+sealed interface $generatedNoArgsDestination: $generatedDestination<Unit>, DirectionDestinationSpec {
     
     override fun argsFrom(navBackStackEntry: NavBackStackEntry) = Unit
 

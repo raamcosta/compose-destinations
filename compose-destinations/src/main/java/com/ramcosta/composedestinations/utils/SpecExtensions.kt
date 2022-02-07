@@ -1,9 +1,18 @@
 package com.ramcosta.composedestinations.utils
 
+import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Route
 
+
+/**
+ * Finds the destination correspondent to this [NavBackStackEntry] in [navGraph] and its nested nav graphs,
+ * null if none is found or if no route is set in this back stack entry's destination.
+ */
+fun NavBackStackEntry.destinationSpec(navGraph: NavGraphSpec): DestinationSpec<*>? {
+    return destination.route?.let { navGraph.findDestination(it) }
+}
 
 /**
  * If this [Route] is a [DestinationSpec], returns it
