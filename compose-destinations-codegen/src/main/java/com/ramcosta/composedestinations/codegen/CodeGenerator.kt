@@ -1,5 +1,9 @@
+@file:Suppress("ObjectPropertyName")
+
 package com.ramcosta.composedestinations.codegen
 
+import com.ramcosta.composedestinations.codegen.commons.CORE_DESTINATION_SPEC
+import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.NO_PREFIX_GENERATED_DESTINATION
 import com.ramcosta.composedestinations.codegen.commons.NO_PREFIX_GENERATED_NO_ARGS_DESTINATION
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
@@ -8,10 +12,13 @@ import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.servicelocator.*
 import java.util.*
 
+private var _generatedDestination: String? = null
+private var _generatedNoArgsDestination: String? = null
+
 internal lateinit var codeGenBasePackageName: String
 internal lateinit var moduleName: String
-internal lateinit var generatedDestination: String
-internal lateinit var generatedNoArgsDestination: String
+internal val codeGenDestination get() = _generatedDestination ?: CORE_DESTINATION_SPEC
+internal val codeGenNoArgsDestination get() = _generatedNoArgsDestination ?: CORE_DIRECTION_DESTINATION_SPEC
 
 class CodeGenerator(
     override val logger: Logger,
@@ -25,7 +32,8 @@ class CodeGenerator(
         navTypeSerializers: List<NavTypeSerializer>
     ) {
         initialValidator.validate(destinations)
-        initConfigurationValues(destinations)
+        val shouldWriteSealedDestinations = shouldWriteSealedDestinations(destinations)
+        initConfigurationValues(destinations, shouldWriteSealedDestinations)
 
         val destinationsWithNavArgs = destinationWithNavArgsMapper.map(destinations)
 
@@ -35,16 +43,13 @@ class CodeGenerator(
 
         val generatedNavGraphs = writeForMode(generatedDestinations)
 
-        if (codeGenConfig.mode == CodeGenMode.SingleModule)
+        if (codeGenConfig.mode == CodeGenMode.SingleModule) {
             coreExtensionsWriter.write(generatedNavGraphs)
-        sealedDestinationWriter.write()
-    }
+        }
 
-    private fun initConfigurationValues(destinations: List<DestinationGeneratingParams>) {
-        codeGenBasePackageName = codeGenConfig.packageName ?: destinations.getCommonPackageNamePart()
-        moduleName = codeGenConfig.moduleName?.replaceFirstChar { it.uppercase(Locale.US) } ?: ""
-        generatedDestination = moduleName + NO_PREFIX_GENERATED_DESTINATION
-        generatedNoArgsDestination = moduleName + NO_PREFIX_GENERATED_NO_ARGS_DESTINATION
+        if (shouldWriteSealedDestinations) {
+            sealedDestinationWriter.write()
+        }
     }
 
     private fun writeForMode(generatedDestinations: List<GeneratedDestination>): List<NavGraphGeneratingParams> {
@@ -61,6 +66,23 @@ class CodeGenerator(
 
             CodeGenMode.SingleModule -> defaultModeWriter.write(generatedDestinations)
         }
+    }
+
+    private fun initConfigurationValues(
+        destinations: List<DestinationGeneratingParams>,
+        shouldWriteSealedDestinations: Boolean
+    ) {
+        codeGenBasePackageName = codeGenConfig.packageName ?: destinations.getCommonPackageNamePart()
+        moduleName = codeGenConfig.moduleName?.replaceFirstChar { it.uppercase(Locale.US) } ?: ""
+
+        if (shouldWriteSealedDestinations) {
+            _generatedDestination = moduleName + NO_PREFIX_GENERATED_DESTINATION
+            _generatedNoArgsDestination = moduleName + NO_PREFIX_GENERATED_NO_ARGS_DESTINATION
+        }
+    }
+
+    private fun shouldWriteSealedDestinations(destinations: List<DestinationGeneratingParams>): Boolean {
+        return codeGenConfig.mode == CodeGenMode.SingleModule || destinations.size > 1
     }
 
     private fun List<DestinationGeneratingParams>.getCommonPackageNamePart(): String {

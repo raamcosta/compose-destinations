@@ -4,8 +4,8 @@ import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.generatedDestination
-import com.ramcosta.composedestinations.codegen.generatedNoArgsDestination
+import com.ramcosta.composedestinations.codegen.codeGenDestination
+import com.ramcosta.composedestinations.codegen.codeGenNoArgsDestination
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFunctionWriter
@@ -69,13 +69,13 @@ class SingleDestinationWriter(
 
     private fun String.replaceSuperclassDestination(): String {
         if (navArgs.isEmpty()) {
-            return replace(SUPERTYPE, generatedNoArgsDestination)
+            return replace(SUPERTYPE, codeGenNoArgsDestination)
         }
 
         val superType = if (destination.navArgsDelegateType != null) {
-            "${generatedDestination}<${destination.navArgsDelegateType.simpleName}>"
+            "${codeGenDestination}<${destination.navArgsDelegateType.simpleName}>"
         } else {
-            "${generatedDestination}<${destination.name}.NavArgs>"
+            "${codeGenDestination}<${destination.name}.NavArgs>"
         }
 
         return replace(SUPERTYPE, superType)
