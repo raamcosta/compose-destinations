@@ -5,12 +5,6 @@ plugins {
 }
 
 android {
-    plugins.withId("com.vanniktech.maven.publish") {
-        mavenPublish {
-            sonatypeHost = com.vanniktech.maven.publish.SonatypeHost.S01
-        }
-    }
-
     compileSdk = Versions.compileSdk
 
     defaultConfig {
@@ -51,4 +45,8 @@ dependencies {
     with(Deps.Compose) {
         api(navigation)
     }
+}
+
+mavenPublish {
+    releaseSigningEnabled = false
 }

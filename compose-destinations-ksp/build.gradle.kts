@@ -1,14 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("com.vanniktech.maven.publish")
-}
-
-java {
-    plugins.withId("com.vanniktech.maven.publish") {
-        mavenPublish {
-            sonatypeHost = com.vanniktech.maven.publish.SonatypeHost.S01
-        }
-    }
+    id("maven-publish")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
@@ -20,4 +12,15 @@ dependencies {
 
     implementation(Deps.Ksp.api)
     implementation(Deps.Test.junit)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            groupId = "com.github.raamcosta.compose-destinations"
+            artifactId = "ksp"
+
+            from(components["java"])
+        }
+    }
 }
