@@ -2,7 +2,7 @@ package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
-import com.ramcosta.composedestinations.codegen.generatedDestination
+import com.ramcosta.composedestinations.codegen.codeGenDestination
 
 const val START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR = "[START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR]"
 const val END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR = "[END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR]"
@@ -21,7 +21,7 @@ import $CORE_PACKAGE_NAME.utils.destinationSpec$ADDITIONAL_IMPORTS
 
 /**
  * Realization of [$CORE_NAV_GRAPH_SPEC] for the app.
- * It uses [$generatedDestination] instead of [$CORE_DESTINATION_SPEC].
+ * It uses [$codeGenDestination] instead of [$CORE_DESTINATION_SPEC].
  * 
  * @see [$CORE_NAV_GRAPH_SPEC]
  */
