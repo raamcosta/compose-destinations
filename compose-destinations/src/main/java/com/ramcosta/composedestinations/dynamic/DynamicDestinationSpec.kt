@@ -4,6 +4,9 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 
+/**
+ * TODO racosta
+ */
 interface DynamicDestinationSpec<T> : DestinationSpec<T> {
     val delegate: DestinationSpec<T>
 }

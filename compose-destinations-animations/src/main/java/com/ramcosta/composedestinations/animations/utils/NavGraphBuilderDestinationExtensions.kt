@@ -26,7 +26,7 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
  * in build.gradle:
  * ```
  * ksp {
- *     arg("compose-destinations.generateNavGraphs", "false")
+ *     arg("compose-destinations.mode", "destinations")
  * }
  * ```
  */

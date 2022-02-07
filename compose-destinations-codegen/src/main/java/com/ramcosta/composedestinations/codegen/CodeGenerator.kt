@@ -35,7 +35,8 @@ class CodeGenerator(
 
         val generatedNavGraphs = writeForMode(generatedDestinations)
 
-        coreExtensionsWriter.write(generatedNavGraphs)
+        if (codeGenConfig.mode == CodeGenMode.SingleModule)
+            coreExtensionsWriter.write(generatedNavGraphs)
         sealedDestinationWriter.write()
     }
 

@@ -18,6 +18,9 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  */
 interface DestinationScope<T> {
 
+    /**
+     * [DestinationSpec] related to this scope
+     */
     val destination: DestinationSpec<T>
 
     /**

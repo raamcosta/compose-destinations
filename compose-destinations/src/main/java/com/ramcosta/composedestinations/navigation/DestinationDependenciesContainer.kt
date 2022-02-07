@@ -10,18 +10,12 @@ import kotlin.reflect.KClass
  * which lets you add dependencies to it.
  *
  * Each dependency added is associated with a given class (reified in [dependency]). The calling
- * `Destination` can then declare arguments of those class types.
+ * `Destination` can then declare arguments of those class types or super types.
  */
 sealed interface DependenciesContainerBuilder<T>: DestinationScope<T>
 
 /**
- * Adds [dependency] to this container builder. By default it will be associated with
- * its declared class, but you can force a super class explicitly like this:
- *
- * ```
- * val someComponentImplementation: SomeComponentImplementation = ...
- * builder.dependency<SomeComponentInterface>(someComponentImplementation)
- * ```
+ * Adds [dependency] to this container builder.
  */
 inline fun <reified D: Any, T> DependenciesContainerBuilder<T>.dependency(dependency: D) {
     (this as DestinationDependenciesContainer<*>).dependency(dependency, asType = D::class)
@@ -29,7 +23,7 @@ inline fun <reified D: Any, T> DependenciesContainerBuilder<T>.dependency(depend
 
 /**
  * Container of all dependencies that can be used in a certain `Destination` Composable.
- * You can use generated `DestinationsNavHost` to add dependencies to it via
+ * You can use `DestinationsNavHost` to add dependencies to it via
  * [DependenciesContainerBuilder.dependency]
  */
 class DestinationDependenciesContainer<T>(
