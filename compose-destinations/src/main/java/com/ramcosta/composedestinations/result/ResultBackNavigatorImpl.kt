@@ -17,10 +17,17 @@ class ResultBackNavigatorImpl<R>(
     private val resultKey = resultKey(resultOriginType, resultType)
 
     override fun navigateBack(result: R) {
+        setResult(result)
+        navigateBack()
+    }
+
+    override fun setResult(result: R) {
         navController.previousBackStackEntry
             ?.savedStateHandle
             ?.set(resultKey, result)
+    }
 
+    override fun navigateBack() {
         navController.navigateUp()
     }
 }

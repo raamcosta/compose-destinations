@@ -34,6 +34,25 @@ interface ResultBackNavigator<R> {
      * how to get the result.
      */
     fun navigateBack(result: R)
+
+    /**
+     * Sets a [result] to be sent on the next [navigateBack] call.
+     *
+     * Check [com.ramcosta.composedestinations.result.ResultRecipient] to see
+     * how to get the result.
+     *
+     * If multiple calls are done, the last one will be the result sent back.
+     * This also applies if you call [navigateBack] (with result) after calling this.
+     */
+    fun setResult(result: R)
+
+    /**
+     * Goes back to previous destination sending the last result set with [setResult]
+     * or just navigating if no result was set..
+     *
+     * It uses [NavController.navigateUp] internally to go back.
+     */
+    fun navigateBack()
 }
 
 /**
