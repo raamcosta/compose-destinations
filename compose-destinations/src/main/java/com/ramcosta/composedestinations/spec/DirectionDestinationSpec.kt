@@ -4,7 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavBackStackEntry
 
 /**
- * TODO racosta
+ * [DestinationSpec] that does not contain any navigation arguments.
+ * It itself is a [Direction]
  */
 interface DirectionDestinationSpec: DestinationSpec<Unit>, Direction {
 

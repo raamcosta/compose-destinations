@@ -12,19 +12,18 @@ import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.Route
 
-/**TODO racosta
+/**
  * Like [androidx.navigation.compose.NavHost] but includes the destinations of [navGraph].
  * Composables annotated with `@Destination` will belong to a [NavGraphSpec] inside `NavGraphs`
  * generated file. You can also disable the `NavGraphs` automatic generation in build.gradle:
  * ```
  * ksp {
- *     arg("compose-destinations.generateNavGraphs", "false")
+ *     arg("compose-destinations.mode", "destinations")
  * }
  * ```
  * This might be useful if you need more complex `NavGraphs` then what the usage of the annotation
- * can provide. If you do this, it is advisable that you create your `NavGraphs` in a central and
- * stateless object, so that you can make queries to it more easily.
- *
+ * can provide. If you do this, it is advisable that you create your `NavGraphs` file with your
+ * navigation graphs in the form of [NavGraphSpec] implementations.
  *
  * @param navGraph [NavGraphSpec] to use the [DestinationSpec]s from and register the navigation graph.
  *
@@ -44,10 +43,16 @@ import com.ramcosta.composedestinations.spec.Route
  * or, if you're using animation feature, from [com.google.accompanist.navigation.animation.rememberAnimatedNavController].
  * Alternatively, you can also use [NavHostEngine.rememberNavController] that will internally call the correct remember function.
  *
+ * @param dependenciesContainerBuilder offers a [DependenciesContainerBuilder] where you can add
+ * dependencies by their class via [com.ramcosta.composedestinations.navigation.dependency].
+ * The lambda will be called when a Composable screen gets navigated to and
+ * [DependenciesContainerBuilder] also implements [com.ramcosta.composedestinations.manualcomposablecalls.DestinationScope]
+ * so you can access all information about what [DestinationSpec] is being navigated to.
+ *
  * @param manualComposableCallsBuilder this will offer a [ManualComposableCallsBuilder] scope where you can
  * make manual calls to specific [DestinationSpec] Composables which belong to this [navGraph].
- * This can be useful if you need to pass non-navigation arguments to those specific Composables which
- * the library cannot provide.
+ * This can be useful if you have some specific case where you want to pass something to a specific screen
+ * that would not work (Compose runtime related classes f.e) or would be awkward with [dependenciesContainerBuilder].
  */
 @Composable
 fun DestinationsNavHost(
