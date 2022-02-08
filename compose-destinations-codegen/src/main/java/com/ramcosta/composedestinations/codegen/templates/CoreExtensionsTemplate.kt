@@ -14,8 +14,7 @@ package $codeGenBasePackageName
 
 import androidx.navigation.NavBackStackEntry
 import $codeGenBasePackageName.destinations.*
-import $CORE_PACKAGE_NAME.spec.NavGraphSpec
-import $CORE_PACKAGE_NAME.spec.Route
+import $CORE_PACKAGE_NAME.spec.*
 import $CORE_PACKAGE_NAME.utils.startDestinationSpec
 import $CORE_PACKAGE_NAME.utils.destinationSpec$ADDITIONAL_IMPORTS
 

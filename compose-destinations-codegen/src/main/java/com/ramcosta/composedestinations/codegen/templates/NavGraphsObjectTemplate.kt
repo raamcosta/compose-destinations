@@ -9,7 +9,8 @@ const val NAV_GRAPHS_PLACEHOLDER = "[NAV_GRAPHS_PLACEHOLDER]"
 val navGraphsObjectTemplate = """
 package $codeGenBasePackageName
 
-import ${codeGenBasePackageName}.destinations.*$ADDITIONAL_IMPORTS
+import ${codeGenBasePackageName}.destinations.*
+import $CORE_PACKAGE_NAME.spec.*$ADDITIONAL_IMPORTS
 
 /**
  * Class generated if any Composable is annotated with `@Destination`.
