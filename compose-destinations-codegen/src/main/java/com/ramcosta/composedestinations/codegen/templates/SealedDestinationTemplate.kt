@@ -13,8 +13,7 @@ package $codeGenBasePackageName.destinations
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavBackStackEntry
-import $CORE_PACKAGE_NAME.spec.DestinationSpec
-import $CORE_PACKAGE_NAME.spec.$CORE_DIRECTION_DESTINATION_SPEC
+import $CORE_PACKAGE_NAME.spec.*
 
 /**
  * Handy typealias of [$codeGenDestination] when you don't
