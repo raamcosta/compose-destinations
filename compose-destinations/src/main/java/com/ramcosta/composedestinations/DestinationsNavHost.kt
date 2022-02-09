@@ -18,7 +18,7 @@ import com.ramcosta.composedestinations.spec.Route
  * generated file. You can also disable the `NavGraphs` automatic generation in build.gradle:
  * ```
  * ksp {
- *     arg("compose-destinations.mode", "destinations")
+ *     arg("compose-destinations.generateNavGraphs", "false")
  * }
  * ```
  * This might be useful if you need more complex `NavGraphs` then what the usage of the annotation

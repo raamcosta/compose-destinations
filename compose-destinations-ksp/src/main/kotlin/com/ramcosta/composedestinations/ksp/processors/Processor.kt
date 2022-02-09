@@ -37,7 +37,7 @@ class Processor(
             logger = kspLogger,
             codeGenerator = kspCodeOutputStreamMaker,
             core = resolver.getCoreType(),
-            codeGenConfig = ConfigParser(options).parse()
+            codeGenConfig = ConfigParser(logger, options).parse()
         ).generate(destinations, navTypeSerializers)
 
         return emptyList()

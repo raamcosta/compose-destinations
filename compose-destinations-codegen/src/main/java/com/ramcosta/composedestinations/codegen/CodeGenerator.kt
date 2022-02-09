@@ -43,7 +43,7 @@ class CodeGenerator(
 
         val generatedNavGraphs = writeForMode(generatedDestinations)
 
-        if (codeGenConfig.mode == CodeGenMode.SingleModule) {
+        if (codeGenConfig.mode is CodeGenMode.SingleModule) {
             coreExtensionsWriter.write(generatedNavGraphs)
         }
 
@@ -54,17 +54,25 @@ class CodeGenerator(
 
     private fun writeForMode(generatedDestinations: List<GeneratedDestination>): List<NavGraphGeneratingParams> {
         return when (codeGenConfig.mode) {
-            CodeGenMode.NavGraphs -> {
+            is CodeGenMode.NavGraphs -> {
                 navGraphsModeWriter.write(generatedDestinations)
                 emptyList()
             }
 
-            CodeGenMode.Destinations -> {
+            is CodeGenMode.Destinations -> {
                 destinationsModeWriter.write(generatedDestinations)
                 emptyList()
             }
 
-            CodeGenMode.SingleModule -> defaultModeWriter.write(generatedDestinations)
+            is CodeGenMode.SingleModule -> {
+                if (codeGenConfig.mode.generateNavGraphs) {
+                    navGraphsSingleObjectWriter.write(generatedDestinations)
+                } else {
+                    // We fallback to just generate a list of all destinations
+                    destinationsModeWriter.write(generatedDestinations)
+                    emptyList()
+                }
+            }
         }
     }
 
@@ -82,7 +90,7 @@ class CodeGenerator(
     }
 
     private fun shouldWriteSealedDestinations(destinations: List<DestinationGeneratingParams>): Boolean {
-        return codeGenConfig.mode == CodeGenMode.SingleModule || destinations.size > 1
+        return codeGenConfig.mode is CodeGenMode.SingleModule || destinations.size > 1
     }
 
     private fun List<DestinationGeneratingParams>.getCommonPackageNamePart(): String {

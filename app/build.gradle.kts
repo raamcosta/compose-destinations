@@ -81,6 +81,8 @@ android {
 //        // Generates destinations and nav graphs nesting all graphs inside the default "root" one.
 //        // Also creates a CoreExtensions.kt file with useful utilities for a single module case.
 //        arg("compose-destinations.mode", "destinations")
+//        // If you have a single module but you want to manually create the nav graphs, use this:
+//        arg("compose-destinations.generateNavGraphs", "false")
 //
 //        // To change the package name where the generated files will be placed
 //        arg("compose-destinations.codeGenPackageName", "your.preferred.packagename")

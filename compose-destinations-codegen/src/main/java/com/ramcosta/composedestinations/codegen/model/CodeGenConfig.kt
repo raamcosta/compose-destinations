@@ -6,6 +6,8 @@ data class CodeGenConfig(
     val mode: CodeGenMode,
 )
 
-enum class CodeGenMode {
-    NavGraphs, Destinations, SingleModule
+sealed class CodeGenMode {
+    object NavGraphs: CodeGenMode()
+    object Destinations: CodeGenMode()
+    class SingleModule(val generateNavGraphs: Boolean): CodeGenMode()
 }

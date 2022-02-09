@@ -28,7 +28,7 @@ internal val ServiceLocatorAccessor.destinationsWriter get() = DestinationsWrite
     NavArgResolver()
 )
 
-internal val ServiceLocatorAccessor.defaultModeWriter get() = DefaultModeWriter(
+internal val ServiceLocatorAccessor.navGraphsSingleObjectWriter get() = NavGraphsSingleObjectWriter(
     codeGenerator,
     logger,
 )

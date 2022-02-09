@@ -12,7 +12,7 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
 import java.io.OutputStream
 
-class DefaultModeWriter(
+class NavGraphsSingleObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
 ) {

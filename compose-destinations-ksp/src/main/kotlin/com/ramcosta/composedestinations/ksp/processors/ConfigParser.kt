@@ -2,10 +2,12 @@
 
 package com.ramcosta.composedestinations.ksp.processors
 
+import com.google.devtools.ksp.processing.KSPLogger
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CodeGenMode
 
 class ConfigParser(
+    private val logger: KSPLogger,
     private val options: Map<String, String>
 ) {
 
@@ -13,8 +15,9 @@ class ConfigParser(
         private const val PREFIX = "compose-destinations"
 
         // Configs
-        private const val MODULE_NAME = "$PREFIX.moduleName"
+        private const val GEN_NAV_GRAPHS = "$PREFIX.generateNavGraphs"
         private const val GEN_PACKAGE_NAME = "$PREFIX.codeGenPackageName"
+        private const val MODULE_NAME = "$PREFIX.moduleName"
         private const val MODE = "$PREFIX.mode"
 
         // Mode options
@@ -38,22 +41,53 @@ class ConfigParser(
     private fun parseMode(key: String): CodeGenMode {
         val option = options[key]
 
-        if (option != null) {
+        return if (option != null) {
             return when (option) {
-                MODE_DESTINATIONS -> CodeGenMode.Destinations
+                MODE_DESTINATIONS -> {
+                    parseGenNavGraphsObjectConfig(false)
+                    CodeGenMode.Destinations
+                }
 
-                MODE_NAV_GRAPHS -> CodeGenMode.NavGraphs
+                MODE_NAV_GRAPHS -> {
+                    parseGenNavGraphsObjectConfig(false)
+                    CodeGenMode.NavGraphs
+                }
 
-                MODE_SINGLE_MODULE -> CodeGenMode.SingleModule
+                MODE_SINGLE_MODULE -> singleModuleMode()
 
-                else -> throw WrongConfigurationSetup(message = "$key has wrong value! It has to be one of: " +
+                else -> throw WrongConfigurationSetup(
+                    message = "$key has wrong value! It has to be one of: " +
                             "'$MODE_NAV_GRAPHS', '$MODE_DESTINATIONS', '$MODE_SINGLE_MODULE'"
                 )
             }
+        } else {
+            singleModuleMode()
+        }
+    }
+
+    private fun singleModuleMode(): CodeGenMode.SingleModule {
+        return CodeGenMode.SingleModule(parseGenNavGraphsObjectConfig(true) ?: true)
+    }
+
+    private fun parseGenNavGraphsObjectConfig(isSingleModuleMode: Boolean): Boolean? {
+        var generateNavGraphs = parseBoolean(GEN_NAV_GRAPHS)
+        if (generateNavGraphs != null && !isSingleModuleMode) {
+            logger.warn("$GEN_NAV_GRAPHS was set but mode is ${options[MODE]}, so it will be ignored. " +
+                    "$GEN_NAV_GRAPHS is only meant for the default mode $MODE_SINGLE_MODULE!")
+            generateNavGraphs = null
         }
 
-        return CodeGenMode.SingleModule
+        return generateNavGraphs
+    }
+
+    private fun parseBoolean(key: String): Boolean? {
+        return options[key]?.runCatching {
+            toBooleanStrict()
+        }?.getOrElse {
+            throw WrongConfigurationSetup("$GEN_NAV_GRAPHS must be a boolean value!", cause = it)
+        }
     }
 }
 
-class WrongConfigurationSetup(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
+class WrongConfigurationSetup(message: String, cause: Throwable? = null) :
+    RuntimeException(message, cause)
