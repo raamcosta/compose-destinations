@@ -34,7 +34,8 @@ class InitialValidator(
     }
 
     private fun DestinationGeneratingParams.warnIgnoredAnnotationArguments() {
-        if (codeGenConfig.mode == CodeGenMode.Destinations) {
+        if (codeGenConfig.mode == CodeGenMode.Destinations
+            || (codeGenConfig.mode is CodeGenMode.SingleModule && !codeGenConfig.mode.generateNavGraphs)) {
             if (navGraphRoute != "root") {
                 logger.warn(
                     "'${composableName}' composable: a navGraph was set but it will be ignored. " +

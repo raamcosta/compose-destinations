@@ -9,5 +9,5 @@ import androidx.navigation.NavType
  */
 abstract class DestinationsNavType<T: Parcelable?>: NavType<T>(true) {
 
-    abstract fun serializeValue(value: Parcelable, isMandatoryArg: Boolean): String
+    abstract fun serializeValue(value: Parcelable): String
 }

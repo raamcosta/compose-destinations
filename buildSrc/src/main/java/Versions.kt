@@ -18,10 +18,10 @@ object Versions {
 
     const val junit = "4.13.2"
 
-    const val compose = "1.1.0-rc03"
+    const val compose = "1.1.0"
     const val composeCompiler = compose
-    const val composeNavigation = "2.4.0"
-    const val accompanist = "0.22.0-rc"
+    const val composeNavigation = "2.4.1"
+    const val accompanist = "0.23.0"
 }
 
 object Deps {

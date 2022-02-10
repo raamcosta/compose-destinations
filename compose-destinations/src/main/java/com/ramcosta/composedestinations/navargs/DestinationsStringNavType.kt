@@ -26,7 +26,7 @@ object DestinationsStringNavType : NavType<String?>(true) {
         }
     }
 
-    fun serializeValue(value: String?, isMandatoryArg: Boolean): String? {
+    fun serializeValue(value: String?): String? {
         if (value == null) {
             return null
         }
@@ -35,6 +35,6 @@ object DestinationsStringNavType : NavType<String?>(true) {
             return ENCODED_EMPTY_STRING
         }
 
-        return encodeForRoute(value, isMandatoryArg)
+        return encodeForRoute(value)
     }
 }

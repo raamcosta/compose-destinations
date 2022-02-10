@@ -38,8 +38,8 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         return stringSerializer.fromRouteString(value, ${CLASS_SIMPLE_NAME_CAMEL_CASE}::class.java)$PARSE_VALUE_CAST_TO_CLASS
     }
 
-    override fun serializeValue(value: Parcelable, isMandatoryArg: Boolean): String {
-        return encodeForRoute(stringSerializer.toRouteString(value$SERIALIZE_VALUE_CAST_TO_CLASS), isMandatoryArg)
+    override fun serializeValue(value: Parcelable): String {
+        return encodeForRoute(stringSerializer.toRouteString(value$SERIALIZE_VALUE_CAST_TO_CLASS))
     }
 }
 """.trimIndent()
@@ -71,8 +71,8 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         return stringSerializer.fromRouteString(value)$PARSE_VALUE_CAST_TO_CLASS
     }
 
-    override fun serializeValue(value: Serializable, isMandatoryArg: Boolean): String {
-        return encodeForRoute(stringSerializer.toRouteString(value$SERIALIZE_VALUE_CAST_TO_CLASS), isMandatoryArg)
+    override fun serializeValue(value: Serializable): String {
+        return encodeForRoute(stringSerializer.toRouteString(value$SERIALIZE_VALUE_CAST_TO_CLASS))
     }
 }
 """.trimIndent()
