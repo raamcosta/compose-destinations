@@ -5,6 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.ramcosta.composedestinations.utils.base64ToByteArray
 import com.ramcosta.composedestinations.utils.toBase64Str
+import java.lang.reflect.Modifier
 
 /**
  * Default [ParcelableNavTypeSerializer] which converts the parcelable to Base64 strings
@@ -17,11 +18,21 @@ import com.ramcosta.composedestinations.utils.toBase64Str
 class DefaultParcelableNavTypeSerializer : ParcelableNavTypeSerializer<Parcelable> {
 
     override fun toRouteString(value: Parcelable): String {
-        return value.toBase64()
+        return value.javaClass.name + "@" + value.toBase64()
     }
 
     override fun fromRouteString(routeStr: String, jClass: Class<out Parcelable>): Parcelable {
-        return base64ToParcelable(routeStr, jClass)
+        val (className, base64) = routeStr.split("@").let { it[0] to it[1] }
+
+        val creator = if (jClass.isFinal) {
+            // Since we have this, small optimization to avoid additional reflection call of Class.forName
+            jClass.parcelableCreator
+        } else {
+            // If our class is not final, then we must use the actual class from "className"
+            parcelableClassForName(className).parcelableCreator
+        }
+
+        return base64ToParcelable(base64, creator)
     }
 
     private fun Parcelable.toBase64(): String {
@@ -33,10 +44,10 @@ class DefaultParcelableNavTypeSerializer : ParcelableNavTypeSerializer<Parcelabl
         return bytes.toBase64Str()
     }
 
-    private fun <T> base64ToParcelable(base64: String, jClass: Class<T>): T {
+    private fun <T> base64ToParcelable(base64: String, creator: Parcelable.Creator<T>): T {
         val bytes = base64.base64ToByteArray()
         val parcel = unmarshall(bytes)
-        val result = jClass.parcelableCreator.createFromParcel(parcel)
+        val result = creator.createFromParcel(parcel)
         parcel.recycle()
         return result
     }
@@ -60,4 +71,12 @@ class DefaultParcelableNavTypeSerializer : ParcelableNavTypeSerializer<Parcelabl
                 throw BadParcelableException(t.message)
             }
         }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun parcelableClassForName(className: String): Class<out Parcelable> {
+        return Class.forName(className) as Class<out Parcelable>
+    }
+
+    private val Class<out Parcelable>.isFinal get() =
+        !isInterface && Modifier.isFinal(modifiers)
 }

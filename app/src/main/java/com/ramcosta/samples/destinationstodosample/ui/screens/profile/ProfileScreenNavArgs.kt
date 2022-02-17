@@ -13,7 +13,7 @@ data class ProfileScreenNavArgs(
     val id: Long,
     val stuff: Stuff = Stuff.STUFF1,
     val groupName: String = DEFAULT_GROUP,
-    val things: Things?,
+    val things: ArgumentThings?,
     val serializableExample: SerializableExample? = null
 )
 
@@ -22,11 +22,13 @@ enum class Stuff {
     STUFF2
 }
 
+interface ArgumentThings: Parcelable
+
 @Parcelize
 data class Things(
     val thing1: String = "QWEQWEQWE",
     val thing2: String = "ASDASDASD"
-) : Parcelable
+) : ArgumentThings
 
 data class SerializableExample(
     val thing1: String = "SERIALIZABLE/11/1",

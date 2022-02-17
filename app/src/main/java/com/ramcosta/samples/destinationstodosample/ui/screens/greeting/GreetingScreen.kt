@@ -21,6 +21,7 @@ import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToP
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.TestScreenDestination
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Stuff
+import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Things
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -46,6 +47,7 @@ fun GreetingScreen(
                     id = 3,
                     groupName = "%02%03",
                     stuff = Stuff.STUFF2,
+                    things = Things()
                 )
             )
         }
