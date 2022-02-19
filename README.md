@@ -7,7 +7,9 @@
    <img height="250" src="https://user-images.githubusercontent.com/80427734/147891822-5cd34c80-8dca-4d34-8278-2aa3bf36913f.png"/> 
 </p>
 
-<h1 align="center"> Compose Destinations </h1>
+<h1 align="center"> 
+   <a href="https://composedestinations.rafaelcosta.xyz">Compose Destinations</a>
+</h1>
 
 A KSP library that processes annotations and generates code that uses Official Jetpack Compose Navigation under the hood. It hides the complex, non-type-safe and boilerplate code you would have to write otherwise. </br>
 No need to learn a whole new framework to navigate - most APIs are either the same as with the Jetpack Components or inspired by them.
@@ -22,7 +24,7 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
     - Easy deep linking to screens
     - All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
 
-For a deeper look into all the features, check our [wiki](https://github.com/raamcosta/compose-destinations/wiki).
+For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
 
 ## Usage
 
@@ -48,7 +50,7 @@ fun ProfileScreen(
 ```
 
 > There is an alternative way to define the destination arguments in case you don't need to use them
-inside the Composable (as is likely the case when using ViewModel). Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Destination-arguments#navigation-arguments-class-delegate).
+inside the Composable (as is likely the case when using ViewModel). Read more [here](https://composedestinations.rafaelcosta.xyz/destination-arguments/navigation-arguments#navigation-arguments-class-delegate).
 
 3. Build the project (or `./gradlew kspDebugKotlin`, which should be faster) to generate
    all the Destinations. With the above annotated composable, a `ProfileScreenDestination` file (that we'll use in step 4) would be generated.
@@ -66,7 +68,7 @@ fun SomeOtherScreen(
    navigator.navigate(ProfileScreenDestination(id = 7, groupName = "Kotlin programmers"))
 }
 ```
-> DestinationsNavigator is a wrapper interface to NavController that if declared as a parameter, will be provided for free by the library. NavController can also be provided in the exact same way, but it ties your composables to a specific implementation which will make it harder to test and preview. Read more [here](https://github.com/raamcosta/compose-destinations/wiki/Navigation)
+> DestinationsNavigator is a wrapper interface to NavController that if declared as a parameter, will be provided for free by the library. NavController can also be provided in the exact same way, but it ties your composables to a specific implementation which will make it harder to test and preview. Read more [here](https://composedestinations.rafaelcosta.xyz/navigation/basics#destinationsnavigator-vs-navcontroller)
 
 5. Finally, add the NavHost call:
 
@@ -137,7 +139,7 @@ ksp("io.github.raamcosta.compose-destinations:ksp:1.3.1-beta")
 > If you want to use animations between screens and/or bottom sheet screens, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
 > this will use [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation) and [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
-> Read more about the next steps to configure these features [here](https://github.com/raamcosta/compose-destinations/wiki/Styles-and-Animations)
+> Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/styles-and-animations)
 
 
 #### 3. And finally, you need to make sure the IDE looks at the generated folder.
