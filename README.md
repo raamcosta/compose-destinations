@@ -160,12 +160,13 @@ kotlin {
 }
 ```
 
-## Current state
+## About
 
 The library is now in its beta stage, which means that I am happy
 with the core feature set. If the APIs change, I will provide a migration path.
 Please do try it and open issues if you find any.
-If you're interested in contributing, I can give you a general overview of how the code works.
-It is much simpler than what it might look like at first glance.
+If you're interested in contributing, reach out via [twitter DM](https://twitter.com/raamcosta).
 
-Any feedback and contributions are highly appreciated! 🙏
+Any feedback and contributions are highly appreciated!
+
+**If you like the library, consider starring and sharing it with your colleagues.**
