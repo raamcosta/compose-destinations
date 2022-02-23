@@ -2,10 +2,7 @@
 
 package com.ramcosta.composedestinations.codegen
 
-import com.ramcosta.composedestinations.codegen.commons.CORE_DESTINATION_SPEC
-import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_DESTINATION_SPEC
-import com.ramcosta.composedestinations.codegen.commons.NO_PREFIX_GENERATED_DESTINATION
-import com.ramcosta.composedestinations.codegen.commons.NO_PREFIX_GENERATED_NO_ARGS_DESTINATION
+import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
@@ -111,5 +108,14 @@ class CodeGenerator(
         }
 
         return currentCommonPackageName.removeSuffix(".")
+            .ifEmpty {
+                throw UnexpectedException(
+                    """Unable to get package name for module. Please specify a package name to use in the module's build.gradle file with:"
+                    ksp {
+                        arg("compose-destinations.codeGenPackageName", "your.preferred.package.name")
+                    }
+                    And report this issue (with steps to reproduce) if possible. 
+                """.trimIndent())
+            }
     }
 }

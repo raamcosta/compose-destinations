@@ -1,44 +1,52 @@
 package com.ramcosta.samples.destinationstodosample.commons.composables
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
+import androidx.annotation.StringRes
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import com.ramcosta.samples.destinationstodosample.commons.title
+import com.ramcosta.composedestinations.spec.Direction
+import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
+import com.ramcosta.samples.destinationstodosample.R
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.Destination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.FeedDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GreetingScreenDestination
+
+enum class BottomBarDestination(
+    val direction: DirectionDestinationSpec,
+    val icon: ImageVector,
+    @StringRes val label: Int
+) {
+    Greeting(GreetingScreenDestination, Icons.Default.Home, R.string.greeting_screen),
+    Feed(FeedDestination, Icons.Default.Email, R.string.feed_screen),
+}
 
 @Composable
 fun BottomBar(
-    destination: Destination,
-    navigateUp: () -> Unit
+    currentDestination: Destination,
+    onBottomBarItemClick: (Direction) -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .background(MaterialTheme.colors.primary),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Button(
-            onClick = navigateUp
-        ) {
-            Text("Navigate Up")
+    BottomNavigation {
+        BottomBarDestination.values().forEach { destination ->
+            BottomNavigationItem(
+                icon = {
+                    Icon(destination.icon, contentDescription = stringResource(destination.label))
+                },
+                label = {
+                    Text(stringResource(destination.label))
+                },
+                alwaysShowLabel = false,
+                selected = currentDestination == destination.direction,
+                onClick = {
+                    onBottomBarItemClick(destination.direction)
+                },
+            )
         }
-
-        Text(
-            text = destination.title?.let { stringResource(it) } ?: "",
-            color = Color.White
-        )
     }
 }

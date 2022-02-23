@@ -38,8 +38,12 @@ fun DestinationsSampleApp() {
             },
             bottomBar = { destination ->
                 BottomBar(
-                    destination = destination,
-                    navigateUp = { navController.navigateUp() }
+                    currentDestination = destination,
+                    onBottomBarItemClick = {
+                        navController.navigateTo(it) {
+                            launchSingleTop = true
+                        }
+                    }
                 )
             },
             drawerContent = { destination ->
