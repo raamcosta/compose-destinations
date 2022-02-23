@@ -16,7 +16,8 @@ class DestinationContentFunctionWriter(
         val (args, needsDependencyContainer) = prepareArguments()
         if (needsDependencyContainer) {
             additionalImports.add("androidx.compose.runtime.remember")
-            functionCallCode += "\t\tval dependencyContainer = remember { DestinationDependenciesContainer(this).apply { dependenciesContainerBuilder() } }\n"
+            functionCallCode += "\t\tval dependencyContainer = remember { DestinationDependenciesContainer(this) }\n"
+            functionCallCode += "\t\tdependencyContainer.apply { dependenciesContainerBuilder() }\n\n"
         }
 
         if (navArgs.isNotEmpty() && destination.navArgsDelegateType == null) {

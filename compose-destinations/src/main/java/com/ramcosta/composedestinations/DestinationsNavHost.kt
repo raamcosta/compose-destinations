@@ -61,7 +61,7 @@ fun DestinationsNavHost(
     startRoute: Route = navGraph.startRoute,
     engine: NavHostEngine = rememberNavHostEngine(),
     navController: NavHostController = engine.rememberNavController(),
-    dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit = {},
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit = {},
     manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit = {}
 ) {
     engine.NavHost(
@@ -88,7 +88,7 @@ private fun NavGraphBuilder.addNavGraphDestinations(
     engine: NavHostEngine,
     navGraphSpec: NavGraphSpec,
     navController: NavHostController,
-    dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
     manualComposableCalls: ManualComposableCalls,
 ): Unit = with(engine) {
 
@@ -114,7 +114,7 @@ private fun NavGraphBuilder.addNestedNavGraphs(
     engine: NavHostEngine,
     nestedNavGraphs: List<NavGraphSpec>,
     navController: NavHostController,
-    dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
     manualComposableCalls: ManualComposableCalls,
 ): Unit = with(engine) {
 

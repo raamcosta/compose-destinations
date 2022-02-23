@@ -71,7 +71,7 @@ interface NavHostEngine {
     fun <T> NavGraphBuilder.composable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     )
 }

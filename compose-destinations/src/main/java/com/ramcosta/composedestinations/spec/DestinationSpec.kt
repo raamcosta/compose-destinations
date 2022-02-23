@@ -54,7 +54,7 @@ interface DestinationSpec<T> : Route {
      */
     @Composable
     fun DestinationScope<T>.Content(
-        dependenciesContainerBuilder: DependenciesContainerBuilder<T>.() -> Unit
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<T>.() -> Unit
     )
 
     /**
