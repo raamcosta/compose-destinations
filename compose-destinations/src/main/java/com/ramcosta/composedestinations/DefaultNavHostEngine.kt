@@ -65,7 +65,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
     override fun <T> NavGraphBuilder.composable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     ) {
         when (val destinationStyle = destination.style) {
@@ -95,7 +95,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
     private fun <T> NavGraphBuilder.addComposable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     ) {
         val contentLambda = manualComposableCalls[destination.routeId]
@@ -119,7 +119,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
         dialogStyle: DestinationStyle.Dialog,
         destination: DestinationSpec<T>,
         navController: NavHostController,
-        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
     ) {
         val contentLambda = manualComposableCalls[destination.routeId]
@@ -146,7 +146,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
         destination: DestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
-        dependenciesContainerBuilder: DependenciesContainerBuilder<*>.() -> Unit,
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         contentLambda: DestinationLambda<*>?
     ) {
         val scope = remember {

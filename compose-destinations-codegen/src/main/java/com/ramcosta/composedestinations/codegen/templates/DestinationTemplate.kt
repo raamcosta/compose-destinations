@@ -44,7 +44,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $SUPERTYPE {
     $NAV_ARGUMENTS$DEEP_LINKS$DESTINATION_STYLE
     @Composable
     override fun DestinationScope<$NAV_ARGS_CLASS_SIMPLE_NAME>.Content(
-		dependenciesContainerBuilder: DependenciesContainerBuilder<$NAV_ARGS_CLASS_SIMPLE_NAME>.() -> Unit
+		dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<$NAV_ARGS_CLASS_SIMPLE_NAME>.() -> Unit
     ) {
 $CONTENT_FUNCTION_CODE
     }
