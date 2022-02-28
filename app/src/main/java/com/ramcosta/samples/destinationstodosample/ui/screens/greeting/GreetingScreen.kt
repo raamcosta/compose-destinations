@@ -108,7 +108,7 @@ fun GreetingScreen(
 
             Button(
                 onClick = {
-                    navigator.navigate(TestScreenDestination(id = "test-id"))
+                    navigator.navigate(TestScreenDestination(id = "test-id", stuff5 = Color.Blue))
                 }
             ) {
                 Text(text = stringResource(R.string.go_to_test_screen))
