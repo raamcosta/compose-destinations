@@ -66,6 +66,9 @@ fun Parameter.isComplexTypeNavArg(): Boolean {
             && (type.isParcelable || (type.isSerializable && !type.isPrimitive()))
 }
 
+fun Parameter.hasCustomTypeSerializer(): Boolean =
+    type.hasCustomTypeSerializer
+
 fun String.removeFromTo(from: String, to: String): String {
     val startIndex = indexOf(from)
     val endIndex = indexOf(to) + to.length
