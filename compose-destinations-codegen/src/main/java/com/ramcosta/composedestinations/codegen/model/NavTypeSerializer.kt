@@ -5,4 +5,5 @@ data class NavTypeSerializer(
     val classKind: ClassKind,
     val serializerType: ClassType,
     val genericType: ClassType,
+    val isCustomTypeSerializer: Boolean,
 )

@@ -11,9 +11,16 @@ class NavArgResolver {
     fun resolve(
         destination: DestinationGeneratingParams,
         additionalImports: MutableSet<String>,
-        parameter: Parameter
+        parameter: Parameter,
+        navTypeName: String? = null,
     ) = internalResolve(
-        argGetter = "navBackStackEntry.arguments?.${parameter.type.toNavBackStackEntryArgGetter(destination, parameter.name)}",
+        argGetter = "navBackStackEntry.arguments?.${
+            parameter.type.toNavBackStackEntryArgGetter(
+                destination,
+                parameter.name,
+                navTypeName,
+            )
+        }",
         additionalImports = additionalImports,
         parameter = parameter,
     )
@@ -66,7 +73,7 @@ class NavArgResolver {
                     isEnum -> {
                         "get<String>(\"$argName\")"
                     }
-                    isParcelable || isSerializable -> {
+                    isParcelable || isSerializable || hasCustomTypeSerializer -> {
                         "get(\"$argName\")"
                     }
                     else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $classType.qualifiedName")
@@ -79,6 +86,7 @@ class NavArgResolver {
     private fun Type.toNavBackStackEntryArgGetter(
         destination: DestinationGeneratingParams,
         argName: String,
+        navTypeName: String? = null,
     ): String {
         return when (classType.qualifiedName) {
             String::class.qualifiedName -> "getString(\"$argName\")"
@@ -96,6 +104,9 @@ class NavArgResolver {
                     }
                     isSerializable -> {
                         "getSerializable(\"$argName\") as? ${this.classType.simpleName}?"
+                    }
+                    hasCustomTypeSerializer -> {
+                        "getString(\"$argName\")?.let { $navTypeName.parseValue(it) }"
                     }
                     else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${classType.qualifiedName}")
                 }

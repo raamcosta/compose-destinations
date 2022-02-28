@@ -150,6 +150,9 @@ class KspToCodeGenDestinationsMapper(
             declaration as? KSClassDeclaration?
         }
         val classDeclarationType = ksClassDeclaration?.asType(emptyList())
+        val customSerializer = resolver.getNavTypeSerializers()
+            .filter { it.isCustomTypeSerializer }
+            .find { it.genericType.qualifiedName == qualifiedName.asString() }
 
         return Type(
             classType = ClassType(declaration.simpleName.asString(), qualifiedName.asString()),
@@ -158,7 +161,8 @@ class KspToCodeGenDestinationsMapper(
             isNullable = isMarkedNullable,
             isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
             isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
-            isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false
+            isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false,
+            customTypeSerializer = customSerializer?.serializerType,
         )
     }
 

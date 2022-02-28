@@ -41,6 +41,10 @@ class DestinationWithNavArgsMapper {
             return true
         }
 
+        if (hasCustomTypeSerializer()) {
+            return true
+        }
+
         return type.isPrimitive()
     }
 }
