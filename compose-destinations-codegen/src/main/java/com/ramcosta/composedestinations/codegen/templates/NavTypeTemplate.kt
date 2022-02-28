@@ -76,3 +76,33 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
     }
 }
 """.trimIndent()
+
+val customTypeSerializerNavTypeTemplate = """
+package $codeGenBasePackageName.navtype
+
+import android.os.Bundle
+import $CORE_PACKAGE_NAME.navargs.utils.encodeForRoute
+import $CORE_PACKAGE_NAME.navargs.custom.CustomTypeSerializer
+import $CORE_PACKAGE_NAME.navargs.custom.CustomDestinationsNavType
+$ADDITIONAL_IMPORTS
+
+val $NAV_TYPE_NAME = CustomTypeSerializer${NAV_TYPE_CLASS_SIMPLE_NAME}($SERIALIZER_SIMPLE_CLASS_NAME)
+
+class CustomTypeSerializer${NAV_TYPE_CLASS_SIMPLE_NAME}(
+    private val customSerializer: CustomTypeSerializer<$DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE>
+) : CustomDestinationsNavType<${CLASS_SIMPLE_NAME_CAMEL_CASE}?>() {
+
+    override fun get(bundle: Bundle, key: String): ${CLASS_SIMPLE_NAME_CAMEL_CASE}? =
+        bundle.getString(key)?.let { parseValue(it) }
+
+    override fun put(bundle: Bundle, key: String, value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?) {
+        bundle.putString(key, serializeValue(value))
+    }
+
+    override fun parseValue(value: String): $CLASS_SIMPLE_NAME_CAMEL_CASE =
+        customSerializer.fromRouteString(value)
+
+    override fun serializeValue(value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?): String? =
+        value?.let { encodeForRoute(customSerializer.toRouteString(it)) }
+}
+""".trimIndent()
