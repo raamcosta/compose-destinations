@@ -85,7 +85,7 @@ class DestinationContentFunctionWriter(
             NAV_CONTROLLER_QUALIFIED_NAME,
             NAV_HOST_CONTROLLER_QUALIFIED_NAME, -> "navController"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
-            DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "$CORE_NAV_DESTINATIONS_NAVIGATION(navController, navBackStackEntry)"
+            DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "destinationsNavigator"
             RESULT_RECIPIENT_QUALIFIED_NAME -> {
                 additionalImports.add("$CORE_PACKAGE_NAME.manualcomposablecalls.resultRecipient")
                 "resultRecipient()"

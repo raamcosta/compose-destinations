@@ -4,13 +4,12 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavBackStackEntry
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ProfileScreenDestination
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 class ProfileViewModel(
+    getProfileLikeCount: GetProfileLikeCountUseCase,
     navArgs: ProfileScreenNavArgs
 ) : ViewModel(), ProfileUiEvents, ProfileUiState {
 
@@ -24,33 +23,13 @@ class ProfileViewModel(
 
     override var likeCount: Int by mutableStateOf(0)
 
-    override fun onLikeButtonClick() {
-        likeCount++
+    init {
+        viewModelScope.launch {
+            likeCount = getProfileLikeCount(id)
+        }
     }
 
-    class Factory(
-        navBackStackEntry: NavBackStackEntry
-    ) : AbstractSavedStateViewModelFactory(
-        navBackStackEntry,
-        navBackStackEntry.arguments
-    ) {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(
-            key: String,
-            modelClass: Class<T>,
-            handle: SavedStateHandle
-        ): T {
-            return ProfileViewModel(
-                /*
-                ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                    HEY!!!
-                    I'm here as an example of how you can get nav arguments
-                    in ViewModels =)
-                ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                */
-                ProfileScreenDestination.argsFrom(handle)
-            ) as T
-        }
+    override fun onLikeButtonClick() {
+        likeCount++
     }
 }

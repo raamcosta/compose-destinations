@@ -1,4 +1,4 @@
-package com.ramcosta.samples.destinationstodosample.ui.screens
+package com.ramcosta.samples.destinationstodosample.ui.screens.settings
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 @Composable
 fun Settings(
     navigator: DestinationsNavigator,
+    viewModel: SettingsViewModel,
     themeSettingsResultRecipient: ResultRecipient<ThemeSettingsDestination, SerializableExample>
 ) {
     themeSettingsResultRecipient.onResult {
@@ -52,6 +54,8 @@ fun Settings(
         Column(
             modifier = Modifier.align(Alignment.Center)
         ) {
+            Switch(checked = viewModel.isToggleOn, onCheckedChange = { viewModel.toggle() })
+
             Button(
                 onClick = { navigator.navigate(ThemeSettingsDestination) }
             ) {
@@ -73,6 +77,7 @@ fun Settings(
 fun SettingsPreview() {
     Settings(
         EmptyDestinationsNavigator,
+        SettingsViewModel(),
         EmptyResultRecipient()
     )
 }

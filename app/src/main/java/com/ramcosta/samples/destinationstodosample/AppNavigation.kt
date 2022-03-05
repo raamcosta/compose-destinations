@@ -2,8 +2,8 @@ package com.ramcosta.samples.destinationstodosample
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.navigation
@@ -17,8 +17,10 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavController
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.result.resultBackNavigator
 import com.ramcosta.composedestinations.result.resultRecipient
+import com.ramcosta.composedestinations.utils.contains
 import com.ramcosta.composedestinations.utils.dialogComposable
 import com.ramcosta.samples.destinationstodosample.commons.DrawerController
+import com.ramcosta.samples.destinationstodosample.di.viewModel
 import com.ramcosta.samples.destinationstodosample.ui.screens.*
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.*
 import com.ramcosta.samples.destinationstodosample.ui.screens.greeting.GreetingScreen
@@ -29,6 +31,9 @@ import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileScr
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileUiEvents
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileUiState
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileViewModel
+import com.ramcosta.samples.destinationstodosample.ui.screens.settings.Settings
+import com.ramcosta.samples.destinationstodosample.ui.screens.settings.SettingsViewModel
+import com.ramcosta.samples.destinationstodosample.ui.screens.settings.ThemeSettings
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialNavigationApi::class)
 @Composable
@@ -58,54 +63,48 @@ fun AppNavigation(
         modifier = modifier,
         dependenciesContainerBuilder = {
             dependency(drawerController)
+
+            if (NavGraphs.settings.contains(destination)) {
+                val parentEntry = remember { navController.getBackStackEntry(NavGraphs.settings.route) }
+                dependency(androidx.lifecycle.viewmodel.compose.viewModel<SettingsViewModel>(parentEntry))
+            }
         }
     ) {
-        // region This is NOT needed: this is exactly what the lib would do for us too
-        // if we didn't explicitly call this Composable
-        // It is here only as an example of getting nav args in a type safe way at this point
-        // and also so we can see the boilerplate we save for each destination
-        composable(TestScreenDestination) {
-            TestScreen(
-                id = navArgs.id,
-                stuff1 = navArgs.stuff1,
-                stuff2 = navArgs.stuff2,
-                stuff3 = navArgs.stuff3
-            )
-        }
-        // endregion
-
-        // region Composables we need to call ourselves since the lib doesn't know how to get
-        // DrawerController or the *UiState and *UiEvents interfaces
-
-        // animatedComposable is needed to get an AnimatedVisibilityScope to use as the receiver for our
-        // ProfileScreen
-        animatedComposable(ProfileScreenDestination) {
-            val vm = viewModel<ProfileViewModel>(
-                factory = ProfileViewModel.Factory(navBackStackEntry)
-            )
-
-            ProfileScreen(
-                vm as ProfileUiState,
-                vm as ProfileUiEvents
-            )
-        }
-
-        composable(GreetingScreenDestination) {
-            val vm = viewModel<GreetingViewModel>()
-
-            GreetingScreen(
-                navigator = destinationsNavigator,
-                drawerController = drawerController,
-                uiEvents = vm as GreetingUiEvents,
-                uiState = vm as GreetingUiState,
-                resultRecipient = resultRecipient()
-            )
-        }
-        // endregion
+        profileScreen()
+        greetingScreen(drawerController)
     }
 }
 
-// ------- Without using DestinationsNavHost example -------
+@ExperimentalAnimationApi
+private fun ManualComposableCallsBuilder.profileScreen() {
+
+    // animatedComposable is needed to get an AnimatedVisibilityScope to use as the receiver for our
+    // ProfileScreen
+    animatedComposable(ProfileScreenDestination) {
+        val vm = viewModel<ProfileViewModel>()
+
+        ProfileScreen(
+            vm as ProfileUiState,
+            vm as ProfileUiEvents
+        )
+    }
+}
+
+private fun ManualComposableCallsBuilder.greetingScreen(drawerController: DrawerController) {
+    composable(GreetingScreenDestination) {
+        val vm = viewModel<GreetingViewModel>()
+
+        GreetingScreen(
+            navigator = destinationsNavigator,
+            drawerController = drawerController,
+            uiEvents = vm as GreetingUiEvents,
+            uiState = vm as GreetingUiState,
+            resultRecipient = resultRecipient()
+        )
+    }
+}
+
+// region ------- Without using DestinationsNavHost example -------
 @Suppress("UNUSED")
 @ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
@@ -156,10 +155,8 @@ fun SampleAppAnimatedNavHostExample(
             )
         }
 
-        animatedComposable(ProfileScreenDestination) { _, entry ->
-            val vm = viewModel<ProfileViewModel>(
-                factory = ProfileViewModel.Factory(entry)
-            )
+        animatedComposable(ProfileScreenDestination) { _, _ ->
+            val vm = viewModel<ProfileViewModel>()
 
             ProfileScreen(
                 vm as ProfileUiState,
@@ -173,6 +170,7 @@ fun SampleAppAnimatedNavHostExample(
         ) {
             animatedComposable(SettingsDestination) {
                 Settings(
+                    viewModel = viewModel(),
                     navigator = DestinationsNavController(navController, it),
                     themeSettingsResultRecipient = resultRecipient(it)
                 )
@@ -180,6 +178,7 @@ fun SampleAppAnimatedNavHostExample(
 
             bottomSheetComposable(ThemeSettingsDestination) {
                 ThemeSettings(
+                    viewModel = viewModel(),
                     resultNavigator = resultBackNavigator(
                         navController = navController,
                         destinationSpec = ThemeSettingsDestination
@@ -189,3 +188,4 @@ fun SampleAppAnimatedNavHostExample(
         }
     }
 }
+// endregion
