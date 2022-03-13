@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.result
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
+import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
 /**
@@ -69,7 +70,11 @@ inline fun <reified R> resultBackNavigator(
 ): ResultBackNavigator<R> = remember {
     ResultBackNavigatorImpl(
         navController = navController,
-        resultOriginType = destinationSpec.javaClass,
+        resultOriginType = if (destinationSpec is DynamicDestinationSpec) {
+            destinationSpec.delegate.javaClass
+        } else {
+            destinationSpec.javaClass
+        },
         resultType = R::class.java
     )
 }
