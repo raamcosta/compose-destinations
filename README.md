@@ -113,8 +113,7 @@ plugins {
     id("com.google.devtools.ksp") version "1.5.31-1.0.1" // Depends on your kotlin version
 }
 ```
-</details>
-
+</details>4
 
 #### 2. Add the dependencies:
 
@@ -122,8 +121,8 @@ plugins {
   <summary>groovy - build.gradle(:app)</summary>
 
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:1.3.3-beta'
-ksp 'io.github.raamcosta.compose-destinations:ksp:1.3.3-beta'    
+implementation 'io.github.raamcosta.compose-destinations:core:1.3.4-beta'
+ksp 'io.github.raamcosta.compose-destinations:ksp:1.3.4-beta'    
 ```
 </details>
 
@@ -131,8 +130,8 @@ ksp 'io.github.raamcosta.compose-destinations:ksp:1.3.3-beta'
   <summary>kotlin - build.gradle.kts(:app)</summary>  
 
 ```gradle
-implementation("io.github.raamcosta.compose-destinations:core:1.3.3-beta")
-ksp("io.github.raamcosta.compose-destinations:ksp:1.3.3-beta")
+implementation("io.github.raamcosta.compose-destinations:core:1.3.4-beta")
+ksp("io.github.raamcosta.compose-destinations:ksp:1.3.4-beta")
 ```
 </details>
 
