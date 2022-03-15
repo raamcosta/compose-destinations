@@ -113,7 +113,7 @@ plugins {
     id("com.google.devtools.ksp") version "1.5.31-1.0.1" // Depends on your kotlin version
 }
 ```
-</details>4
+</details>
 
 #### 2. Add the dependencies:
 
