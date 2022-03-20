@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.result
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationSpec
@@ -67,14 +66,21 @@ interface ResultBackNavigator<R> {
 inline fun <reified R> resultBackNavigator(
     navController: NavController,
     destinationSpec: DestinationSpec<*>
-): ResultBackNavigator<R> = remember {
-    ResultBackNavigatorImpl(
-        navController = navController,
-        resultOriginType = if (destinationSpec is DynamicDestinationSpec) {
-            destinationSpec.delegate.javaClass
-        } else {
-            destinationSpec.javaClass
-        },
-        resultType = R::class.java
-    )
+): ResultBackNavigator<R> {
+
+    val backNavigator = remember {
+        ResultBackNavigatorImpl(
+            navController = navController,
+            resultOriginType = if (destinationSpec is DynamicDestinationSpec) {
+                destinationSpec.delegate.javaClass
+            } else {
+                destinationSpec.javaClass
+            },
+            resultType = R::class.java
+        )
+    }
+
+    backNavigator.handleCanceled()
+
+    return backNavigator
 }

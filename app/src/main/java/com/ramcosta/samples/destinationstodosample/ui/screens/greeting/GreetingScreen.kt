@@ -1,5 +1,6 @@
 package com.ramcosta.samples.destinationstodosample.ui.screens.greeting
 
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,11 +11,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
+import com.ramcosta.composedestinations.result.getOr
 import com.ramcosta.samples.destinationstodosample.R
 import com.ramcosta.samples.destinationstodosample.commons.DrawerController
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToProfileConfirmationDestination
@@ -39,17 +43,26 @@ fun GreetingScreen(
     uiState: GreetingUiState,
     resultRecipient: ResultRecipient<GoToProfileConfirmationDestination, Boolean>
 ) {
-    resultRecipient.onResult { confirmed ->
-        println("go? $confirmed")
-        if (confirmed) {
-            navigator.navigate(
-                ProfileScreenDestination(
-                    id = 3,
-                    groupName = "%02%03",
-                    stuff = Stuff.STUFF2,
-                    things = Things()
+    resultRecipient.onResult {
+        println("Deprecated onResult called, result = $it")
+    }
+
+    val context = LocalContext.current
+    resultRecipient.onNavResult { result ->
+        Toast.makeText(context, "result? = $result", Toast.LENGTH_LONG).show()
+        println("go? $result")
+        when (result) {
+            is NavResult.Canceled -> println("canceled!!")
+            is NavResult.Value -> if (result.value) {
+                navigator.navigate(
+                    ProfileScreenDestination(
+                        id = 3,
+                        groupName = "%02%03",
+                        stuff = Stuff.STUFF2,
+                        things = Things()
+                    )
                 )
-            )
+            }
         }
     }
 

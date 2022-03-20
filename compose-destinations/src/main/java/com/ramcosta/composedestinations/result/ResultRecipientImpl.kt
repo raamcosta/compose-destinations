@@ -26,7 +26,48 @@ class ResultRecipientImpl<D : DestinationSpec<*>, R>(
 ) : ResultRecipient<D, R> {
 
     private val resultKey = resultKey(resultOriginType, resultType)
+    private val canceledKey = canceledKey(resultOriginType, resultType)
 
+    @Composable
+    override fun onNavResult(listener: (NavResult<R>) -> Unit) {
+        val currentListener by rememberUpdatedState(listener)
+
+        DisposableEffect(key1 = Unit) {
+            val observer = object : LifecycleEventObserver {
+                override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                    when (event) {
+                        Lifecycle.Event.ON_RESUME -> {
+                            val canceled = navBackStackEntry.savedStateHandle.remove<Boolean>(canceledKey)
+
+                            if (canceled == true) {
+                                currentListener(NavResult.Canceled)
+                            } else if (navBackStackEntry.savedStateHandle.contains(resultKey)) {
+                                currentListener(
+                                    NavResult.Value(
+                                        navBackStackEntry.savedStateHandle.remove<R>(resultKey) as R
+                                    )
+                                )
+                            }
+                        }
+
+                        Lifecycle.Event.ON_DESTROY -> {
+                            navBackStackEntry.lifecycle.removeObserver(this)
+                        }
+
+                        else -> Unit
+                    }
+                }
+            }
+
+            navBackStackEntry.lifecycle.addObserver(observer)
+
+            onDispose {
+                navBackStackEntry.lifecycle.removeObserver(observer)
+            }
+        }
+    }
+
+    @Suppress("OverridingDeprecatedMember")
     @Composable
     override fun onResult(listener: (R) -> Unit) {
         val currentListener by rememberUpdatedState(listener)

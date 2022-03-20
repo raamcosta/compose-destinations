@@ -33,14 +33,31 @@ interface ResultRecipient<D : DestinationSpec<*>, R> {
 
     /**
      * Install a [listener] that will be called when the [D] destination
+     * finishes. [NavResult] will either contain a specific result [R] for [NavResult.Value]
+     * or it will be [NavResult.Canceled] if [D] finishes without setting any result.
+     *
+     * Implementation makes sure to only do something the first time it is called,
+     * so, no need to worry about recomposition.
+     *
+     * [listener] will not be called from a Compose scope, it should be treated
+     * as a normal button click listener, you can navigate or call a method on a view model,
+     * for example.
+     */
+    @Composable
+    fun onNavResult(listener: @DisallowComposableCalls (NavResult<R>) -> Unit)
+
+    /**
+     * Install a [listener] that will be called when the [D] destination
      * finishes with a specific result [R].
      *
      * Implementation makes sure to only do something the first time it is called,
      * so, no need to worry about recomposition.
      *
      * [listener] will not be called from a Compose scope, it should be treated
-     * as a normal button click listener, you can navigate or call a method on a view model.
+     * as a normal button click listener, you can navigate or call a method on a view model,
+     * for example.
      */
+    @Deprecated("You should migrate to `onNavResult` as this API will be removed in the near future.")
     @Composable
     fun onResult(listener: @DisallowComposableCalls (R) -> Unit)
 }

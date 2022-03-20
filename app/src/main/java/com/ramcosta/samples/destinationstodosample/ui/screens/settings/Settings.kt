@@ -1,5 +1,6 @@
 package com.ramcosta.samples.destinationstodosample.ui.screens.settings
 
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
@@ -42,8 +44,10 @@ fun Settings(
     viewModel: SettingsViewModel,
     themeSettingsResultRecipient: ResultRecipient<ThemeSettingsDestination, SerializableExample>
 ) {
-    themeSettingsResultRecipient.onResult {
+    val context = LocalContext.current
+    themeSettingsResultRecipient.onNavResult {
         println("result = $it")
+        Toast.makeText(context, "confirmed? = $it", Toast.LENGTH_LONG).show()
     }
 
     Box(
