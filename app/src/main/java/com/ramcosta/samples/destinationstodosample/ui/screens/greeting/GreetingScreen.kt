@@ -18,7 +18,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
-import com.ramcosta.composedestinations.result.getOr
 import com.ramcosta.samples.destinationstodosample.R
 import com.ramcosta.samples.destinationstodosample.commons.DrawerController
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToProfileConfirmationDestination
