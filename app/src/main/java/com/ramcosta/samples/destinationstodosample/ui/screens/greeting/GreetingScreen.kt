@@ -42,10 +42,6 @@ fun GreetingScreen(
     uiState: GreetingUiState,
     resultRecipient: ResultRecipient<GoToProfileConfirmationDestination, Boolean>
 ) {
-    resultRecipient.onResult {
-        println("Deprecated onResult called, result = $it")
-    }
-
     val context = LocalContext.current
     resultRecipient.onNavResult { result ->
         Toast.makeText(context, "result? = $result", Toast.LENGTH_LONG).show()
