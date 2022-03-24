@@ -36,7 +36,8 @@ class CodeGenerator(
 
         val navTypeNamesByType = customNavTypeWriter.write(destinationsWithNavArgs, navTypeSerializers)
 
-        val generatedDestinations = destinationsWriter.write(destinationsWithNavArgs, navTypeNamesByType)
+        val generatedDestinations = destinationsWriter(navTypeNamesByType)
+            .write(destinationsWithNavArgs)
 
         val generatedNavGraphs = writeForMode(generatedDestinations)
 

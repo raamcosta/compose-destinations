@@ -26,7 +26,7 @@ class CustomNavTypesWriter(
             .map {
                 it.navArgs
                     .filter { param ->
-                        param.isComplexTypeNavArg() || param.hasCustomTypeSerializer()
+                        param.isComplexTypeNavArg()
                     }
                     .map { param ->
                         //we don't want to consider types different due to different nullability here
@@ -53,13 +53,8 @@ class CustomNavTypesWriter(
         val navTypeName = getNavTypeName()
 
         val className = navTypeName.replaceFirstChar { it.uppercase(Locale.US) }
-        val fileName = if (hasCustomTypeSerializer) {
-            "CustomTypeSerializer$className"
-        } else {
-            className
-        }
         val out: OutputStream = codeGenerator.makeFile(
-            fileName,
+            className,
             "$codeGenBasePackageName.navtype",
         )
 
@@ -72,19 +67,20 @@ class CustomNavTypesWriter(
                 out,
                 navTypeName,
             )
+
             isParcelable -> generateParcelableCustomNavType(
                 className,
                 navTypeSerializer,
                 out,
                 navTypeName,
             )
-            hasCustomTypeSerializer ->
-                generateCustomTypeSerializerNavType(
-                    className,
-                    navTypeSerializer!!,
-                    out,
-                    navTypeName,
-                )
+
+            hasCustomTypeSerializer -> generateCustomTypeSerializerNavType(
+                className,
+                navTypeSerializer!!,
+                out,
+                navTypeName,
+            )
         }
     }
 
@@ -105,10 +101,6 @@ class CustomNavTypesWriter(
             .replace(
                 PARSE_VALUE_CAST_TO_CLASS,
                 if (navTypeSerializer == null) " as ${classType.simpleName}" else ""
-            )
-            .replace(
-                SERIALIZE_VALUE_CAST_TO_CLASS,
-                if (navTypeSerializer == null) "" else " as ${classType.simpleName}"
             )
             .replace(
                 DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
@@ -161,10 +153,6 @@ class CustomNavTypesWriter(
                 if (navTypeSerializer == null) " as ${classType.simpleName}" else ""
             )
             .replace(
-                SERIALIZE_VALUE_CAST_TO_CLASS,
-                if (navTypeSerializer == null) "" else " as ${classType.simpleName}"
-            )
-            .replace(
                 DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
                 if (navTypeSerializer == null) "Parcelable" else classType.simpleName
             )
@@ -173,9 +161,9 @@ class CustomNavTypesWriter(
         out.close()
     }
 
-    private fun parcelableNavTypeSerializerCode(navTypeSerializer: NavTypeSerializer?): String {
+    private fun Type.parcelableNavTypeSerializerCode(navTypeSerializer: NavTypeSerializer?): String {
         if (navTypeSerializer == null) {
-            return "DefaultParcelableNavTypeSerializer()"
+            return "DefaultParcelableNavTypeSerializer(${this.classType.simpleName}::class.java)"
         }
 
         return navTypeSerializerCode(navTypeSerializer)

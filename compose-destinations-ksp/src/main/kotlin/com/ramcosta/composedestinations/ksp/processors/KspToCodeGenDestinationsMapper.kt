@@ -13,6 +13,7 @@ import java.util.*
 class KspToCodeGenDestinationsMapper(
     private val resolver: Resolver,
     private val logger: KspLogger,
+    private val navTypeSerializersByType: Map<ClassType, NavTypeSerializer>,
 ) : KSFileSourceMapper {
 
     private val defaultStyle by lazy {
@@ -150,19 +151,17 @@ class KspToCodeGenDestinationsMapper(
             declaration as? KSClassDeclaration?
         }
         val classDeclarationType = ksClassDeclaration?.asType(emptyList())
-        val customSerializer = resolver.getNavTypeSerializers()
-            .filter { it.isCustomTypeSerializer }
-            .find { it.genericType.qualifiedName == qualifiedName.asString() }
 
+        val classType = ClassType(declaration.simpleName.asString(), qualifiedName.asString())
         return Type(
-            classType = ClassType(declaration.simpleName.asString(), qualifiedName.asString()),
+            classType = classType,
             genericTypes = genericTypes(location),
             requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
             isNullable = isMarkedNullable,
             isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
             isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
             isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false,
-            customTypeSerializer = customSerializer?.serializerType,
+            hasCustomTypeSerializer = navTypeSerializersByType[classType] != null
         )
     }
 

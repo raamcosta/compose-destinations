@@ -62,12 +62,14 @@ fun Type.toPrimitiveNavTypeCodeOrNull(): String? {
 }
 
 fun Parameter.isComplexTypeNavArg(): Boolean {
-    return !type.isEnum
-            && (type.isParcelable || (type.isSerializable && !type.isPrimitive()))
-}
+    if (type.isEnum) {
+        return false
+    }
 
-fun Parameter.hasCustomTypeSerializer(): Boolean =
-    type.hasCustomTypeSerializer
+    return type.isParcelable ||
+            (type.isSerializable && !type.isPrimitive()) ||
+            type.hasCustomTypeSerializer
+}
 
 fun String.removeFromTo(from: String, to: String): String {
     val startIndex = indexOf(from)

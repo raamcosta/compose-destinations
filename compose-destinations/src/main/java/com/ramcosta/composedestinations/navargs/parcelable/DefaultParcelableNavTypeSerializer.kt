@@ -3,25 +3,28 @@ package com.ramcosta.composedestinations.navargs.parcelable
 import android.os.BadParcelableException
 import android.os.Parcel
 import android.os.Parcelable
+import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
 import com.ramcosta.composedestinations.utils.base64ToByteArray
 import com.ramcosta.composedestinations.utils.toBase64Str
 import java.lang.reflect.Modifier
 
 /**
- * Default [ParcelableNavTypeSerializer] which converts the parcelable to Base64 strings
+ * Default [DestinationsNavTypeSerializer] for [Parcelable]s which converts them to Base64 strings
  * and then parses them back.
  *
  * This gets used by the generated code if you don't provide an explicit
- * [ParcelableNavTypeSerializer] annotated with `@NavTypeSerializer` for the type being
+ * [DestinationsNavTypeSerializer] annotated with `@NavTypeSerializer` for the type being
  * passed as navigation argument.
  */
-class DefaultParcelableNavTypeSerializer : ParcelableNavTypeSerializer<Parcelable> {
+class DefaultParcelableNavTypeSerializer(
+    private val jClass: Class<out Parcelable>
+) : DestinationsNavTypeSerializer<Parcelable> {
 
     override fun toRouteString(value: Parcelable): String {
         return value.javaClass.name + "@" + value.toBase64()
     }
 
-    override fun fromRouteString(routeStr: String, jClass: Class<out Parcelable>): Parcelable {
+    override fun fromRouteString(routeStr: String): Parcelable {
         val (className, base64) = routeStr.split("@").let { it[0] to it[1] }
 
         val creator = if (jClass.isFinal) {

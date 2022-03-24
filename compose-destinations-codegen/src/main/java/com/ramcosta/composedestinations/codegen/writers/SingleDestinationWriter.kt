@@ -222,7 +222,7 @@ class SingleDestinationWriter(
     }
 
     private fun Parameter.stringifyForNavigation(): String {
-        if (isComplexTypeNavArg() || hasCustomTypeSerializer()) {
+        if (isComplexTypeNavArg()) {
             val navTypeName = customNavTypeByType[type.classType]!!.name
             additionalImports.add("$codeGenBasePackageName.navtype.$navTypeName")
 
@@ -279,9 +279,8 @@ class SingleDestinationWriter(
 
         val arguments = StringBuilder()
         navArgs.forEach {
-            val navTypeName = customNavTypeByType[it.type.classType]?.name
             arguments += "\n\t\t${it.name} = "
-            arguments += navArgResolver.resolve(destination, additionalImports, it, navTypeName)
+            arguments += navArgResolver.resolve(destination, additionalImports, it)
             arguments += ","
         }
 
@@ -516,7 +515,7 @@ class SingleDestinationWriter(
             return primitiveNavTypeCode
         }
 
-        if (isComplexTypeNavArg() || hasCustomTypeSerializer()) {
+        if (isComplexTypeNavArg()) {
             additionalImports.add(type.classType.qualifiedName)
             return customNavTypeByType[type.classType]!!.name
         }

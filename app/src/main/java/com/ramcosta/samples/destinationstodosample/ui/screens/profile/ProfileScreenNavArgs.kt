@@ -1,9 +1,9 @@
 package com.ramcosta.samples.destinationstodosample.ui.screens.profile
 
 import android.os.Parcelable
+import androidx.compose.ui.graphics.Color
+import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
 import com.ramcosta.composedestinations.navargs.NavTypeSerializer
-import com.ramcosta.composedestinations.navargs.parcelable.ParcelableNavTypeSerializer
-import com.ramcosta.composedestinations.navargs.serializable.SerializableNavTypeSerializer
 import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
@@ -14,7 +14,8 @@ data class ProfileScreenNavArgs(
     val stuff: Stuff = Stuff.STUFF1,
     val groupName: String = DEFAULT_GROUP,
     val things: ArgumentThings?,
-    val serializableExample: SerializableExample? = null
+    val serializableExample: SerializableExample? = null,
+    val color: Color
 )
 
 enum class Stuff {
@@ -37,13 +38,13 @@ data class SerializableExample(
 
 
 @NavTypeSerializer
-object ThingsNavTypeSerializer : ParcelableNavTypeSerializer<Things> {
+object ThingsNavTypeSerializer : DestinationsNavTypeSerializer<Things> {
 
     override fun toRouteString(value: Things): String {
         return "${value.thing1};${value.thing2}"
     }
 
-    override fun fromRouteString(routeStr: String, jClass: Class<out Things>): Things {
+    override fun fromRouteString(routeStr: String): Things {
         return routeStr.split(";").run {
             Things(get(0), get(1))
         }
@@ -51,7 +52,7 @@ object ThingsNavTypeSerializer : ParcelableNavTypeSerializer<Things> {
 }
 
 @NavTypeSerializer
-class SerializableExampleSerializer : SerializableNavTypeSerializer<SerializableExample> {
+class SerializableExampleSerializer : DestinationsNavTypeSerializer<SerializableExample> {
 
     override fun toRouteString(value: SerializableExample): String {
         return "${value.thing1};${value.thing2}"

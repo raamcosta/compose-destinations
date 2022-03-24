@@ -8,8 +8,5 @@ data class Type(
     val isEnum: Boolean,
     val isParcelable: Boolean,
     val isSerializable: Boolean,
-    val customTypeSerializer: ClassType?,
-) {
-    val hasCustomTypeSerializer
-        get() = customTypeSerializer != null
-}
+    val hasCustomTypeSerializer: Boolean
+)

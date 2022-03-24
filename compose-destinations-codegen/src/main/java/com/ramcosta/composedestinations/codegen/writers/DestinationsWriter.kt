@@ -9,12 +9,12 @@ class DestinationsWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
     private val core: Core,
+    private val customNavTypeByType: Map<ClassType, CustomNavType>,
     private val navArgResolver: NavArgResolver,
 ) {
 
     fun write(
         destinations: List<DestinationGeneratingParamsWithNavArgs>,
-        navTypeNamesByType: Map<ClassType, CustomNavType>
     ): List<GeneratedDestination> {
         val generatedFiles = mutableListOf<GeneratedDestination>()
 
@@ -25,7 +25,7 @@ class DestinationsWriter(
                 core,
                 navArgResolver,
                 destination,
-                navTypeNamesByType
+                customNavTypeByType
             ).write()
 
             generatedFiles.add(generatedDestination)

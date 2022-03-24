@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.style.TextAlign
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navargs.NavTypeSerializer
-import com.ramcosta.composedestinations.navargs.custom.CustomTypeSerializer
+import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExample
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Stuff
 import kotlinx.parcelize.Parcelize
@@ -49,7 +49,7 @@ data class Things(
 ) : Parcelable
 
 @NavTypeSerializer
-class ColorTypeSerializer : CustomTypeSerializer<Color> {
+class ColorTypeSerializer : DestinationsNavTypeSerializer<Color> {
     override fun toRouteString(value: Color): String =
         value.toArgb().toString()
 

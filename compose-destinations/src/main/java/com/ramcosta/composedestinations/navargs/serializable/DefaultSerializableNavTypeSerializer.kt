@@ -1,18 +1,19 @@
 package com.ramcosta.composedestinations.navargs.serializable
 
+import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
 import com.ramcosta.composedestinations.utils.base64ToByteArray
 import com.ramcosta.composedestinations.utils.toBase64Str
 import java.io.*
 
 /**
- * Default [SerializableNavTypeSerializer] which converts the [Serializable] to Base64 strings
+ * Default [DestinationsNavTypeSerializer] for [Serializable]s which converts them to Base64 strings
  * and then parses them back.
  *
  * This gets used by the generated code if you don't provide an explicit
- * [SerializableNavTypeSerializer] annotated with `@NavTypeSerializer` for the type being
+ * [DestinationsNavTypeSerializer] annotated with `@NavTypeSerializer` for the type being
  * passed as navigation argument.
  */
-class DefaultSerializableNavTypeSerializer : SerializableNavTypeSerializer<Serializable> {
+class DefaultSerializableNavTypeSerializer : DestinationsNavTypeSerializer<Serializable> {
 
     override fun toRouteString(value: Serializable): String {
         return value.toBase64()

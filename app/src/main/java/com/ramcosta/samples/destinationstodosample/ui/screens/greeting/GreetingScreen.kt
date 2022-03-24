@@ -59,7 +59,8 @@ fun GreetingScreen(
                         id = 3,
                         groupName = "%02%03",
                         stuff = Stuff.STUFF2,
-                        things = Things()
+                        things = Things(),
+                        color = Color.Black
                     )
                 )
             }
