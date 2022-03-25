@@ -1,9 +1,7 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
-import com.ramcosta.composedestinations.codegen.commons.isComplexTypeNavArg
-import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
@@ -27,10 +25,12 @@ class CustomNavTypesWriter(
         val allNavTypeParams: Set<Type> = destinations
             .map {
                 it.navArgs
-                    .filter { it.isComplexTypeNavArg() }
-                    .map {
+                    .filter { param ->
+                        param.isComplexTypeNavArg()
+                    }
+                    .map { param ->
                         //we don't want to consider types different due to different nullability here
-                        it.type.copy(isNullable = false)
+                        param.type.copy(isNullable = false)
                     }
             }
             .flatten()
@@ -60,10 +60,27 @@ class CustomNavTypesWriter(
 
         typesForNavTypeName[CustomNavType(navTypeName, navTypeSerializer)] = classType
 
-        if (isSerializable) {
-            generateSerializableCustomNavType(className, navTypeSerializer, out, navTypeName)
-        } else if (isParcelable) {
-            generateParcelableCustomNavType(className, navTypeSerializer, out, navTypeName)
+        when {
+            isSerializable -> generateSerializableCustomNavType(
+                className,
+                navTypeSerializer,
+                out,
+                navTypeName,
+            )
+
+            isParcelable -> generateParcelableCustomNavType(
+                className,
+                navTypeSerializer,
+                out,
+                navTypeName,
+            )
+
+            hasCustomTypeSerializer -> generateCustomTypeSerializerNavType(
+                className,
+                navTypeSerializer!!,
+                out,
+                navTypeName,
+            )
         }
     }
 
@@ -86,14 +103,33 @@ class CustomNavTypesWriter(
                 if (navTypeSerializer == null) " as ${classType.simpleName}" else ""
             )
             .replace(
-                SERIALIZE_VALUE_CAST_TO_CLASS,
-                if (navTypeSerializer == null) "" else " as ${classType.simpleName}"
-            )
-            .replace(
                 DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
                 if (navTypeSerializer == null) "Serializable" else classType.simpleName
             )
             .replace(ADDITIONAL_IMPORTS, serializableAdditionalImports(this, navTypeSerializer))
+
+        out.close()
+    }
+
+    private fun Type.generateCustomTypeSerializerNavType(
+        navTypeClassName: String,
+        navTypeSerializer: NavTypeSerializer,
+        out: OutputStream,
+        navTypeName: String
+    ) {
+        out += customTypeSerializerNavTypeTemplate
+            .replace(NAV_TYPE_NAME, navTypeName)
+            .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
+            .replace(
+                SERIALIZER_SIMPLE_CLASS_NAME,
+                navTypeSerializerCode(navTypeSerializer)
+            )
+            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, classType.simpleName)
+            .replace(DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE, classType.simpleName)
+            .replace(
+                ADDITIONAL_IMPORTS,
+                customTypeSerializerAdditionalImports(this, navTypeSerializer),
+            )
 
         out.close()
     }
@@ -117,10 +153,6 @@ class CustomNavTypesWriter(
                 if (navTypeSerializer == null) " as ${classType.simpleName}" else ""
             )
             .replace(
-                SERIALIZE_VALUE_CAST_TO_CLASS,
-                if (navTypeSerializer == null) "" else " as ${classType.simpleName}"
-            )
-            .replace(
                 DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
                 if (navTypeSerializer == null) "Parcelable" else classType.simpleName
             )
@@ -129,23 +161,28 @@ class CustomNavTypesWriter(
         out.close()
     }
 
-    private fun parcelableNavTypeSerializerCode(navTypeSerializer: NavTypeSerializer?): String {
+    private fun Type.parcelableNavTypeSerializerCode(navTypeSerializer: NavTypeSerializer?): String {
         if (navTypeSerializer == null) {
-            return "DefaultParcelableNavTypeSerializer()"
+            return "DefaultParcelableNavTypeSerializer(${this.classType.simpleName}::class.java)"
         }
-        val simpleName = navTypeSerializer.serializerType.simpleName
 
-        return if (navTypeSerializer.classKind == ClassKind.CLASS) "$simpleName()" else simpleName
+        return navTypeSerializerCode(navTypeSerializer)
     }
 
     private fun serializableNavTypeSerializerCode(navTypeSerializer: NavTypeSerializer?): String {
         if (navTypeSerializer == null) {
             return "DefaultSerializableNavTypeSerializer()"
         }
+
+        return navTypeSerializerCode(navTypeSerializer)
+    }
+
+    private fun navTypeSerializerCode(navTypeSerializer: NavTypeSerializer): String {
         val simpleName = navTypeSerializer.serializerType.simpleName
 
         return if (navTypeSerializer.classKind == ClassKind.CLASS) "$simpleName()" else simpleName
     }
+
 
     private fun parcelableAdditionalImports(
         type: Type,
@@ -174,6 +211,14 @@ class CustomNavTypesWriter(
 
         return imports
     }
+
+    private fun customTypeSerializerAdditionalImports(
+        type: Type,
+        customSerializer: NavTypeSerializer,
+    ): String = """
+        import ${type.classType.qualifiedName}
+        import ${customSerializer.serializerType.qualifiedName}
+    """.trimIndent()
 
     private fun Type.getNavTypeName(): String {
         val navTypeName =

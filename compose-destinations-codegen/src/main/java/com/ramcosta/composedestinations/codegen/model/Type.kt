@@ -7,5 +7,6 @@ data class Type(
     val isNullable: Boolean,
     val isEnum: Boolean,
     val isParcelable: Boolean,
-    val isSerializable: Boolean
+    val isSerializable: Boolean,
+    val hasCustomTypeSerializer: Boolean
 )

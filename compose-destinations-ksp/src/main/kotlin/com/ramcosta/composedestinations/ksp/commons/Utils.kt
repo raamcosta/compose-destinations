@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.ksp.commons
 
 import com.google.devtools.ksp.symbol.*
-import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.model.*
 import java.io.*
 

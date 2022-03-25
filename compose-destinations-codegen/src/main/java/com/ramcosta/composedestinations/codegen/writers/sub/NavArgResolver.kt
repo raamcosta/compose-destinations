@@ -2,18 +2,23 @@ package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.commons.GeneratedExceptions
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
-import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
-import com.ramcosta.composedestinations.codegen.model.Parameter
-import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.model.*
 
-class NavArgResolver {
+class NavArgResolver(
+    private val customNavTypeByType: Map<ClassType, CustomNavType>
+) {
 
     fun resolve(
         destination: DestinationGeneratingParams,
         additionalImports: MutableSet<String>,
         parameter: Parameter
     ) = internalResolve(
-        argGetter = "navBackStackEntry.arguments?.${parameter.type.toNavBackStackEntryArgGetter(destination, parameter.name)}",
+        argGetter = "navBackStackEntry.arguments?.${
+            parameter.type.toNavBackStackEntryArgGetter(
+                destination,
+                parameter.name
+            )
+        }",
         additionalImports = additionalImports,
         parameter = parameter,
     )
@@ -69,6 +74,10 @@ class NavArgResolver {
                     isParcelable || isSerializable -> {
                         "get(\"$argName\")"
                     }
+                    hasCustomTypeSerializer -> {
+                        val navTypeName = customNavTypeByType[this.classType]!!.name
+                        "get<String>(\"$argName\")?.let { $navTypeName.parseValue(it) }"
+                    }
                     else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $classType.qualifiedName")
                 }
 
@@ -96,6 +105,10 @@ class NavArgResolver {
                     }
                     isSerializable -> {
                         "getSerializable(\"$argName\") as? ${this.classType.simpleName}?"
+                    }
+                    hasCustomTypeSerializer -> {
+                        val navTypeName = customNavTypeByType[this.classType]!!.name
+                        "getString(\"$argName\")?.let { $navTypeName.parseValue(it) }"
                     }
                     else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${classType.qualifiedName}")
                 }

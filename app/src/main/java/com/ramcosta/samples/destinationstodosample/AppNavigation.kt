@@ -151,7 +151,8 @@ fun SampleAppAnimatedNavHostExample(
                 id = args.id,
                 stuff1 = args.stuff1,
                 stuff2 = args.stuff2,
-                stuff3 = args.stuff3
+                stuff3 = args.stuff3,
+                stuff5 = args.stuff5,
             )
         }
 

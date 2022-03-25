@@ -222,22 +222,17 @@ class SingleDestinationWriter(
     }
 
     private fun Parameter.stringifyForNavigation(): String {
-        if (isComplexTypeNavArg()) {
-            val navTypeName = customNavTypeByType[type.classType]!!.name
-            additionalImports.add("$codeGenBasePackageName.navtype.$navTypeName")
-
-            val (ifNullPrefix, ifNullSuffix) = if (type.isNullable) {
-                "$name?.let { " to " } ?: \"{${name}}\""
-            } else {
-                "" to ""
-            }
-            return "$ifNullPrefix$navTypeName.serializeValue($name)$ifNullSuffix"
-        }
-
         val ifNullSuffix = if (type.isNullable) {
             " ?: \"{${name}}\""
         } else {
             ""
+        }
+
+        if (isComplexTypeNavArg()) {
+            val navTypeName = customNavTypeByType[type.classType]!!.name
+            additionalImports.add("$codeGenBasePackageName.navtype.$navTypeName")
+
+            return "$navTypeName.serializeValue($name)$ifNullSuffix"
         }
 
         if (type.classType.simpleName == "String") {

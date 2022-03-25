@@ -25,13 +25,17 @@ class Processor(
         if (!annotatedDestinations.iterator().hasNext()) {
             return emptyList()
         }
+        val navTypeSerializers = resolver.getNavTypeSerializers()
 
         val kspLogger = KspLogger(logger)
-        val functionsToDestinationsMapper = KspToCodeGenDestinationsMapper(resolver, kspLogger)
+        val functionsToDestinationsMapper = KspToCodeGenDestinationsMapper(
+            resolver,
+            kspLogger,
+            navTypeSerializers.associateBy { it.genericType }
+        )
         val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, functionsToDestinationsMapper)
 
         val destinations = functionsToDestinationsMapper.map(annotatedDestinations)
-        val navTypeSerializers = resolver.getNavTypeSerializers()
 
         CodeGenerator(
             logger = kspLogger,
@@ -50,35 +54,32 @@ class Processor(
 
     private fun Resolver.getNavTypeSerializers(): List<NavTypeSerializer> {
         return getSymbolsWithAnnotation(NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED)
-            .filterIsInstance<KSClassDeclaration>().map {
-                if (it.classKind != KSPClassKind.CLASS && it.classKind != KSPClassKind.OBJECT) {
-                    throw IllegalDestinationsSetup("${it.simpleName}: Type serializers must be either class or object!")
+            .filterIsInstance<KSClassDeclaration>().map { serializer ->
+                if (serializer.classKind != KSPClassKind.CLASS && serializer.classKind != KSPClassKind.OBJECT) {
+                    throw IllegalDestinationsSetup("${serializer.simpleName}: Type serializers must be either class or object!")
                 }
 
                 var superType: KSType? = null
-                for (type in it.superTypes) {
+                for (type in serializer.superTypes) {
                     val resolvedType = type.resolve()
-                    if (resolvedType.declaration.qualifiedName?.asString() ==
-                        "$CORE_PACKAGE_NAME.navargs.parcelable.ParcelableNavTypeSerializer") {
+                    val resolvedTypeString = resolvedType.declaration.qualifiedName?.asString()
+                    if (resolvedTypeString ==
+                        "$CORE_PACKAGE_NAME.navargs.DestinationsNavTypeSerializer") {
                         superType = resolvedType
                         break
                     }
+                }
 
-                    if (resolvedType.declaration.qualifiedName?.asString() ==
-                        "$CORE_PACKAGE_NAME.navargs.serializable.SerializableNavTypeSerializer") {
-                        superType = resolvedType
-                        break
-                    }
-                }
                 if (superType == null) {
-                    throw IllegalDestinationsSetup("${it.simpleName}: Type serializers must implement ParcelableNavTypeSerializer (or SerializableNavTypeSerializer for Serializable types)!")
+                    throw IllegalDestinationsSetup("${serializer.simpleName}: Type serializers must implement DestinationsNavTypeSerializer!")
                 }
+
                 val genericType = superType.arguments.first().type?.resolve()?.declaration as KSClassDeclaration
 
                 NavTypeSerializer(
-                    if (it.classKind == KSPClassKind.CLASS) ClassKind.CLASS else ClassKind.OBJECT,
-                    ClassType(it.simpleName.asString(), it.qualifiedName!!.asString()),
-                    ClassType(genericType.simpleName.asString(), genericType.qualifiedName!!.asString())
+                    classKind = if (serializer.classKind == KSPClassKind.CLASS) ClassKind.CLASS else ClassKind.OBJECT,
+                    serializerType = ClassType(serializer.simpleName.asString(), serializer.qualifiedName!!.asString()),
+                    genericType = ClassType(genericType.simpleName.asString(), genericType.qualifiedName!!.asString()),
                 )
             }.toList()
     }
