@@ -2,10 +2,9 @@ package com.ramcosta.composedestinations.navargs
 
 import android.net.Uri
 import android.os.Bundle
-import androidx.navigation.NavType
 import com.ramcosta.composedestinations.navargs.utils.encodeForRoute
 
-object DestinationsStringNavType : NavType<String?>(true) {
+object DestinationsStringNavType : DestinationsNavType<String?>() {
 
     private const val ENCODED_EMPTY_STRING = "%02%03"
     private val DECODED_EMPTY_STRING: String = Uri.decode(ENCODED_EMPTY_STRING)
@@ -26,7 +25,7 @@ object DestinationsStringNavType : NavType<String?>(true) {
         }
     }
 
-    fun serializeValue(value: String?): String? {
+    override fun serializeValue(value: String?): String? {
         if (value == null) {
             return null
         }

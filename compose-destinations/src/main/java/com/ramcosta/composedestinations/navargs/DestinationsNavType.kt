@@ -8,5 +8,5 @@ import androidx.navigation.NavType
  */
 abstract class DestinationsNavType<T: Any?>: NavType<T>(true) {
 
-    abstract fun serializeValue(value: T): String
+    abstract fun serializeValue(value: T): String?
 }

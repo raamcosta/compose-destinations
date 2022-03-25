@@ -37,11 +37,8 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         return stringSerializer.fromRouteString(value)$PARSE_VALUE_CAST_TO_CLASS
     }
 
-    override fun serializeValue(value: $CLASS_SIMPLE_NAME_CAMEL_CASE?): String {
-        value ?: throw IllegalArgumentException("Cannot serialize null value - impossible by code generation")
-
-        return encodeForRoute(stringSerializer.toRouteString(value))
-    }
+    override fun serializeValue(value: $CLASS_SIMPLE_NAME_CAMEL_CASE?): String? =
+        value?.let { encodeForRoute(stringSerializer.toRouteString(value)) }
 }
 """.trimIndent()
 
@@ -72,11 +69,8 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         return stringSerializer.fromRouteString(value)
     }
 
-    override fun serializeValue(value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?): String {
-        value ?: throw IllegalArgumentException("Cannot serialize null value - impossible by code generation")
-
-        return encodeForRoute(stringSerializer.toRouteString(value))
-    }
+    override fun serializeValue(value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?): String? =
+        value?.let { encodeForRoute(stringSerializer.toRouteString(value)) }
 }
 """.trimIndent()
 
@@ -105,10 +99,7 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
     override fun parseValue(value: String): $CLASS_SIMPLE_NAME_CAMEL_CASE =
         customSerializer.fromRouteString(value)
 
-    override fun serializeValue(value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?): String {
-        value ?: throw IllegalArgumentException("Cannot serialize null value - impossible by code generation")
-        
-        return encodeForRoute(customSerializer.toRouteString(value))
-    }
+    override fun serializeValue(value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?): String? =
+        value?.let { encodeForRoute(customSerializer.toRouteString(value)) }
 }
 """.trimIndent()
