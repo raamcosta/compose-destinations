@@ -45,9 +45,8 @@ object ThingsNavTypeSerializer : DestinationsNavTypeSerializer<Things> {
     }
 
     override fun fromRouteString(routeStr: String): Things {
-        return routeStr.split(";").run {
-            Things(get(0), get(1))
-        }
+        val things = routeStr.split(";")
+        return Things(things[0], things[1])
     }
 }
 

@@ -16,7 +16,7 @@ sealed interface NavResult<out R> {
 
 /**
  * Returns [NavResult.Value.value] if there is any, or [canceledValue] result
- * if there isn't (i.e, it is [NavResult.Canceled]
+ * if there isn't (i.e, it is [NavResult.Canceled])
  */
 inline fun <R> NavResult<R>.getOr(canceledValue: () -> R): R = when (this) {
     is NavResult.Canceled -> canceledValue()
