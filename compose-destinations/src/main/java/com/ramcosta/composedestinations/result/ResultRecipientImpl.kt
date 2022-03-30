@@ -20,6 +20,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  *  @see [ResultRecipient].
  */
 class ResultRecipientImpl<D : DestinationSpec<*>, R>(
+    private val isRecipientDialogStyled: Boolean,
     private val navBackStackEntry: NavBackStackEntry,
     resultOriginType: Class<D>,
     resultType: Class<R>,
@@ -36,18 +37,15 @@ class ResultRecipientImpl<D : DestinationSpec<*>, R>(
             val observer = object : LifecycleEventObserver {
                 override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                     when (event) {
-                        Lifecycle.Event.ON_RESUME -> {
-                            val canceled = navBackStackEntry.savedStateHandle.remove<Boolean>(canceledKey)
-
-                            if (canceled == true) {
-                                currentListener(NavResult.Canceled)
-                            } else if (navBackStackEntry.savedStateHandle.contains(resultKey)) {
-                                currentListener(
-                                    NavResult.Value(
-                                        navBackStackEntry.savedStateHandle.remove<R>(resultKey) as R
-                                    )
-                                )
+                        Lifecycle.Event.ON_START -> {
+                            // If the destination listening is a Dialog, then we need to consider
+                            // ON_START as well, since moving between Dialogs, don't trigger ON_RESUME
+                            if (isRecipientDialogStyled && hasAnyResult()) {
+                                handleResult(currentListener)
                             }
+                        }
+                        Lifecycle.Event.ON_RESUME -> {
+                            handleResult(currentListener)
                         }
 
                         Lifecycle.Event.ON_DESTROY -> {
@@ -64,6 +62,25 @@ class ResultRecipientImpl<D : DestinationSpec<*>, R>(
             onDispose {
                 navBackStackEntry.lifecycle.removeObserver(observer)
             }
+        }
+    }
+
+    private fun hasAnyResult(): Boolean {
+        return navBackStackEntry.savedStateHandle.contains(canceledKey) ||
+                navBackStackEntry.savedStateHandle.contains(resultKey)
+    }
+
+    private fun handleResult(currentListener: (NavResult<R>) -> Unit) {
+        val canceled = navBackStackEntry.savedStateHandle.remove<Boolean>(canceledKey)
+
+        if (canceled == true) {
+            currentListener(NavResult.Canceled)
+        } else if (navBackStackEntry.savedStateHandle.contains(resultKey)) {
+            currentListener(
+                NavResult.Value(
+                    navBackStackEntry.savedStateHandle.remove<R>(resultKey) as R
+                )
+            )
         }
     }
 

@@ -71,9 +71,11 @@ interface ResultRecipient<D : DestinationSpec<*>, R> {
  */
 @Composable
 inline fun <reified D : DestinationSpec<*>, reified R> resultRecipient(
+    isRecipientDialogStyled: Boolean,
     navBackStackEntry: NavBackStackEntry
 ): ResultRecipient<D, R> = remember {
     ResultRecipientImpl(
+        isRecipientDialogStyled = isRecipientDialogStyled,
         navBackStackEntry = navBackStackEntry,
         resultOriginType = D::class.java,
         resultType = R::class.java,

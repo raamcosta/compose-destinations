@@ -13,6 +13,7 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.resultBackNavigator
 import com.ramcosta.composedestinations.result.resultRecipient
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.DestinationStyle
 
 /**
  * Scope given to the calls related to the [ManualComposableCallsBuilder].
@@ -59,7 +60,7 @@ inline fun <reified R> DestinationScope<*>.resultBackNavigator(): ResultBackNavi
  */
 @Composable
 inline fun <reified D : DestinationSpec<*>, reified R> DestinationScope<*>.resultRecipient(): ResultRecipient<D, R> =
-    resultRecipient(navBackStackEntry)
+     resultRecipient(destination.style is DestinationStyle.Dialog, navBackStackEntry)
 
 /**
  * Like [DestinationScope] but also [AnimatedVisibilityScope] so that
