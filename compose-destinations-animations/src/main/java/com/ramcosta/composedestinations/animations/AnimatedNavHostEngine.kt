@@ -14,6 +14,8 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import com.ramcosta.composedestinations.animations.defaults.*
+import com.ramcosta.composedestinations.animations.scope.AnimatedDestinationScopeImpl
+import com.ramcosta.composedestinations.animations.scope.BottomSheetDestinationScopeImpl
 import com.ramcosta.composedestinations.manualcomposablecalls.*
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.rememberNavHostEngine

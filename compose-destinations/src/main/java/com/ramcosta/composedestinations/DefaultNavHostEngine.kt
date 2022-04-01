@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
-import com.ramcosta.composedestinations.manualcomposablecalls.DestinationScopeImpl
+import com.ramcosta.composedestinations.scope.DestinationScopeImpl
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.*
@@ -150,7 +150,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
         contentLambda: DestinationLambda<*>?
     ) {
         val scope = remember {
-            DestinationScopeImpl(
+            DestinationScopeImpl.Default(
                 destination,
                 navBackStackEntry,
                 navController

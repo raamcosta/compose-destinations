@@ -4,8 +4,8 @@ import android.os.BadParcelableException
 import android.os.Parcel
 import android.os.Parcelable
 import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
-import com.ramcosta.composedestinations.utils.base64ToByteArray
-import com.ramcosta.composedestinations.utils.toBase64Str
+import com.ramcosta.composedestinations.navargs.utils.base64ToByteArray
+import com.ramcosta.composedestinations.navargs.utils.toBase64Str
 import java.lang.reflect.Modifier
 
 /**

@@ -1,10 +1,15 @@
 package com.ramcosta.composedestinations.manualcomposablecalls
 
 import android.annotation.SuppressLint
+import androidx.annotation.RestrictTo
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
+import com.ramcosta.composedestinations.scope.BottomSheetDestinationScope
+import com.ramcosta.composedestinations.scope.DestinationScope
 
 @SuppressLint("ComposableNaming")
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 sealed class DestinationLambda<T> {
 
     @Composable

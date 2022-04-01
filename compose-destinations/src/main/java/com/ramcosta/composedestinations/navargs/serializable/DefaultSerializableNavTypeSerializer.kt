@@ -1,8 +1,8 @@
 package com.ramcosta.composedestinations.navargs.serializable
 
 import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
-import com.ramcosta.composedestinations.utils.base64ToByteArray
-import com.ramcosta.composedestinations.utils.toBase64Str
+import com.ramcosta.composedestinations.navargs.utils.base64ToByteArray
+import com.ramcosta.composedestinations.navargs.utils.toBase64Str
 import java.io.*
 
 /**

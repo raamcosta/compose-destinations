@@ -154,10 +154,6 @@ class SingleDestinationWriter(
 
         additionalImports.add(destination.composableQualifiedName)
 
-        if (destination.parameters.any { it.type.classType.qualifiedName == DESTINATIONS_NAVIGATOR_QUALIFIED_NAME }) {
-            additionalImports.add(CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME)
-        }
-
         additionalImports.sorted().forEach {
             imports += "\nimport $it"
         }

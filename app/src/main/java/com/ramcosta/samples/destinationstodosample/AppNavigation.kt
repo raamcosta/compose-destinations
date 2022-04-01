@@ -13,15 +13,17 @@ import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.animations.utils.animatedComposable
 import com.ramcosta.composedestinations.animations.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.manualcomposablecalls.*
-import com.ramcosta.composedestinations.navigation.DestinationsNavController
 import com.ramcosta.composedestinations.navigation.dependency
-import com.ramcosta.composedestinations.result.resultBackNavigator
-import com.ramcosta.composedestinations.result.resultRecipient
+import com.ramcosta.composedestinations.scope.resultBackNavigator
+import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.utils.contains
 import com.ramcosta.composedestinations.utils.dialogComposable
 import com.ramcosta.samples.destinationstodosample.commons.DrawerController
 import com.ramcosta.samples.destinationstodosample.di.viewModel
-import com.ramcosta.samples.destinationstodosample.ui.screens.*
+import com.ramcosta.samples.destinationstodosample.ui.screens.Feed
+import com.ramcosta.samples.destinationstodosample.ui.screens.GoToProfileConfirmation
+import com.ramcosta.samples.destinationstodosample.ui.screens.NavGraphs
+import com.ramcosta.samples.destinationstodosample.ui.screens.TestScreen
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.*
 import com.ramcosta.samples.destinationstodosample.ui.screens.greeting.GreetingScreen
 import com.ramcosta.samples.destinationstodosample.ui.screens.greeting.GreetingUiEvents
@@ -65,8 +67,13 @@ fun AppNavigation(
             dependency(drawerController)
 
             if (NavGraphs.settings.contains(destination)) {
-                val parentEntry = remember { navController.getBackStackEntry(NavGraphs.settings.route) }
-                dependency(androidx.lifecycle.viewmodel.compose.viewModel<SettingsViewModel>(parentEntry))
+                val parentEntry =
+                    remember { navController.getBackStackEntry(NavGraphs.settings.route) }
+                dependency(
+                    androidx.lifecycle.viewmodel.compose.viewModel<SettingsViewModel>(
+                        parentEntry
+                    )
+                )
             }
         }
     ) {
@@ -121,15 +128,15 @@ fun SampleAppAnimatedNavHostExample(
         route = "root"
     ) {
 
-        animatedComposable(GreetingScreenDestination) { _, entry ->
+        animatedComposable(GreetingScreenDestination) {
             val vm = viewModel<GreetingViewModel>()
 
             GreetingScreen(
-                navigator = DestinationsNavController(navController, entry),
+                navigator = destinationsNavigator(navController),
                 drawerController = drawerController,
                 uiEvents = vm as GreetingUiEvents,
                 uiState = vm as GreetingUiState,
-                resultRecipient = resultRecipient(entry)
+                resultRecipient = resultRecipient()
             )
         }
 
@@ -139,24 +146,21 @@ fun SampleAppAnimatedNavHostExample(
 
         dialogComposable(GoToProfileConfirmationDestination) {
             GoToProfileConfirmation(
-                resultNavigator = resultBackNavigator(
-                    navController = navController,
-                    destinationSpec = GoToProfileConfirmationDestination
-                )
+                resultNavigator = resultBackNavigator(navController)
             )
         }
 
-        animatedComposable(TestScreenDestination) { args, _ ->
+        animatedComposable(TestScreenDestination) {
             TestScreen(
-                id = args.id,
-                stuff1 = args.stuff1,
-                stuff2 = args.stuff2,
-                stuff3 = args.stuff3,
-                stuff5 = args.stuff5,
+                id = navArgs.id,
+                stuff1 = navArgs.stuff1,
+                stuff2 = navArgs.stuff2,
+                stuff3 = navArgs.stuff3,
+                stuff5 = navArgs.stuff5,
             )
         }
 
-        animatedComposable(ProfileScreenDestination) { _, _ ->
+        animatedComposable(ProfileScreenDestination) {
             val vm = viewModel<ProfileViewModel>()
 
             ProfileScreen(
@@ -172,18 +176,15 @@ fun SampleAppAnimatedNavHostExample(
             animatedComposable(SettingsDestination) {
                 Settings(
                     viewModel = viewModel(),
-                    navigator = DestinationsNavController(navController, it),
-                    themeSettingsResultRecipient = resultRecipient(it)
+                    navigator = destinationsNavigator(navController),
+                    themeSettingsResultRecipient = resultRecipient()
                 )
             }
 
             bottomSheetComposable(ThemeSettingsDestination) {
                 ThemeSettings(
                     viewModel = viewModel(),
-                    resultNavigator = resultBackNavigator(
-                        navController = navController,
-                        destinationSpec = ThemeSettingsDestination
-                    )
+                    resultNavigator = resultBackNavigator(navController)
                 )
             }
         }

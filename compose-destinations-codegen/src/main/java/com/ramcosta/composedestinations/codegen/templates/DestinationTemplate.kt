@@ -30,7 +30,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import $CORE_PACKAGE_NAME.manualcomposablecalls.DestinationScope
+import $CORE_PACKAGE_NAME.scope.DestinationScope
 import $CORE_PACKAGE_NAME.navigation.DestinationDependenciesContainer
 import $CORE_PACKAGE_NAME.navigation.DependenciesContainerBuilder
 import $CORE_PACKAGE_NAME.navargs.$CORE_STRING_NAV_TYPE

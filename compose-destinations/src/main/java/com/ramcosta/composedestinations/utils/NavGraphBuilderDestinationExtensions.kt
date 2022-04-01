@@ -2,10 +2,11 @@ package com.ramcosta.composedestinations.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
+import com.ramcosta.composedestinations.scope.NavGraphBuilderDestinationScopeImpl
+import com.ramcosta.composedestinations.scope.NavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 
@@ -28,44 +29,21 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
  */
 fun <T> NavGraphBuilder.composable(
     destination: DestinationSpec<T>,
-    content: @Composable (T, NavBackStackEntry) -> Unit
+    content: @Composable NavGraphBuilderDestinationScope<T>.() -> Unit
 ) = with(destination) {
     composable(
         route,
         arguments,
         deepLinks
     ) {
-        content(remember { destination.argsFrom(it) }, it)
-    }
-}
+        val scope = remember {
+            NavGraphBuilderDestinationScopeImpl.Default(
+                destination,
+                it,
+            )
+        }
 
-/**
- * Like [androidx.navigation.compose.composable] but accepts
- * a [DestinationSpec] to get the route, arguments and deep links.
- *
- * Used for destinations with no navigation arguments.
- *
- * Useful if you opt to use [androidx.navigation.compose.NavHost] instead of
- * [com.ramcosta.composedestinations.DestinationsNavHost].
- * This way, you can build the navigation graph in the "vanilla compose navigation" way.
- * If you do this, you should also disable the `NavGraphs` generation
- * in build.gradle:
- * ```
- * ksp {
- *     arg("compose-destinations.generateNavGraphs", "false")
- * }
- * ```
- */
-fun NavGraphBuilder.composable(
-    destination: DestinationSpec<Unit>,
-    content: @Composable (NavBackStackEntry) -> Unit
-) = with(destination) {
-    composable(
-        route,
-        arguments,
-        deepLinks
-    ) {
-        content(it)
+        scope.content()
     }
 }
 
@@ -88,7 +66,7 @@ fun NavGraphBuilder.composable(
  */
 fun <T> NavGraphBuilder.dialogComposable(
     destination: DestinationSpec<T>,
-    content: @Composable (T, NavBackStackEntry) -> Unit
+    content: @Composable NavGraphBuilderDestinationScope<T>.() -> Unit
 ) = with(destination) {
     val style = destination.style
     if (style !is DestinationStyle.Dialog) {
@@ -101,42 +79,13 @@ fun <T> NavGraphBuilder.dialogComposable(
         deepLinks,
         style.properties
     ) {
-        content(remember { destination.argsFrom(it) }, it)
-    }
-}
+        val scope = remember {
+            NavGraphBuilderDestinationScopeImpl.Default(
+                destination,
+                it,
+            )
+        }
 
-/**
- * Like [androidx.navigation.compose.dialog] but accepts
- * a [DestinationSpec] to get the route, arguments and deep links.
- *
- * Used for destinations with no navigation arguments.
- *
- * Useful if you opt to use [androidx.navigation.compose.NavHost] instead of
- * [com.ramcosta.composedestinations.DestinationsNavHost].
- * This way, you can build the navigation graph in the "vanilla compose navigation" way.
- * If you do this, you should also disable the `NavGraphs` generation
- * in build.gradle:
- * ```
- * ksp {
- *     arg("compose-destinations.generateNavGraphs", "false")
- * }
- * ```
- */
-fun NavGraphBuilder.dialogComposable(
-    destination: DestinationSpec<Unit>,
-    content: @Composable (NavBackStackEntry) -> Unit
-) = with(destination) {
-    val style = destination.style
-    if (style !is DestinationStyle.Dialog) {
-        throw RuntimeException("Need to use `composable` to add non dialog destinations")
-    }
-
-    dialog(
-        route,
-        arguments,
-        deepLinks,
-        style.properties
-    ) {
-        content(it)
+        scope.content()
     }
 }

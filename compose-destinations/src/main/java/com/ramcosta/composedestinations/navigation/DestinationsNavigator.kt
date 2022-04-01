@@ -10,6 +10,24 @@ import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.Route
 
 /**
+ * Like [NavController.navigate], but uses [Direction] instead of a String route.
+ */
+fun NavController.navigateTo(
+    direction: Direction,
+    navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
+) {
+    navigate(direction.route, navOptionsBuilder)
+}
+
+/**
+ * Like [NavOptionsBuilder.popUpTo] but uses [Route] instead of a String route, making it
+ * clear what kind of route we need to use and making it more "Compose Destinations friendly".
+ */
+fun NavOptionsBuilder.popUpTo(route: Route, popUpToBuilder: PopUpToBuilder.() -> Unit = {}) {
+    popUpTo(route.route, popUpToBuilder)
+}
+
+/**
  * Contract for a navigator of [DestinationSpec].
  * It uses components of [NavController] so implementations
  * will need one to do actual navigation.
@@ -104,22 +122,3 @@ interface DestinationsNavigator {
     @MainThread
     fun clearBackStack(route: String): Boolean
 }
-
-/**
- * Like [NavController.navigate], but uses [Direction] instead of a String route.
- */
-fun NavController.navigateTo(
-    direction: Direction,
-    navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
-) {
-    navigate(direction.route, navOptionsBuilder)
-}
-
-/**
- * Like [NavOptionsBuilder.popUpTo] but uses [Route] instead of a String route, making it
- * clear what kind of route we need to use and making it more "Compose Destinations friendly".
- */
-fun NavOptionsBuilder.popUpTo(route: Route, popUpToBuilder: PopUpToBuilder.() -> Unit = {}) {
-    popUpTo(route.route, popUpToBuilder)
-}
-

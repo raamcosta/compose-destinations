@@ -3,6 +3,9 @@ package com.ramcosta.composedestinations.manualcomposablecalls
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
+import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
+import com.ramcosta.composedestinations.scope.BottomSheetDestinationScope
+import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
@@ -109,11 +112,11 @@ private fun ManualComposableCallsBuilder.validateAnimated(
     destination: DestinationSpec<*>
 ) {
     if (engineType == NavHostEngine.Type.DEFAULT) {
-        throw RuntimeException("'animatedComposable' can only be called with a 'AnimatedNavHostEngine'")
+        error("'animatedComposable' can only be called with a 'AnimatedNavHostEngine'")
     }
 
     if (destination.style !is DestinationStyle.Animated && destination.style !is DestinationStyle.Default) {
-        throw RuntimeException("'animatedComposable' can only be called for a destination of style 'Animated' or 'Default'")
+        error("'animatedComposable' can only be called for a destination of style 'Animated' or 'Default'")
     }
 }
 
@@ -121,10 +124,10 @@ private fun ManualComposableCallsBuilder.validateBottomSheet(
     destination: DestinationSpec<*>
 ) {
     if (engineType == NavHostEngine.Type.DEFAULT) {
-        throw RuntimeException("'bottomSheetComposable' can only be called with a 'AnimatedNavHostEngine'")
+        error("'bottomSheetComposable' can only be called with a 'AnimatedNavHostEngine'")
     }
 
     if (destination.style !is DestinationStyle.BottomSheet) {
-        throw RuntimeException("'bottomSheetComposable' can only be called for a destination of style 'BottomSheet'")
+        error("'bottomSheetComposable' can only be called for a destination of style 'BottomSheet'")
     }
 }

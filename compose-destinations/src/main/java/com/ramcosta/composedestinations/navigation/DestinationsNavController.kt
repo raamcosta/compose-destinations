@@ -10,7 +10,7 @@ import androidx.navigation.NavOptionsBuilder
  * Implementation of [DestinationsNavigator] that uses
  * a [NavController] to navigate.
  */
-class DestinationsNavController(
+internal class DestinationsNavController(
     private val navController: NavController,
     private val navBackStackEntry: NavBackStackEntry,
 ) : DestinationsNavigator {

@@ -3,7 +3,7 @@ package com.ramcosta.composedestinations.spec
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.*
-import com.ramcosta.composedestinations.manualcomposablecalls.DestinationScope
+import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 
 /**

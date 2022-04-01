@@ -54,33 +54,3 @@ interface ResultBackNavigator<R> {
      */
     fun navigateBack()
 }
-
-/**
- * Returns a well typed [ResultBackNavigator] for [navController] and [destinationSpec].
- * You shouldn't have to call this directly, it is public to be used in the generated code.
- *
- * If you're manually calling your Composable, then use
- * [com.ramcosta.composedestinations.manualcomposablecalls.resultBackNavigator] instead.
- */
-@Composable
-inline fun <reified R> resultBackNavigator(
-    navController: NavController,
-    destinationSpec: DestinationSpec<*>
-): ResultBackNavigator<R> {
-
-    val backNavigator = remember {
-        ResultBackNavigatorImpl(
-            navController = navController,
-            resultOriginType = if (destinationSpec is DynamicDestinationSpec) {
-                destinationSpec.delegate.javaClass
-            } else {
-                destinationSpec.javaClass
-            },
-            resultType = R::class.java
-        )
-    }
-
-    backNavigator.handleCanceled()
-
-    return backNavigator
-}

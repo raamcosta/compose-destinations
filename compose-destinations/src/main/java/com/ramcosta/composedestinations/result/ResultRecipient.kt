@@ -6,8 +6,6 @@ package com.ramcosta.composedestinations.result
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
-import androidx.compose.runtime.remember
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
 /**
@@ -60,24 +58,4 @@ interface ResultRecipient<D : DestinationSpec<*>, R> {
     @Deprecated("You should migrate to `onNavResult` as this API will be removed in the near future.")
     @Composable
     fun onResult(listener: @DisallowComposableCalls (R) -> Unit)
-}
-
-/**
- * Returns a well typed [ResultRecipient] for [navBackStackEntry].
- * You shouldn't have to call this directly, it is public to be used in the generated code.
- *
- * If you're manually calling your Composable, then use
- * [com.ramcosta.composedestinations.manualcomposablecalls.resultRecipient] instead.
- */
-@Composable
-inline fun <reified D : DestinationSpec<*>, reified R> resultRecipient(
-    isRecipientDialogStyled: Boolean,
-    navBackStackEntry: NavBackStackEntry
-): ResultRecipient<D, R> = remember {
-    ResultRecipientImpl(
-        isRecipientDialogStyled = isRecipientDialogStyled,
-        navBackStackEntry = navBackStackEntry,
-        resultOriginType = D::class.java,
-        resultType = R::class.java,
-    )
 }

@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.manualcomposablecalls
+package com.ramcosta.composedestinations.scope
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -13,10 +13,9 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.resultBackNavigator
 import com.ramcosta.composedestinations.result.resultRecipient
 import com.ramcosta.composedestinations.spec.DestinationSpec
-import com.ramcosta.composedestinations.spec.DestinationStyle
 
 /**
- * Scope given to the calls related to the [ManualComposableCallsBuilder].
+ * Scope where a destination screen will be called in.
  */
 @Immutable
 interface DestinationScope<T> {
@@ -53,14 +52,14 @@ interface DestinationScope<T> {
  */
 @Composable
 inline fun <reified R> DestinationScope<*>.resultBackNavigator(): ResultBackNavigator<R> =
-    resultBackNavigator(navController, (this as DestinationScopeImpl<*>).destination)
+    resultBackNavigator(destination, R::class.java, navController)
 
 /**
  * Returns a well typed [ResultRecipient] for this [DestinationScope]
  */
 @Composable
 inline fun <reified D : DestinationSpec<*>, reified R> DestinationScope<*>.resultRecipient(): ResultRecipient<D, R> =
-     resultRecipient(destination.style is DestinationStyle.Dialog, navBackStackEntry)
+    resultRecipient(destination, navBackStackEntry, D::class.java, R::class.java)
 
 /**
  * Like [DestinationScope] but also [AnimatedVisibilityScope] so that
@@ -68,6 +67,7 @@ inline fun <reified D : DestinationSpec<*>, reified R> DestinationScope<*>.resul
  * of your Animated Composable
  */
 @ExperimentalAnimationApi
+@Immutable
 interface AnimatedDestinationScope<T> : DestinationScope<T>, AnimatedVisibilityScope
 
 /**
@@ -75,4 +75,5 @@ interface AnimatedDestinationScope<T> : DestinationScope<T>, AnimatedVisibilityS
  * if you're using the "animations-core" you can use this Scope as a receiver
  * of your Bottom Sheet styled Composable
  */
+@Immutable
 interface BottomSheetDestinationScope<T> : DestinationScope<T>, ColumnScope

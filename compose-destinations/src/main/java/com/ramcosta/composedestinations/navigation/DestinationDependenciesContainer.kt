@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.navigation
 
-import com.ramcosta.composedestinations.manualcomposablecalls.DestinationScope
+import com.ramcosta.composedestinations.scope.DestinationScope
 import kotlin.reflect.KClass
 
 /**
@@ -42,7 +42,8 @@ class DestinationDependenciesContainer<T>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <D: Any> require(type: KClass<in D>): D {
+    @PublishedApi
+    internal fun <D: Any> require(type: KClass<in D>): D {
         var depForType: D? = map[type.java] as? D
 
         if (depForType == null) {

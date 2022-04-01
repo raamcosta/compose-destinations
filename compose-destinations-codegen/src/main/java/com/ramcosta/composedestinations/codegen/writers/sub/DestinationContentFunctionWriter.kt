@@ -87,11 +87,11 @@ class DestinationContentFunctionWriter(
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
             DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "destinationsNavigator"
             RESULT_RECIPIENT_QUALIFIED_NAME -> {
-                additionalImports.add("$CORE_PACKAGE_NAME.manualcomposablecalls.resultRecipient")
+                additionalImports.add("$CORE_PACKAGE_NAME.scope.resultRecipient")
                 "resultRecipient()"
             }
             RESULT_BACK_NAVIGATOR_QUALIFIED_NAME -> {
-                additionalImports.add("$CORE_PACKAGE_NAME.manualcomposablecalls.resultBackNavigator")
+                additionalImports.add("$CORE_PACKAGE_NAME.scope.resultBackNavigator")
                 "resultBackNavigator()"
             }
             destination.navArgsDelegateType?.qualifiedName -> {
