@@ -66,7 +66,7 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
     }
 
     override fun parseValue(value: String): $CLASS_SIMPLE_NAME_CAMEL_CASE {
-        return stringSerializer.fromRouteString(value)
+        return stringSerializer.fromRouteString(value)$PARSE_VALUE_CAST_TO_CLASS
     }
 
     override fun serializeValue(value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?): String? =

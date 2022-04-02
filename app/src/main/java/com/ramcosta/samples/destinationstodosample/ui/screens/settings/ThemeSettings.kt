@@ -19,7 +19,7 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.samples.destinationstodosample.commons.Routes
 import com.ramcosta.samples.destinationstodosample.commons.requireTitle
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ThemeSettingsDestination
-import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExample
+import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 
 @Destination(
     route = Routes.THEME_SETTINGS,
@@ -29,7 +29,7 @@ import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Serializab
 @Composable
 fun ColumnScope.ThemeSettings(
     viewModel: SettingsViewModel,
-    resultNavigator: ResultBackNavigator<SerializableExample>
+    resultNavigator: ResultBackNavigator<SerializableExampleWithNavTypeSerializer>
 ) {
     Box(
         Modifier
@@ -48,7 +48,7 @@ fun ColumnScope.ThemeSettings(
             Button(
                 onClick = {
                     resultNavigator.navigateBack(
-                        result = SerializableExample("RESULT!!", "THING2")
+                        result = SerializableExampleWithNavTypeSerializer("RESULT!!", "THING2")
                     )
                 }
             ) {

@@ -14,7 +14,9 @@ data class ProfileScreenNavArgs(
     val stuff: Stuff = Stuff.STUFF1,
     val groupName: String = DEFAULT_GROUP,
     val things: ArgumentThings?,
-    val serializableExample: SerializableExample? = null,
+    val thingsWithNavTypeSerializer: Things?,
+    val serializableExample: SerializableExample? = SerializableExample(),
+    val serializableExampleWithNavTypeSerializer: SerializableExampleWithNavTypeSerializer? = null,
     val color: Color
 )
 
@@ -31,9 +33,14 @@ data class Things(
     val thing2: String = "ASDASDASD"
 ) : ArgumentThings
 
-data class SerializableExample(
+data class SerializableExampleWithNavTypeSerializer(
     val thing1: String = "SERIALIZABLE/11/1",
     val thing2: String = "qweqew?asd=SERIALIZABLE222"
+) : Serializable
+
+data class SerializableExample(
+    val thing1: String = "SerializableExampleWithNoNavTypeSerializer/11/1",
+    val thing2: String = "qweqew?asd=SerializableExampleWithNoNavTypeSerializer"
 ) : Serializable
 
 
@@ -51,15 +58,15 @@ object ThingsNavTypeSerializer : DestinationsNavTypeSerializer<Things> {
 }
 
 @NavTypeSerializer
-class SerializableExampleSerializer : DestinationsNavTypeSerializer<SerializableExample> {
+class SerializableExampleSerializer : DestinationsNavTypeSerializer<SerializableExampleWithNavTypeSerializer> {
 
-    override fun toRouteString(value: SerializableExample): String {
+    override fun toRouteString(value: SerializableExampleWithNavTypeSerializer): String {
         return "${value.thing1};${value.thing2}"
     }
 
-    override fun fromRouteString(routeStr: String): SerializableExample {
+    override fun fromRouteString(routeStr: String): SerializableExampleWithNavTypeSerializer {
         return routeStr.split(";").run {
-            SerializableExample(get(0), get(1))
+            SerializableExampleWithNavTypeSerializer(get(0), get(1))
         }
     }
 

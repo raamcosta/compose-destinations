@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navargs.NavTypeSerializer
 import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
-import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExample
+import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Stuff
 import kotlinx.parcelize.Parcelize
 
@@ -23,7 +23,7 @@ fun TestScreen(
     stuff1: Long = 1L,
     stuff2: Stuff?,
     stuff3: Things? = Things(),
-    stuff4: SerializableExample? = SerializableExample(),
+    stuff4: SerializableExampleWithNavTypeSerializer? = SerializableExampleWithNavTypeSerializer(),
     stuff5: Color,
 ) {
     Text(

@@ -25,7 +25,7 @@ import com.ramcosta.samples.destinationstodosample.commons.Routes
 import com.ramcosta.samples.destinationstodosample.commons.requireTitle
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.SettingsDestination
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ThemeSettingsDestination
-import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExample
+import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.destinationstodosample.ui.screens.styles.SettingsTransitions
 
 const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
@@ -42,7 +42,7 @@ const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 fun Settings(
     navigator: DestinationsNavigator,
     viewModel: SettingsViewModel,
-    themeSettingsResultRecipient: ResultRecipient<ThemeSettingsDestination, SerializableExample>
+    themeSettingsResultRecipient: ResultRecipient<ThemeSettingsDestination, SerializableExampleWithNavTypeSerializer>
 ) {
     val context = LocalContext.current
     themeSettingsResultRecipient.onNavResult {
