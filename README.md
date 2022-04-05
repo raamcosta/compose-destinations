@@ -14,15 +14,15 @@
 A KSP library that processes annotations and generates code that uses Official Jetpack Compose Navigation under the hood. It hides the complex, non-type-safe and boilerplate code you would have to write otherwise. </br>
 No need to learn a whole new framework to navigate - most APIs are either the same as with the Jetpack Components or inspired by them.
 
-- Main features:
-    - Typesafe navigation arguments
-    - Simple but configurable navigation graphs setup 
-    - Navigating back with a result in a simple and type-safe way
-    - Getting the navigation arguments from the `SavedStateHandle` (useful in ViewModels) and `NavBackStackEntry` in a type-safe way.
-    - Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
-    - Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
-    - Easy deep linking to screens
-    - All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
+### Main features
+- Typesafe navigation arguments
+- Simple but configurable navigation graphs setup 
+- Navigating back with a result in a simple and type-safe way
+- Getting the navigation arguments from the `SavedStateHandle` (useful in ViewModels) and `NavBackStackEntry` in a type-safe way.
+- Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
+- Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
+- Easy deep linking to screens
+- All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
 
 For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
 
