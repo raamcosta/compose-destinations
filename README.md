@@ -26,7 +26,14 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
 
 For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
 
-## Usage
+## Materials
+
+- Philipp Lackner's Youtube video [_Compose Navigation Just Got SO MUCH EASIER_ 😱](https://www.youtube.com/watch?v=Q3iZyW2etm4)
+- Yanneck Reiß's [_Type Safe Navigation With Jetpack Compose Destinations_](https://medium.com/codex/type-save-navigation-with-jetpack-compose-destinations-610514e85370)
+- Google Dev Expert Kenji Abe's [_Navigation Composeを便利にしてくれるライブラリ_](https://star-zero.medium.com/navigation-compose%E3%82%92%E4%BE%BF%E5%88%A9%E3%81%AB%E3%81%97%E3%81%A6%E3%81%8F%E3%82%8C%E3%82%8B%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA-c2d0133b3e84)
+- Rafael Costa's [_Compose Destinations: simpler and safer navigation in Compose with no compromises_](https://proandroiddev.com/compose-destinations-simpler-and-safer-navigation-in-compose-with-no-compromises-74a59c6b727d)
+
+## Basic Usage
 
 1. Annotate your screen Composables with `@Destination`:
 
@@ -97,7 +104,7 @@ Example:
 If you're using `1.5.31` Kotlin version, then the last KSP version is `1.5.31-1.0.1`.
 
 <details open>
-  <summary>groovy - build.gradle(:app)</summary>
+  <summary>groovy - build.gradle(:module-name)</summary>
 
 ```gradle
 plugins {
@@ -108,7 +115,7 @@ plugins {
 </details>
 
 <details>
-  <summary>kotlin - build.gradle.kts(:app)</summary>  
+  <summary>kotlin - build.gradle.kts(:module-name)</summary>  
 
 ```gradle
 plugins {
@@ -121,7 +128,7 @@ plugins {
 #### 2. Add the dependencies:
 
 <details open>
-  <summary>groovy - build.gradle(:app)</summary>
+  <summary>groovy - build.gradle(:module-name)</summary>
 
 ```gradle
 implementation 'io.github.raamcosta.compose-destinations:core:1.4.2-beta'
@@ -130,7 +137,7 @@ ksp 'io.github.raamcosta.compose-destinations:ksp:1.4.2-beta'
 </details>
 
 <details>
-  <summary>kotlin - build.gradle.kts(:app)</summary>  
+  <summary>kotlin - build.gradle.kts(:module-name)</summary>  
 
 ```gradle
 implementation("io.github.raamcosta.compose-destinations:core:1.4.2-beta")
@@ -145,22 +152,38 @@ ksp("io.github.raamcosta.compose-destinations:ksp:1.4.2-beta")
 
 
 #### 3. And finally, you need to make sure the IDE looks at the generated folder.
-See KSP related [issue](https://github.com/google/ksp/issues/37).
-An example for the debug/release variant would be:
+See KSP related [issue](https://github.com/google/ksp/issues/37).  
+Here is an example of how to do that for all your build variants (inside `android` block):
 
-groovy/kotlin - gradle.build(:app) (same level as `plugins` and `android` blocks):
+> !! Replace `applicationVariants` with `libraryVariants` if the module uses `'com.android.library'` plugin!
+
+<details open>
+  <summary>groovy - build.gradle(:module-name)</summary>
+
 ```gradle
-kotlin {
-    sourceSets {
-        debug {
-            kotlin.srcDir("build/generated/ksp/debug/kotlin")
-        }
-        release {
-            kotlin.srcDir("build/generated/ksp/release/kotlin")
+applicationVariants.all { variant ->
+    kotlin.sourceSets {
+        getByName(variant.name) {
+            kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
         }
     }
 }
 ```
+</details>
+
+<details>
+  <summary>kotlin - build.gradle.kts(:module-name)</summary>  
+
+```gradle
+applicationVariants.all {
+    kotlin.sourceSets {
+        getByName(name) {
+            kotlin.srcDir("build/generated/ksp/$name/kotlin")
+        }
+    }
+}
+```
+</details>
 
 ## About
 
