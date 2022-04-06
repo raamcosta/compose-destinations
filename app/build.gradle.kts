@@ -93,7 +93,7 @@ android {
 dependencies {
 
     implementation(project(mapOf("path" to ":compose-destinations-animations")))
-    implementation(project(mapOf("path" to ":composedestinations-ktx-serialization")))
+    implementation(project(mapOf("path" to ":compose-destinations-ktx-serialization")))
     ksp(project(":compose-destinations-ksp"))
 
     with(Deps.Android) {
