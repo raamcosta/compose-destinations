@@ -6,17 +6,6 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-kotlin {
-    sourceSets {
-        debug {
-            kotlin.srcDir("build/generated/ksp/debug/kotlin")
-        }
-        release {
-            kotlin.srcDir("build/generated/ksp/release/kotlin")
-        }
-    }
-}
-
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 }
@@ -63,6 +52,14 @@ android {
 
     packagingOptions {
         resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+    }
+
+    applicationVariants.all {
+        kotlin.sourceSets {
+            getByName(name) {
+                kotlin.srcDir("build/generated/ksp/$name/kotlin")
+            }
+        }
     }
 
     // Possible Compose Destinations configs:
