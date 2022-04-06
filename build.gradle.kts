@@ -18,6 +18,9 @@ buildscript {
             classpath(kotlin)
             classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
         }
+        with(Versions) {
+            classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlin")
+        }
     }
 }
 
