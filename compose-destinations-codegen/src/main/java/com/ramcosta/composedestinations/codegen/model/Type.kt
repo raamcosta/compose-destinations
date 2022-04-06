@@ -8,5 +8,6 @@ data class Type(
     val isEnum: Boolean,
     val isParcelable: Boolean,
     val isSerializable: Boolean,
-    val hasCustomTypeSerializer: Boolean
+    val hasCustomTypeSerializer: Boolean,
+    val isKtxSerializable: Boolean,
 )

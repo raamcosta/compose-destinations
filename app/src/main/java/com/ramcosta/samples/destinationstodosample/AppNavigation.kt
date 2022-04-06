@@ -157,6 +157,7 @@ fun SampleAppAnimatedNavHostExample(
                 stuff2 = navArgs.stuff2,
                 stuff3 = navArgs.stuff3,
                 stuff5 = navArgs.stuff5,
+                stuff6 = navArgs.stuff6,
             )
         }
 

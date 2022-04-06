@@ -74,7 +74,7 @@ class NavArgResolver(
                     isParcelable || isSerializable -> {
                         "get(\"$argName\")"
                     }
-                    hasCustomTypeSerializer -> {
+                    hasCustomTypeSerializer || isKtxSerializable -> {
                         val navTypeName = customNavTypeByType[this.classType]!!.name
                         "get<String>(\"$argName\")?.let { $navTypeName.parseValue(it) }"
                     }
@@ -106,7 +106,7 @@ class NavArgResolver(
                     isSerializable -> {
                         "getSerializable(\"$argName\") as? ${this.classType.simpleName}?"
                     }
-                    hasCustomTypeSerializer -> {
+                    hasCustomTypeSerializer || isKtxSerializable -> {
                         val navTypeName = customNavTypeByType[this.classType]!!.name
                         "getString(\"$argName\")?.let { $navTypeName.parseValue(it) }"
                     }

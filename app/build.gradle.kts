@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     id("com.google.devtools.ksp") version Versions.ksp
     id("kotlin-parcelize")
+    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -92,6 +93,7 @@ android {
 dependencies {
 
     implementation(project(mapOf("path" to ":compose-destinations-animations")))
+    implementation(project(mapOf("path" to ":composedestinations-ktx-serialization")))
     ksp(project(":compose-destinations-ksp"))
 
     with(Deps.Android) {

@@ -8,7 +8,6 @@ import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
 import com.ramcosta.composedestinations.ksp.commons.*
 import java.io.File
-import java.util.*
 
 class KspToCodeGenDestinationsMapper(
     private val resolver: Resolver,
@@ -161,7 +160,13 @@ class KspToCodeGenDestinationsMapper(
             isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
             isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
             isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false,
-            hasCustomTypeSerializer = navTypeSerializersByType[classType] != null
+            hasCustomTypeSerializer = navTypeSerializersByType[classType] != null,
+            isKtxSerializable = declaration.annotations.any {
+                it.annotationType.resolve().declaration.qualifiedName?.asString()
+                    ?.let { qualifiedName ->
+                        qualifiedName == "kotlinx.serialization.Serializable"
+                    } ?: false
+            },
         )
     }
 

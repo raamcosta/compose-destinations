@@ -68,7 +68,8 @@ fun Parameter.isComplexTypeNavArg(): Boolean {
 
     return type.isParcelable ||
             (type.isSerializable && !type.isPrimitive()) ||
-            type.hasCustomTypeSerializer
+            type.hasCustomTypeSerializer ||
+            type.isKtxSerializable
 }
 
 fun String.removeFromTo(from: String, to: String): String {
