@@ -136,7 +136,7 @@ class CustomNavTypesWriter(
             .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, classType.simpleName)
             .replace(
                 DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
-                if (navTypeSerializer == null) "Serializable" else classType.simpleName
+                classType.simpleName,
             )
             .replace(ADDITIONAL_IMPORTS, serializableAdditionalImports(this, navTypeSerializer))
 

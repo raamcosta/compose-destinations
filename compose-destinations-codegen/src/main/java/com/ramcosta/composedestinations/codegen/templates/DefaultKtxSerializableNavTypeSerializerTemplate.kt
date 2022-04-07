@@ -36,18 +36,24 @@ class $DEFAULT_KTX_SERIALIZABLE_NAV_TYPE_SERIALIZER_TEMPLATE_NAME<T : @Serializa
 ) : DestinationsNavTypeSerializer<T> {
 
     override fun toRouteString(value: T): String {
-        return ByteArrayOutputStream().use {
-            Json.encodeToStream(serializer, value, it)
-            it.toByteArray().toBase64Str()
-        }
+        return toByteArray(value).toBase64Str()
     }
 
     override fun fromRouteString(routeStr: String): T {
         val bytes = routeStr.base64ToByteArray()
-        return ByteArrayInputStream(bytes).use {
+        return fromByteArray(bytes)
+    }
+    
+    fun toByteArray(value: T): ByteArray =
+        ByteArrayOutputStream().use {
+            Json.encodeToStream(serializer, value, it)
+            it.toByteArray()
+        }
+    
+    fun fromByteArray(bytes: ByteArray): T =
+        ByteArrayInputStream(bytes).use {
             Json.decodeFromStream(serializer, it)
         }
-    }
 
     private fun String.base64ToByteArray(): ByteArray {
         return Base64.decode(

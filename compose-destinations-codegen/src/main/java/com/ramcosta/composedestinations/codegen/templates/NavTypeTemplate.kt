@@ -125,10 +125,10 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
 ) : DestinationsNavType<${CLASS_SIMPLE_NAME_CAMEL_CASE}?>() {
 
     override fun get(bundle: Bundle, key: String): ${CLASS_SIMPLE_NAME_CAMEL_CASE}? =
-        bundle.getString(key)?.let { parseValue(it) }
+        bundle.getByteArray(key)?.let { fromByteArray(it) }
 
     override fun put(bundle: Bundle, key: String, value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?) {
-        bundle.putString(key, serializeValue(value))
+        bundle.putByteArray(key, value?.let { toByteArray(it) })
     }
 
     override fun parseValue(value: String): $CLASS_SIMPLE_NAME_CAMEL_CASE =
@@ -136,5 +136,10 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
 
     override fun serializeValue(value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?): String? =
         value?.let { encodeForRoute(serializer.toRouteString(value)) }
+
+    fun fromByteArray(bytes: ByteArray): $CLASS_SIMPLE_NAME_CAMEL_CASE = 
+        serializer.fromByteArray(bytes)
+
+    fun toByteArray(value: OtherThings): ByteArray = serializer.toByteArray(value)
 }
 """.trimIndent()
