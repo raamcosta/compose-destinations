@@ -113,4 +113,9 @@ dependencies {
     with(Deps.KtxSerialization) {
         api(json)
     }
+
+    with(Deps.Test) {
+        testImplementation(junit)
+        testImplementation(mockk)
+    }
 }

@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.navargs.ktxserializable
 
 import android.util.Base64
+import com.ramcosta.samples.destinationstodosample.ui.screens.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll

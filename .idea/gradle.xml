@@ -16,7 +16,6 @@
             <option value="$PROJECT_DIR$/compose-destinations-animations" />
             <option value="$PROJECT_DIR$/compose-destinations-codegen" />
             <option value="$PROJECT_DIR$/compose-destinations-ksp" />
-            <option value="$PROJECT_DIR$/compose-destinations-ktx-serialization" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
