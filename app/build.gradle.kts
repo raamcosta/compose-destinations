@@ -93,7 +93,6 @@ android {
 dependencies {
 
     implementation(project(mapOf("path" to ":compose-destinations-animations")))
-    implementation(project(mapOf("path" to ":compose-destinations-ktx-serialization")))
     ksp(project(":compose-destinations-ksp"))
 
     with(Deps.Android) {
@@ -109,5 +108,9 @@ dependencies {
     with(Deps.AndroidX) {
         implementation(lifecycleRuntimeKtx)
         implementation(activityCompose)
+    }
+
+    with(Deps.KtxSerialization) {
+        api(json)
     }
 }
