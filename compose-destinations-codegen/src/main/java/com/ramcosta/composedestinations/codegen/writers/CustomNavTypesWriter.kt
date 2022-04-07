@@ -1,7 +1,9 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.isComplexTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
@@ -212,10 +214,7 @@ class CustomNavTypesWriter(
         className: String
     ): String {
         if (navTypeSerializer == null) {
-            return """
-                |   DefaultKtxSerializableNavTypeSerializer(
-                |       serializer = $className.serializer(),
-                |   )""".trimMargin()
+            return "DefaultKtxSerializableNavTypeSerializer($className.serializer())"
         }
 
         return navTypeSerializerCode(navTypeSerializer)
