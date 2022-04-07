@@ -138,7 +138,7 @@ class CustomNavTypesWriter(
                 DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
                 classType.simpleName,
             )
-            .replace(ADDITIONAL_IMPORTS, serializableAdditionalImports(this, navTypeSerializer))
+            .replace(ADDITIONAL_IMPORTS, ktxSerializableAdditionalImports(this, navTypeSerializer))
 
         out.close()
     }
@@ -257,13 +257,13 @@ class CustomNavTypesWriter(
 
     private fun ktxSerializableAdditionalImports(
         type: Type,
-        customSerializer: NavTypeSerializer?
+        customSerializer: NavTypeSerializer?,
     ): String {
         var imports = "\nimport ${type.classType.qualifiedName}"
         imports += if (customSerializer != null) {
             "\nimport ${customSerializer.serializerType.qualifiedName}"
         } else {
-            "\nimport $CORE_PACKAGE_NAME.navargs.serializable.DefaultKtxSerializableNavTypeSerializer"
+            "\nimport ${codeGenBasePackageName}.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer"
         }
 
         return imports
