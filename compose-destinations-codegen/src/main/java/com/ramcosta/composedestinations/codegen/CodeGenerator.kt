@@ -48,6 +48,13 @@ class CodeGenerator(
         if (shouldWriteSealedDestinations) {
             sealedDestinationWriter.write()
         }
+
+        val shouldWriteKtxSerializableNavTypeSerializer =
+            shouldWriteKtxSerializableNavTypeSerializer(destinations)
+
+        if (shouldWriteKtxSerializableNavTypeSerializer) {
+            defaultKtxSerializableNavTypeSerializer.write()
+        }
     }
 
     private fun writeForMode(generatedDestinations: List<GeneratedDestination>): List<NavGraphGeneratingParams> {
@@ -89,6 +96,16 @@ class CodeGenerator(
 
     private fun shouldWriteSealedDestinations(destinations: List<DestinationGeneratingParams>): Boolean {
         return codeGenConfig.mode is CodeGenMode.SingleModule || destinations.size > 1
+    }
+
+    private fun shouldWriteKtxSerializableNavTypeSerializer(
+        destinations: List<DestinationGeneratingParams>,
+    ) = destinations.any {
+        it.parameters.any { param ->
+            param.type.run {
+                isKtxSerializable && !hasCustomTypeSerializer
+            }
+        }
     }
 
     private fun List<DestinationGeneratingParams>.getCommonPackageNamePart(): String {

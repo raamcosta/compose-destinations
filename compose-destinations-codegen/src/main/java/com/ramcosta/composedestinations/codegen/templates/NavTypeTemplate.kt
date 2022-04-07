@@ -110,7 +110,7 @@ package $codeGenBasePackageName.navtype
 import android.os.Bundle
 import java.io.Serializable
 import $CORE_PACKAGE_NAME.navargs.DestinationsNavType
-import $CORE_PACKAGE_NAME.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer
+import $codeGenBasePackageName.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer
 import $CORE_PACKAGE_NAME.navargs.utils.encodeForRoute$ADDITIONAL_IMPORTS
 import kotlinx.serialization.ExperimentalSerializationApi
 
