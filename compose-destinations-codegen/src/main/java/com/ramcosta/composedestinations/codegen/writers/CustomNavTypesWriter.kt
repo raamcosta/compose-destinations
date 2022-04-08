@@ -86,7 +86,6 @@ class CustomNavTypesWriter(
 
             isKtxSerializable -> generateKtxSerializableCustomNavType(
                 className,
-                navTypeSerializer,
                 out,
                 navTypeName,
             )
@@ -122,7 +121,6 @@ class CustomNavTypesWriter(
 
     private fun Type.generateKtxSerializableCustomNavType(
         navTypeClassName: String,
-        navTypeSerializer: NavTypeSerializer?,
         out: OutputStream,
         navTypeName: String
     ) {
@@ -131,14 +129,14 @@ class CustomNavTypesWriter(
             .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
             .replace(
                 SERIALIZER_SIMPLE_CLASS_NAME,
-                kxtSerializableNavTypeSerializerCode(navTypeSerializer, classType.simpleName)
+                "DefaultKtxSerializableNavTypeSerializer(${classType.simpleName}.serializer())"
             )
             .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, classType.simpleName)
             .replace(
                 DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
                 classType.simpleName,
             )
-            .replace(ADDITIONAL_IMPORTS, ktxSerializableAdditionalImports(this, navTypeSerializer))
+            .replace(ADDITIONAL_IMPORTS, ktxSerializableAdditionalImports(this))
 
         out.close()
     }
@@ -160,7 +158,7 @@ class CustomNavTypesWriter(
             .replace(DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE, classType.simpleName)
             .replace(
                 ADDITIONAL_IMPORTS,
-                ktxSerializableAdditionalImports(this, navTypeSerializer),
+                customTypeSerializerAdditionalImports(this, navTypeSerializer),
             )
 
         out.close()
@@ -209,17 +207,6 @@ class CustomNavTypesWriter(
         return navTypeSerializerCode(navTypeSerializer)
     }
 
-    private fun kxtSerializableNavTypeSerializerCode(
-        navTypeSerializer: NavTypeSerializer?,
-        className: String
-    ): String {
-        if (navTypeSerializer == null) {
-            return "DefaultKtxSerializableNavTypeSerializer($className.serializer())"
-        }
-
-        return navTypeSerializerCode(navTypeSerializer)
-    }
-
     private fun navTypeSerializerCode(navTypeSerializer: NavTypeSerializer): String {
         val simpleName = navTypeSerializer.serializerType.simpleName
 
@@ -256,18 +243,11 @@ class CustomNavTypesWriter(
     }
 
     private fun ktxSerializableAdditionalImports(
-        type: Type,
-        customSerializer: NavTypeSerializer?,
-    ): String {
-        var imports = "\nimport ${type.classType.qualifiedName}"
-        imports += if (customSerializer != null) {
-            "\nimport ${customSerializer.serializerType.qualifiedName}"
-        } else {
-            "\nimport ${codeGenBasePackageName}.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer"
-        }
-
-        return imports
-    }
+        type: Type
+    ): String = """
+        import ${type.classType.qualifiedName}
+        import ${codeGenBasePackageName}.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer
+    """.trimIndent()
 
     private fun customTypeSerializerAdditionalImports(
         type: Type,
