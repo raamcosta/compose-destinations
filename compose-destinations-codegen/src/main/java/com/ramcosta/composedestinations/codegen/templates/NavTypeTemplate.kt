@@ -139,6 +139,6 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
     fun fromByteArray(bytes: ByteArray): $CLASS_SIMPLE_NAME_CAMEL_CASE = 
         serializer.fromByteArray(bytes)
 
-    fun toByteArray(value: OtherThings): ByteArray = serializer.toByteArray(value)
+    fun toByteArray(value: $CLASS_SIMPLE_NAME_CAMEL_CASE): ByteArray = serializer.toByteArray(value)
 }
 """.trimIndent()
