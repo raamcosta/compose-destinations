@@ -161,14 +161,17 @@ class KspToCodeGenDestinationsMapper(
             isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
             isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false,
             hasCustomTypeSerializer = navTypeSerializersByType[classType] != null,
-            isKtxSerializable = declaration.annotations.any {
-                it.annotationType.resolve().declaration.qualifiedName?.asString()
-                    ?.let { qualifiedName ->
-                        qualifiedName == "kotlinx.serialization.Serializable"
-                    } ?: false
-            },
+            isKtxSerializable = isKtxSerializable(),
         )
     }
+
+    private fun KSType.isKtxSerializable() =
+        declaration.annotations.any {
+            it.annotationType.resolve().declaration.qualifiedName?.asString()
+                ?.let { qualifiedName ->
+                    qualifiedName == "kotlinx.serialization.Serializable"
+                } ?: false
+        }
 
     private fun KSType.genericTypes(location: Location): List<GenericType> {
         return arguments.mapNotNull { typeArg ->
