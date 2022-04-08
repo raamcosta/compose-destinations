@@ -93,7 +93,7 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         bundle.getString(key)?.let { parseValue(it) }
 
     override fun put(bundle: Bundle, key: String, value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?) {
-        bundle.putString(key, serializeValue(value))
+        bundle.putString(key, value?.let { customSerializer.toRouteString(it) })
     }
 
     override fun parseValue(value: String): $CLASS_SIMPLE_NAME_CAMEL_CASE =
