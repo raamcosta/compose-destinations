@@ -111,7 +111,8 @@ import android.os.Bundle
 import java.io.Serializable
 import $CORE_PACKAGE_NAME.navargs.DestinationsNavType
 import $CORE_PACKAGE_NAME.navargs.utils.encodeForRoute
-import kotlinx.serialization.ExperimentalSerializationApi$ADDITIONAL_IMPORTS
+import kotlinx.serialization.ExperimentalSerializationApi
+$ADDITIONAL_IMPORTS
 
 @OptIn(ExperimentalSerializationApi::class)
 val $NAV_TYPE_NAME = ${NAV_TYPE_CLASS_SIMPLE_NAME}(
