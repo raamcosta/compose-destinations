@@ -63,7 +63,7 @@ internal val ServiceLocatorAccessor.initialValidator get() = InitialValidator(
     core
 )
 
-internal val ServiceLocatorAccessor.defaultKtxSerializableNavTypeSerializer get() =
+internal val ServiceLocatorAccessor.defaultKtxSerializableNavTypeSerializerWriter get() =
     DefaultKtxSerializableNavTypeSerializerWriter(
         codeGenerator,
     )

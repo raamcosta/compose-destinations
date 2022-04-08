@@ -53,7 +53,7 @@ class CodeGenerator(
             shouldWriteKtxSerializableNavTypeSerializer(destinations)
 
         if (shouldWriteKtxSerializableNavTypeSerializer) {
-            defaultKtxSerializableNavTypeSerializer.write()
+            defaultKtxSerializableNavTypeSerializerWriter.write()
         }
     }
 
