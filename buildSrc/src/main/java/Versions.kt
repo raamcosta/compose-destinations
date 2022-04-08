@@ -20,7 +20,7 @@ object Versions {
 
     const val compose = "1.1.1"
     const val composeCompiler = compose
-    const val composeNavigation = "2.4.1"
+    const val composeNavigation = "2.4.2"
     const val accompanist = "0.23.1"
 
     const val ktxSerialization = "1.3.2"
