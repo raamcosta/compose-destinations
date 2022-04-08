@@ -111,7 +111,7 @@ dependencies {
     }
 
     with(Deps.KtxSerialization) {
-        api(json)
+        implementation(json)
     }
 
     with(Deps.Test) {

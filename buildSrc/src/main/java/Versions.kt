@@ -31,6 +31,7 @@ object Deps {
 
     object Gradle {
         const val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+        const val kotlinSerialization = "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlin}"
         const val dependencyCheckPlugin = "com.github.ben-manes.versions"
         const val pluginVersion = "com.android.tools.build:gradle:${Versions.gradlePluginVersion}"
     }
