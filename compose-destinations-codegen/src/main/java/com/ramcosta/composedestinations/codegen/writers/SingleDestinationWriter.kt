@@ -361,7 +361,8 @@ class SingleDestinationWriter(
             code += "type = $toNavTypeCode\n\t\t"
             if (it.type.isNullable) {
                 if (toNavTypeCode != CORE_STRING_NAV_TYPE && !it.isComplexTypeNavArg()) {
-                    throw IllegalDestinationsSetup("Composable '${destination.composableName}', argument '${it.name}': Only String, Parcelable, Serializable and Enum navigation arguments can be nullable")
+                    throw IllegalDestinationsSetup("Composable '${destination.composableName}', argument '${it.name}': " +
+                            "Only String, Parcelable, Serializable, KtxSerializable, types with custom serializer and Enum navigation arguments can be nullable")
                 }
                 code += "\tnullable = true\n\t\t"
             }

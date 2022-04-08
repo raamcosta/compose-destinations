@@ -15,6 +15,7 @@ import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.Stuff
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Destination
 @Composable
@@ -25,6 +26,7 @@ fun TestScreen(
     stuff3: Things? = Things(),
     stuff4: SerializableExampleWithNavTypeSerializer? = SerializableExampleWithNavTypeSerializer(),
     stuff5: Color,
+    stuff6: OtherThings,
 ) {
     Text(
         modifier = Modifier
@@ -38,6 +40,7 @@ fun TestScreen(
             stuff3 = $stuff3
             stuff4 = $stuff4
             stuff5 = $stuff5
+            stuff6 = $stuff6
         """.trimIndent()
     )
 }
@@ -47,6 +50,16 @@ data class Things(
     val thingyOne: String = "thingy1",
     val thingyTwo: String = "thingy2",
 ) : Parcelable
+
+@Serializable
+data class OtherThings(
+    val thatIsAThing: String,
+    val thatIsAValueClass: ValueClass,
+)
+
+@JvmInline
+@Serializable
+value class ValueClass(val value: String)
 
 @NavTypeSerializer
 class ColorTypeSerializer : DestinationsNavTypeSerializer<Color> {

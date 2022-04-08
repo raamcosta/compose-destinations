@@ -103,3 +103,43 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         value?.let { encodeForRoute(customSerializer.toRouteString(value)) }
 }
 """.trimIndent()
+
+val ktxSerializableNavTypeTemplate = """
+package $codeGenBasePackageName.navtype
+
+import android.os.Bundle
+import java.io.Serializable
+import $CORE_PACKAGE_NAME.navargs.DestinationsNavType
+import $CORE_PACKAGE_NAME.navargs.utils.encodeForRoute
+import kotlinx.serialization.ExperimentalSerializationApi
+$ADDITIONAL_IMPORTS
+
+@OptIn(ExperimentalSerializationApi::class)
+val $NAV_TYPE_NAME = ${NAV_TYPE_CLASS_SIMPLE_NAME}(
+    $SERIALIZER_SIMPLE_CLASS_NAME
+)
+
+@OptIn(ExperimentalSerializationApi::class)
+class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
+    private val serializer: DefaultKtxSerializableNavTypeSerializer<$CLASS_SIMPLE_NAME_CAMEL_CASE>
+) : DestinationsNavType<${CLASS_SIMPLE_NAME_CAMEL_CASE}?>() {
+
+    override fun get(bundle: Bundle, key: String): ${CLASS_SIMPLE_NAME_CAMEL_CASE}? =
+        bundle.getByteArray(key)?.let { fromByteArray(it) }
+
+    override fun put(bundle: Bundle, key: String, value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?) {
+        bundle.putByteArray(key, value?.let { toByteArray(it) })
+    }
+
+    override fun parseValue(value: String): $CLASS_SIMPLE_NAME_CAMEL_CASE =
+        serializer.fromRouteString(value)
+
+    override fun serializeValue(value: ${CLASS_SIMPLE_NAME_CAMEL_CASE}?): String? =
+        value?.let { encodeForRoute(serializer.toRouteString(value)) }
+
+    fun fromByteArray(bytes: ByteArray): $CLASS_SIMPLE_NAME_CAMEL_CASE = 
+        serializer.fromByteArray(bytes)
+
+    fun toByteArray(value: $CLASS_SIMPLE_NAME_CAMEL_CASE): ByteArray = serializer.toByteArray(value)
+}
+""".trimIndent()

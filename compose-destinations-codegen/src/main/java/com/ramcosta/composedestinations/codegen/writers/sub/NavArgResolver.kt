@@ -78,6 +78,10 @@ class NavArgResolver(
                         val navTypeName = customNavTypeByType[this.classType]!!.name
                         "get<String>(\"$argName\")?.let { $navTypeName.parseValue(it) }"
                     }
+                    isKtxSerializable -> {
+                        val navTypeName = customNavTypeByType[this.classType]!!.name
+                        "get<ByteArray>(\"$argName\")?.let { $navTypeName.fromByteArray(it) }"
+                    }
                     else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $classType.qualifiedName")
                 }
 
@@ -109,6 +113,10 @@ class NavArgResolver(
                     hasCustomTypeSerializer -> {
                         val navTypeName = customNavTypeByType[this.classType]!!.name
                         "getString(\"$argName\")?.let { $navTypeName.parseValue(it) }"
+                    }
+                    isKtxSerializable -> {
+                        val navTypeName = customNavTypeByType[this.classType]!!.name
+                        "getByteArray(\"$argName\")?.let { $navTypeName.fromByteArray(it) }"
                     }
                     else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${classType.qualifiedName}")
                 }

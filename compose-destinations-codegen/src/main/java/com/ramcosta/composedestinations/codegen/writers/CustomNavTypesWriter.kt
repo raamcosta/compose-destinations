@@ -1,7 +1,9 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.isComplexTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
@@ -81,6 +83,12 @@ class CustomNavTypesWriter(
                 out,
                 navTypeName,
             )
+
+            isKtxSerializable -> generateKtxSerializableCustomNavType(
+                className,
+                out,
+                navTypeName,
+            )
         }
     }
 
@@ -107,6 +115,28 @@ class CustomNavTypesWriter(
                 if (navTypeSerializer == null) "Serializable" else classType.simpleName
             )
             .replace(ADDITIONAL_IMPORTS, serializableAdditionalImports(this, navTypeSerializer))
+
+        out.close()
+    }
+
+    private fun Type.generateKtxSerializableCustomNavType(
+        navTypeClassName: String,
+        out: OutputStream,
+        navTypeName: String
+    ) {
+        out += ktxSerializableNavTypeTemplate
+            .replace(NAV_TYPE_NAME, navTypeName)
+            .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
+            .replace(
+                SERIALIZER_SIMPLE_CLASS_NAME,
+                "DefaultKtxSerializableNavTypeSerializer(${classType.simpleName}.serializer())"
+            )
+            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, classType.simpleName)
+            .replace(
+                DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
+                classType.simpleName,
+            )
+            .replace(ADDITIONAL_IMPORTS, ktxSerializableAdditionalImports(this))
 
         out.close()
     }
@@ -211,6 +241,13 @@ class CustomNavTypesWriter(
 
         return imports
     }
+
+    private fun ktxSerializableAdditionalImports(
+        type: Type
+    ): String = """
+        import ${type.classType.qualifiedName}
+        import ${codeGenBasePackageName}.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer
+    """.trimIndent()
 
     private fun customTypeSerializerAdditionalImports(
         type: Type,

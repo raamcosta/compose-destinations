@@ -22,12 +22,16 @@ object Versions {
     const val composeCompiler = compose
     const val composeNavigation = "2.4.1"
     const val accompanist = "0.23.1"
+
+    const val ktxSerialization = "1.3.2"
+    const val mockk = "1.12.3"
 }
 
 object Deps {
 
     object Gradle {
         const val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+        const val kotlinSerialization = "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlin}"
         const val dependencyCheckPlugin = "com.github.ben-manes.versions"
         const val pluginVersion = "com.android.tools.build:gradle:${Versions.gradlePluginVersion}"
     }
@@ -56,7 +60,12 @@ object Deps {
         const val api = "com.google.devtools.ksp:symbol-processing-api:${Versions.ksp}"
     }
 
+    object KtxSerialization {
+        const val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.ktxSerialization}"
+    }
+
     object Test {
         const val junit = "junit:junit:${Versions.junit}"
+        const val mockk = "io.mockk:mockk:${Versions.mockk}"
     }
 }

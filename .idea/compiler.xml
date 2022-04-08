@@ -8,6 +8,7 @@
       <module name="DestinationsTodoSample.compose-destinations" target="11" />
       <module name="DestinationsTodoSample.compose-destinations-animations" target="11" />
       <module name="DestinationsTodoSample.compose-destinations-ksp" target="11" />
+      <module name="DestinationsTodoSample.compose-destinations-ktx-serialization" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

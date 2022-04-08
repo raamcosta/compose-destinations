@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     id("com.google.devtools.ksp") version Versions.ksp
     id("kotlin-parcelize")
+    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -107,5 +108,14 @@ dependencies {
     with(Deps.AndroidX) {
         implementation(lifecycleRuntimeKtx)
         implementation(activityCompose)
+    }
+
+    with(Deps.KtxSerialization) {
+        implementation(json)
+    }
+
+    with(Deps.Test) {
+        testImplementation(junit)
+        testImplementation(mockk)
     }
 }

@@ -20,6 +20,8 @@ import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.samples.destinationstodosample.R
 import com.ramcosta.samples.destinationstodosample.commons.DrawerController
+import com.ramcosta.samples.destinationstodosample.ui.screens.OtherThings
+import com.ramcosta.samples.destinationstodosample.ui.screens.ValueClass
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.GoToProfileConfirmationDestination
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.TestScreenDestination
@@ -104,7 +106,18 @@ fun GreetingScreen(
 
             Button(
                 onClick = {
-                    navigator.navigate(TestScreenDestination(id = "test-id", stuff5 = Color.Blue))
+                    navigator.navigate(
+                        TestScreenDestination(
+                            id = "test-id",
+                            stuff5 = Color.DarkGray,
+                            stuff6 = OtherThings(
+                                thatIsAThing = "What a Thing!!",
+                                thatIsAValueClass = ValueClass(
+                                    value = "That is the value of the value class!",
+                                )
+                            )
+                        )
+                    )
                 }
             ) {
                 Text(text = stringResource(R.string.go_to_test_screen))
