@@ -12,7 +12,8 @@ const val DEFAULT_GROUP: String = ""
 data class ProfileScreenNavArgs(
     val id: Long,
     val stuff: Stuff = Stuff.STUFF1,
-    val groupName: String = DEFAULT_GROUP,
+    val groupName: String? = DEFAULT_GROUP,
+    val whatever: Int? = 12333,
     val things: ArgumentThings?,
     val thingsWithNavTypeSerializer: Things?,
     val serializableExample: SerializableExample? = SerializableExample(),

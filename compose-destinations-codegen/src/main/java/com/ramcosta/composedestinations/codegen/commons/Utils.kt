@@ -46,18 +46,18 @@ fun GenericType.toTypeCode(): String {
 }
 
 fun Type.isPrimitive(): Boolean {
-    return toPrimitiveNavTypeCodeOrNull() != null
+    return toPrimitiveNavTypeClassTypeOrNull() != null
 }
 
 val primitiveTypes = mapOf(
     String::class.qualifiedName to CORE_STRING_NAV_TYPE,
-    Int::class.qualifiedName to "NavType.IntType",
-    Float::class.qualifiedName to "NavType.FloatType",
-    Long::class.qualifiedName to "NavType.LongType",
-    Boolean::class.qualifiedName to "NavType.BoolType",
+    Int::class.qualifiedName to CORE_INT_NAV_TYPE,
+    Float::class.qualifiedName to CORE_FLOAT_NAV_TYPE,
+    Long::class.qualifiedName to CORE_LONG_NAV_TYPE,
+    Boolean::class.qualifiedName to CORE_BOOLEAN_NAV_TYPE
 )
 
-fun Type.toPrimitiveNavTypeCodeOrNull(): String? {
+fun Type.toPrimitiveNavTypeClassTypeOrNull(): ClassType? {
     return primitiveTypes[classType.qualifiedName]
 }
 

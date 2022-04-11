@@ -17,14 +17,38 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 interface DestinationSpec<T> : Route {
 
     /**
-     * Id part of the route - basically the [route] without argument info
+     * Function to get a [Direction] you can then pass to [com.ramcosta.composedestinations.navigation.DestinationsNavigator]
+     * or to [NavController].navigateTo() to safely navigate to this Destination.
      */
-    val routeId: String
+    operator fun invoke(navArgs: T): Direction
+
+    /**
+     * Method that returns the navigation arguments class of this Composable
+     * for the [navBackStackEntry] when the destination gets navigated to.
+     */
+    fun argsFrom(navBackStackEntry: NavBackStackEntry) : T
+
+    /**
+     * Method that returns the navigation arguments class of this Composable
+     * for the [savedStateHandle]. This is useful when the [SavedStateHandle]
+     * is created with the navigation arguments, for example, inside the
+     * ViewModel.
+     *
+     * If you're manually creating the ViewModel, use the `AbstractSavedStateViewModelFactory`
+     * and pass the [NavBackStackEntry.arguments] as the second constructor parameter.
+     * If you're using something like Hilt, then that is done for you out of the box.
+     */
+    fun argsFrom(savedStateHandle: SavedStateHandle) : T
 
     /**
      * Full route that will be added to the navigation graph
      */
     override val route: String
+
+    /**
+     * Id part of the route - basically the [route] without argument info
+     */
+    val routeId: String
 
     /**
      * All [NamedNavArgument]s that will be added to the navigation
@@ -56,22 +80,4 @@ interface DestinationSpec<T> : Route {
     fun DestinationScope<T>.Content(
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<T>.() -> Unit
     )
-
-    /**
-     * Method that returns the navigation arguments class of this Composable
-     * for the [navBackStackEntry] when the destination gets navigated to.
-     */
-    fun argsFrom(navBackStackEntry: NavBackStackEntry) : T
-
-    /**
-     * Method that returns the navigation arguments class of this Composable
-     * for the [savedStateHandle]. This is useful when the [SavedStateHandle]
-     * is created with the navigation arguments, for example, inside the
-     * ViewModel.
-     *
-     * If you're manually creating the ViewModel, use the `AbstractSavedStateViewModelFactory`
-     * and pass the [NavBackStackEntry.arguments] as the second constructor parameter.
-     * If you're using something like Hilt, then that is done for you out of the box.
-     */
-    fun argsFrom(savedStateHandle: SavedStateHandle) : T
 }

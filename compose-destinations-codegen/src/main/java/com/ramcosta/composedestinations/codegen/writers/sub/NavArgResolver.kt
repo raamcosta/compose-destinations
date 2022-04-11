@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.codegen.writers.sub
 
-import com.ramcosta.composedestinations.codegen.commons.GeneratedExceptions
-import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.model.*
 
 class NavArgResolver(
@@ -10,35 +9,28 @@ class NavArgResolver(
 
     fun resolve(
         destination: DestinationGeneratingParams,
-        additionalImports: MutableSet<String>,
         parameter: Parameter
     ) = internalResolve(
-        argGetter = "navBackStackEntry.arguments?.${
-            parameter.type.toNavBackStackEntryArgGetter(
-                destination,
-                parameter.name
-            )
-        }",
-        additionalImports = additionalImports,
+        argGetter = parameter.type.toNavBackStackEntryArgGetter(
+            destination,
+            parameter.name
+        ),
         parameter = parameter,
     )
 
     fun resolveFromSavedStateHandle(
         destination: DestinationGeneratingParams,
-        additionalImports: MutableSet<String>,
         parameter: Parameter,
     ) = internalResolve(
-        argGetter = "savedStateHandle.${parameter.type.toSavedStateHandleArgGetter(destination, parameter.name)}",
-        additionalImports = additionalImports,
+        argGetter = parameter.type.toSavedStateHandleArgGetter(destination, parameter.name),
         parameter = parameter,
     )
 
     private fun internalResolve(
         argGetter: String,
-        additionalImports: MutableSet<String>,
         parameter: Parameter,
     ): String {
-        val defaultCodeIfArgNotPresent = defaultCodeIfArgNotPresent(additionalImports, parameter)
+        val defaultCodeIfArgNotPresent = defaultCodeIfArgNotPresent(parameter)
 
         return if (parameter.type.isEnum) {
             val stringToArg = "${parameter.type.classType.simpleName}.valueOf(it)"
@@ -61,26 +53,19 @@ class NavArgResolver(
         argName: String,
     ): String {
         return when (classType.qualifiedName) {
-            String::class.qualifiedName -> "get<String>(\"$argName\")"
-            Int::class.qualifiedName -> "get<Int>(\"$argName\")"
-            Float::class.qualifiedName -> "get<Float>(\"$argName\")"
-            Long::class.qualifiedName -> "get<Long>(\"$argName\")"
-            Boolean::class.qualifiedName -> "get<Boolean>(\"$argName\")"
+            String::class.qualifiedName -> "${CORE_STRING_NAV_TYPE.simpleName}.get(savedStateHandle, \"$argName\")"
+            Int::class.qualifiedName -> "${CORE_INT_NAV_TYPE.simpleName}.get(savedStateHandle, \"$argName\")"
+            Float::class.qualifiedName -> "${CORE_FLOAT_NAV_TYPE.simpleName}.get(savedStateHandle, \"$argName\")"
+            Long::class.qualifiedName -> "${CORE_LONG_NAV_TYPE.simpleName}.get(savedStateHandle, \"$argName\")"
+            Boolean::class.qualifiedName -> "${CORE_BOOLEAN_NAV_TYPE.simpleName}.get(savedStateHandle, \"$argName\")"
             else -> {
                 return when {
                     isEnum -> {
-                        "get<String>(\"$argName\")"
+                        "savedStateHandle.get<String>(\"$argName\")"
                     }
-                    isParcelable || isSerializable -> {
-                        "get(\"$argName\")"
-                    }
-                    hasCustomTypeSerializer -> {
+                    isParcelable || isSerializable || hasCustomTypeSerializer || isKtxSerializable -> {
                         val navTypeName = customNavTypeByType[this.classType]!!.name
-                        "get<String>(\"$argName\")?.let { $navTypeName.parseValue(it) }"
-                    }
-                    isKtxSerializable -> {
-                        val navTypeName = customNavTypeByType[this.classType]!!.name
-                        "get<ByteArray>(\"$argName\")?.let { $navTypeName.fromByteArray(it) }"
+                        "$navTypeName.get(savedStateHandle, \"$argName\")"
                     }
                     else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $classType.qualifiedName")
                 }
@@ -94,29 +79,19 @@ class NavArgResolver(
         argName: String,
     ): String {
         return when (classType.qualifiedName) {
-            String::class.qualifiedName -> "getString(\"$argName\")"
-            Int::class.qualifiedName -> "getInt(\"$argName\")"
-            Float::class.qualifiedName -> "getFloat(\"$argName\")"
-            Long::class.qualifiedName -> "getLong(\"$argName\")"
-            Boolean::class.qualifiedName -> "getBoolean(\"$argName\")"
+            String::class.qualifiedName -> "${CORE_STRING_NAV_TYPE.simpleName}.get(navBackStackEntry, \"$argName\")"
+            Int::class.qualifiedName -> "${CORE_INT_NAV_TYPE.simpleName}.get(navBackStackEntry, \"$argName\")"
+            Float::class.qualifiedName -> "${CORE_FLOAT_NAV_TYPE.simpleName}.get(navBackStackEntry, \"$argName\")"
+            Long::class.qualifiedName -> "${CORE_LONG_NAV_TYPE.simpleName}.get(navBackStackEntry, \"$argName\")"
+            Boolean::class.qualifiedName -> "${CORE_BOOLEAN_NAV_TYPE.simpleName}.get(navBackStackEntry, \"$argName\")"
             else -> {
                 return when {
-                    isParcelable -> {
-                        "getParcelable(\"$argName\")"
-                    }
                     isEnum -> {
-                        "getString(\"$argName\")"
+                        "navBackStackEntry.arguments?.getString(\"$argName\")"
                     }
-                    isSerializable -> {
-                        "getSerializable(\"$argName\") as? ${this.classType.simpleName}?"
-                    }
-                    hasCustomTypeSerializer -> {
+                    isParcelable || isSerializable || hasCustomTypeSerializer || isKtxSerializable -> {
                         val navTypeName = customNavTypeByType[this.classType]!!.name
-                        "getString(\"$argName\")?.let { $navTypeName.parseValue(it) }"
-                    }
-                    isKtxSerializable -> {
-                        val navTypeName = customNavTypeByType[this.classType]!!.name
-                        "getByteArray(\"$argName\")?.let { $navTypeName.fromByteArray(it) }"
+                        "$navTypeName.get(navBackStackEntry, \"$argName\")"
                     }
                     else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${classType.qualifiedName}")
                 }
@@ -125,21 +100,10 @@ class NavArgResolver(
     }
 
     private fun defaultCodeIfArgNotPresent(
-        additionalImports: MutableSet<String>,
         parameter: Parameter,
-    ): String = parameter.defaultValue.let { defaultValue ->
-        if (defaultValue == null) {
-            return if (parameter.type.isNullable) {
-                ""
-            } else {
-                " ?: ${GeneratedExceptions.missingMandatoryArgument(parameter.name)}"
-            }
-        }
-
-        defaultValue.imports.forEach { additionalImports.add(it) }
-
-        return if (defaultValue.code == "null") {
-            ""
-        } else " ?: ${defaultValue.code}"
+    ): String = when {
+        parameter.type.isNullable -> ""
+        parameter.isMandatory -> " ?: ${GeneratedExceptions.missingMandatoryArgument(parameter.name)}"
+        else -> " ?: ${GeneratedExceptions.nonMandatoryNonNullableMissingArgument(parameter.name)}"
     }
 }

@@ -27,13 +27,8 @@ typealias $typeAliasDestination = $codeGenDestination<*>
 sealed interface $codeGenDestination<T>: $CORE_DESTINATION_SPEC<T>
 
 /**
- * Interface for all $codeGenDestination with no navigation arguments
+ * $codeGenNoArgsDestination is a sealed version of [$CORE_DIRECTION_DESTINATION_SPEC]
  */
-sealed interface $codeGenNoArgsDestination: $codeGenDestination<Unit>, $CORE_DIRECTION_DESTINATION_SPEC {
-    
-    override fun argsFrom(navBackStackEntry: NavBackStackEntry) = Unit
-
-    override fun argsFrom(savedStateHandle: SavedStateHandle) = Unit
-}
+sealed interface $codeGenNoArgsDestination: $codeGenDestination<Unit>, $CORE_DIRECTION_DESTINATION_SPEC
 
 """.trimIndent()

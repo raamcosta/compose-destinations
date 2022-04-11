@@ -9,6 +9,8 @@ import androidx.navigation.NavBackStackEntry
  */
 interface DirectionDestinationSpec: DestinationSpec<Unit>, Direction {
 
+    override fun invoke(navArgs: Unit): Direction = this
+
     override fun argsFrom(navBackStackEntry: NavBackStackEntry) = Unit
 
     override fun argsFrom(savedStateHandle: SavedStateHandle) = Unit

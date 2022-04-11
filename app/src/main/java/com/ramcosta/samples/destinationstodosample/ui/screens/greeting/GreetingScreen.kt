@@ -54,7 +54,8 @@ fun GreetingScreen(
                 navigator.navigate(
                     ProfileScreenDestination(
                         id = 3,
-                        groupName = "%02%03",
+                        whatever = null,
+                        groupName = "{groupName}",
                         stuff = Stuff.STUFF2,
                         things = Things(),
                         color = Color.Black
@@ -109,6 +110,7 @@ fun GreetingScreen(
                     navigator.navigate(
                         TestScreenDestination(
                             id = "test-id",
+                            stuff3 = null,
                             stuff5 = Color.DarkGray,
                             stuff6 = OtherThings(
                                 thatIsAThing = "What a Thing!!",

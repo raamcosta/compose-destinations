@@ -162,7 +162,7 @@ class SingleDestinationWriter(
     }
 
     private fun String.addInvokeWithArgsMethod(): String {
-        return replace(ARGS_TO_ROUTED_METHOD, invokeWithArgsMethod())
+        return replace(ARGS_TO_DIRECTION_METHOD, invokeWithArgsMethod())
     }
 
     private fun invokeWithArgsMethod(): String {
@@ -176,12 +176,16 @@ class SingleDestinationWriter(
         }
 
         val template = """
+        |
+        |    override fun invoke(navArgs: %s1): $CORE_DIRECTION = with(navArgs) {
+		|        invoke(%s2)
+	    |    }
         |     
         |    operator fun invoke(
-        |%s1
+        |%s3
         |    ): $CORE_DIRECTION {
         |        return object : $CORE_DIRECTION {
-        |            override val route = %s2
+        |            override val route = %s4
         |        }
         |    }
         |    
@@ -196,8 +200,10 @@ class SingleDestinationWriter(
         }
 
         return template
-            .replace("%s1", innerNavArgsParametersCode())
-            .replace("%s2", route)
+            .replace("%s1", navArgsDataClassName())
+            .replace("%s2", navArgs.joinToString(", ") { it.name })
+            .replace("%s3", innerNavArgsParametersCode())
+            .replace("%s4", route)
     }
 
     private fun innerNavArgsParametersCode(prefixWithVal: Boolean = false): String {
@@ -218,24 +224,26 @@ class SingleDestinationWriter(
     }
 
     private fun Parameter.stringifyForNavigation(): String {
+        if (isComplexTypeNavArg()) {
+            val navTypeName = customNavTypeByType[type.classType]!!.name
+            additionalImports.add("$codeGenBasePackageName.navtype.$navTypeName")
+
+            return "$navTypeName.serializeValue($name)"
+        }
+
+        if (type.classType.qualifiedName == String::class.qualifiedName) {
+            return "${CORE_STRING_NAV_TYPE.simpleName}.serializeValue(\"$name\", $name)"
+        } else if (type.classType.qualifiedName in primitiveTypes.keys) {
+            return "${primitiveTypes[type.classType.qualifiedName]!!.simpleName}.serializeValue($name)"
+        }
+
+        val ifNullBeforeToString = if (type.isNullable) "?" else ""
         val ifNullSuffix = if (type.isNullable) {
             " ?: \"{${name}}\""
         } else {
             ""
         }
 
-        if (isComplexTypeNavArg()) {
-            val navTypeName = customNavTypeByType[type.classType]!!.name
-            additionalImports.add("$codeGenBasePackageName.navtype.$navTypeName")
-
-            return "$navTypeName.serializeValue($name)$ifNullSuffix"
-        }
-
-        if (type.classType.simpleName == "String") {
-            return "$CORE_STRING_NAV_TYPE.serializeValue($name)$ifNullSuffix"
-        }
-
-        val ifNullBeforeToString = if (type.isNullable) "?" else ""
         return "${name}$ifNullBeforeToString${".toString()"}$ifNullSuffix"
     }
 
@@ -271,7 +279,7 @@ class SingleDestinationWriter(
         val arguments = StringBuilder()
         navArgs.forEach {
             arguments += "\n\t\t${it.name} = "
-            arguments += navArgResolver.resolve(destination, additionalImports, it)
+            arguments += navArgResolver.resolve(destination, it)
             arguments += ","
         }
 
@@ -295,7 +303,7 @@ class SingleDestinationWriter(
         val arguments = StringBuilder()
         navArgs.forEach {
             arguments += "\n\t\t${it.name} = "
-            arguments += navArgResolver.resolveFromSavedStateHandle(destination, additionalImports, it)
+            arguments += navArgResolver.resolveFromSavedStateHandle(destination, it)
             arguments += ","
         }
 
@@ -360,10 +368,6 @@ class SingleDestinationWriter(
             code += "navArgument(\"${it.name}\") {\n\t\t\t"
             code += "type = $toNavTypeCode\n\t\t"
             if (it.type.isNullable) {
-                if (toNavTypeCode != CORE_STRING_NAV_TYPE && !it.isComplexTypeNavArg()) {
-                    throw IllegalDestinationsSetup("Composable '${destination.composableName}', argument '${it.name}': " +
-                            "Only String, Parcelable, Serializable, KtxSerializable, types with custom serializer and Enum navigation arguments can be nullable")
-                }
                 code += "\tnullable = true\n\t\t"
             }
             code += navArgDefaultCode(it)
@@ -490,6 +494,8 @@ class SingleDestinationWriter(
             return ""
         }
 
+        defaultValue.imports.forEach { additionalImports.add(it) }
+
         if (defaultValue.code == "null") {
             return "\tdefaultValue = null\n\t\t"
         }
@@ -502,9 +508,10 @@ class SingleDestinationWriter(
     }
 
     private fun Parameter.toNavTypeCode(): String {
-        val primitiveNavTypeCode = type.toPrimitiveNavTypeCodeOrNull()
+        val primitiveNavTypeCode = type.toPrimitiveNavTypeClassTypeOrNull()
         if (primitiveNavTypeCode != null) {
-            return primitiveNavTypeCode
+            additionalImports.add(primitiveNavTypeCode.qualifiedName)
+            return primitiveNavTypeCode.simpleName
         }
 
         if (isComplexTypeNavArg()) {
@@ -514,7 +521,8 @@ class SingleDestinationWriter(
 
         if (type.isEnum) {
             additionalImports.add(type.classType.qualifiedName)
-            return CORE_STRING_NAV_TYPE
+            additionalImports.add(CORE_STRING_NAV_TYPE.qualifiedName)
+            return CORE_STRING_NAV_TYPE.simpleName
         }
 
         throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${type.classType.qualifiedName}")
