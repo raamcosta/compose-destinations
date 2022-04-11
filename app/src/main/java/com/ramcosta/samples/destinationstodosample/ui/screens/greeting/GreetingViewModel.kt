@@ -5,7 +5,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel(binds = [GreetingUiEvents::class, GreetingUiState::class])
 class GreetingViewModel: ViewModel(), GreetingUiEvents, GreetingUiState {
 
     private val greetings = arrayOf(

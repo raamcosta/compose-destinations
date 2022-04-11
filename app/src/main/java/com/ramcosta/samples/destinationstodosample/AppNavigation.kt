@@ -1,9 +1,11 @@
 package com.ramcosta.samples.destinationstodosample
 
+import android.os.Bundle
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.navigation
@@ -19,7 +21,7 @@ import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.utils.contains
 import com.ramcosta.composedestinations.utils.dialogComposable
 import com.ramcosta.samples.destinationstodosample.commons.DrawerController
-import com.ramcosta.samples.destinationstodosample.di.viewModel
+//import com.ramcosta.samples.destinationstodosample.di.viewModel
 import com.ramcosta.samples.destinationstodosample.ui.screens.Feed
 import com.ramcosta.samples.destinationstodosample.ui.screens.GoToProfileConfirmation
 import com.ramcosta.samples.destinationstodosample.ui.screens.NavGraphs
@@ -36,6 +38,9 @@ import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileVie
 import com.ramcosta.samples.destinationstodosample.ui.screens.settings.Settings
 import com.ramcosta.samples.destinationstodosample.ui.screens.settings.SettingsViewModel
 import com.ramcosta.samples.destinationstodosample.ui.screens.settings.ThemeSettings
+import org.koin.androidx.compose.getStateViewModel
+import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.viewModel
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialNavigationApi::class)
 @Composable
@@ -88,7 +93,8 @@ private fun ManualComposableCallsBuilder.profileScreen() {
     // animatedComposable is needed to get an AnimatedVisibilityScope to use as the receiver for our
     // ProfileScreen
     animatedComposable(ProfileScreenDestination) {
-        val vm = viewModel<ProfileViewModel>()
+//        val vm = getStateViewModel<ProfileViewModel>(state = { navBackStackEntry.arguments ?: Bundle() })
+        val vm by viewModel<ProfileViewModel>()
 
         ProfileScreen(
             vm as ProfileUiState,
@@ -99,7 +105,7 @@ private fun ManualComposableCallsBuilder.profileScreen() {
 
 private fun ManualComposableCallsBuilder.greetingScreen(drawerController: DrawerController) {
     composable(GreetingScreenDestination) {
-        val vm = viewModel<GreetingViewModel>()
+        val vm by viewModel<GreetingViewModel>()
 
         GreetingScreen(
             navigator = destinationsNavigator,
@@ -176,7 +182,7 @@ fun SampleAppAnimatedNavHostExample(
         ) {
             animatedComposable(SettingsDestination) {
                 Settings(
-                    viewModel = viewModel(),
+                    viewModel = getViewModel(),
                     navigator = destinationsNavigator(navController),
                     themeSettingsResultRecipient = resultRecipient()
                 )
@@ -184,7 +190,7 @@ fun SampleAppAnimatedNavHostExample(
 
             bottomSheetComposable(ThemeSettingsDestination) {
                 ThemeSettings(
-                    viewModel = viewModel(),
+                    viewModel = getViewModel(),
                     resultNavigator = resultBackNavigator(navController)
                 )
             }

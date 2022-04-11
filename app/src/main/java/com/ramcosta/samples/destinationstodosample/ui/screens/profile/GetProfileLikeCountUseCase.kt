@@ -2,7 +2,9 @@ package com.ramcosta.samples.destinationstodosample.ui.screens.profile
 
 import android.util.Log
 import kotlinx.coroutines.delay
+import org.koin.core.annotation.Factory
 
+@Factory
 class GetProfileLikeCountUseCase {
 
     suspend operator fun invoke(profileId: Long): Int {

@@ -92,6 +92,13 @@ dependencies {
     implementation(project(mapOf("path" to ":compose-destinations-animations")))
     ksp(project(":compose-destinations-ksp"))
 
+    val koin_version = "3.2.0-beta-1"
+    val koin_ksp_version = "1.0.0-beta-1"
+    implementation("io.insert-koin:koin-android:$koin_version")
+    implementation("io.insert-koin:koin-annotations:$koin_ksp_version")
+    ksp("io.insert-koin:koin-ksp-compiler:$koin_ksp_version")
+    implementation("io.insert-koin:koin-androidx-compose:$koin_version")
+
     with(Deps.Android) {
         implementation(material)
     }
