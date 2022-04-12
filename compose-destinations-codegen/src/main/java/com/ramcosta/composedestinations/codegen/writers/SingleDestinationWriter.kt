@@ -456,7 +456,31 @@ class SingleDestinationWriter(
             is DestinationStyleType.Animated -> destinationStyleAnimated(destination.destinationStyleType)
 
             is DestinationStyleType.Dialog -> destinationStyleDialog(destination.destinationStyleType)
+
+            is DestinationStyleType.Runtime -> destinationStyleRuntime()
         }
+    }
+
+    private fun destinationStyleRuntime(): String {
+        return """
+                            
+            private var _style: DestinationStyle? = null
+
+            override var style: DestinationStyle
+                set(value) {
+                    if (value is DestinationStyle.Runtime) {
+                        error("You cannot use `DestinationStyle.Runtime` other than in the `@Destination`" +
+                            "annotation 'style' parameter!")
+                    }
+                    _style = value
+                }
+                get() {
+                    return _style ?: error("For annotated Composables with `style = DestinationStyle.Runtime`, " +
+                            "you need to explicitly set the style before calling `DestinationsNavHost`")
+                }
+                
+        """.trimIndent()
+            .prependIndent("\t")
     }
 
     private fun destinationStyleDialog(destinationStyleType: DestinationStyleType.Dialog): String {
@@ -485,7 +509,6 @@ class SingleDestinationWriter(
             throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
         }
 
-        additionalImports.add("$CORE_PACKAGE_NAME.spec.DestinationStyle")
         return "\n\toverride val style = $CORE_BOTTOM_SHEET_DESTINATION_STYLE\n"
     }
 

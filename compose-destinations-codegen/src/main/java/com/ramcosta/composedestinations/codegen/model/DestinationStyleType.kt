@@ -8,4 +8,6 @@ sealed class DestinationStyleType {
     object BottomSheet : DestinationStyleType()
 
     object Default : DestinationStyleType()
+
+    object Runtime: DestinationStyleType()
 }

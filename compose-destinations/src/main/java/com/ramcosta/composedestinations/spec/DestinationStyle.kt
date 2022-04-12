@@ -98,4 +98,15 @@ sealed interface DestinationStyle {
             override val properties = DialogProperties()
         }
     }
+
+    /**
+     * Marks the style as "Runtime" defined.
+     *
+     * This means that for this Destination, the style property will
+     * contain a setter and you need to set it before calling `DestinationsNavHost`.
+     *
+     * This is useful if you want to define the style for a Destination in a
+     * different module than the one which has the annotated Composable.
+     */
+    object Runtime: DestinationStyle
 }

@@ -69,6 +69,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
         manualComposableCalls: ManualComposableCalls,
     ) {
         when (val destinationStyle = destination.style) {
+            is DestinationStyle.Runtime,
             is DestinationStyle.Default -> {
                 addComposable(
                     destination,

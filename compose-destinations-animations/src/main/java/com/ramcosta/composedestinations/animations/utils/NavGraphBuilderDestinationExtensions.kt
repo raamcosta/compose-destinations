@@ -37,6 +37,7 @@ fun <T> NavGraphBuilder.animatedComposable(
     content: @Composable AnimatedNavGraphBuilderDestinationScope<T>.() -> Unit
 ) {
     when (val style = destination.style) {
+        is DestinationStyle.Runtime,
         is DestinationStyle.Default -> {
             composable(
                 route = destination.route,

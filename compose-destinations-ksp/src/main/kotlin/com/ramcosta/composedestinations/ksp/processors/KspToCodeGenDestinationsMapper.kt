@@ -20,12 +20,16 @@ class KspToCodeGenDestinationsMapper(
             .asType(emptyList())
     }
 
-    private val bottomSheet by lazy {
+    private val bottomSheetStyle by lazy {
         resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.BottomSheet")!!.asType(emptyList())
     }
 
-    private val dialog by lazy {
+    private val dialogStyle by lazy {
         resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Dialog")!!.asType(emptyList())
+    }
+
+    private val runtimeStyle by lazy {
+        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Runtime")!!.asType(emptyList())
     }
 
     private val parcelableType by lazy {
@@ -113,14 +117,18 @@ class KspToCodeGenDestinationsMapper(
             return DestinationStyleType.Default
         }
 
-        if (bottomSheet.isAssignableFrom(ksStyleType)) {
+        if (bottomSheetStyle.isAssignableFrom(ksStyleType)) {
             return DestinationStyleType.BottomSheet
         }
 
         val type = ksStyleType.toType(location) ?: throw IllegalDestinationsSetup("Parameter $DESTINATION_ANNOTATION_STYLE_ARGUMENT of Destination annotation in composable $composableName was not resolvable: please review it.")
 
-        if (dialog.isAssignableFrom(ksStyleType)) {
+        if (dialogStyle.isAssignableFrom(ksStyleType)) {
             return DestinationStyleType.Dialog(type)
+        }
+
+        if (runtimeStyle.isAssignableFrom(ksStyleType)) {
+            return DestinationStyleType.Runtime
         }
 
         //then it must be animated (since animated ones implement a generated interface, it would require multi step processing which can be avoided like this)

@@ -116,6 +116,7 @@ internal class AnimatedNavHostEngine(
         manualComposableCalls: ManualComposableCalls
     ) {
         when (val destinationStyle = destination.style) {
+            is DestinationStyle.Runtime,
             is DestinationStyle.Default -> {
                 addComposable(
                     destination,
