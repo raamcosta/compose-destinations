@@ -1,15 +1,16 @@
-package com.ramcosta.composedestinations.codegen.writers
+package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
+import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
 import com.ramcosta.composedestinations.codegen.templates.*
 import java.io.OutputStream
 import java.util.*
 
-class NavGraphsModeWriter(
+class LegacyNavGraphsModeWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val codeGenConfig: CodeGenConfig
 ) {
@@ -17,12 +18,11 @@ class NavGraphsModeWriter(
     private val additionalImports = mutableSetOf<String>()
 
     fun write(generatedDestinations: List<GeneratedDestination>) {
-        val navGraphs = generatedDestinations.mapTo(mutableSetOf()) { it.navGraphRoute }
-
+        val navGraphNames = generatedDestinations.map { it.asLegacy().navGraphRoute }
         val moduleName = codeGenConfig.moduleName
-        if (navGraphs.size > 1
-            && navGraphs.contains("root")
-            && (moduleName == null || navGraphs.contains(moduleName))
+        if (navGraphNames.size > 1
+            && navGraphNames.contains("root")
+            && (moduleName == null || navGraphNames.contains(moduleName))
         ) {
             throw IllegalDestinationsSetup(
                 "Code gen mode was set to 'navgraphs' but you're using multiple" +
@@ -32,23 +32,29 @@ class NavGraphsModeWriter(
         }
 
         generatedDestinations.map {
-            if (it.navGraphRoute == "root") {
+            val navGraphInfo = it.asLegacy()
+            if (navGraphInfo.navGraphRoute == "root") {
                 it.copy(
-                    navGraphRoute = moduleName
-                        ?: throw IllegalDestinationsSetup(
-                            "You need to set 'moduleName' on gradle ksp configuration to be used as" +
-                                    " main nav graph name or set 'navGraph' on all @Destination of this module."
-                        )
+                    navGraphInfo = navGraphInfo.copy(
+                        navGraphRoute = codeGenConfig.moduleName
+                            ?: throw IllegalDestinationsSetup(
+                                "You need to set 'moduleName' on gradle ksp configuration to be used as" +
+                                        " main nav graph name or set 'navGraph' on all @Destination of this module."
+                            )
+                    )
                 )
             } else {
                 it
             }
         }.groupBy {
-            it.navGraphRoute
+            it.asLegacy().navGraphRoute
         }.forEach {
             writeNavGraph(it.key, it.value)
         }
     }
+
+    private fun GeneratedDestination.asLegacy() =
+        (navGraphInfo as NavGraphInfo.Legacy)
 
     private fun writeNavGraph(navGraphRoute: String, destinations: List<GeneratedDestination>) {
         val navGraphName = navGraphRoute.replaceFirstChar { it.uppercase(Locale.US) } + "NavGraph"
@@ -61,10 +67,11 @@ class NavGraphsModeWriter(
         file += moduleNavGraphTemplate
             .replace(NAV_GRAPH_NAME_PLACEHOLDER, navGraphName)
             .replace(NAV_GRAPH_ROUTE_PLACEHOLDER, "\"${navGraphRoute.toSnakeCase()}\"")
-            .replace(NAV_GRAPH_START_ROUTE_PLACEHOLDER, startingDestination(navGraphRoute, destinations))
+            .replace(NAV_GRAPH_START_ROUTE_PLACEHOLDER, legacyStartingDestination(navGraphRoute, destinations))
             .replace(NAV_GRAPH_DESTINATIONS, navGraphDestinationsCode(destinations))
             .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinations))
             .replace(ADDITIONAL_IMPORTS, additionalImports())
+            .removeInstancesOf(NESTED_NAV_GRAPHS)
 
         file.close()
     }

@@ -1,13 +1,22 @@
 package com.ramcosta.composedestinations.codegen.commons
 
 import com.ramcosta.composedestinations.codegen.model.ClassType
+import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 
 const val CORE_PACKAGE_NAME = "com.ramcosta.composedestinations"
 
 const val DESTINATION_ANNOTATION = "Destination"
+const val NAV_GRAPH_ANNOTATION = "NavGraph"
 const val NAV_TYPE_SERIALIZER_ANNOTATION = "NavTypeSerializer"
 const val DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$DESTINATION_ANNOTATION"
+const val NAV_GRAPH_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$NAV_GRAPH_ANNOTATION"
 const val NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.navargs.$NAV_TYPE_SERIALIZER_ANNOTATION"
+
+val rootNavGraphType = ClassType(
+    "RootNavGraph",
+    "$CORE_PACKAGE_NAME.annotation.RootNavGraph"
+)
+val rootNavGraphGenParams = RawNavGraphGenParams(rootNavGraphType, true)
 
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"
 const val DESTINATION_ANNOTATION_START_ARGUMENT = "start"
@@ -18,16 +27,15 @@ const val DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT = "deepLinks"
 
 const val DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER = "@ramcosta.destinations.fullroute@" // Needs to be the same as the constant in core module
 const val DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER = "@ramcosta.destinations.composable-name-route@" // Needs to be the same as the constant in core module's Destination
+const val NAV_GRAPH_ANNOTATION_DEFAULT_NAME = "@ramcosta.destinations.annotation-navgraph-route@" // Needs to be the same as the constant in core module's NavGraph
 
-const val CORE_EXTENSIONS = "CoreExtensions"
+const val SINGLE_MODULE_EXTENSIONS = "SingleModuleExtensions"
 const val NO_PREFIX_GENERATED_DESTINATION = "TypedDestination"
 const val NO_PREFIX_GENERATED_NO_ARGS_DESTINATION = "DirectionDestination"
 const val GENERATED_NAV_GRAPH = "NavGraph"
 const val GENERATED_NAV_GRAPHS_OBJECT = "NavGraphs"
 const val GENERATED_DESTINATION_SUFFIX = "Destination"
 
-const val CORE_NAV_DESTINATIONS_NAVIGATION = "DestinationsNavController"
-const val CORE_NAV_DESTINATIONS_NAVIGATION_QUALIFIED_NAME = "$CORE_PACKAGE_NAME.navigation.$CORE_NAV_DESTINATIONS_NAVIGATION"
 const val CORE_DESTINATION_SPEC = "DestinationSpec"
 const val CORE_DIRECTION_DESTINATION_SPEC = "DirectionDestinationSpec"
 const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"

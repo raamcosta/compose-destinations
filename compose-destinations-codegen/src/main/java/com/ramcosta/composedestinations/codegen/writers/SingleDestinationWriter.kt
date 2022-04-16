@@ -24,7 +24,7 @@ class SingleDestinationWriter(
     private val navArgs get() = destination.navArgs
 
     init {
-        if (destination.isStart && destination.navArgs.any { it.isMandatory }) {
+        if (destination.navGraphInfo.start && destination.navArgs.any { it.isMandatory }) {
             throw IllegalDestinationsSetup("\"'${destination.composableName}' composable: Start destinations cannot have mandatory navigation arguments!")
         }
     }
@@ -58,8 +58,7 @@ class SingleDestinationWriter(
             sourceIds = sourceIds,
             qualifiedName = qualifiedName,
             simpleName = name,
-            isStartDestination = isStart,
-            navGraphRoute = navGraphRoute,
+            navGraphInfo = navGraphInfo,
             requireOptInAnnotationTypes = gatherOptInAnnotations()
                 .filter { !it.isOptedIn }
                 .map { it.classType }

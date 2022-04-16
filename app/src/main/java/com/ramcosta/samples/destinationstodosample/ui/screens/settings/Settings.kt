@@ -21,9 +21,9 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.ramcosta.composedestinations.result.EmptyResultRecipient
 import com.ramcosta.composedestinations.result.ResultRecipient
-import com.ramcosta.samples.destinationstodosample.commons.Routes
+import com.ramcosta.samples.destinationstodosample.commons.SettingsNavGraph
 import com.ramcosta.samples.destinationstodosample.commons.requireTitle
-import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.SettingsDestination
+import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.SettingsScreenDestination
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ThemeSettingsDestination
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.destinationstodosample.ui.screens.styles.SettingsTransitions
@@ -31,15 +31,13 @@ import com.ramcosta.samples.destinationstodosample.ui.screens.styles.SettingsTra
 const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 
 @OptIn(ExperimentalAnimationApi::class)
+@SettingsNavGraph(start = true)
 @Destination(
-    route = Routes.MAIN_SETTINGS,
-    start = true,
-    navGraph = Routes.SETTINGS_NAV_GRAPH,
     deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],
     style = SettingsTransitions::class
 )
 @Composable
-fun Settings(
+fun SettingsScreen(
     navigator: DestinationsNavigator,
     viewModel: SettingsViewModel,
     themeSettingsResultRecipient: ResultRecipient<ThemeSettingsDestination, SerializableExampleWithNavTypeSerializer>
@@ -67,7 +65,7 @@ fun Settings(
             }
 
             Text(
-                text = stringResource(id = SettingsDestination.requireTitle)
+                text = stringResource(id = SettingsScreenDestination.requireTitle)
             )
         }
     }
@@ -79,7 +77,7 @@ fun Settings(
 //@Preview
 @Composable
 fun SettingsPreview() {
-    Settings(
+    SettingsScreen(
         EmptyDestinationsNavigator,
         SettingsViewModel(),
         EmptyResultRecipient()

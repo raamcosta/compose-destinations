@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.codegen.writers
+package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.plusAssign

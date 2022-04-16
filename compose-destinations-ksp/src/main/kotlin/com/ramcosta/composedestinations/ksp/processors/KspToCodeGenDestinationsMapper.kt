@@ -42,7 +42,7 @@ class KspToCodeGenDestinationsMapper(
 
     private val sourceFilesById = mutableMapOf<String, KSFile?>()
 
-    fun map(composableDestinations: Sequence<KSFunctionDeclaration>): List<DestinationGeneratingParams> {
+    fun map(composableDestinations: Sequence<KSFunctionDeclaration>): List<RawDestinationGenParams> {
         return composableDestinations.map { it.toDestination() }.toList()
     }
 
@@ -50,7 +50,7 @@ class KspToCodeGenDestinationsMapper(
         return sourceFilesById[sourceId]
     }
 
-    private fun KSFunctionDeclaration.toDestination(): DestinationGeneratingParams {
+    private fun KSFunctionDeclaration.toDestination(): RawDestinationGenParams {
         val composableName = simpleName.asString()
         val name = composableName + GENERATED_DESTINATION_SUFFIX
         val destinationAnnotation = findAnnotation(DESTINATION_ANNOTATION)
@@ -63,7 +63,7 @@ class KspToCodeGenDestinationsMapper(
         }
         sourceFilesById[containingFile!!.fileName] = containingFile
 
-        return DestinationGeneratingParams(
+        return RawDestinationGenParams(
             sourceIds = listOfNotNull(containingFile!!.fileName, navArgsDelegateTypeAndFile?.second?.fileName),
             name = name,
             qualifiedName = "$CORE_PACKAGE_NAME.$name",
@@ -73,11 +73,40 @@ class KspToCodeGenDestinationsMapper(
             destinationStyleType = destinationAnnotation.getDestinationStyleType(composableName),
             parameters = parameters.map { it.toParameter(composableName) },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
-            isStart = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
-            navGraphRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!,
+            navGraphInfo = getNavGraphInfo(destinationAnnotation),
             composableReceiverSimpleName = extensionReceiver?.toString(),
             requireOptInAnnotationTypes = findAllRequireOptInAnnotations(),
             navArgsDelegateType = navArgsDelegateTypeAndFile?.first
+        )
+    }
+
+    private fun KSFunctionDeclaration.getNavGraphInfo(destinationAnnotation: KSAnnotation): NavGraphInfo {
+        var resolvedAnnotation: KSType? = null
+        val navGraphAnnotation = annotations.find { functionAnnotation ->
+            val annotationShortName = functionAnnotation.shortName.asString()
+            if (annotationShortName == "Composable" || annotationShortName == "Destination") {
+                return@find false
+            }
+
+            val functionAnnotationType = functionAnnotation.annotationType.resolve()
+            functionAnnotationType.declaration.annotations.any { annotationOfAnnotation ->
+                annotationOfAnnotation.shortName.asString() == "NavGraph"
+                        && annotationOfAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_GRAPH_ANNOTATION_QUALIFIED
+            }.also {
+                if (it) resolvedAnnotation = functionAnnotationType
+            }
+        }
+            ?: return NavGraphInfo.Legacy(
+                start = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
+                navGraphRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!,
+            )
+
+        return NavGraphInfo.AnnotatedSource(
+            start = navGraphAnnotation.arguments.first().value as Boolean,
+            graphType = ClassType(
+                resolvedAnnotation!!.declaration.simpleName.asString(),
+                resolvedAnnotation!!.declaration.qualifiedName!!.asString()
+            )
         )
     }
 

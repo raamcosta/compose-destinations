@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.codegen
+package com.ramcosta.composedestinations.codegen.validators
 
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.Logger
@@ -10,12 +10,19 @@ class InitialValidator(
     private val core: Core
 ) {
 
-    fun validate(destinations: List<DestinationGeneratingParams>) {
+    fun validate(
+        navGraphs: List<RawNavGraphGenParams>,
+        destinations: List<DestinationGeneratingParams>
+    ) {
+        validateNavGraphs(navGraphs)
+
         val destinationsByName = lazy { destinations.associateBy { it.name } }
         val cleanRoutes = mutableListOf<String>()
         val composableNames = mutableListOf<String>()
 
         destinations.forEach { destination ->
+            destination.checkLegacyNavGraphInfo()
+
             destination.validateRoute(currentKnownRoutes = cleanRoutes)
 
             destination.validateComposableName(currentKnownComposableNames = composableNames)
@@ -31,23 +38,63 @@ class InitialValidator(
             cleanRoutes.add(destination.cleanRoute)
             composableNames.add(destination.composableName)
         }
+
+        if (destinations.any { it.navGraphInfo is NavGraphInfo.AnnotatedSource } &&
+                destinations.any { it.navGraphInfo is NavGraphInfo.Legacy && !it.navGraphInfo.isDefault  }) {
+            // User is using both ways to set navgraphs, fail the build
+            throw IllegalDestinationsSetup("Cannot use both the deprecated way to set navgraphs and the new one.\n" +
+                    "Please migrate all your Destinations to use the new @NavGraph annotations instead!")
+        }
+    }
+
+    private fun validateNavGraphs(navGraphs: List<RawNavGraphGenParams>) {
+        val navGraphsByRoute: Map<String, List<RawNavGraphGenParams>> = navGraphs.groupBy { it.route }
+        navGraphsByRoute.forEach {
+            if (it.value.size > 1) {
+                throw IllegalDestinationsSetup(
+                    "${it.value.joinToString(",")} have" +
+                            " the same final nav graph route: ${it.key}." +
+                            "Nav graph routes must be unique!"
+                )
+            }
+        }
+
+        val defaultNavGraphs = navGraphs.filter { it.default }
+        if (defaultNavGraphs.size > 1) {
+            throw IllegalDestinationsSetup(
+                "${defaultNavGraphs.joinToString(",")} are" +
+                        " marked as the default nav graph. Only one nav graph can be the default one!"
+            )
+        }
     }
 
     private fun DestinationGeneratingParams.warnIgnoredAnnotationArguments() {
         if (codeGenConfig.mode == CodeGenMode.Destinations
             || (codeGenConfig.mode is CodeGenMode.SingleModule && !codeGenConfig.mode.generateNavGraphs)) {
-            if (navGraphRoute != "root") {
-                logger.warn(
-                    "'${composableName}' composable: a navGraph was set but it will be ignored. " +
-                            "Reason: nav graphs generation was disabled by ksp gradle configuration."
-                )
-            }
 
-            if (isStart) {
-                logger.warn(
-                    "'${composableName}' composable: destination was set as the start destination but that will be ignored. " +
-                            "Reason: nav graphs generation was disabled by ksp gradle configuration."
-                )
+            when(val info = navGraphInfo) {
+                is NavGraphInfo.Legacy -> {
+                    if (info.navGraphRoute != "root") {
+                        logger.warn(
+                            "'${composableName}' composable: a navGraph was set but it will be ignored. " +
+                                    "Reason: nav graphs generation was disabled by ksp gradle configuration."
+                        )
+                    }
+
+                    if (info.start) {
+                        logger.warn(
+                            "'${composableName}' composable: destination was set as the start destination but that will be ignored. " +
+                                    "Reason: nav graphs generation was disabled by ksp gradle configuration."
+                        )
+                    }
+                }
+
+                is NavGraphInfo.AnnotatedSource -> {
+                    logger.warn(
+                        "'${composableName}' composable: is annotated with a `NavGraph` annotation, but it will be ignored." +
+                                "Reason: nav graphs generation was disabled by ksp gradle configuration."
+                    )
+                }
             }
         }
     }
@@ -174,6 +221,12 @@ class InitialValidator(
 
         if (!resultType.isPrimitive() && !resultType.isSerializable && !resultType.isParcelable) {
             throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: Result types must be one of: ${primitiveTypes.keys.toMutableList().apply { add("Parcelable"); add("Serializable") }.joinToString(",")}")
+        }
+    }
+
+    private fun DestinationGeneratingParams.checkLegacyNavGraphInfo() {
+        if (navGraphInfo is NavGraphInfo.Legacy && !navGraphInfo.isDefault) {
+            logger.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.")
         }
     }
 }

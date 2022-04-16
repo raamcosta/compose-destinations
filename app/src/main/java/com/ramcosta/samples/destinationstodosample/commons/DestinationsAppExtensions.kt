@@ -31,7 +31,7 @@ fun DirectionDestination.DrawerContent(
             )
         }
         GoToProfileConfirmationDestination,
-        SettingsDestination,
+        SettingsScreenDestination,
         ThemeSettingsDestination -> Unit
     }
 }
@@ -48,7 +48,7 @@ val Destination.title
         return when (this) {
             GreetingScreenDestination -> R.string.greeting_screen
             ProfileScreenDestination -> R.string.profile_screen
-            SettingsDestination -> R.string.settings_screen
+            SettingsScreenDestination -> R.string.settings_screen
             FeedDestination -> R.string.feed_screen
             ThemeSettingsDestination -> R.string.theme_settings_screen
             GoToProfileConfirmationDestination -> null

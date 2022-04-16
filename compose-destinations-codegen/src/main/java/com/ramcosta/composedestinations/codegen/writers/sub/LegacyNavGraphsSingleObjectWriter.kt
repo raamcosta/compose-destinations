@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.codegen.writers
+package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
@@ -7,12 +7,13 @@ import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.ClassType
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.model.NavGraphGeneratingParams
+import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
 import com.ramcosta.composedestinations.codegen.templates.ADDITIONAL_IMPORTS
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
 import java.io.OutputStream
 
-class NavGraphsSingleObjectWriter(
+class LegacyNavGraphsSingleObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
 ) {
@@ -69,8 +70,6 @@ class NavGraphsSingleObjectWriter(
             return "\tval root: NavGraph = throw RuntimeException(\"No found destinations for 'root' navigation graph\")"
         }
 
-        val startDestination = startingDestination(route, destinations)
-
         val destinationsAnchor = "[DESTINATIONS]"
         val nestedGraphsAnchor = "[NESTED_GRAPHS]"
         val requireOptInAnnotationsAnchor = "[REQUIRE_OPT_IN_ANNOTATIONS_ANCHOR]"
@@ -78,14 +77,14 @@ class NavGraphsSingleObjectWriter(
         return """
        |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(route)} = $GENERATED_NAV_GRAPH(
        |        route = "$route",
-       |        startRoute = ${startDestination},
+       |        startRoute = ${startRouteFieldName},
        |        destinations = listOf(
        |            $destinationsAnchor
-       |        )${if (nestedNavGraphs.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"}
+       |        )${if (nestedNavGraphRoutes.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"}
        |    )
         """.trimMargin()
             .replace(destinationsAnchor, destinationsInsideList(destinations))
-            .replace(nestedGraphsAnchor, nestedGraphsList(nestedNavGraphs))
+            .replace(nestedGraphsAnchor, nestedGraphsList(nestedNavGraphRoutes))
             .replace(
                 requireOptInAnnotationsAnchor,
                 requireOptInAnnotations(requireOptInAnnotationTypes)
@@ -102,24 +101,6 @@ class NavGraphsSingleObjectWriter(
         }
 
         return code.toString()
-    }
-
-    private fun navGraphFieldName(navGraphRoute: String): String {
-        val regex = "[^a-zA-Z]".toRegex()
-        val auxNavGraphRoute = navGraphRoute.toCharArray().toMutableList()
-        var weirdCharIndex = auxNavGraphRoute.indexOfFirst { it.toString().matches(regex) }
-
-        while (weirdCharIndex != -1) {
-            auxNavGraphRoute.removeAt(weirdCharIndex)
-            if (weirdCharIndex >= auxNavGraphRoute.size) {
-                break
-            }
-            auxNavGraphRoute[weirdCharIndex] = auxNavGraphRoute[weirdCharIndex].uppercaseChar()
-
-            weirdCharIndex = auxNavGraphRoute.indexOfFirst { it.toString().matches(regex) }
-        }
-
-        return String(auxNavGraphRoute.toCharArray())
     }
 
     private fun destinationsInsideList(destinations: List<GeneratedDestination>): String {
@@ -153,14 +134,14 @@ class NavGraphsSingleObjectWriter(
     private fun List<GeneratedDestination>.mapToNavGraphs(): List<NavGraphGeneratingParams> {
         val result = mutableListOf<NavGraphGeneratingParams>()
         val destinationsByNavGraph: MutableMap<String, List<GeneratedDestination>> =
-            groupBy { it.navGraphRoute }.toMutableMap()
+            groupBy { (it.navGraphInfo as NavGraphInfo.Legacy).navGraphRoute }.toMutableMap()
 
         val nestedNavGraphs = mutableListOf<String>()
         val nestedNavGraphsRequireOptInAnnotations = mutableSetOf<ClassType>()
         val rootDestinations = destinationsByNavGraph.remove("root")
 
         destinationsByNavGraph.forEach {
-            val navGraphRoute = it.value[0].navGraphRoute
+            val navGraphRoute = (it.value[0].navGraphInfo as NavGraphInfo.Legacy).navGraphRoute
             nestedNavGraphs.add(navGraphRoute)
 
             val requireOptInClassTypes = it.value.requireOptInAnnotationClassTypes()
@@ -170,7 +151,8 @@ class NavGraphsSingleObjectWriter(
                 NavGraphGeneratingParams(
                     route = navGraphRoute,
                     destinations = it.value,
-                    nestedNavGraphs = emptyList(),
+                    startRouteFieldName = legacyStartingDestination(navGraphRoute, it.value),
+                    nestedNavGraphRoutes = emptyList(),
                     requireOptInAnnotationTypes = requireOptInClassTypes
                 )
             )
@@ -180,7 +162,8 @@ class NavGraphsSingleObjectWriter(
             NavGraphGeneratingParams(
                 route = "root",
                 destinations = rootDestinations.orEmpty(),
-                nestedNavGraphs = nestedNavGraphs,
+                startRouteFieldName = legacyStartingDestination("root", rootDestinations.orEmpty()),
+                nestedNavGraphRoutes = nestedNavGraphs,
                 requireOptInAnnotationTypes = rootDestinations.orEmpty()
                     .requireOptInAnnotationClassTypes()
                     .apply { addAll(nestedNavGraphsRequireOptInAnnotations) }

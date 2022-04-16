@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
@@ -31,10 +32,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
-@Destination(
-    start = true,
-    style = GreetingTransitions::class
-)
+@RootNavGraph(start = true)
+@Destination(style = GreetingTransitions::class)
 @Composable
 fun GreetingScreen(
     navigator: DestinationsNavigator,

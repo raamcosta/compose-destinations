@@ -33,7 +33,7 @@ import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileScr
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileUiEvents
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileUiState
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.ProfileViewModel
-import com.ramcosta.samples.destinationstodosample.ui.screens.settings.Settings
+import com.ramcosta.samples.destinationstodosample.ui.screens.settings.SettingsScreen
 import com.ramcosta.samples.destinationstodosample.ui.screens.settings.SettingsViewModel
 import com.ramcosta.samples.destinationstodosample.ui.screens.settings.ThemeSettings
 
@@ -171,11 +171,11 @@ fun SampleAppAnimatedNavHostExample(
         }
 
         navigation(
-            startDestination = SettingsDestination.route,
+            startDestination = SettingsScreenDestination.route,
             route = "settings"
         ) {
-            animatedComposable(SettingsDestination) {
-                Settings(
+            animatedComposable(SettingsScreenDestination) {
+                SettingsScreen(
                     viewModel = viewModel(),
                     navigator = destinationsNavigator(navController),
                     themeSettingsResultRecipient = resultRecipient()

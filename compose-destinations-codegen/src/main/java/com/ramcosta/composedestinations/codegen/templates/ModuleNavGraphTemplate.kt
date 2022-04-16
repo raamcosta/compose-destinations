@@ -7,6 +7,7 @@ const val NAV_GRAPH_NAME_PLACEHOLDER = "[NAV_GRAPH_NAME_PLACEHOLDER]"
 const val NAV_GRAPH_ROUTE_PLACEHOLDER = "[NAV_GRAPH_ROUTE_PLACEHOLDER]"
 const val NAV_GRAPH_START_ROUTE_PLACEHOLDER = "[NAV_GRAPH_START_ROUTE_PLACEHOLDER]"
 const val NAV_GRAPH_DESTINATIONS = "[NAV_GRAPH_DESTINATIONS]"
+const val NESTED_NAV_GRAPHS = "[NESTED_NAV_GRAPHS]"
 
 val moduleNavGraphTemplate = """
 package $codeGenBasePackageName
@@ -23,6 +24,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $NAV_GRAPH_NAME_PLACEHOLDER : $C
     override val destinationsByRoute = listOf(
 $NAV_GRAPH_DESTINATIONS
     ).associateBy { it.route }
+$NESTED_NAV_GRAPHS
 }
 
 """.trimIndent()
