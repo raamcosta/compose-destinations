@@ -10,6 +10,18 @@ import com.ramcosta.composedestinations.spec.Route
  * Finds the destination correspondent to this [NavBackStackEntry] in [navGraph] and its nested nav graphs,
  * null if none is found or if no route is set in this back stack entry's destination.
  */
+fun NavBackStackEntry.destination(navGraph: NavGraphSpec): DestinationSpec<*>? {
+    return destination.route?.let { navGraph.findDestination(it) }
+}
+
+/**
+ * Finds the destination correspondent to this [NavBackStackEntry] in [navGraph] and its nested nav graphs,
+ * null if none is found or if no route is set in this back stack entry's destination.
+ */
+@Deprecated(
+    message = "Api will be removed! Use `destination(NavGraphSpec)` instead.",
+    replaceWith = ReplaceWith("destination")
+)
 fun NavBackStackEntry.destinationSpec(navGraph: NavGraphSpec): DestinationSpec<*>? {
     return destination.route?.let { navGraph.findDestination(it) }
 }
@@ -20,10 +32,27 @@ fun NavBackStackEntry.destinationSpec(navGraph: NavGraphSpec): DestinationSpec<*
  * If this [Route] is a [NavGraphSpec], returns its
  * start [DestinationSpec].
  */
+val Route.startDestination get(): DestinationSpec<*> {
+    return when (this) {
+        is DestinationSpec<*> -> this
+        is NavGraphSpec -> startRoute.startDestination
+    }
+}
+
+/**
+ * If this [Route] is a [DestinationSpec], returns it
+ *
+ * If this [Route] is a [NavGraphSpec], returns its
+ * start [DestinationSpec].
+ */
+@Deprecated(
+    message = "Api will be removed! Use `startDestination` instead.",
+    replaceWith = ReplaceWith("startDestination")
+)
 val Route.startDestinationSpec get(): DestinationSpec<*> {
     return when (this) {
         is DestinationSpec<*> -> this
-        is NavGraphSpec -> startRoute.startDestinationSpec
+        is NavGraphSpec -> startRoute.startDestination
     }
 }
 

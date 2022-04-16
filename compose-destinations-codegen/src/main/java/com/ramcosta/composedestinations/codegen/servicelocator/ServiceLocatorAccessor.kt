@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.codegen.servicelocator
 
-import com.ramcosta.composedestinations.codegen.InitialValidator
+import com.ramcosta.composedestinations.codegen.validators.InitialValidator
 import com.ramcosta.composedestinations.codegen.commons.DestinationWithNavArgsMapper
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
@@ -9,7 +9,7 @@ import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.Core
 import com.ramcosta.composedestinations.codegen.model.CustomNavType
 import com.ramcosta.composedestinations.codegen.writers.*
-import com.ramcosta.composedestinations.codegen.writers.sub.NavArgResolver
+import com.ramcosta.composedestinations.codegen.writers.sub.*
 
 internal interface ServiceLocatorAccessor {
     val logger: Logger
@@ -17,6 +17,16 @@ internal interface ServiceLocatorAccessor {
     val core: Core
     val codeGenConfig: CodeGenConfig
 }
+
+internal val ServiceLocatorAccessor.moduleOutputWriter get() = ModuleOutputWriter(
+    codeGenConfig,
+    navGraphsModeWriter,
+    legacyNavGraphsModeWriter,
+    destinationsListModeWriter,
+    navGraphsSingleObjectWriter,
+    legacyNavGraphsSingleObjectWriter,
+    singleModuleExtensionsWriter
+)
 
 internal val ServiceLocatorAccessor.customNavTypeWriter get() = CustomNavTypesWriter(
     codeGenerator,
@@ -33,22 +43,37 @@ internal fun ServiceLocatorAccessor.destinationsWriter(
     NavArgResolver(customNavTypeByType)
 )
 
-internal val ServiceLocatorAccessor.navGraphsSingleObjectWriter get() = NavGraphsSingleObjectWriter(
-    codeGenerator,
-    logger,
-)
-
-internal val ServiceLocatorAccessor.destinationsModeWriter get() = DestinationsModeWriter(
+internal val ServiceLocatorAccessor.destinationsListModeWriter get() = DestinationsModeWriter(
     codeGenerator,
 )
 
 internal val ServiceLocatorAccessor.navGraphsModeWriter get() = NavGraphsModeWriter(
+    logger,
     codeGenerator,
     codeGenConfig
 )
 
-internal val ServiceLocatorAccessor.coreExtensionsWriter get() = CoreExtensionsWriter(
+internal val ServiceLocatorAccessor.navGraphsSingleObjectWriter get() = NavGraphsSingleObjectWriter(
     codeGenerator,
+    logger,
+    codeGenConfig
+)
+
+//region legacy navgraphs setup
+internal val ServiceLocatorAccessor.legacyNavGraphsModeWriter get() = LegacyNavGraphsModeWriter(
+    codeGenerator,
+    codeGenConfig,
+)
+
+internal val ServiceLocatorAccessor.legacyNavGraphsSingleObjectWriter get() = LegacyNavGraphsSingleObjectWriter(
+    codeGenerator,
+    logger,
+)
+//endregion
+
+internal val ServiceLocatorAccessor.singleModuleExtensionsWriter get() = SingleModuleExtensionsWriter(
+    codeGenerator,
+    logger
 )
 
 internal val ServiceLocatorAccessor.sealedDestinationWriter get() = SealedDestinationWriter(

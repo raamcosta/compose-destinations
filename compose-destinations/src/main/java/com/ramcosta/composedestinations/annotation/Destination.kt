@@ -10,8 +10,8 @@ import kotlin.reflect.KClass
  * will call the annotated one, when the destination gets navigated to.
  *
  * @param route main route of this destination (by default, the name of the Composable function)
- * @param start `true` if this destination is the start destination of the navigation graph
- * @param navGraph route of the navigation graph this destination is a part of.
+ * @param start (Deprecated: check [NavGraph]) `true` if this destination is the start destination of the navigation graph
+ * @param navGraph (Deprecated: check [NavGraph]) route of the navigation graph this destination is a part of.
  * `"root"` is used by default. If this destination should be part of a nested nav graph, then
  * pass that nav graph's route.
  * @param navArgsDelegate class with a primary constructor where all navigation arguments are
@@ -29,8 +29,8 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.SOURCE)
 annotation class Destination(
     val route: String = COMPOSABLE_NAME,
-    val start: Boolean = false,
-    val navGraph: String = ROOT_NAV_GRAPH_ROUTE,
+    @Deprecated("Will be removed! Create annotation classes annotated with @NavGraph instead.") val start: Boolean = false,
+    @Deprecated("Will be removed! Create annotation classes annotated with @NavGraph instead.") val navGraph: String = ROOT_NAV_GRAPH_ROUTE,
     val navArgsDelegate: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
     val style: KClass<out DestinationStyle> = DestinationStyle.Default::class

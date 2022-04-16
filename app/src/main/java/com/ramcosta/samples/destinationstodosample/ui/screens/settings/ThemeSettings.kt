@@ -16,16 +16,13 @@ import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyle
-import com.ramcosta.samples.destinationstodosample.commons.Routes
+import com.ramcosta.samples.destinationstodosample.commons.SettingsNavGraph
 import com.ramcosta.samples.destinationstodosample.commons.requireTitle
 import com.ramcosta.samples.destinationstodosample.ui.screens.destinations.ThemeSettingsDestination
 import com.ramcosta.samples.destinationstodosample.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 
-@Destination(
-    route = Routes.THEME_SETTINGS,
-    navGraph = Routes.SETTINGS_NAV_GRAPH,
-    style = DestinationStyle.BottomSheet::class
-)
+@SettingsNavGraph
+@Destination(style = DestinationStyle.BottomSheet::class)
 @Composable
 fun ColumnScope.ThemeSettings(
     viewModel: SettingsViewModel,

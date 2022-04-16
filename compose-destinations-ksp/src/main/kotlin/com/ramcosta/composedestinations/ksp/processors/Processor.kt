@@ -4,13 +4,11 @@ import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
-import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.*
 import com.ramcosta.composedestinations.codegen.CodeGenerator
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.model.ClassKind
 import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
 
@@ -25,9 +23,14 @@ class Processor(
         if (!annotatedDestinations.iterator().hasNext()) {
             return emptyList()
         }
-        val navTypeSerializers = resolver.getNavTypeSerializers()
-
         val kspLogger = KspLogger(logger)
+
+        val navTypeSerializers = resolver.getNavTypeSerializers()
+        val navGraphAnnotations = resolver.getNavGraphAnnotations()
+
+        val classesToNavGraphsMapper = KspToCodeGenNavGraphsMapper()
+        val navGraphs = classesToNavGraphsMapper.map(navGraphAnnotations)
+
         val functionsToDestinationsMapper = KspToCodeGenDestinationsMapper(
             resolver,
             kspLogger,
@@ -42,7 +45,7 @@ class Processor(
             codeGenerator = kspCodeOutputStreamMaker,
             core = resolver.getCoreType(),
             codeGenConfig = ConfigParser(logger, options).parse()
-        ).generate(destinations, navTypeSerializers)
+        ).generate(destinations, navGraphs, navTypeSerializers)
 
         return emptyList()
     }
@@ -50,6 +53,11 @@ class Processor(
     private fun Resolver.getComposableDestinations(): Sequence<KSFunctionDeclaration> {
         return getSymbolsWithAnnotation(DESTINATION_ANNOTATION_QUALIFIED)
             .filterIsInstance<KSFunctionDeclaration>()
+    }
+
+    private fun Resolver.getNavGraphAnnotations(): Sequence<KSClassDeclaration> {
+        return getSymbolsWithAnnotation(NAV_GRAPH_ANNOTATION_QUALIFIED)
+            .filterIsInstance<KSClassDeclaration>()
     }
 
     private fun Resolver.getNavTypeSerializers(): List<NavTypeSerializer> {

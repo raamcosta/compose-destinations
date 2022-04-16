@@ -25,11 +25,13 @@ class CodeGenerator(
 ) : ServiceLocatorAccessor {
 
     fun generate(
-        destinations: List<DestinationGeneratingParams>,
+        destinations: List<RawDestinationGenParams>,
+        navGraphs: List<RawNavGraphGenParams>,
         navTypeSerializers: List<NavTypeSerializer>
     ) {
-        initialValidator.validate(destinations)
-        val shouldWriteSealedDestinations = shouldWriteSealedDestinations(destinations)
+        initialValidator.validate(navGraphs, destinations)
+
+        val shouldWriteSealedDestinations =  codeGenConfig.mode is CodeGenMode.SingleModule || destinations.size > 1
         initConfigurationValues(destinations, shouldWriteSealedDestinations)
 
         val destinationsWithNavArgs = destinationWithNavArgsMapper.map(destinations)
@@ -39,45 +41,14 @@ class CodeGenerator(
         val generatedDestinations = destinationsWriter(navTypeNamesByType)
             .write(destinationsWithNavArgs)
 
-        val generatedNavGraphs = writeForMode(generatedDestinations)
-
-        if (codeGenConfig.mode is CodeGenMode.SingleModule) {
-            coreExtensionsWriter.write(generatedNavGraphs)
-        }
+        moduleOutputWriter.write(navGraphs, generatedDestinations)
 
         if (shouldWriteSealedDestinations) {
             sealedDestinationWriter.write()
         }
 
-        val shouldWriteKtxSerializableNavTypeSerializer =
-            shouldWriteKtxSerializableNavTypeSerializer(destinations)
-
-        if (shouldWriteKtxSerializableNavTypeSerializer) {
+        if (shouldWriteKtxSerializableNavTypeSerializer(destinations)) {
             defaultKtxSerializableNavTypeSerializerWriter.write()
-        }
-    }
-
-    private fun writeForMode(generatedDestinations: List<GeneratedDestination>): List<NavGraphGeneratingParams> {
-        return when (codeGenConfig.mode) {
-            is CodeGenMode.NavGraphs -> {
-                navGraphsModeWriter.write(generatedDestinations)
-                emptyList()
-            }
-
-            is CodeGenMode.Destinations -> {
-                destinationsModeWriter.write(generatedDestinations)
-                emptyList()
-            }
-
-            is CodeGenMode.SingleModule -> {
-                if (codeGenConfig.mode.generateNavGraphs) {
-                    navGraphsSingleObjectWriter.write(generatedDestinations)
-                } else {
-                    // We fallback to just generate a list of all destinations
-                    destinationsModeWriter.write(generatedDestinations)
-                    emptyList()
-                }
-            }
         }
     }
 
@@ -94,16 +65,15 @@ class CodeGenerator(
         }
     }
 
-    private fun shouldWriteSealedDestinations(destinations: List<DestinationGeneratingParams>): Boolean {
-        return codeGenConfig.mode is CodeGenMode.SingleModule || destinations.size > 1
-    }
-
     private fun shouldWriteKtxSerializableNavTypeSerializer(
         destinations: List<DestinationGeneratingParams>,
     ) = destinations.any {
         it.parameters.any { param ->
             param.type.run {
-                isKtxSerializable && !hasCustomTypeSerializer
+                isKtxSerializable &&
+                        !hasCustomTypeSerializer &&
+                        !isParcelable &&
+                        !isSerializable
             }
         }
     }
