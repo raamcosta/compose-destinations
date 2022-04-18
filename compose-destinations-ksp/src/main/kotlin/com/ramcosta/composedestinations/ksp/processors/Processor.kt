@@ -86,8 +86,8 @@ class Processor(
 
                 NavTypeSerializer(
                     classKind = if (serializer.classKind == KSPClassKind.CLASS) ClassKind.CLASS else ClassKind.OBJECT,
-                    serializerType = ClassType(serializer.simpleName.asString(), serializer.qualifiedName!!.asString()),
-                    genericType = ClassType(genericType.simpleName.asString(), genericType.qualifiedName!!.asString()),
+                    serializerType = Importable(serializer.simpleName.asString(), serializer.qualifiedName!!.asString()),
+                    genericType = Importable(genericType.simpleName.asString(), genericType.qualifiedName!!.asString()),
                 )
             }.toList()
     }

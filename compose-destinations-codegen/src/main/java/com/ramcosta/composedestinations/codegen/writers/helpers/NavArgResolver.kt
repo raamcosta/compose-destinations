@@ -1,10 +1,12 @@
-package com.ramcosta.composedestinations.codegen.writers.sub
+package com.ramcosta.composedestinations.codegen.writers.helpers
 
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.model.*
 
 class NavArgResolver(
-    private val customNavTypeByType: Map<ClassType, CustomNavType>
+    private val customNavTypeByType: Map<Importable, CustomNavType>,
+    private val importableHelper: ImportableHelper
 ) {
 
     fun resolve(
@@ -26,6 +28,16 @@ class NavArgResolver(
         parameter = parameter,
     )
 
+    fun customNavTypeCode(type: Type): String {
+        val navTypeName = customNavTypeByType[type.importable]!!.name
+        return importableHelper.addImportableAndGetPlaceholder(
+            Importable(
+                navTypeName,
+                "$codeGenBasePackageName.navtype.$navTypeName"
+            )
+        )
+    }
+
     private fun internalResolve(
         argGetter: String,
         parameter: Parameter,
@@ -33,7 +45,7 @@ class NavArgResolver(
         val defaultCodeIfArgNotPresent = defaultCodeIfArgNotPresent(parameter)
 
         return if (parameter.type.isEnum) {
-            val stringToArg = "${parameter.type.classType.simpleName}.valueOf(it)"
+            val stringToArg = "${parameter.type.importable.simpleName}.valueOf(it)"
             buildNavArgForStringifiedEnumTypes(argGetter, stringToArg, defaultCodeIfArgNotPresent)
         } else {
             argGetter + defaultCodeIfArgNotPresent
@@ -52,7 +64,7 @@ class NavArgResolver(
         destination: DestinationGeneratingParams,
         argName: String,
     ): String {
-        return when (classType.qualifiedName) {
+        return when (importable.qualifiedName) {
             String::class.qualifiedName -> "${CORE_STRING_NAV_TYPE.simpleName}.get(savedStateHandle, \"$argName\")"
             Int::class.qualifiedName -> "${CORE_INT_NAV_TYPE.simpleName}.get(savedStateHandle, \"$argName\")"
             Float::class.qualifiedName -> "${CORE_FLOAT_NAV_TYPE.simpleName}.get(savedStateHandle, \"$argName\")"
@@ -64,10 +76,9 @@ class NavArgResolver(
                         "savedStateHandle.get<String>(\"$argName\")"
                     }
                     isParcelable || isSerializable || hasCustomTypeSerializer || isKtxSerializable -> {
-                        val navTypeName = customNavTypeByType[this.classType]!!.name
-                        "$navTypeName.get(savedStateHandle, \"$argName\")"
+                        "${customNavTypeCode(this)}.get(savedStateHandle, \"$argName\")"
                     }
-                    else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $classType.qualifiedName")
+                    else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $importable.qualifiedName")
                 }
 
             }
@@ -78,7 +89,7 @@ class NavArgResolver(
         destination: DestinationGeneratingParams,
         argName: String,
     ): String {
-        return when (classType.qualifiedName) {
+        return when (importable.qualifiedName) {
             String::class.qualifiedName -> "${CORE_STRING_NAV_TYPE.simpleName}.get(navBackStackEntry, \"$argName\")"
             Int::class.qualifiedName -> "${CORE_INT_NAV_TYPE.simpleName}.get(navBackStackEntry, \"$argName\")"
             Float::class.qualifiedName -> "${CORE_FLOAT_NAV_TYPE.simpleName}.get(navBackStackEntry, \"$argName\")"
@@ -90,10 +101,9 @@ class NavArgResolver(
                         "navBackStackEntry.arguments?.getString(\"$argName\")"
                     }
                     isParcelable || isSerializable || hasCustomTypeSerializer || isKtxSerializable -> {
-                        val navTypeName = customNavTypeByType[this.classType]!!.name
-                        "$navTypeName.get(navBackStackEntry, \"$argName\")"
+                        "${customNavTypeCode(this)}.get(navBackStackEntry, \"$argName\")"
                     }
-                    else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${classType.qualifiedName}")
+                    else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${importable.qualifiedName}")
                 }
             }
         }

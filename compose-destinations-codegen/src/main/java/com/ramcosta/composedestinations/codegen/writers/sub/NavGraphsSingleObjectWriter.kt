@@ -153,10 +153,10 @@ class NavGraphsSingleObjectWriter(
         return code.toString()
     }
 
-    private fun requireOptInAnnotations(navGraphRequireOptInClassTypes: Set<ClassType>): String {
+    private fun requireOptInAnnotations(navGraphRequireOptInImportables: Set<Importable>): String {
         val code = StringBuilder()
 
-        navGraphRequireOptInClassTypes.forEach { annotationType ->
+        navGraphRequireOptInImportables.forEach { annotationType ->
             additionalImports.add(annotationType.qualifiedName)
             code += "@${annotationType.simpleName}\n\t"
         }
@@ -164,7 +164,7 @@ class NavGraphsSingleObjectWriter(
         return code.toString()
     }
 
-    private fun List<GeneratedDestination>.requireOptInAnnotationClassTypes(): MutableSet<ClassType> {
+    private fun List<GeneratedDestination>.requireOptInAnnotationClassTypes(): MutableSet<Importable> {
         val requireOptInClassTypes = flatMapTo(mutableSetOf()) { generatedDest ->
             generatedDest.requireOptInAnnotationTypes
         }
@@ -184,7 +184,7 @@ class NavGraphsSingleObjectWriter(
     }
 
     private fun RawNavGraphGenParams.distanceToRoot(
-        navGraphsByType: Map<ClassType, RawNavGraphGenParams>
+        navGraphsByType: Map<Importable, RawNavGraphGenParams>
     ): Int {
         var distance = 0
         var parent: RawNavGraphGenParams? = parent?.let { navGraphsByType[it]!! }

@@ -2,12 +2,14 @@ package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
+import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 
 class DestinationContentFunctionWriter(
     private val destination: DestinationGeneratingParams,
     private val navArgs: List<Parameter>,
-    private val additionalImports: MutableSet<String>,
+    private val importableHelper: ImportableHelper,
 ) {
 
     fun write(): String = with(destination) {
@@ -15,8 +17,13 @@ class DestinationContentFunctionWriter(
 
         val (args, needsDependencyContainer) = prepareArguments()
         if (needsDependencyContainer) {
-            additionalImports.add("androidx.compose.runtime.remember")
-            functionCallCode += "\t\tval dependencyContainer = remember { DestinationDependenciesContainer(this) }\n"
+            val rememberPlaceholder = importableHelper.addImportableAndGetPlaceholder(
+                Importable(
+                    "remember",
+                    "androidx.compose.runtime.remember"
+                )
+            )
+            functionCallCode += "\t\tval dependencyContainer = $rememberPlaceholder { DestinationDependenciesContainer(this) }\n"
             functionCallCode += "\t\tdependencyContainer.apply { dependenciesContainerBuilder() }\n\n"
         }
 
@@ -37,14 +44,24 @@ class DestinationContentFunctionWriter(
     private fun prepareReceiver(): String {
         return when (destination.composableReceiverSimpleName) {
             ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME -> {
-                additionalImports.add(ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME)
-                "val animatedVisibilityScope = (this as $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME)\n" +
+                val animatedVisPlaceholder = importableHelper.addImportableAndGetPlaceholder(
+                    Importable(
+                        ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME,
+                        ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
+                    )
+                )
+                "val animatedVisibilityScope = (this as $animatedVisPlaceholder)\n" +
                         "\t\tanimatedVisibilityScope."
             }
 
             COLUMN_SCOPE_SIMPLE_NAME -> {
-                additionalImports.add(COLUMN_SCOPE_QUALIFIED_NAME)
-                "val columnScope = (this as $COLUMN_SCOPE_SIMPLE_NAME)\n" +
+                val columnScopePlaceholder = importableHelper.addImportableAndGetPlaceholder(
+                    Importable(
+                        COLUMN_SCOPE_SIMPLE_NAME,
+                        COLUMN_SCOPE_QUALIFIED_NAME
+                    )
+                )
+                "val columnScope = (this as $columnScopePlaceholder)\n" +
                         "\t\tcolumnScope."
             }
 
@@ -81,20 +98,30 @@ class DestinationContentFunctionWriter(
 
     private fun resolveArgumentForTypeAndName(parameter: Parameter): Pair<String?, Boolean> {
         var needsDependencyContainer = false
-        val arg = when (parameter.type.classType.qualifiedName) {
+        val arg = when (parameter.type.importable.qualifiedName) {
             NAV_CONTROLLER_QUALIFIED_NAME,
             NAV_HOST_CONTROLLER_QUALIFIED_NAME, -> "navController"
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
             DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "destinationsNavigator"
             RESULT_RECIPIENT_QUALIFIED_NAME -> {
-                additionalImports.add("$CORE_PACKAGE_NAME.scope.resultRecipient")
-                "resultRecipient()"
+                val placeHolder = importableHelper.addImportableAndGetPlaceholder(
+                    Importable(
+                        "resultRecipient",
+                        "$CORE_PACKAGE_NAME.scope.resultRecipient"
+                    )
+                )
+                "$placeHolder()"
             }
             RESULT_BACK_NAVIGATOR_QUALIFIED_NAME -> {
-                additionalImports.add("$CORE_PACKAGE_NAME.scope.resultBackNavigator")
-                "resultBackNavigator()"
+                val placeHolder = importableHelper.addImportableAndGetPlaceholder(
+                    Importable(
+                        "resultBackNavigator",
+                        "$CORE_PACKAGE_NAME.scope.resultBackNavigator"
+                    )
+                )
+                "$placeHolder()"
             }
-            destination.navArgsDelegateType?.qualifiedName -> {
+            destination.navArgsDelegateType?.type?.qualifiedName -> {
                 "navArgs"
             }
             else -> {
@@ -105,9 +132,6 @@ class DestinationContentFunctionWriter(
 
                     !parameter.hasDefault -> {
                         needsDependencyContainer = true
-                        if (parameter.type.classType.qualifiedName != "kotlin.${parameter.type.classType.simpleName}") {
-                            additionalImports.add(parameter.type.classType.qualifiedName)
-                        }
                         "dependencyContainer.require()"
                     }
 

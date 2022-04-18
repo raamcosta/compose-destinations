@@ -58,7 +58,7 @@ class NavGraphsModeWriter(
                 }
         }
 
-        val rawNavGraphGenByParent: Map<ClassType?, List<RawNavGraphGenParams>> =
+        val rawNavGraphGenByParent: Map<Importable?, List<RawNavGraphGenParams>> =
             destinationsByNavGraphParams.keys.groupBy { it.parent }
 
         destinationsByNavGraphParams.forEach {

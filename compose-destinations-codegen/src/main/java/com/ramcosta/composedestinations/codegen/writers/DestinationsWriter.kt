@@ -3,14 +3,14 @@ package com.ramcosta.composedestinations.codegen.writers
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
-import com.ramcosta.composedestinations.codegen.writers.sub.NavArgResolver
+import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
+import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 
 class DestinationsWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
     private val core: Core,
-    private val customNavTypeByType: Map<ClassType, CustomNavType>,
-    private val navArgResolver: NavArgResolver,
+    private val customNavTypeByType: Map<Importable, CustomNavType>,
 ) {
 
     fun write(
@@ -19,13 +19,15 @@ class DestinationsWriter(
         val generatedFiles = mutableListOf<GeneratedDestination>()
 
         destinations.forEach { destination ->
+            val importableHelper = ImportableHelper(destination)
             val generatedDestination = SingleDestinationWriter(
                 codeGenerator,
                 logger,
                 core,
-                navArgResolver,
+                NavArgResolver(customNavTypeByType, importableHelper),
                 destination,
-                customNavTypeByType
+                customNavTypeByType,
+                importableHelper
             ).write()
 
             generatedFiles.add(generatedDestination)

@@ -12,7 +12,7 @@ interface DestinationGeneratingParams {
     val navGraphInfo: NavGraphInfo
     val destinationStyleType: DestinationStyleType
     val composableReceiverSimpleName: String?
-    val requireOptInAnnotationTypes: List<ClassType>
+    val requireOptInAnnotationTypes: List<Importable>
     val navArgsDelegateType: NavArgsDelegateType?
 }
 
@@ -28,6 +28,6 @@ data class RawDestinationGenParams(
     override val navGraphInfo: NavGraphInfo,
     override val destinationStyleType: DestinationStyleType,
     override val composableReceiverSimpleName: String?,
-    override val requireOptInAnnotationTypes: List<ClassType>,
+    override val requireOptInAnnotationTypes: List<Importable>,
     override val navArgsDelegateType: NavArgsDelegateType?
 ): DestinationGeneratingParams

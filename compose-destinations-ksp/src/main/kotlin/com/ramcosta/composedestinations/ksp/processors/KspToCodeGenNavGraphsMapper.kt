@@ -5,7 +5,7 @@ import com.google.devtools.ksp.symbol.KSType
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_DEFAULT_NAME
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
-import com.ramcosta.composedestinations.codegen.model.ClassType
+import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 
 class KspToCodeGenNavGraphsMapper {
@@ -52,7 +52,7 @@ class KspToCodeGenNavGraphsMapper {
 
         val isParentStart = parentGraphAnnotation?.arguments?.first()?.value as? Boolean?
         val parent = parentGraphAnnotationResolved?.let {
-            ClassType(
+            Importable(
                 it.declaration.simpleName.asString(),
                 it.declaration.qualifiedName!!.asString()
             )
@@ -61,7 +61,7 @@ class KspToCodeGenNavGraphsMapper {
         return RawNavGraphGenParams(
             routeOverride = if (navGraphAnnotationNameArg == NAV_GRAPH_ANNOTATION_DEFAULT_NAME) null else navGraphAnnotationNameArg,
             default = navGraphAnnotationDefaultArg,
-            type = ClassType(this.simpleName.asString(), this.qualifiedName!!.asString()),
+            type = Importable(this.simpleName.asString(), this.qualifiedName!!.asString()),
             parent = parent,
             isParentStart = isParentStart
         )

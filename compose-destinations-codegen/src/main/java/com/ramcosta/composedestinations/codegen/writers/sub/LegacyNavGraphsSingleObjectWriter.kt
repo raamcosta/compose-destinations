@@ -4,7 +4,7 @@ import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.model.ClassType
+import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.model.NavGraphGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
@@ -92,10 +92,10 @@ class LegacyNavGraphsSingleObjectWriter(
 
     }
 
-    private fun requireOptInAnnotations(navGraphRequireOptInClassTypes: Set<ClassType>): String {
+    private fun requireOptInAnnotations(navGraphRequireOptInImportables: Set<Importable>): String {
         val code = StringBuilder()
 
-        navGraphRequireOptInClassTypes.forEach { annotationType ->
+        navGraphRequireOptInImportables.forEach { annotationType ->
             additionalImports.add(annotationType.qualifiedName)
             code += "@${annotationType.simpleName}\n\t"
         }
@@ -137,7 +137,7 @@ class LegacyNavGraphsSingleObjectWriter(
             groupBy { (it.navGraphInfo as NavGraphInfo.Legacy).navGraphRoute }.toMutableMap()
 
         val nestedNavGraphs = mutableListOf<String>()
-        val nestedNavGraphsRequireOptInAnnotations = mutableSetOf<ClassType>()
+        val nestedNavGraphsRequireOptInAnnotations = mutableSetOf<Importable>()
         val rootDestinations = destinationsByNavGraph.remove("root")
 
         destinationsByNavGraph.forEach {
@@ -173,7 +173,7 @@ class LegacyNavGraphsSingleObjectWriter(
         return result
     }
 
-    private fun List<GeneratedDestination>.requireOptInAnnotationClassTypes(): MutableSet<ClassType> {
+    private fun List<GeneratedDestination>.requireOptInAnnotationClassTypes(): MutableSet<Importable> {
         val requireOptInClassTypes = flatMapTo(mutableSetOf()) { generatedDest ->
             generatedDest.requireOptInAnnotationTypes
         }

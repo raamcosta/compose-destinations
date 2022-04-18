@@ -4,10 +4,10 @@ import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
 import java.util.*
 
 data class RawNavGraphGenParams(
-    val type: ClassType,
+    val type: Importable,
     val default: Boolean,
     private val routeOverride: String? = null,
-    val parent: ClassType? = null,
+    val parent: Importable? = null,
     val isParentStart: Boolean? = null,
 ) {
     private var nameOverride: String? = null

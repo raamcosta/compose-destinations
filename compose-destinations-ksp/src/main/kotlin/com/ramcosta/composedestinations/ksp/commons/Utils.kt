@@ -42,8 +42,8 @@ fun File.readLine(lineNumber: Int): String {
         }
 }
 
-fun KSAnnotated.findAllRequireOptInAnnotations(): List<ClassType> {
-    val requireOptInAnnotations = mutableListOf<ClassType>()
+fun KSAnnotated.findAllRequireOptInAnnotations(): List<Importable> {
+    val requireOptInAnnotations = mutableListOf<Importable>()
     annotations.forEach { annotation ->
         val annotationShortName = annotation.shortName.asString()
         if (annotationShortName == "Composable" || annotationShortName == "Destination") {
@@ -52,7 +52,7 @@ fun KSAnnotated.findAllRequireOptInAnnotations(): List<ClassType> {
 
         val ksType = annotation.annotationType.resolve()
         if (ksType.isRequireOptInAnnotation()) {
-            requireOptInAnnotations.add(ClassType(annotationShortName, ksType.declaration.qualifiedName!!.asString()))
+            requireOptInAnnotations.add(Importable(annotationShortName, ksType.declaration.qualifiedName!!.asString()))
         }
     }
 

@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.codegen.commons
 
-import com.ramcosta.composedestinations.codegen.model.ClassType
+import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 
 const val CORE_PACKAGE_NAME = "com.ramcosta.composedestinations"
@@ -12,7 +12,7 @@ const val DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$DES
 const val NAV_GRAPH_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$NAV_GRAPH_ANNOTATION"
 const val NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.navargs.$NAV_TYPE_SERIALIZER_ANNOTATION"
 
-val rootNavGraphType = ClassType(
+val rootNavGraphType = Importable(
     "RootNavGraph",
     "$CORE_PACKAGE_NAME.annotation.RootNavGraph"
 )
@@ -39,18 +39,18 @@ const val GENERATED_DESTINATION_SUFFIX = "Destination"
 const val CORE_DESTINATION_SPEC = "DestinationSpec"
 const val CORE_DIRECTION_DESTINATION_SPEC = "DirectionDestinationSpec"
 const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
-val CORE_STRING_NAV_TYPE = ClassType("DestinationsStringNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsStringNavType")
-val CORE_INT_NAV_TYPE = ClassType("DestinationsIntNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsIntNavType")
-val CORE_BOOLEAN_NAV_TYPE = ClassType("DestinationsBooleanNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsBooleanNavType")
-val CORE_FLOAT_NAV_TYPE = ClassType("DestinationsFloatNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsFloatNavType")
-val CORE_LONG_NAV_TYPE = ClassType("DestinationsLongNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsLongNavType")
+val CORE_STRING_NAV_TYPE = Importable("DestinationsStringNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsStringNavType")
+val CORE_INT_NAV_TYPE = Importable("DestinationsIntNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsIntNavType")
+val CORE_BOOLEAN_NAV_TYPE = Importable("DestinationsBooleanNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsBooleanNavType")
+val CORE_FLOAT_NAV_TYPE = Importable("DestinationsFloatNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsFloatNavType")
+val CORE_LONG_NAV_TYPE = Importable("DestinationsLongNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsLongNavType")
 const val CORE_DIRECTION = "Direction"
 const val CORE_DESTINATION_ANIMATION_STYLE = "DestinationStyle.Animated"
 const val CORE_BOTTOM_SHEET_DESTINATION_STYLE = "DestinationStyle.BottomSheet"
 
 private const val EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME = "ExperimentalAnimationApi"
 private const val EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME = "androidx.compose.animation.ExperimentalAnimationApi"
-val experimentalAnimationApiType = ClassType(
+val experimentalAnimationApiType = Importable(
     simpleName = EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME,
     qualifiedName = EXPERIMENTAL_ANIMATION_API_QUALIFIED_NAME
 )

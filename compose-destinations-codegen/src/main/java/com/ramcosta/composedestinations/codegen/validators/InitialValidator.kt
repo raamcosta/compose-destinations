@@ -154,7 +154,7 @@ class InitialValidator(
     private fun DestinationGeneratingParams.validateResultParams(
         destinationsByName: Lazy<Map<String, DestinationGeneratingParams>>
     ) {
-        val resultRecipientParams = parameters.filter { it.type.classType.qualifiedName == RESULT_RECIPIENT_QUALIFIED_NAME }
+        val resultRecipientParams = parameters.filter { it.type.importable.qualifiedName == RESULT_RECIPIENT_QUALIFIED_NAME }
         val destinationResultOriginForAllResultTypes = mutableSetOf<String>()
         resultRecipientParams.forEach { parameter ->
             val resultOriginDestinationName = parameter.getFirstArgTypeSimpleName()
@@ -169,7 +169,7 @@ class InitialValidator(
                     ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin!")
 
             resultOriginDestinationParams.parameters.firstOrNull {
-                it.type.classType.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME &&
+                it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME &&
                         (it.type.genericTypes.firstOrNull() as? TypedGenericType)?.type == resultType
             }
                 ?: throw IllegalDestinationsSetup(
@@ -186,7 +186,7 @@ class InitialValidator(
         }
 
         val resultBackNavigatorParams =
-            parameters.filter { it.type.classType.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME }
+            parameters.filter { it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME }
         if (resultBackNavigatorParams.size > 1) {
             throw IllegalDestinationsSetup(
                 "Composable '${composableName}': " +
@@ -210,7 +210,7 @@ class InitialValidator(
                 .trim()
         }
 
-        return (firstTypeArg as? TypedGenericType)?.type?.classType?.simpleName
+        return (firstTypeArg as? TypedGenericType)?.type?.importable?.simpleName
             ?: throw IllegalDestinationsSetup("ResultRecipient first type argument must be a Destination")
     }
 

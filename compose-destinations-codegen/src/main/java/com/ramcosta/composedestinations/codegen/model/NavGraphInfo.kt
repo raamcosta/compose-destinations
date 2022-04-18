@@ -15,7 +15,7 @@ sealed interface NavGraphInfo {
 
     data class AnnotatedSource(
         override val start: Boolean,
-        val graphType: ClassType
+        val graphType: Importable
     ): NavGraphInfo {
         override val isDefault = false
     }

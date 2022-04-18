@@ -8,8 +8,9 @@ import com.ramcosta.composedestinations.codegen.codeGenDestination
 import com.ramcosta.composedestinations.codegen.codeGenNoArgsDestination
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.templates.*
+import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFunctionWriter
-import com.ramcosta.composedestinations.codegen.writers.sub.NavArgResolver
+import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 
 class SingleDestinationWriter(
     private val codeGenerator: CodeOutputStreamMaker,
@@ -17,10 +18,10 @@ class SingleDestinationWriter(
     private val core: Core,
     private val navArgResolver: NavArgResolver,
     private val destination: DestinationGeneratingParamsWithNavArgs,
-    private val customNavTypeByType: Map<ClassType, CustomNavType>
+    private val customNavTypeByType: Map<Importable, CustomNavType>,
+    private val importableHelper: ImportableHelper
 ) {
 
-    private val additionalImports = mutableSetOf<String>()
     private val navArgs get() = destination.navArgs
 
     init {
@@ -30,29 +31,27 @@ class SingleDestinationWriter(
     }
 
     fun write(): GeneratedDestination = with(destination) {
-        val outputStream = codeGenerator.makeFile(
+        codeGenerator.makeFile(
             packageName = "$codeGenBasePackageName.destinations",
             name = name,
             sourceIds = sourceIds.toTypedArray()
-        )
-
-        outputStream += destinationTemplate
-            .replace(DESTINATION_NAME, name)
-            .replaceSuperclassDestination()
-            .addNavArgsDataClass()
-            .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
-            .replace(ROUTE_ID, destination.cleanRoute)
-            .replace(NAV_ARGS_CLASS_SIMPLE_NAME, navArgsDataClassName())
-            .replace(COMPOSED_ROUTE, constructRouteFieldCode())
-            .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
-            .replace(DEEP_LINKS, deepLinksDeclarationCode())
-            .replace(DESTINATION_STYLE, destinationStyle())
-            .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
-            .addInvokeWithArgsMethod()
-            .replace(ARGS_FROM_METHODS, argsFromFunctions())
-            .replace(ADDITIONAL_IMPORTS, additionalImports())
-
-        outputStream.close()
+        ).use {
+            it += destinationTemplate
+                .replace(DESTINATION_NAME, name)
+                .replaceSuperclassDestination()
+                .addNavArgsDataClass()
+                .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
+                .replace(ROUTE_ID, destination.cleanRoute)
+                .replace(NAV_ARGS_CLASS_SIMPLE_NAME, navArgsDataClassName())
+                .replace(COMPOSED_ROUTE, constructRouteFieldCode())
+                .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
+                .replace(DEEP_LINKS, deepLinksDeclarationCode())
+                .replace(DESTINATION_STYLE, destinationStyle())
+                .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
+                .addInvokeWithArgsMethod()
+                .replace(ARGS_FROM_METHODS, argsFromFunctions())
+                .replaceImportablePlaceHolders()
+        }
 
         return GeneratedDestination(
             sourceIds = sourceIds,
@@ -61,7 +60,7 @@ class SingleDestinationWriter(
             navGraphInfo = navGraphInfo,
             requireOptInAnnotationTypes = gatherOptInAnnotations()
                 .filter { !it.isOptedIn }
-                .map { it.classType }
+                .map { it.importable }
                 .toList(),
         )
     }
@@ -72,7 +71,7 @@ class SingleDestinationWriter(
         }
 
         val superType = if (destination.navArgsDelegateType != null) {
-            "${codeGenDestination}<${destination.navArgsDelegateType.simpleName}>"
+            "${codeGenDestination}<${destination.navArgsDelegateType.type.getCodePlaceHolder()}>"
         } else {
             "${codeGenDestination}<${destination.name}.NavArgs>"
         }
@@ -112,7 +111,7 @@ class SingleDestinationWriter(
 
         if (isRequiredReceiverExperimentalOptedIn() || isRequiredAnimationExperimentalOptedIn()) {
             // user has opted in, so we will too
-            additionalImports.add(experimentalAnimationApiType.qualifiedName)
+            experimentalAnimationApiType.addImport()
             optInByAnnotation[experimentalAnimationApiType] = true
         }
 
@@ -134,30 +133,18 @@ class SingleDestinationWriter(
         val optInByAnnotation = gatherOptInAnnotations()
 
         val (optedIns, nonOptedIns) = optInByAnnotation
-            .onEach { additionalImports.add(it.classType.qualifiedName) }
+            .onEach { it.importable.addImport() }
             .partition { it.isOptedIn }
 
         nonOptedIns.forEach {
-            code += "@${it.classType.simpleName}\n"
+            code += "@${it.importable.getCodePlaceHolder()}\n"
         }
 
         if (optedIns.isNotEmpty()) {
-            code += "@OptIn(${optedIns.joinToString(", ") { "${it.classType.simpleName}::class" }})\n"
+            code += "@OptIn(${optedIns.joinToString(", ") { "${it.importable.simpleName}::class" }})\n"
         }
 
         return code.toString()
-    }
-
-    private fun additionalImports(): String {
-        val imports = StringBuilder()
-
-        additionalImports.add(destination.composableQualifiedName)
-
-        additionalImports.sorted().forEach {
-            imports += "\nimport $it"
-        }
-
-        return imports.toString()
     }
 
     private fun String.addInvokeWithArgsMethod(): String {
@@ -212,7 +199,7 @@ class SingleDestinationWriter(
         } else ""
 
         navArgs.forEachIndexed { i, it ->
-            args += "\t\t$argPrefix${it.name}: ${it.type.toTypeCode()}${defaultValueForWithArgsFunction(it)},"
+            args += "\t\t$argPrefix${it.name}: ${it.type.toTypeCode(importableHelper)}${defaultValueForWithArgsFunction(it)},"
 
             if (i != navArgs.lastIndex) {
                 args += "\n"
@@ -224,16 +211,15 @@ class SingleDestinationWriter(
 
     private fun Parameter.stringifyForNavigation(): String {
         if (isComplexTypeNavArg()) {
-            val navTypeName = customNavTypeByType[type.classType]!!.name
-            additionalImports.add("$codeGenBasePackageName.navtype.$navTypeName")
+            val codePlaceHolder = navArgResolver.customNavTypeCode(type)
 
-            return "$navTypeName.serializeValue($name)"
+            return "$codePlaceHolder.serializeValue($name)"
         }
 
-        if (type.classType.qualifiedName == String::class.qualifiedName) {
-            return "${CORE_STRING_NAV_TYPE.simpleName}.serializeValue(\"$name\", $name)"
-        } else if (type.classType.qualifiedName in primitiveTypes.keys) {
-            return "${primitiveTypes[type.classType.qualifiedName]!!.simpleName}.serializeValue($name)"
+        if (type.importable.qualifiedName == String::class.qualifiedName) {
+            return "${CORE_STRING_NAV_TYPE.getCodePlaceHolder()}.serializeValue(\"$name\", $name)"
+        } else if (type.importable.qualifiedName in primitiveTypes.keys) {
+            return "${primitiveTypes[type.importable.qualifiedName]!!.getCodePlaceHolder()}.serializeValue($name)"
         }
 
         val ifNullBeforeToString = if (type.isNullable) "?" else ""
@@ -257,12 +243,8 @@ class SingleDestinationWriter(
     }
 
     private fun navArgsDataClassName(): String = with(destination) {
-        return if (navArgsDelegateType == null) {
-            if (navArgs.isEmpty()) "Unit" else "NavArgs"
-        } else {
-            additionalImports.add(navArgsDelegateType.qualifiedName)
-            navArgsDelegateType.simpleName
-        }
+        return navArgsDelegateType?.type?.getCodePlaceHolder()
+            ?: if (navArgs.isEmpty()) "Unit" else "NavArgs"
     }
 
     private fun argsFromNavBackStackEntry(argsType: String): String {
@@ -288,12 +270,15 @@ class SingleDestinationWriter(
     }
 
     private fun argsFromSavedStateHandle(argsType: String): String {
-        additionalImports.add(SAVED_STATE_HANDLE_QUALIFIED_NAME)
+        val savedStateHandlePlaceholder = Importable(
+            SAVED_STATE_HANDLE_SIMPLE_NAME,
+            SAVED_STATE_HANDLE_QUALIFIED_NAME
+        ).getCodePlaceHolder()
 
         val code = StringBuilder()
         code += """
                 
-           |override fun argsFrom(savedStateHandle: $SAVED_STATE_HANDLE_SIMPLE_NAME): $argsType {
+           |override fun argsFrom(savedStateHandle: $savedStateHandlePlaceholder): $argsType {
            |    return ${argsType}(%s2
            |    )
            |}
@@ -351,7 +336,7 @@ class SingleDestinationWriter(
         return DestinationContentFunctionWriter(
             destination,
             navArgs,
-            additionalImports
+            importableHelper
         ).write()
     }
 
@@ -384,14 +369,17 @@ class SingleDestinationWriter(
 
     private fun deepLinksDeclarationCode(): String {
         val code = StringBuilder()
+        val navDeepLinkPlaceholder = Importable(
+            "navDeepLink",
+            "androidx.navigation.navDeepLink"
+        ).getCodePlaceHolder()
 
         destination.deepLinks.forEachIndexed { i, it ->
             if (i == 0) {
-                additionalImports.add("androidx.navigation.navDeepLink")
                 code += "\n\toverride val deepLinks get() = listOf(\n\t\t"
             }
 
-            code += "navDeepLink {\n\t\t"
+            code += "$navDeepLinkPlaceholder {\n\t\t"
 
             if (it.action.isNotEmpty()) {
                 code += "\taction = \"${it.action}\"\n\t\t"
@@ -429,7 +417,7 @@ class SingleDestinationWriter(
             .apply {
                 removeAll {
                     val isComplexType = it.isComplexTypeNavArg()
-                    val hasCustomSerializer = customNavTypeByType[it.type.classType]?.serializer != null
+                    val hasCustomSerializer = customNavTypeByType[it.type.importable]?.serializer != null
                     if (it.isMandatory && isComplexType && !hasCustomSerializer) {
                         throw IllegalDestinationsSetup(
                             "Composable '${destination.composableName}', arg name= '${it.name}': " +
@@ -483,9 +471,7 @@ class SingleDestinationWriter(
     }
 
     private fun destinationStyleDialog(destinationStyleType: DestinationStyleType.Dialog): String {
-        additionalImports.add(destinationStyleType.type.classType.qualifiedName)
-
-        return "\n\toverride val style = ${destinationStyleType.type.classType.simpleName}\n"
+        return "\n\toverride val style = ${destinationStyleType.type.importable.getCodePlaceHolder()}\n"
     }
 
     private fun destinationStyleAnimated(destinationStyleType: DestinationStyleType.Animated): String {
@@ -493,14 +479,16 @@ class SingleDestinationWriter(
             throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_DESTINATION_ANIMATION_STYLE!")
         }
 
-        additionalImports.add(experimentalAnimationApiType.qualifiedName)
-        additionalImports.add(destinationStyleType.type.classType.qualifiedName)
+        experimentalAnimationApiType.addImport()
 
         if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
-            additionalImports.add(ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME)
+            Importable(
+                ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME,
+                ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
+            ).addImport()
         }
 
-        return "\n\toverride val style = ${destinationStyleType.type.classType.simpleName}\n"
+        return "\n\toverride val style = ${destinationStyleType.type.importable.getCodePlaceHolder()}\n"
     }
 
     private fun destinationStyleBottomSheet(): String {
@@ -516,7 +504,7 @@ class SingleDestinationWriter(
             return ""
         }
 
-        defaultValue.imports.forEach { additionalImports.add(it) }
+        defaultValue.imports.forEach { importableHelper.addPriorityQualifiedImport(it) }
 
         if (defaultValue.code == "null") {
             return "\tdefaultValue = null\n\t\t"
@@ -532,26 +520,36 @@ class SingleDestinationWriter(
     private fun Parameter.toNavTypeCode(): String {
         val primitiveNavTypeCode = type.toPrimitiveNavTypeClassTypeOrNull()
         if (primitiveNavTypeCode != null) {
-            additionalImports.add(primitiveNavTypeCode.qualifiedName)
-            return primitiveNavTypeCode.simpleName
+            return primitiveNavTypeCode.getCodePlaceHolder()
         }
 
         if (isComplexTypeNavArg()) {
-            additionalImports.add(type.classType.qualifiedName)
-            return customNavTypeByType[type.classType]!!.name
+            type.importable.addImport()
+            return navArgResolver.customNavTypeCode(type)
         }
 
         if (type.isEnum) {
-            additionalImports.add(type.classType.qualifiedName)
-            additionalImports.add(CORE_STRING_NAV_TYPE.qualifiedName)
-            return CORE_STRING_NAV_TYPE.simpleName
+            type.importable.addImport()
+            return CORE_STRING_NAV_TYPE.getCodePlaceHolder()
         }
 
-        throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${type.classType.qualifiedName}")
+        throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${type.importable.qualifiedName}")
     }
 
     private class OptInAnnotation(
-        val classType: ClassType,
+        val importable: Importable,
         val isOptedIn: Boolean,
     )
+
+    private fun Importable.getCodePlaceHolder(): String  {
+        return importableHelper.addImportableAndGetPlaceholder(this)
+    }
+
+    private fun Importable.addImport()  {
+        importableHelper.addImportableAndGetPlaceholder(this)
+    }
+
+    private fun String.replaceImportablePlaceHolders(): String {
+        return importableHelper.resolveImportablePlaceHolders(ADDITIONAL_IMPORTS, this)
+    }
 }

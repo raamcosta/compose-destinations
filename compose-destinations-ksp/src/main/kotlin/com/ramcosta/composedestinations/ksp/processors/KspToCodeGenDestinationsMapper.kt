@@ -12,7 +12,7 @@ import java.io.File
 class KspToCodeGenDestinationsMapper(
     private val resolver: Resolver,
     private val logger: KspLogger,
-    private val navTypeSerializersByType: Map<ClassType, NavTypeSerializer>,
+    private val navTypeSerializersByType: Map<Importable, NavTypeSerializer>,
 ) : KSFileSourceMapper {
 
     private val defaultStyle by lazy {
@@ -103,7 +103,7 @@ class KspToCodeGenDestinationsMapper(
 
         return NavGraphInfo.AnnotatedSource(
             start = navGraphAnnotation.arguments.first().value as Boolean,
-            graphType = ClassType(
+            graphType = Importable(
                 resolvedAnnotation!!.declaration.simpleName.asString(),
                 resolvedAnnotation!!.declaration.qualifiedName!!.asString()
             )
@@ -128,8 +128,10 @@ class KspToCodeGenDestinationsMapper(
         return Pair(
             NavArgsDelegateType(
                 parameters,
-                ksClassDeclaration.qualifiedName!!.asString(),
-                ksClassDeclaration.simpleName.asString()
+                Importable(
+                    ksClassDeclaration.simpleName.asString(),
+                    ksClassDeclaration.qualifiedName!!.asString(),
+                )
             ),
             ksClassDeclaration.containingFile!!
         )
@@ -188,9 +190,9 @@ class KspToCodeGenDestinationsMapper(
         }
         val classDeclarationType = ksClassDeclaration?.asType(emptyList())
 
-        val classType = ClassType(declaration.simpleName.asString(), qualifiedName.asString())
+        val classType = Importable(declaration.simpleName.asString(), qualifiedName.asString())
         return Type(
-            classType = classType,
+            importable = classType,
             genericTypes = genericTypes(location),
             requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
             isNullable = isMarkedNullable,

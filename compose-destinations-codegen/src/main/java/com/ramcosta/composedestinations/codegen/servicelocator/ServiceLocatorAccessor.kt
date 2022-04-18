@@ -1,13 +1,13 @@
 package com.ramcosta.composedestinations.codegen.servicelocator
 
-import com.ramcosta.composedestinations.codegen.validators.InitialValidator
 import com.ramcosta.composedestinations.codegen.commons.DestinationWithNavArgsMapper
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.model.ClassType
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.Core
 import com.ramcosta.composedestinations.codegen.model.CustomNavType
+import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.validators.InitialValidator
 import com.ramcosta.composedestinations.codegen.writers.*
 import com.ramcosta.composedestinations.codegen.writers.sub.*
 
@@ -34,13 +34,12 @@ internal val ServiceLocatorAccessor.customNavTypeWriter get() = CustomNavTypesWr
 )
 
 internal fun ServiceLocatorAccessor.destinationsWriter(
-    customNavTypeByType: Map<ClassType, CustomNavType>
+    customNavTypeByType: Map<Importable, CustomNavType>
 ) = DestinationsWriter(
     codeGenerator,
     logger,
     core,
-    customNavTypeByType,
-    NavArgResolver(customNavTypeByType)
+    customNavTypeByType
 )
 
 internal val ServiceLocatorAccessor.destinationsListModeWriter get() = DestinationsModeWriter(

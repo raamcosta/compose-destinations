@@ -1,9 +1,9 @@
 package com.ramcosta.composedestinations.codegen.model
 
 data class Type(
-    val classType: ClassType,
+    val importable: Importable,
     val genericTypes: List<GenericType>,
-    val requireOptInAnnotations: List<ClassType>,
+    val requireOptInAnnotations: List<Importable>,
     val isNullable: Boolean,
     val isEnum: Boolean,
     val isParcelable: Boolean,

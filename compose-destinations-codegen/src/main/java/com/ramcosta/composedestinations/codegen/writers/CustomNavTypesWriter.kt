@@ -15,13 +15,13 @@ class CustomNavTypesWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger
 ) {
-    private val typesForNavTypeName: MutableMap<CustomNavType, ClassType> = mutableMapOf()
+    private val typesForNavTypeName: MutableMap<CustomNavType, Importable> = mutableMapOf()
 
     fun write(
         destinations: List<DestinationGeneratingParamsWithNavArgs>,
         navTypeSerializers: List<NavTypeSerializer>
-    ): Map<ClassType, CustomNavType> {
-        val serializersByType: Map<ClassType, NavTypeSerializer> =
+    ): Map<Importable, CustomNavType> {
+        val serializersByType: Map<Importable, NavTypeSerializer> =
             navTypeSerializers.associateBy { it.genericType }
 
         val allNavTypeParams: Set<Type> = destinations
@@ -43,9 +43,9 @@ class CustomNavTypesWriter(
             // if we have multiple classes with equal simple name, ordering by the package length,
             // will make it so we first create the one with the simplest package name, then
             // the other one will have a more meaningful name deduced from the package (since it is longer)
-            .apply { sortBy { it.classType.qualifiedName.length } }
+            .apply { sortBy { it.importable.qualifiedName.length } }
             .forEach { type ->
-                type.generateCustomNavType(serializersByType[type.classType])
+                type.generateCustomNavType(serializersByType[type.importable])
             }
 
         return typesForNavTypeName.entries.associate { it.value to it.key }
@@ -60,7 +60,7 @@ class CustomNavTypesWriter(
             "$codeGenBasePackageName.navtype",
         )
 
-        typesForNavTypeName[CustomNavType(navTypeName, navTypeSerializer)] = classType
+        typesForNavTypeName[CustomNavType(navTypeName, navTypeSerializer)] = importable
 
         when {
             isSerializable -> generateSerializableCustomNavType(
@@ -105,14 +105,14 @@ class CustomNavTypesWriter(
                 SERIALIZER_SIMPLE_CLASS_NAME,
                 serializableNavTypeSerializerCode(navTypeSerializer)
             )
-            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, classType.simpleName)
+            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importable.simpleName)
             .replace(
                 PARSE_VALUE_CAST_TO_CLASS,
-                if (navTypeSerializer == null) " as ${classType.simpleName}" else ""
+                if (navTypeSerializer == null) " as ${importable.simpleName}" else ""
             )
             .replace(
                 DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
-                if (navTypeSerializer == null) "Serializable" else classType.simpleName
+                if (navTypeSerializer == null) "Serializable" else importable.simpleName
             )
             .replace(ADDITIONAL_IMPORTS, serializableAdditionalImports(this, navTypeSerializer))
 
@@ -129,12 +129,12 @@ class CustomNavTypesWriter(
             .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
             .replace(
                 SERIALIZER_SIMPLE_CLASS_NAME,
-                "DefaultKtxSerializableNavTypeSerializer(${classType.simpleName}.serializer())"
+                "DefaultKtxSerializableNavTypeSerializer(${importable.simpleName}.serializer())"
             )
-            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, classType.simpleName)
+            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importable.simpleName)
             .replace(
                 DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
-                classType.simpleName,
+                importable.simpleName,
             )
             .replace(ADDITIONAL_IMPORTS, ktxSerializableAdditionalImports(this))
 
@@ -154,8 +154,8 @@ class CustomNavTypesWriter(
                 SERIALIZER_SIMPLE_CLASS_NAME,
                 navTypeSerializerCode(navTypeSerializer)
             )
-            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, classType.simpleName)
-            .replace(DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE, classType.simpleName)
+            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importable.simpleName)
+            .replace(DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE, importable.simpleName)
             .replace(
                 ADDITIONAL_IMPORTS,
                 customTypeSerializerAdditionalImports(this, navTypeSerializer),
@@ -177,14 +177,14 @@ class CustomNavTypesWriter(
                 SERIALIZER_SIMPLE_CLASS_NAME,
                 parcelableNavTypeSerializerCode(navTypeSerializer)
             )
-            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, classType.simpleName)
+            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importable.simpleName)
             .replace(
                 PARSE_VALUE_CAST_TO_CLASS,
-                if (navTypeSerializer == null) " as ${classType.simpleName}" else ""
+                if (navTypeSerializer == null) " as ${importable.simpleName}" else ""
             )
             .replace(
                 DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
-                if (navTypeSerializer == null) "Parcelable" else classType.simpleName
+                if (navTypeSerializer == null) "Parcelable" else importable.simpleName
             )
             .replace(ADDITIONAL_IMPORTS, parcelableAdditionalImports(this, navTypeSerializer))
 
@@ -193,7 +193,7 @@ class CustomNavTypesWriter(
 
     private fun Type.parcelableNavTypeSerializerCode(navTypeSerializer: NavTypeSerializer?): String {
         if (navTypeSerializer == null) {
-            return "DefaultParcelableNavTypeSerializer(${this.classType.simpleName}::class.java)"
+            return "DefaultParcelableNavTypeSerializer(${this.importable.simpleName}::class.java)"
         }
 
         return navTypeSerializerCode(navTypeSerializer)
@@ -218,7 +218,7 @@ class CustomNavTypesWriter(
         type: Type,
         customSerializer: NavTypeSerializer?
     ): String {
-        var imports = "\nimport ${type.classType.qualifiedName}"
+        var imports = "\nimport ${type.importable.qualifiedName}"
         imports += if (customSerializer != null) {
             "\nimport ${customSerializer.serializerType.qualifiedName}"
         } else {
@@ -232,7 +232,7 @@ class CustomNavTypesWriter(
         type: Type,
         customSerializer: NavTypeSerializer?
     ): String {
-        var imports = "\nimport ${type.classType.qualifiedName}"
+        var imports = "\nimport ${type.importable.qualifiedName}"
         imports += if (customSerializer != null) {
             "\nimport ${customSerializer.serializerType.qualifiedName}"
         } else {
@@ -245,7 +245,7 @@ class CustomNavTypesWriter(
     private fun ktxSerializableAdditionalImports(
         type: Type
     ): String = """
-        import ${type.classType.qualifiedName}
+        import ${type.importable.qualifiedName}
         import ${codeGenBasePackageName}.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer
     """.trimIndent()
 
@@ -253,18 +253,18 @@ class CustomNavTypesWriter(
         type: Type,
         customSerializer: NavTypeSerializer,
     ): String = """
-        import ${type.classType.qualifiedName}
+        import ${type.importable.qualifiedName}
         import ${customSerializer.serializerType.qualifiedName}
     """.trimIndent()
 
     private fun Type.getNavTypeName(): String {
         val navTypeName =
-            "${classType.simpleName.replaceFirstChar { it.lowercase(Locale.US) }}NavType"
+            "${importable.simpleName.replaceFirstChar { it.lowercase(Locale.US) }}NavType"
 
         val duplicateType = typesForNavTypeName.entries.find { it.key.name == navTypeName }?.value
 
         val prefix = if (duplicateType != null) {
-            val qualifiedNameParts = classType.qualifiedName.split(".").reversed()
+            val qualifiedNameParts = importable.qualifiedName.split(".").reversed()
             val duplicateQualifiedNameParts = duplicateType.qualifiedName.split(".").reversed()
 
             var found: String? = null
@@ -279,7 +279,7 @@ class CustomNavTypesWriter(
             ""
         }
 
-        return prefix + if (prefix.isNotEmpty()) {
+        return prefix.replaceFirstChar { it.lowercase(Locale.US) } + if (prefix.isNotEmpty()) {
             navTypeName.replaceFirstChar { it.uppercase(Locale.US) }
         } else {
             navTypeName
