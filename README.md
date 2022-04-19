@@ -16,7 +16,7 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
 
 ### Main features
 - Typesafe navigation arguments
-- Simple but configurable navigation graphs setup 
+- Simple but configurable navigation graphs setup
 - Navigating back with a result in a simple and type-safe way
 - Getting the navigation arguments from the `SavedStateHandle` (useful in ViewModels) and `NavBackStackEntry` in a type-safe way.
 - Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
@@ -29,9 +29,10 @@ For a deeper look into all the features, check our [documentation website](https
 ## Materials
 
 - Philipp Lackner's Youtube video [_Compose Navigation Just Got SO MUCH EASIER_ 😱](https://www.youtube.com/watch?v=Q3iZyW2etm4)
-- Yanneck Reiß's [_Type Safe Navigation With Jetpack Compose Destinations_](https://medium.com/codex/type-save-navigation-with-jetpack-compose-destinations-610514e85370)
-- Google Dev Expert Kenji Abe's [_Navigation Composeを便利にしてくれるライブラリ_](https://star-zero.medium.com/navigation-compose%E3%82%92%E4%BE%BF%E5%88%A9%E3%81%AB%E3%81%97%E3%81%A6%E3%81%8F%E3%82%8C%E3%82%8B%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA-c2d0133b3e84)
-- Rafael Costa's [_Compose Destinations: simpler and safer navigation in Compose with no compromises_](https://proandroiddev.com/compose-destinations-simpler-and-safer-navigation-in-compose-with-no-compromises-74a59c6b727d)
+- Rafael Costa's blog post [_Compose Destinations: simpler and safer navigation in Compose with no compromises_](https://proandroiddev.com/compose-destinations-simpler-and-safer-navigation-in-compose-with-no-compromises-74a59c6b727d)
+- Yanneck Reiß's blog post [_Type Safe Navigation With Jetpack Compose Destinations_](https://medium.com/codex/type-save-navigation-with-jetpack-compose-destinations-610514e85370)
+- Google Dev Expert Kenji Abe's blog post [_Navigation Composeを便利にしてくれるライブラリ_](https://star-zero.medium.com/navigation-compose%E3%82%92%E4%BE%BF%E5%88%A9%E3%81%AB%E3%81%97%E3%81%A6%E3%81%8F%E3%82%8C%E3%82%8B%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA-c2d0133b3e84)
+- aseem wangoo's blog post (and Youtube video inside): [_Using compose destinations_](https://flatteredwithflutter.com/using-compose-destinations%ef%bf%bc/)
 
 ## Basic Usage
 
@@ -45,7 +46,7 @@ fun ProfileScreen() { /*...*/ }
 
 2. Add navigation arguments to the function declaration:
 
-`Parcelable`, `Serializable` and `Enum` work out of the box!
+`Parcelable`, `Serializable`, `Enum` and classes annotated with [`@kotlinx.serialization.Serializable`](https://github.com/Kotlin/kotlinx.serialization) work out of the box!
 > Besides, you can make any other type a navigation argument type with some setup. Read about it [here](https://composedestinations.rafaelcosta.xyz/destination-arguments/navigation-arguments#custom-navigation-argument-types)
 
 
@@ -69,9 +70,10 @@ inside the Composable (as is likely the case when using ViewModel). Read more [h
    have the correct typed arguments.
 
 ```kotlin
+@RootNavGraph(start = true) // sets this as the start destination of the default nav graph
 @Destination
 @Composable
-fun SomeOtherScreen(
+fun HomeScreen(
    navigator: DestinationsNavigator
 ) {
    /*...*/
@@ -85,7 +87,7 @@ fun SomeOtherScreen(
 ```kotlin
 DestinationsNavHost(navGraph = NavGraphs.root)
 ```
-> `NavGraphs` is a generated file that describes your navigation graphs and their destinations. By default all destinations will belong to "root", but you can use the `navGraph` argument of the annotation to have certain screens in nested navigation graphs.
+> `NavGraphs` is a generated file that describes your navigation graphs and their destinations. By default all destinations will belong to "root" (@RootNavGraph), but you can create your own nav graphs annotations to have certain screens in other navigation graphs.
 
 This call adds all annotated Composable functions as destinations of the Navigation Host.
 
