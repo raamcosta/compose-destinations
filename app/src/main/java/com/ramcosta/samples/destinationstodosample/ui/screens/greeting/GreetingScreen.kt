@@ -109,6 +109,7 @@ fun GreetingScreen(
                     navigator.navigate(
                         TestScreenDestination(
                             id = "test-id",
+                            stuff2 = null,
                             stuff3 = null,
                             stuff5 = Color.DarkGray,
                             stuff6 = OtherThings(

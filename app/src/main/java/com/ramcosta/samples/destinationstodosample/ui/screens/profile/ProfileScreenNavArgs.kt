@@ -14,8 +14,8 @@ data class ProfileScreenNavArgs(
     val stuff: Stuff = Stuff.STUFF1,
     val groupName: String? = DEFAULT_GROUP,
     val whatever: Int? = 12333,
-    val things: ArgumentThings?,
-    val thingsWithNavTypeSerializer: Things?,
+    val things: ArgumentThings? = null,
+    val thingsWithNavTypeSerializer: Things? = null,
     val serializableExample: SerializableExample? = SerializableExample(),
     val serializableExampleWithNavTypeSerializer: SerializableExampleWithNavTypeSerializer? = null,
     val color: Color

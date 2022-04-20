@@ -48,7 +48,7 @@ class SingleDestinationWriter(
                 .replace(DEEP_LINKS, deepLinksDeclarationCode())
                 .replace(DESTINATION_STYLE, destinationStyle())
                 .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
-                .addInvokeWithArgsMethod()
+                .replace(ARGS_TO_DIRECTION_METHOD, invokeMethodsCode())
                 .replace(ARGS_FROM_METHODS, argsFromFunctions())
                 .replaceImportablePlaceHolders()
         }
@@ -147,11 +147,7 @@ class SingleDestinationWriter(
         return code.toString()
     }
 
-    private fun String.addInvokeWithArgsMethod(): String {
-        return replace(ARGS_TO_DIRECTION_METHOD, invokeWithArgsMethod())
-    }
-
-    private fun invokeWithArgsMethod(): String {
+    private fun invokeMethodsCode(): String {
         if (navArgs.isEmpty()) {
 
             return """
@@ -199,7 +195,7 @@ class SingleDestinationWriter(
         } else ""
 
         navArgs.forEachIndexed { i, it ->
-            args += "\t\t$argPrefix${it.name}: ${it.type.toTypeCode(importableHelper)}${defaultValueForWithArgsFunction(it)},"
+            args += "\t\t$argPrefix${it.name}: ${it.type.toTypeCode(importableHelper)}${defaultValueForInvokeFunction(it)},"
 
             if (i != navArgs.lastIndex) {
                 args += "\n"
@@ -296,15 +292,9 @@ class SingleDestinationWriter(
             .prependIndent("\t")
     }
 
-    private fun defaultValueForWithArgsFunction(it: Parameter): String {
-        return when {
-            it.hasDefault -> " = ${it.defaultValue?.code}"
-
-            it.type.isNullable -> " = null"
-
-            else -> ""
-
-        }
+    private fun defaultValueForInvokeFunction(it: Parameter): String {
+        return if (it.hasDefault) " = ${it.defaultValue?.code}"
+        else ""
     }
 
     private fun constructRouteFieldCode(): String {

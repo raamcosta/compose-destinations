@@ -72,7 +72,7 @@ class InitialValidator(
         if (codeGenConfig.mode == CodeGenMode.Destinations
             || (codeGenConfig.mode is CodeGenMode.SingleModule && !codeGenConfig.mode.generateNavGraphs)) {
 
-            when(val info = navGraphInfo) {
+            when (val info = navGraphInfo) {
                 is NavGraphInfo.Legacy -> {
                     if (info.navGraphRoute != "root") {
                         logger.warn(
