@@ -193,7 +193,7 @@ class KspToCodeGenDestinationsMapper(
         val classType = Importable(declaration.simpleName.asString(), qualifiedName.asString())
         return Type(
             importable = classType,
-            genericTypes = genericTypes(location),
+            typeArguments = argumentTypes(location),
             requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
             isNullable = isMarkedNullable,
             isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
@@ -212,18 +212,18 @@ class KspToCodeGenDestinationsMapper(
                 } ?: false
         }
 
-    private fun KSType.genericTypes(location: Location): List<GenericType> {
+    private fun KSType.argumentTypes(location: Location): List<TypeArgument> {
         return arguments.mapNotNull { typeArg ->
             if (typeArg.variance == Variance.STAR) {
-                return@mapNotNull StarGenericType
+                return@mapNotNull TypeArgument.Star
             }
             val resolvedType = typeArg.type?.resolve()
 
             if (resolvedType?.isError == true) {
-                return@mapNotNull ErrorGenericType(lazy { getErrorLine(location) })
+                return@mapNotNull TypeArgument.Error(lazy { getErrorLine(location) })
             }
 
-            resolvedType?.toType(location)?.let { TypedGenericType(it, typeArg.variance.label) }
+            resolvedType?.toType(location)?.let { TypeArgument.Typed(it, typeArg.variance.label) }
         }
     }
 

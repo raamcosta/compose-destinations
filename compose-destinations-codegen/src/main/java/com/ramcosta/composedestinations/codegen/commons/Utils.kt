@@ -15,11 +15,11 @@ operator fun StringBuilder.plusAssign(str: String) {
 
 fun Type.recursiveRequireOptInAnnotations(): List<Importable> {
     val mutableList = requireOptInAnnotations.toMutableList()
-    genericTypes.forEach {
+    typeArguments.forEach {
         when (it) {
-            is TypedGenericType -> mutableList.addAll(it.type.recursiveRequireOptInAnnotations())
-            is ErrorGenericType,
-            is StarGenericType -> Unit
+            is TypeArgument.Typed -> mutableList.addAll(it.type.recursiveRequireOptInAnnotations())
+            is TypeArgument.Error,
+            is TypeArgument.Star -> Unit
         }
     }
 
@@ -30,22 +30,22 @@ fun Type.toTypeCode(importableHelper: ImportableHelper? = null): String {
     val importableName = importableHelper?.addImportableAndGetPlaceholder(importable)
         ?: importable.simpleName
 
-    if (genericTypes.isEmpty()) {
+    if (typeArguments.isEmpty()) {
         return "${importableName}${if (isNullable) "?" else ""}"
     }
 
-    return "${importableName}<${genericTypes.toTypesCode(importableHelper)}>${if (isNullable) "?" else ""}"
+    return "${importableName}<${typeArguments.toTypesCode(importableHelper)}>${if (isNullable) "?" else ""}"
 }
 
-fun List<GenericType>.toTypesCode(importableHelper: ImportableHelper? = null): String {
+fun List<TypeArgument>.toTypesCode(importableHelper: ImportableHelper? = null): String {
     return joinToString(", ") { it.toTypeCode(importableHelper) }
 }
 
-fun GenericType.toTypeCode(importableHelper: ImportableHelper? = null): String {
+fun TypeArgument.toTypeCode(importableHelper: ImportableHelper? = null): String {
     return when (this) {
-        is StarGenericType -> varianceLabel
-        is TypedGenericType -> "$varianceLabel${if(varianceLabel.isEmpty()) "" else " "}${type.toTypeCode(importableHelper)}"
-        is ErrorGenericType -> "ERROR"
+        is TypeArgument.Star -> varianceLabel
+        is TypeArgument.Typed -> "$varianceLabel${if(varianceLabel.isEmpty()) "" else " "}${type.toTypeCode(importableHelper)}"
+        is TypeArgument.Error -> "ERROR"
     }
 }
 

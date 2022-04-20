@@ -158,7 +158,7 @@ class InitialValidator(
         val destinationResultOriginForAllResultTypes = mutableSetOf<String>()
         resultRecipientParams.forEach { parameter ->
             val resultOriginDestinationName = parameter.getFirstArgTypeSimpleName()
-            val resultType = (parameter.type.genericTypes[1] as? TypedGenericType)?.type
+            val resultType = (parameter.type.typeArguments[1] as? TypeArgument.Typed)?.type
                 ?: throw IllegalDestinationsSetup("ResultRecipient second type argument must be a valid type with no '*' variance.")
 
             validateResultType(resultType)
@@ -170,7 +170,7 @@ class InitialValidator(
 
             resultOriginDestinationParams.parameters.firstOrNull {
                 it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME &&
-                        (it.type.genericTypes.firstOrNull() as? TypedGenericType)?.type == resultType
+                        (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type == resultType
             }
                 ?: throw IllegalDestinationsSetup(
                     "Composable '${resultOriginDestinationParams.composableName}' must receive a ResultBackNavigator" +
@@ -196,9 +196,9 @@ class InitialValidator(
     }
 
     private fun Parameter.getFirstArgTypeSimpleName(): String {
-        val firstTypeArg = type.genericTypes.first()
+        val firstTypeArg = type.typeArguments.first()
 
-        if (firstTypeArg is ErrorGenericType) {
+        if (firstTypeArg is TypeArgument.Error) {
             // Since the Destination is not yet generated, we are expecting this to happen
             return firstTypeArg.lineStr
                 .replaceBefore("<", "")
@@ -210,12 +210,12 @@ class InitialValidator(
                 .trim()
         }
 
-        return (firstTypeArg as? TypedGenericType)?.type?.importable?.simpleName
+        return (firstTypeArg as? TypeArgument.Typed)?.type?.importable?.simpleName
             ?: throw IllegalDestinationsSetup("ResultRecipient first type argument must be a Destination")
     }
 
     private fun DestinationGeneratingParams.validateResultType(resultType: Type) {
-        if (resultType.genericTypes.isNotEmpty()) {
+        if (resultType.typeArguments.isNotEmpty()) {
             throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: Result types cannot have type arguments!")
         }
 
