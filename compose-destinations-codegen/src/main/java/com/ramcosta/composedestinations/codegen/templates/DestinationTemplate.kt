@@ -6,7 +6,7 @@ import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 //region anchors
 const val ADDITIONAL_IMPORTS = "[ADDITIONAL_IMPORTS]"
 const val DESTINATION_NAME = "[DESTINATION_NAME]"
-const val ROUTE_ID = "[ROUTE_ID]"
+const val BASE_ROUTE = "[ROUTE_ID]"
 const val COMPOSED_ROUTE = "[COMPOSED_ROUTE]"
 const val NAV_ARGUMENTS = "[NAV_ARGUMENTS]"
 const val DEEP_LINKS = "[DEEP_LINKS]"
@@ -23,6 +23,7 @@ const val NAV_ARGS_CLASS_SIMPLE_NAME = "[NAV_ARGS_CLASS_SIMPLE_NAME]"
 val destinationTemplate="""
 package $codeGenBasePackageName.destinations
 
+import androidx.annotation.RestrictTo
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -35,7 +36,8 @@ import $CORE_PACKAGE_NAME.spec.*$ADDITIONAL_IMPORTS
 
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $SUPERTYPE {
     $ARGS_TO_DIRECTION_METHOD
-    override val routeId = "$ROUTE_ID"
+    @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
+    override val baseRoute = "$BASE_ROUTE"
 
     override val route = $COMPOSED_ROUTE
     $NAV_ARGUMENTS$DEEP_LINKS$DESTINATION_STYLE

@@ -43,7 +43,7 @@ interface DynamicDestinationSpec<T> : DestinationSpec<T> {
  */
 infix fun <T> DestinationSpec<T>.routedIn(navGraph: NavGraphSpec): DestinationSpec<T> {
     return object: DynamicDestinationSpec<T>, DestinationSpec<T> by this {
-        override val routeId = "${navGraph.route}/${this@routedIn.routeId}"
+        override val baseRoute = "${navGraph.route}/${this@routedIn.baseRoute}"
 
         override val route = "${navGraph.route}/${this@routedIn.route}"
 

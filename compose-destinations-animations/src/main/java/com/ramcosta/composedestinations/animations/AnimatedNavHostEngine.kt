@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.animations
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
@@ -165,7 +166,8 @@ internal class AnimatedNavHostEngine(
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
     ) {
-        val contentWrapper = manualComposableCalls[destination.routeId]
+        @SuppressLint("RestrictedApi")
+        val contentWrapper = manualComposableCalls[destination.baseRoute]
 
         composable(
             route = destination.route,
@@ -198,7 +200,8 @@ internal class AnimatedNavHostEngine(
             popEnterTransition = { popEnterTransition() },
             popExitTransition = { popExitTransition() }
         ) { navBackStackEntry ->
-            val contentWrapper = manualComposableCalls[destination.routeId]
+            @SuppressLint("RestrictedApi")
+            val contentWrapper = manualComposableCalls[destination.baseRoute]
 
             CallComposable(
                 destination,
@@ -216,7 +219,8 @@ internal class AnimatedNavHostEngine(
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
     ) {
-        val contentWrapper = manualComposableCalls[destination.routeId]
+        @SuppressLint("RestrictedApi")
+        val contentWrapper = manualComposableCalls[destination.baseRoute]
 
         bottomSheet(
             destination.route,

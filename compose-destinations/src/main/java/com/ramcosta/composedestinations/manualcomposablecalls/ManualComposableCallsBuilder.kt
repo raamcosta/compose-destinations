@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.manualcomposablecalls
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
@@ -96,13 +97,14 @@ class ManualComposableCallsBuilder internal constructor(
 
     internal fun build() = ManualComposableCalls(map)
 
+    @SuppressLint("RestrictedApi")
     internal fun add(
         lambda: DestinationLambda<*>,
         destination: DestinationSpec<*>,
     ) {
-        map[destination.routeId] = lambda
+        map[destination.baseRoute] = lambda
         dynamicDestinationsBySingletonDestination[destination]?.forEach {
-            map[it.routeId] = lambda
+            map[it.baseRoute] = lambda
         }
     }
 }

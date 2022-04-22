@@ -41,7 +41,7 @@ class SingleDestinationWriter(
                 .replaceSuperclassDestination()
                 .addNavArgsDataClass()
                 .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
-                .replace(ROUTE_ID, destination.cleanRoute)
+                .replace(BASE_ROUTE, destination.cleanRoute)
                 .replace(NAV_ARGS_CLASS_SIMPLE_NAME, navArgsDataClassName())
                 .replace(COMPOSED_ROUTE, constructRouteFieldCode())
                 .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
@@ -318,8 +318,8 @@ class SingleDestinationWriter(
             }
         }
 
-        return if (args.isEmpty()) "routeId"
-        else "\$routeId$mandatoryArgs$optionalArgs"
+        return if (args.isEmpty()) "baseRoute"
+        else "\$baseRoute$mandatoryArgs$optionalArgs"
     }
 
     private fun contentFunctionCode(): String {

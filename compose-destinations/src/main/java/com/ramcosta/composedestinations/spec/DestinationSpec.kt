@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.spec
 
+import androidx.annotation.RestrictTo
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.*
@@ -46,9 +47,11 @@ interface DestinationSpec<T> : Route {
     override val route: String
 
     /**
-     * Id part of the route - basically the [route] without argument info
+     * Prefix of the route - basically [route] without argument info.
+     * Meant for internal usage only.
      */
-    val routeId: String
+    @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
+    val baseRoute: String
 
     /**
      * All [NamedNavArgument]s that will be added to the navigation
@@ -68,6 +71,7 @@ interface DestinationSpec<T> : Route {
      * - [DestinationStyle.Animated]
      * - [DestinationStyle.BottomSheet]
      * - [DestinationStyle.Dialog]
+     * - [DestinationStyle.Runtime]
      */
     val style: DestinationStyle get() = DestinationStyle.Default
 

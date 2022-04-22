@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -99,7 +100,8 @@ internal class DefaultNavHostEngine : NavHostEngine {
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     ) {
-        val contentLambda = manualComposableCalls[destination.routeId]
+        @SuppressLint("RestrictedApi")
+        val contentLambda = manualComposableCalls[destination.baseRoute]
 
         composable(
             route = destination.route,
@@ -123,7 +125,8 @@ internal class DefaultNavHostEngine : NavHostEngine {
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
     ) {
-        val contentLambda = manualComposableCalls[destination.routeId]
+        @SuppressLint("RestrictedApi")
+        val contentLambda = manualComposableCalls[destination.baseRoute]
 
         dialog(
             destination.route,
