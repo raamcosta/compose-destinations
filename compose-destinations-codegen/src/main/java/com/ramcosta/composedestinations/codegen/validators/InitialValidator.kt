@@ -21,6 +21,8 @@ class InitialValidator(
         val composableNames = mutableListOf<String>()
 
         destinations.forEach { destination ->
+            destination.checkNavArgTypes()
+
             destination.checkLegacyNavGraphInfo()
 
             destination.validateRoute(currentKnownRoutes = cleanRoutes)
@@ -235,6 +237,34 @@ class InitialValidator(
     private fun DestinationGeneratingParams.checkLegacyNavGraphInfo() {
         if (navGraphInfo is NavGraphInfo.Legacy && !navGraphInfo.isDefault) {
             logger.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.")
+        }
+    }
+}
+
+private fun DestinationGeneratingParams.checkNavArgTypes() {
+    val navArgsDelegate = navArgsDelegateType
+    if (navArgsDelegate != null) {
+        navArgsDelegate.navArgs.validateArrayTypeArgNullability()
+    } else {
+        parameters.validateArrayTypeArgNullability()
+    }
+}
+
+private fun List<Parameter>.validateArrayTypeArgNullability() {
+    forEach { param ->
+        val type = param.type
+        if (type.isCustomArrayOrArrayListTypeNavArg() && type.value.firstTypeInfoArg.isNullable) {
+            val typeArg = type.value.typeArguments.first() as TypeArgument.Typed
+            val recommendedType = type.copy(
+                value = type.value.copy(
+                    typeArguments = listOf(typeArg.copy(type = typeArg.type.copy(isNullable = false)))
+                )
+            )
+            throw IllegalDestinationsSetup(
+                "'${param.name}: ${type.toTypeCode()}': " +
+                        "Arrays / ArrayLists of nullable type arguments are not supported! Maybe " +
+                        "'${recommendedType.toTypeCode()}' can be used instead?"
+            )
         }
     }
 }

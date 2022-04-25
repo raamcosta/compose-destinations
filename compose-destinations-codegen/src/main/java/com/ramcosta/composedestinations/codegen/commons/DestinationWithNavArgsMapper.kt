@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.codegen.commons
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
 
 class DestinationWithNavArgsMapper {
 

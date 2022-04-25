@@ -12,11 +12,13 @@ val coreTypes = mapOf(
     Float::class.asType() to CORE_FLOAT_NAV_TYPE,
     Long::class.asType() to CORE_LONG_NAV_TYPE,
     Boolean::class.asType() to CORE_BOOLEAN_NAV_TYPE,
+
     IntArray::class.asType() to CORE_INT_ARRAY_NAV_TYPE,
     FloatArray::class.asType() to CORE_FLOAT_ARRAY_NAV_TYPE,
     LongArray::class.asType() to CORE_LONG_ARRAY_NAV_TYPE,
     BooleanArray::class.asType() to CORE_BOOLEAN_ARRAY_NAV_TYPE,
     Array::class.asTypeWithArg(String::class) to CORE_STRING_ARRAY_NAV_TYPE,
+
     ArrayList::class.asTypeWithArg(Boolean::class) to CORE_BOOLEAN_ARRAY_LIST_NAV_TYPE,
     ArrayList::class.asTypeWithArg(Float::class) to CORE_FLOAT_ARRAY_LIST_NAV_TYPE,
     ArrayList::class.asTypeWithArg(Int::class) to CORE_INT_ARRAY_LIST_NAV_TYPE,
