@@ -53,11 +53,11 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         }
     }
     
-    fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
+    override fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
         return navBackStackEntry.arguments?.getParcelable(key)
     }
 
-    fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
+    override fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
         return savedStateHandle.get(key)
     }
 }
@@ -106,11 +106,11 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         }
     }
 
-    fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
+    override fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
         return navBackStackEntry.arguments?.getSerializable(key) as? $CLASS_SIMPLE_NAME_CAMEL_CASE?
     }
 
-    fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
+    override fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
         return savedStateHandle.get(key)
     }
 }
@@ -158,11 +158,11 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         }
     }
 
-    fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
+    override fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
         return navBackStackEntry.arguments?.getString(key)?.let { customSerializer.fromRouteString(it) }
     }
 
-    fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
+    override fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
         return savedStateHandle.get<String>(key)?.let { customSerializer.fromRouteString(it) }
     }
 }
@@ -215,11 +215,11 @@ class ${NAV_TYPE_CLASS_SIMPLE_NAME}(
         }
     }
 
-    fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
+    override fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
         return navBackStackEntry.arguments?.getByteArray(key)?.let { fromByteArray(it) }
     }
 
-    fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
+    override fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
         return savedStateHandle.get<ByteArray>(key)?.let { fromByteArray(it) }
     }
 

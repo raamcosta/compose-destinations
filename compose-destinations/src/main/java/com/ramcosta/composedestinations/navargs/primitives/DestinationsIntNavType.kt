@@ -31,11 +31,11 @@ object DestinationsIntNavType : DestinationsNavType<Int?>() {
         return value?.toString() ?: ENCODED_NULL
     }
 
-    fun get(navBackStackEntry: NavBackStackEntry, key: String): Int? {
+    override fun get(navBackStackEntry: NavBackStackEntry, key: String): Int? {
         return intValue(navBackStackEntry.arguments?.get(key))
     }
 
-    fun get(savedStateHandle: SavedStateHandle, key: String): Int? {
+    override fun get(savedStateHandle: SavedStateHandle, key: String): Int? {
         return intValue(savedStateHandle.get<Any?>(key))
     }
 

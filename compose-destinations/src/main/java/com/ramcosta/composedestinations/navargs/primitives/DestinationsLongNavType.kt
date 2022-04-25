@@ -31,11 +31,11 @@ object DestinationsLongNavType : DestinationsNavType<Long?>() {
         return value?.toString() ?: ENCODED_NULL
     }
 
-    fun get(navBackStackEntry: NavBackStackEntry, key: String): Long? {
+    override fun get(navBackStackEntry: NavBackStackEntry, key: String): Long? {
         return longValue(navBackStackEntry.arguments?.get(key))
     }
 
-    fun get(savedStateHandle: SavedStateHandle, key: String): Long? {
+    override fun get(savedStateHandle: SavedStateHandle, key: String): Long? {
         return longValue(savedStateHandle.get<Any?>(key))
     }
 

@@ -69,11 +69,20 @@ class CodeGenerator(
         destinations: List<DestinationGeneratingParams>,
     ) = destinations.any {
         it.parameters.any { param ->
-            param.type.run {
-                isKtxSerializable &&
-                        !hasCustomTypeSerializer &&
-                        !isParcelable &&
-                        !isSerializable
+            if (param.type.isCustomArrayOrArrayListTypeNavArg()) {
+               param.type.value.firstTypeInfoArg.run {
+                   isKtxSerializable &&
+                           !hasCustomTypeSerializer &&
+                           !isParcelable &&
+                           !isSerializable
+               }
+            } else {
+                param.type.run {
+                    isKtxSerializable &&
+                            !hasCustomTypeSerializer &&
+                            !isParcelable &&
+                            !isSerializable
+                }
             }
         }
     }

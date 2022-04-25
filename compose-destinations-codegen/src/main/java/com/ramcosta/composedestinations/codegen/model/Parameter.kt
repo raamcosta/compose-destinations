@@ -2,7 +2,7 @@ package com.ramcosta.composedestinations.codegen.model
 
 class Parameter(
     val name: String,
-    val type: Type,
+    val type: TypeInfo,
     val hasDefault: Boolean,
     lazyDefaultValue: Lazy<DefaultValue?>,
 ) {

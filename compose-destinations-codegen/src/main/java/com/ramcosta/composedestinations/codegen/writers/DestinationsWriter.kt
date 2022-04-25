@@ -10,7 +10,7 @@ class DestinationsWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
     private val core: Core,
-    private val customNavTypeByType: Map<Importable, CustomNavType>,
+    private val customNavTypeByType: Map<Type, CustomNavType>,
 ) {
 
     fun write(

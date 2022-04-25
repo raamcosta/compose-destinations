@@ -31,11 +31,11 @@ object DestinationsBooleanNavType : DestinationsNavType<Boolean?>() {
         return value?.toString() ?: ENCODED_NULL
     }
 
-    fun get(navBackStackEntry: NavBackStackEntry, key: String): Boolean? {
+    override fun get(navBackStackEntry: NavBackStackEntry, key: String): Boolean? {
         return booleanValue(navBackStackEntry.arguments?.get(key))
     }
 
-    fun get(savedStateHandle: SavedStateHandle, key: String): Boolean? {
+    override fun get(savedStateHandle: SavedStateHandle, key: String): Boolean? {
         return booleanValue(savedStateHandle.get<Any?>(key))
     }
 

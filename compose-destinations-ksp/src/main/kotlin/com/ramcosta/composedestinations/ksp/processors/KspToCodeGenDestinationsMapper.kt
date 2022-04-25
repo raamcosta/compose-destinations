@@ -179,7 +179,7 @@ class KspToCodeGenDestinationsMapper(
         )
     }
 
-    private fun KSType.toType(location: Location): Type? {
+    private fun KSType.toType(location: Location): TypeInfo? {
         val qualifiedName = declaration.qualifiedName ?: return null
         val typeAliasType = getTypeAlias()
 
@@ -190,17 +190,22 @@ class KspToCodeGenDestinationsMapper(
         }
         val classDeclarationType = ksClassDeclaration?.asType(emptyList())
 
-        val classType = Importable(declaration.simpleName.asString(), qualifiedName.asString())
-        return Type(
-            importable = classType,
-            typeArguments = argumentTypes(location),
-            requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
+        val importable = Importable(
+            ksClassDeclaration?.simpleName?.asString() ?: declaration.simpleName.asString(),
+            ksClassDeclaration?.qualifiedName?.asString() ?: qualifiedName.asString()
+        )
+        return TypeInfo(
+            value = Type(
+                importable = importable,
+                typeArguments = argumentTypes(location),
+                requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
+                isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
+                isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
+                isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false,
+                isKtxSerializable = isKtxSerializable(),
+            ),
             isNullable = isMarkedNullable,
-            isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
-            isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
-            isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false,
-            hasCustomTypeSerializer = navTypeSerializersByType[classType] != null,
-            isKtxSerializable = isKtxSerializable(),
+            hasCustomTypeSerializer = navTypeSerializersByType[importable] != null,
         )
     }
 

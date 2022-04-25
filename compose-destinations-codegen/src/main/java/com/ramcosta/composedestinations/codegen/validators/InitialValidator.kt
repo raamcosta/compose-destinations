@@ -214,13 +214,21 @@ class InitialValidator(
             ?: throw IllegalDestinationsSetup("ResultRecipient first type argument must be a Destination")
     }
 
-    private fun DestinationGeneratingParams.validateResultType(resultType: Type) {
+    private fun DestinationGeneratingParams.validateResultType(resultType: TypeInfo) {
         if (resultType.typeArguments.isNotEmpty()) {
             throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: Result types cannot have type arguments!")
         }
 
-        if (!resultType.isPrimitive() && !resultType.isSerializable && !resultType.isParcelable) {
-            throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: Result types must be one of: ${primitiveTypes.keys.toMutableList().apply { add("Parcelable"); add("Serializable") }.joinToString(",")}")
+        val primitives = listOf(
+            String::class.qualifiedName,
+            Long::class.qualifiedName,
+            Boolean::class.qualifiedName,
+            Float::class.qualifiedName,
+            Int::class.qualifiedName
+        )
+        if (resultType.importable.qualifiedName !in primitives && !resultType.isSerializable && !resultType.isParcelable) {
+            throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: " +
+                    "Result types must be one of: ${listOf("String", "Long", "Boolean", "Float", "Int", "Parcelable", "Serializable").joinToString(", ")}")
         }
     }
 

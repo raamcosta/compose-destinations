@@ -33,14 +33,10 @@ class DestinationWithNavArgsMapper {
     }
 
     private fun Parameter.isNavArg(): Boolean {
-        if (type.isEnum) {
+        if (isCustomTypeNavArg()) {
             return true
         }
 
-        if (isComplexTypeNavArg()) {
-            return true
-        }
-
-        return type.isPrimitive()
+        return type.isCoreType()
     }
 }

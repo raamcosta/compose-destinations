@@ -9,8 +9,8 @@ import com.ramcosta.composedestinations.navargs.utils.encodeForRoute
 
 object DestinationsStringNavType : DestinationsNavType<String?>() {
 
-    private const val ENCODED_EMPTY_STRING = "%02%03"
-    private val DECODED_EMPTY_STRING: String = Uri.decode(ENCODED_EMPTY_STRING)
+    internal const val ENCODED_EMPTY_STRING = "%02%03"
+    internal val DECODED_EMPTY_STRING: String = Uri.decode(ENCODED_EMPTY_STRING)
 
     private const val ENCODED_DEFAULT_VALUE_STRING_PREFIX = "%@def@"
     private val DECODED_DEFAULT_VALUE_STRING_PREFIX: String = Uri.decode(ENCODED_DEFAULT_VALUE_STRING_PREFIX)
@@ -51,11 +51,11 @@ object DestinationsStringNavType : DestinationsNavType<String?>() {
         return serializeValue(value)
     }
 
-    fun get(navBackStackEntry: NavBackStackEntry, key: String): String? {
+    override fun get(navBackStackEntry: NavBackStackEntry, key: String): String? {
         return navBackStackEntry.arguments?.getString(key)
     }
 
-    fun get(savedStateHandle: SavedStateHandle, key: String): String? {
+    override fun get(savedStateHandle: SavedStateHandle, key: String): String? {
         return savedStateHandle.get<String?>(key)
     }
 }

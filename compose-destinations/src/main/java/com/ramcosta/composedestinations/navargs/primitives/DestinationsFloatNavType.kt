@@ -31,11 +31,11 @@ object DestinationsFloatNavType : DestinationsNavType<Float?>() {
         return value?.toString() ?: ENCODED_NULL
     }
 
-    fun get(navBackStackEntry: NavBackStackEntry, key: String): Float? {
+    override fun get(navBackStackEntry: NavBackStackEntry, key: String): Float? {
         return floatValue(navBackStackEntry.arguments?.get(key))
     }
 
-    fun get(savedStateHandle: SavedStateHandle, key: String): Float? {
+    override fun get(savedStateHandle: SavedStateHandle, key: String): Float? {
         return floatValue(savedStateHandle.get<Any?>(key))
     }
 

@@ -3,7 +3,7 @@ package com.ramcosta.composedestinations.codegen.model
 sealed interface TypeArgument {
 
     data class Typed(
-        val type: Type,
+        val type: TypeInfo,
         val varianceLabel: String
     ): TypeArgument
 

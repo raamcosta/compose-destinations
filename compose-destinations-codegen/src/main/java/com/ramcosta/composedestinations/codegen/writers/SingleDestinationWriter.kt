@@ -18,7 +18,7 @@ class SingleDestinationWriter(
     private val core: Core,
     private val navArgResolver: NavArgResolver,
     private val destination: DestinationGeneratingParamsWithNavArgs,
-    private val customNavTypeByType: Map<Importable, CustomNavType>,
+    private val customNavTypeByType: Map<Type, CustomNavType>,
     private val importableHelper: ImportableHelper
 ) {
 
@@ -206,7 +206,7 @@ class SingleDestinationWriter(
     }
 
     private fun Parameter.stringifyForNavigation(): String {
-        if (isComplexTypeNavArg()) {
+        if (isCustomTypeNavArg()) {
             val codePlaceHolder = navArgResolver.customNavTypeCode(type)
 
             return "$codePlaceHolder.serializeValue($name)"
@@ -214,8 +214,8 @@ class SingleDestinationWriter(
 
         if (type.importable.qualifiedName == String::class.qualifiedName) {
             return "${CORE_STRING_NAV_TYPE.getCodePlaceHolder()}.serializeValue(\"$name\", $name)"
-        } else if (type.importable.qualifiedName in primitiveTypes.keys) {
-            return "${primitiveTypes[type.importable.qualifiedName]!!.getCodePlaceHolder()}.serializeValue($name)"
+        } else if (type.value in coreTypes.keys) {
+            return "${coreTypes[type.value]!!.getCodePlaceHolder()}.serializeValue($name)"
         }
 
         val ifNullBeforeToString = if (type.isNullable) "?" else ""
@@ -406,18 +406,18 @@ class SingleDestinationWriter(
             .toMutableList()
             .apply {
                 removeAll {
-                    val isComplexType = it.isComplexTypeNavArg()
-                    val hasCustomSerializer = customNavTypeByType[it.type.importable]?.serializer != null
-                    if (it.isMandatory && isComplexType && !hasCustomSerializer) {
+                    val needsCustomSerializer = it.isCustomTypeNavArg()
+                    val hasCustomSerializer = customNavTypeByType[it.type.value]?.serializer != null
+                    if (it.isMandatory && needsCustomSerializer && !hasCustomSerializer) {
                         throw IllegalDestinationsSetup(
                             "Composable '${destination.composableName}', arg name= '${it.name}': " +
-                                    "deep links cannot contain mandatory navigation types of complex type unless you define" +
-                                    "a custom serializer with @NavTypeSerializer." +
-                                    "This lets you control how the complex type class is defined in the string route."
+                                    "deep links cannot contain mandatory navigation types of custom type unless you define" +
+                                    "a custom serializer with @NavTypeSerializer. " +
+                                    "This lets you control how the custom type class is defined in the string route."
                         )
                     }
 
-                    isComplexType && !it.isMandatory && !hasCustomSerializer
+                    needsCustomSerializer && !it.isMandatory && !hasCustomSerializer
                 }
             }
 
@@ -500,27 +500,26 @@ class SingleDestinationWriter(
             return "\tdefaultValue = null\n\t\t"
         }
 
-        if (param.type.isEnum) {
-            return "\tdefaultValue = ${defaultValue.code}.toString()\n\t\t"
+        return if(param.type.typeArguments.any { it is TypeArgument.Typed }) {
+            "\tval defValue: ${param.type.toTypeCode(importableHelper)} = ${defaultValue.code}\n\t\t" +
+            "\tdefaultValue = defValue\n\t\t"
+        } else {
+            "\tdefaultValue = ${defaultValue.code}\n\t\t"
         }
-
-        return "\tdefaultValue = ${defaultValue.code}\n\t\t"
     }
 
     private fun Parameter.toNavTypeCode(): String {
-        val primitiveNavTypeCode = type.toPrimitiveNavTypeClassTypeOrNull()
-        if (primitiveNavTypeCode != null) {
-            return primitiveNavTypeCode.getCodePlaceHolder()
+        val coreNavTypeCode = type.toCoreNavTypeImportableOrNull()
+        if (coreNavTypeCode != null) {
+            return coreNavTypeCode.getCodePlaceHolder()
         }
 
-        if (isComplexTypeNavArg()) {
+        if (isCustomTypeNavArg()) {
             type.importable.addImport()
+            type.typeArguments.forEach {
+                if (it is TypeArgument.Typed) it.type.importable.addImport()
+            }
             return navArgResolver.customNavTypeCode(type)
-        }
-
-        if (type.isEnum) {
-            type.importable.addImport()
-            return CORE_STRING_NAV_TYPE.getCodePlaceHolder()
         }
 
         throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${type.importable.qualifiedName}")
