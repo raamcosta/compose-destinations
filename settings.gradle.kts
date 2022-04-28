@@ -8,7 +8,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "DestinationsTodoSample"
 
-include(":app")
+include(":playground")
 include(":compose-destinations")
 include(":compose-destinations-ksp")
 include(":compose-destinations-codegen")
