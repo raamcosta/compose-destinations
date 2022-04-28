@@ -20,7 +20,7 @@ internal fun <R> resultBackNavigator(
         ResultBackNavigatorImpl(
             navController = navController,
             resultOriginType = if (destination is DynamicDestinationSpec) {
-                destination.delegate.javaClass
+                destination.originalDestination.javaClass
             } else {
                 destination.javaClass
             },

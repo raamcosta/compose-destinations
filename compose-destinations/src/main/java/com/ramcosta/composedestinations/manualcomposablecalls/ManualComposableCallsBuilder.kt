@@ -93,7 +93,7 @@ class ManualComposableCallsBuilder internal constructor(
     private val dynamicDestinationsBySingletonDestination: Map<DestinationSpec<*>, List<DynamicDestinationSpec<*>>> =
         navGraph.allDestinations
             .filterIsInstance<DynamicDestinationSpec<*>>()
-            .groupBy { it.delegate }
+            .groupBy { it.originalDestination }
 
     internal fun build() = ManualComposableCalls(map)
 

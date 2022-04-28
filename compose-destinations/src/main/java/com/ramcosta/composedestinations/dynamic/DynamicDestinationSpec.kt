@@ -1,12 +1,15 @@
 package com.ramcosta.composedestinations.dynamic
 
+import androidx.navigation.NavDeepLink
+import androidx.navigation.NavDeepLinkDslBuilder
+import androidx.navigation.navDeepLink
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 
 /**
- * [DestinationSpec] created by [routedIn] methods.
- * This is useful if you have one annotated Composable used on multiple [NavGraphSpec]s.
+ * [DestinationSpec] created by [routedIn] / [withDeepLink] methods.
+ * These are useful if you have annotated Composable used on multiple [NavGraphSpec]s.
  *
  * For all intents and purposes, it will be an entirely different destination, except
  * that it will have the same navigation arguments and call the same Composable, when
@@ -22,7 +25,7 @@ import com.ramcosta.composedestinations.spec.NavGraphSpec
  * not exist in the navigation graph and it will crash at runtime.
  */
 interface DynamicDestinationSpec<T> : DestinationSpec<T> {
-    val delegate: DestinationSpec<T>
+    val originalDestination: DestinationSpec<T>
 }
 
 /**
@@ -42,13 +45,20 @@ interface DynamicDestinationSpec<T> : DestinationSpec<T> {
  * ```
  */
 infix fun <T> DestinationSpec<T>.routedIn(navGraph: NavGraphSpec): DestinationSpec<T> {
-    return object: DynamicDestinationSpec<T>, DestinationSpec<T> by this {
+    return object : DynamicDestinationSpec<T>, DestinationSpec<T> by this {
         override val baseRoute = "${navGraph.route}/${this@routedIn.baseRoute}"
 
         override val route = "${navGraph.route}/${this@routedIn.route}"
 
-        override val delegate = this@routedIn
+        override val originalDestination = this@routedIn.originalDestination
     }
+}
+
+/**
+ * Same as [routedIn] but for a whole List of [DestinationSpec]
+ */
+fun List<DestinationSpec<*>>.routedIn(navGraphSpec: NavGraphSpec): List<DestinationSpec<*>> {
+    return map { it routedIn navGraphSpec }
 }
 
 /**
@@ -65,14 +75,86 @@ infix fun <T> DestinationSpec<T>.routedIn(navGraph: NavGraphSpec): DestinationSp
  * ```
  */
 infix fun Direction.within(navGraph: NavGraphSpec): Direction {
-    return object: Direction by this@within {
+    return object : Direction by this@within {
         override val route = "${navGraph.route}/${this@within.route}"
     }
 }
 
 /**
- * Same as [routedIn] but for a whole List of [DestinationSpec]
+ * Can be used in conjunction with [routedIn] methods to define deep links specific
+ * to one combination of [DestinationSpec]/[NavGraphSpec].
+ *
+ * Example:
+ * ```
+ * val yourNavGraph = object: NavGraphSpec {
+ *     override val route = "your_nav_graph"
+ *     override val startRoute = YourScreenDestination routedIn this
+ *     override val destinationsByRoute = listOf(
+ *         YourScreenDestination.withDeepLink { uriPattern = "https://myapp.com/yourscreen" },
+ *         AnotherScreenDestination,
+ *     ).routedIn(this).associateBy { it.route }
+ * }
+ *
+ * val anotherNavGraph = object: NavGraphSpec {
+ *     override val route = "another_nav_graph"
+ *     override val startRoute = AnotherScreenDestination routedIn this
+ *     override val destinationsByRoute = listOf(
+ *         YourScreenDestination,
+ *         AnotherScreenDestination,
+ *     ).routedIn(this).associateBy { it.route }
+ * }
+ * ```
+ *
+ * In the above example, "YourScreenDestination" is tied to multiple navigation graphs, and
+ * only one has a deep link (the one in "yourNavGraph"). So when that deep link is used, the app
+ * will navigate to "YourScreenDestination" that belongs to "yourNavGraph".
  */
-fun List<DestinationSpec<*>>.routedIn(navGraphSpec: NavGraphSpec): List<DestinationSpec<*>> {
-    return map { it routedIn navGraphSpec }
+fun <T> DestinationSpec<T>.withDeepLink(
+    deepLinkBuilder: NavDeepLinkDslBuilder.() -> Unit
+): DestinationSpec<T> {
+    return object : DynamicDestinationSpec<T>, DestinationSpec<T> by this {
+        override val originalDestination = this@withDeepLink.originalDestination
+
+        override val deepLinks = listOf(navDeepLink(deepLinkBuilder))
+    }
 }
+
+/**
+ * Same as [withDeepLink] but can take a list of [NavDeepLink]s instead of a single [NavDeepLinkDslBuilder].
+ * If you want to tie the destination to a single deep link, using [withDeepLink] will be more natural and less
+ * verbose.
+ *
+ * Example:
+ * ```
+ * val yourNavGraph = object: NavGraphSpec {
+ *     override val route = "your_nav_graph"
+ *     override val startRoute = YourScreenDestination routedIn this
+ *     override val destinationsByRoute = listOf(
+ *         YourScreenDestination.withDeepLinks(
+ *              listOf(
+ *                  navDeepLink { uriPattern = "https://myapp.com/yourscreen" },
+ *                  navDeepLink { uriPattern = "https://myapp.com/anotheruri" },
+ *              )
+ *          ),
+ *         AnotherScreenDestination,
+ *     ).routedIn(this).associateBy { it.route }
+ * }
+ * ```
+ *
+ * @see [withDeepLink]
+ */
+fun <T> DestinationSpec<T>.withDeepLinks(deepLinks: List<NavDeepLink>): DestinationSpec<T> {
+    return object : DynamicDestinationSpec<T>, DestinationSpec<T> by this {
+        override val originalDestination = this@withDeepLinks.originalDestination
+
+        override val deepLinks = deepLinks
+    }
+}
+
+private val <T> DestinationSpec<T>.originalDestination
+    get(): DestinationSpec<T> =
+        if (this is DynamicDestinationSpec<T>) {
+            this.originalDestination
+        } else {
+            this
+        }
