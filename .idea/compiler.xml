@@ -8,6 +8,7 @@
       <module name="ComposeDestinations.compose-destinations-animations" target="11" />
       <module name="ComposeDestinations.compose-destinations-ksp" target="11" />
       <module name="ComposeDestinations.playground" target="11" />
+      <module name="ComposeDestinations.sample" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

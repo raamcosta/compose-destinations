@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/compose-destinations-codegen" />
             <option value="$PROJECT_DIR$/compose-destinations-ksp" />
             <option value="$PROJECT_DIR$/playground" />
+            <option value="$PROJECT_DIR$/sample" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
