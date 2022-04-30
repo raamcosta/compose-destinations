@@ -11,7 +11,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.Route
-import com.ramcosta.composedestinations.utils.navGraphSpecsByRoute
+import com.ramcosta.composedestinations.utils.NavGraphSpecHolder
 
 /**
  * Like [androidx.navigation.compose.NavHost] but includes the destinations of [navGraph].
@@ -65,8 +65,6 @@ fun DestinationsNavHost(
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit = {},
     manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit = {}
 ) {
-    navGraphSpecsByRoute[navGraph.route] = navGraph
-
     engine.NavHost(
         modifier = modifier,
         route = navGraph.route,
@@ -95,6 +93,7 @@ private fun NavGraphBuilder.addNavGraphDestinations(
     manualComposableCalls: ManualComposableCalls,
 ): Unit = with(engine) {
 
+    NavGraphSpecHolder.addUnique(navGraphSpec)
     navGraphSpec.destinationsByRoute.values.forEach { destination ->
         composable(
             destination,
@@ -122,8 +121,6 @@ private fun NavGraphBuilder.addNestedNavGraphs(
 ): Unit = with(engine) {
 
     nestedNavGraphs.forEach { nestedGraph ->
-        navGraphSpecsByRoute[nestedGraph.route] = nestedGraph
-
         navigation(nestedGraph) {
             addNavGraphDestinations(
                 engine = engine,

@@ -11,21 +11,23 @@ import com.ramcosta.composedestinations.spec.Route
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-
-internal val navGraphSpecsByRoute: MutableMap<String, NavGraphSpec> = mutableMapOf()
-
 /**
  * The top level navigation graph associated with this [NavController].
  * Can only be called after [com.ramcosta.composedestinations.DestinationsNavHost].
  */
 val NavController.navGraph: NavGraphSpec
-    get() = navGraphSpecsByRoute[graph.route!!] ?: error("Cannot call rootNavGraph before DestinationsNavHost!")
+    get() {
+        return NavGraphSpecHolder.topLevelNavGraph(this)
+            ?: error("Cannot call rootNavGraph before DestinationsNavHost!")
+    }
 
 /**
  * Finds the [DestinationSpec] correspondent to this [NavBackStackEntry].
  */
 fun NavBackStackEntry.destination(): DestinationSpec<*> {
-    val navGraphSpec = navGraphSpecsByRoute[destination.parent!!.route!!]!!
+    val navGraphSpec = NavGraphSpecHolder.closestNavGraph(this)
+        ?: error("Cannot call NavBackStackEntry.destination() before DestinationsNavHost!")
+
     return destination.route?.let { navGraphSpec.findDestination(it) }
         ?: navGraphSpec.startDestination
 }
