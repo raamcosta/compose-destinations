@@ -3,12 +3,11 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
       <module name="compose-destinations.buildSrc" target="11" />
-      <module name="DestinationsTodoSample.buildSrc" target="11" />
-      <module name="DestinationsTodoSample.compose-destinations" target="11" />
-      <module name="DestinationsTodoSample.compose-destinations-animations" target="11" />
-      <module name="DestinationsTodoSample.compose-destinations-ksp" target="11" />
-      <module name="DestinationsTodoSample.compose-destinations-ktx-serialization" target="11" />
-      <module name="DestinationsTodoSample.playground" target="11" />
+      <module name="ComposeDestinations.buildSrc" target="11" />
+      <module name="ComposeDestinations.compose-destinations" target="11" />
+      <module name="ComposeDestinations.compose-destinations-animations" target="11" />
+      <module name="ComposeDestinations.compose-destinations-ksp" target="11" />
+      <module name="ComposeDestinations.playground" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

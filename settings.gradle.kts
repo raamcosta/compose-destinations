@@ -6,7 +6,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "DestinationsTodoSample"
+rootProject.name = "ComposeDestinations"
 
 include(":playground")
 include(":compose-destinations")
