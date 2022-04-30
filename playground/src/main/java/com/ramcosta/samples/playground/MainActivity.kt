@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CompositionLocalProvider(LocalDependencyContainer provides dependencyContainer) {
-                DestinationsSampleApp()
+                PlaygroundApp()
             }
         }
     }

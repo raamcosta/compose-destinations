@@ -11,22 +11,22 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.ramcosta.composedestinations.navigation.navigateTo
 import com.ramcosta.samples.playground.commons.DrawerControllerImpl
 import com.ramcosta.samples.playground.commons.composables.BottomBar
-import com.ramcosta.samples.playground.commons.composables.DestinationsSampleScaffold
+import com.ramcosta.samples.playground.commons.composables.PlaygroundScaffold
 import com.ramcosta.samples.playground.commons.composables.MyDrawer
 import com.ramcosta.samples.playground.commons.composables.TopBar
 import com.ramcosta.samples.playground.ui.screens.NavGraphs
-import com.ramcosta.samples.playground.ui.theme.DestinationsTodoSampleTheme
+import com.ramcosta.samples.playground.ui.theme.PlaygroundTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun DestinationsSampleApp() {
-    DestinationsTodoSampleTheme {
+fun PlaygroundApp() {
+    PlaygroundTheme {
         val scaffoldState = rememberScaffoldState()
         val coroutineScope = rememberCoroutineScope()
         val navController = rememberAnimatedNavController()
 
-        DestinationsSampleScaffold(
+        PlaygroundScaffold(
             scaffoldState = scaffoldState,
             navController = navController,
             topBar = { destination ->

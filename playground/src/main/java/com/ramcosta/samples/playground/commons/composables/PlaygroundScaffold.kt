@@ -11,17 +11,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.plusAssign
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import com.ramcosta.samples.playground.ui.screens.*
+import com.ramcosta.samples.playground.ui.screens.NavGraphs
+import com.ramcosta.samples.playground.ui.screens.appCurrentDestinationAsState
+import com.ramcosta.samples.playground.ui.screens.appDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.Destination
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun DestinationsSampleScaffold(
+fun PlaygroundScaffold(
     navController: NavHostController,
     scaffoldState: ScaffoldState,
     topBar: @Composable (Destination) -> Unit,
@@ -29,9 +30,7 @@ fun DestinationsSampleScaffold(
     drawerContent: @Composable ColumnScope.(Destination) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val currentBackStackEntryAsState by navController.currentBackStackEntryAsState()
-    val destination = currentBackStackEntryAsState?.appDestination()
-        ?: NavGraphs.root.startRoute.startAppDestination
+    val destination by navController.appCurrentDestinationAsState()
 
     //Just for me to debug, ignore this line
     navController.backQueue.print()
@@ -45,9 +44,9 @@ fun DestinationsSampleScaffold(
     ) {
         Scaffold(
             scaffoldState = scaffoldState,
-            topBar = { topBar(destination) },
-            bottomBar = { bottomBar(destination) },
-            drawerContent = { drawerContent(destination) },
+            topBar = { destination?.let { topBar(it) } },
+            bottomBar = { destination?.let { bottomBar(it) } },
+            drawerContent = { destination?.let { drawerContent(it) } },
             content = content
         )
     }
@@ -56,7 +55,7 @@ fun DestinationsSampleScaffold(
 fun ArrayDeque<NavBackStackEntry>.print(prefix: String = "stack") {
     val stack = toMutableList()
         .filter { it.destination.route !in listOf(NavGraphs.root.route, NavGraphs.settings.route) }
-        .map { it.appDestination()?.javaClass?.simpleName + "@" + it.toString().split("@")[1] }
+        .map { it.appDestination().javaClass.simpleName + "@" + it.toString().split("@")[1] }
         .toTypedArray().contentToString()
     println("$prefix = $stack")
 }

@@ -8,11 +8,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DestinationsTodoSample">
+        android:theme="@style/Theme.Playground">
         <activity
             android:name="com.ramcosta.samples.playground.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.DestinationsTodoSample.NoActionBar">
+            android:theme="@style/Theme.Playground.NoActionBar">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
