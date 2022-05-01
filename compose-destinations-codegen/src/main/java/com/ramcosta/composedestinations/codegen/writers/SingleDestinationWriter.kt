@@ -406,7 +406,7 @@ class SingleDestinationWriter(
             .toMutableList()
             .apply {
                 removeAll {
-                    val needsCustomSerializer = it.isCustomTypeNavArg()
+                    val needsCustomSerializer = it.isCustomTypeNavArg() && !it.isEnumTypeOrTypeArg()
                     val hasCustomSerializer = customNavTypeByType[it.type.value]?.serializer != null
                     if (it.isMandatory && needsCustomSerializer && !hasCustomSerializer) {
                         throw IllegalDestinationsSetup(

@@ -244,27 +244,44 @@ class InitialValidator(
 private fun DestinationGeneratingParams.checkNavArgTypes() {
     val navArgsDelegate = navArgsDelegateType
     if (navArgsDelegate != null) {
-        navArgsDelegate.navArgs.validateArrayTypeArgNullability()
+        navArgsDelegate.navArgs.validateArrayTypeArgs()
     } else {
-        parameters.validateArrayTypeArgNullability()
+        parameters.validateArrayTypeArgs()
     }
 }
 
-private fun List<Parameter>.validateArrayTypeArgNullability() {
+private fun List<Parameter>.validateArrayTypeArgs() {
+    val typesOfPrimitiveArrays = mapOf(
+        Float::class.qualifiedName to FloatArray::class,
+        Int::class.qualifiedName to IntArray::class,
+        Boolean::class.qualifiedName to BooleanArray::class,
+        Long::class.qualifiedName to LongArray::class,
+    )
+
     forEach { param ->
         val type = param.type
-        if (type.isCustomArrayOrArrayListTypeNavArg() && type.value.firstTypeInfoArg.isNullable) {
-            val typeArg = type.value.typeArguments.first() as TypeArgument.Typed
-            val recommendedType = type.copy(
-                value = type.value.copy(
-                    typeArguments = listOf(typeArg.copy(type = typeArg.type.copy(isNullable = false)))
+        if (type.isCustomArrayOrArrayListTypeNavArg()) {
+            if (type.value.firstTypeInfoArg.isNullable) {
+                val typeArg = type.value.typeArguments.first() as TypeArgument.Typed
+                val recommendedType = type.copy(
+                    value = type.value.copy(
+                        typeArguments = listOf(typeArg.copy(type = typeArg.type.copy(isNullable = false)))
+                    )
                 )
-            )
-            throw IllegalDestinationsSetup(
-                "'${param.name}: ${type.toTypeCode()}': " +
-                        "Arrays / ArrayLists of nullable type arguments are not supported! Maybe " +
-                        "'${recommendedType.toTypeCode()}' can be used instead?"
-            )
+                throw IllegalDestinationsSetup(
+                    "'${param.name}: ${type.toTypeCode()}': " +
+                            "Arrays / ArrayLists of nullable type arguments are not supported! Maybe " +
+                            "'${recommendedType.toTypeCode()}' can be used instead?"
+                )
+            }
+
+            val qualifiedName = type.value.firstTypeArg.importable.qualifiedName
+            if (qualifiedName in typesOfPrimitiveArrays.keys) {
+                throw IllegalDestinationsSetup(
+                    "'${param.name}: ${type.toTypeCode()}': " +
+                            "${type.toTypeCode()} is not allowed, use '${typesOfPrimitiveArrays[qualifiedName]!!.simpleName}' instead."
+                )
+            }
         }
     }
 }

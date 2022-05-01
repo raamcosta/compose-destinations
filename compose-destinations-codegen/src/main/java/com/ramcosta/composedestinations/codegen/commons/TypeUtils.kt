@@ -78,6 +78,10 @@ fun Parameter.isCustomTypeNavArg(): Boolean {
     return type.isCustomTypeNavArg()
 }
 
+fun Parameter.isEnumTypeOrTypeArg(): Boolean {
+    return type.isEnum || (type.isArrayOrArrayList() && type.value.firstTypeArg.isEnum)
+}
+
 fun TypeInfo.isCustomTypeNavArg(): Boolean {
     if (isCoreType()) {
         return false
