@@ -19,6 +19,7 @@ import com.ramcosta.samples.playground.ui.screens.NavGraphs
 import com.ramcosta.samples.playground.ui.screens.appCurrentDestinationAsState
 import com.ramcosta.samples.playground.ui.screens.appDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.Destination
+import com.ramcosta.samples.playground.ui.screens.startAppDestination
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalMaterialApi::class)
 @Composable
@@ -30,7 +31,8 @@ fun PlaygroundScaffold(
     drawerContent: @Composable ColumnScope.(Destination) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val destination by navController.appCurrentDestinationAsState()
+    val destination = navController.appCurrentDestinationAsState().value
+        ?: NavGraphs.root.startAppDestination
 
     //Just for me to debug, ignore this line
     navController.backQueue.print()
@@ -44,9 +46,9 @@ fun PlaygroundScaffold(
     ) {
         Scaffold(
             scaffoldState = scaffoldState,
-            topBar = { destination?.let { topBar(it) } },
-            bottomBar = { destination?.let { bottomBar(it) } },
-            drawerContent = { destination?.let { drawerContent(it) } },
+            topBar = { topBar(destination) },
+            bottomBar = { bottomBar(destination) },
+            drawerContent = { drawerContent(destination) },
             content = content
         )
     }
