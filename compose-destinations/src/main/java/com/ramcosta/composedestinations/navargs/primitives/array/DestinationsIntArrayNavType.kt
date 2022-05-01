@@ -6,6 +6,7 @@ import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
+import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 
 object DestinationsIntArrayNavType : DestinationsNavType<IntArray?>() {
 
@@ -21,7 +22,12 @@ object DestinationsIntArrayNavType : DestinationsNavType<IntArray?>() {
         return if (value == DECODED_NULL) {
             null
         } else {
-            val splits = value.split(",")
+            val splits = if (value.contains(encodedComma)) {
+                value.split(encodedComma)
+            } else {
+                value.split(",")
+            }
+
             IntArray(splits.size) { IntType.parseValue(splits[it]) }
         }
     }

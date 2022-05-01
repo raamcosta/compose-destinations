@@ -6,6 +6,7 @@ import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
+import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 import com.ramcosta.composedestinations.navargs.primitives.valueOfIgnoreCase
 
 @Suppress("UNCHECKED_CAST")
@@ -24,9 +25,11 @@ class DestinationsEnumArrayListNavType<E : Enum<*>>(
     override fun parseValue(value: String): ArrayList<E>? {
         if (value == DECODED_NULL) return null
 
-        return value.split(",").mapTo(ArrayList()) {
-            enumType.valueOfIgnoreCase(it)
-        }
+        return if (value.contains(encodedComma)) {
+            value.split(encodedComma)
+        } else {
+            value.split(",")
+        }.mapTo(ArrayList()) { enumType.valueOfIgnoreCase(it) }
     }
 
     override fun serializeValue(value: ArrayList<E>?): String {

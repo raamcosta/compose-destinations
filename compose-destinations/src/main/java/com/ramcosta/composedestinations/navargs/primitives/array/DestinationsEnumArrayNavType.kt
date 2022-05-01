@@ -6,6 +6,7 @@ import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
+import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 
 @Suppress("UNCHECKED_CAST")
 class DestinationsEnumArrayNavType<E : Enum<*>>(
@@ -23,7 +24,13 @@ class DestinationsEnumArrayNavType<E : Enum<*>>(
     override fun parseValue(value: String): Array<E>? {
         if (value == DECODED_NULL) return null
 
-        return converter(value.split(","))
+        val splits = if (value.contains(encodedComma)) {
+            value.split(encodedComma)
+        } else {
+            value.split(",")
+        }
+
+        return converter(splits)
     }
 
     override fun serializeValue(value: Array<E>?): String {

@@ -6,6 +6,7 @@ import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
+import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 
 object DestinationsFloatArrayListNavType : DestinationsNavType<ArrayList<Float>?>() {
 
@@ -21,8 +22,11 @@ object DestinationsFloatArrayListNavType : DestinationsNavType<ArrayList<Float>?
         return if (value == DECODED_NULL) {
             null
         } else {
-            value.split(",")
-                .mapTo(ArrayList()) { FloatType.parseValue(it) }
+            if (value.contains(encodedComma)) {
+                value.split(encodedComma)
+            } else {
+                value.split(",")
+            }.mapTo(ArrayList()) { FloatType.parseValue(it) }
         }
     }
 
