@@ -27,6 +27,8 @@ fun LoginScreen(
         hasNavigatedUp.value = true // avoids double navigation
 
         if (!navigator.navigateUp()) {
+            // Sometimes we are starting on LoginScreen (to avoid UI jumps)
+            // In those cases, navigateUp fails, so we just navigate to the registered start destination
             navigator.navigate(NavGraphs.root.startAppDestination as DirectionDestination)
         }
     }
