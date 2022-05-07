@@ -61,6 +61,14 @@ val Route.startDestination get(): DestinationSpec<*> {
 }
 
 /**
+ * Checks if a given [Route] (which is either [com.ramcosta.composedestinations.spec.NavGraphSpec]
+ * or [com.ramcosta.composedestinations.spec.DestinationSpec]) is currently somewhere in the back stack.
+ */
+fun NavController.isRouteOnBackStack(route: Route): Boolean {
+    return runCatching { getBackStackEntry(route.route) }.isSuccess
+}
+
+/**
  * Filters all destinations of this [NavGraphSpec] and its nested nav graphs with given [predicate]
  */
 inline fun NavGraphSpec.filterDestinations(predicate: (DestinationSpec<*>) -> Boolean): List<DestinationSpec<*>> {
