@@ -11,7 +11,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
-import com.ramcosta.composedestinations.navigation.navigateTo
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.destinations.sample.core.viewmodel.activityViewModel
 import com.ramcosta.destinations.sample.destinations.Destination
 import com.ramcosta.destinations.sample.destinations.LoginScreenDestination
@@ -33,7 +33,7 @@ fun SampleApp() {
         navController = navController,
         startRoute = startRoute,
         topBar = { AnimatedVisibility(it.shouldShowScaffoldElements) { TopBar(it) } },
-        bottomBar = { AnimatedVisibility(it.shouldShowScaffoldElements) { BottomBar(it, navController) } }
+        bottomBar = { AnimatedVisibility(it.shouldShowScaffoldElements) { BottomBar(navController) } }
     ) {
         DestinationsNavHost(
             engine = engine,
@@ -63,6 +63,8 @@ private fun ShowLoginWhenLoggedOut(
     if (!isLoggedIn && currentDestination != LoginScreenDestination) {
         // everytime destination changes or logged in state we check
         // if we have to show Login screen and navigate to it if so
-        navController.navigateTo(LoginScreenDestination)
+        navController.navigate(LoginScreenDestination) {
+            launchSingleTop = true
+        }
     }
 }

@@ -14,6 +14,7 @@ import com.ramcosta.destinations.sample.LocalDependencyContainer
 import com.ramcosta.destinations.sample.MainViewModel
 import com.ramcosta.destinations.sample.account.AccountViewModel
 import com.ramcosta.destinations.sample.core.di.DependencyContainer
+import com.ramcosta.destinations.sample.tasks.presentation.list.TaskListViewModel
 
 @Composable
 inline fun <reified VM : ViewModel> viewModel(
@@ -51,23 +52,17 @@ inline fun <reified VM : ViewModel> activityViewModel(): VM {
 class ViewModelFactory(
     owner: SavedStateRegistryOwner,
     defaultArgs: Bundle?,
-    //remove this line if you're not using Dependency injection
     private val dependencyContainer: DependencyContainer
 ) : AbstractSavedStateViewModelFactory(
     owner,
     defaultArgs
 ) {
 
-    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
         key: String,
         modelClass: Class<T>,
         handle: SavedStateHandle
     ): T {
-        return when (modelClass) {
-            MainViewModel::class.java -> MainViewModel(dependencyContainer.loginStateRepository)
-            AccountViewModel::class.java -> AccountViewModel(dependencyContainer.loginStateRepository)
-            else -> throw RuntimeException("Unknown view model $modelClass")
-        } as T
+        return dependencyContainer.createViewModel(modelClass, handle)
     }
 }

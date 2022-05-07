@@ -4,7 +4,7 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
-import com.ramcosta.composedestinations.navigation.navigateTo
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.samples.playground.commons.DrawerContent
 import com.ramcosta.samples.playground.ui.screens.NavGraphs
 import com.ramcosta.samples.playground.ui.screens.appDestination
@@ -31,7 +31,7 @@ fun MyDrawer(
                     if (navController.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
                         && navController.currentBackStackEntry?.appDestination() != clickedDestination
                     ) {
-                        navController.navigateTo(clickedDestination)
+                        navController.navigate(clickedDestination)
                         coroutineScope.launch { scaffoldState.drawerState.close() }
                     }
                 }

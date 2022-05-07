@@ -10,7 +10,7 @@ object Versions {
     const val composeViewModel = "2.4.1"
     const val activityCompose = "1.4.0"
 
-    const val material = "1.5.0"
+    const val material = "1.6.0"
     const val lifecycleKtx = "2.4.1"
     const val lifecycleRuntimeKtx = lifecycleKtx
 

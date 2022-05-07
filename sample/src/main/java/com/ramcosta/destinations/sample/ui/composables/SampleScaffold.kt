@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.plusAssign
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -27,6 +28,9 @@ fun SampleScaffold(
     val destination = navController.appCurrentDestinationAsState().value
         ?: startRoute.startAppDestination
 
+    // 👇 only for debugging, you shouldn't use backQueue API as it is restricted by annotation
+    navController.backQueue.print()
+
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
 
@@ -41,4 +45,9 @@ fun SampleScaffold(
             content = content
         )
     }
+}
+
+private fun ArrayDeque<NavBackStackEntry>.print(prefix: String = "stack") {
+    val stack = map { it.destination.route }.toTypedArray().contentToString()
+    println("$prefix = $stack")
 }

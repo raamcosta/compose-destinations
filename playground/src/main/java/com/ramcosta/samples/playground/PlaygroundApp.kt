@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.ramcosta.composedestinations.navigation.navigateTo
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.samples.playground.commons.DrawerControllerImpl
 import com.ramcosta.samples.playground.commons.composables.BottomBar
 import com.ramcosta.samples.playground.commons.composables.PlaygroundScaffold
@@ -33,14 +33,14 @@ fun PlaygroundApp() {
                 TopBar(
                     destination = destination,
                     onDrawerClick = { coroutineScope.launch { scaffoldState.drawerState.open() } },
-                    onSettingsClick = { navController.navigateTo(NavGraphs.settings) }
+                    onSettingsClick = { navController.navigate(NavGraphs.settings) }
                 )
             },
             bottomBar = { destination ->
                 BottomBar(
                     currentDestination = destination,
                     onBottomBarItemClick = {
-                        navController.navigateTo(it) {
+                        navController.navigate(it) {
                             launchSingleTop = true
                         }
                     }
