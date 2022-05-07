@@ -3,7 +3,6 @@ package com.ramcosta.composedestinations.codegen.model
 interface DestinationGeneratingParams {
     val sourceIds: List<String>
     val name: String
-    val qualifiedName: String
     val composableName: String
     val composableQualifiedName: String
     val cleanRoute: String
@@ -19,7 +18,6 @@ interface DestinationGeneratingParams {
 data class RawDestinationGenParams(
     override val sourceIds: List<String>,
     override val name: String,
-    override val qualifiedName: String,
     override val composableName: String,
     override val composableQualifiedName: String,
     override val cleanRoute: String,

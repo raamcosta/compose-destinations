@@ -31,7 +31,7 @@ class CodeGenerator(
     ) {
         initialValidator.validate(navGraphs, destinations)
 
-        val shouldWriteSealedDestinations =  codeGenConfig.mode is CodeGenMode.SingleModule || destinations.size > 1
+        val shouldWriteSealedDestinations = codeGenConfig.mode is CodeGenMode.SingleModule || destinations.size > 1
         initConfigurationValues(destinations, shouldWriteSealedDestinations)
 
         val destinationsWithNavArgs = destinationWithNavArgsMapper.map(destinations)
@@ -50,6 +50,8 @@ class CodeGenerator(
         if (shouldWriteKtxSerializableNavTypeSerializer(destinations)) {
             defaultKtxSerializableNavTypeSerializerWriter.write()
         }
+
+        navArgsGetters.write(generatedDestinations)
     }
 
     private fun initConfigurationValues(

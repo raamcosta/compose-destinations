@@ -11,7 +11,6 @@ import androidx.savedstate.SavedStateRegistryOwner
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.samples.playground.LocalDependencyContainer
-import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.playground.ui.screens.greeting.GreetingViewModel
 import com.ramcosta.samples.playground.ui.screens.profile.ProfileViewModel
 import com.ramcosta.samples.playground.ui.screens.settings.SettingsViewModel
@@ -58,7 +57,7 @@ class ViewModelFactory(
         return when (modelClass) {
             ProfileViewModel::class.java -> ProfileViewModel(
                 dependencyContainer.getProfileLikeCount,
-                ProfileScreenDestination.argsFrom(handle)
+                handle
             )
 
             GreetingViewModel::class.java -> GreetingViewModel()

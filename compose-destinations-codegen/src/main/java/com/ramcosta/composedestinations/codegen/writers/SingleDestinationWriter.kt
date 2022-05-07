@@ -1,16 +1,16 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.codeGenDestination
+import com.ramcosta.composedestinations.codegen.codeGenNoArgsDestination
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.codeGenDestination
-import com.ramcosta.composedestinations.codegen.codeGenNoArgsDestination
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
-import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFunctionWriter
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
+import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFunctionWriter
 
 class SingleDestinationWriter(
     private val codeGenerator: CodeOutputStreamMaker,
@@ -22,6 +22,7 @@ class SingleDestinationWriter(
     private val importableHelper: ImportableHelper
 ) {
 
+    private val packageName = "$codeGenBasePackageName.destinations"
     private val navArgs get() = destination.navArgs
 
     init {
@@ -32,7 +33,7 @@ class SingleDestinationWriter(
 
     fun write(): GeneratedDestination = with(destination) {
         codeGenerator.makeFile(
-            packageName = "$codeGenBasePackageName.destinations",
+            packageName = packageName,
             name = name,
             sourceIds = sourceIds.toTypedArray()
         ).use {
@@ -55,8 +56,15 @@ class SingleDestinationWriter(
 
         return GeneratedDestination(
             sourceIds = sourceIds,
-            qualifiedName = qualifiedName,
+            qualifiedName = "$packageName.$name",
             simpleName = name,
+            navArgsImportable = navArgsDataClassImportable()?.let {
+                if (navArgsDelegateType == null) {
+                    it.copy(simpleName = "$name.NavArgs")
+                } else {
+                    it
+                }
+            },
             navGraphInfo = navGraphInfo,
             requireOptInAnnotationTypes = gatherOptInAnnotations()
                 .filter { !it.isOptedIn }
@@ -238,10 +246,20 @@ class SingleDestinationWriter(
         return argsFromNavBackStackEntry(argsType) + "\n" + argsFromSavedStateHandle(argsType)
     }
 
-    private fun navArgsDataClassName(): String = with(destination) {
-        return navArgsDelegateType?.type?.getCodePlaceHolder()
-            ?: if (navArgs.isEmpty()) "Unit" else "NavArgs"
+    private fun navArgsDataClassImportable(): Importable? = with(destination) {
+        return navArgsDelegateType?.type
+            ?: if (navArgs.isEmpty()) {
+                null
+            } else {
+                Importable(
+                    "NavArgs",
+                    "$packageName.${destination.name}.NavArgs"
+                )
+            }
     }
+
+    private fun navArgsDataClassName(): String =
+        navArgsDataClassImportable()?.getCodePlaceHolder() ?: "Unit"
 
     private fun argsFromNavBackStackEntry(argsType: String): String {
         val code = StringBuilder()

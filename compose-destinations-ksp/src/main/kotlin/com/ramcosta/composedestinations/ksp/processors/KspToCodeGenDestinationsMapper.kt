@@ -66,7 +66,6 @@ class KspToCodeGenDestinationsMapper(
         return RawDestinationGenParams(
             sourceIds = listOfNotNull(containingFile!!.fileName, navArgsDelegateTypeAndFile?.second?.fileName),
             name = name,
-            qualifiedName = "$CORE_PACKAGE_NAME.$name",
             composableName = composableName,
             composableQualifiedName = qualifiedName!!.asString(),
             cleanRoute = cleanRoute,

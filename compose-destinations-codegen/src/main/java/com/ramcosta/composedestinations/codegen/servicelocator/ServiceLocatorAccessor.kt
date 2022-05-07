@@ -88,3 +88,8 @@ internal val ServiceLocatorAccessor.defaultKtxSerializableNavTypeSerializerWrite
     DefaultKtxSerializableNavTypeSerializerWriter(
         codeGenerator,
     )
+
+internal val ServiceLocatorAccessor.navArgsGetters get() =
+    NavArgsGettersWriter(
+        codeGenerator,
+    )

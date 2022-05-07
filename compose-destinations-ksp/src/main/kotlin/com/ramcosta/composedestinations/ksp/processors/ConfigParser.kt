@@ -39,29 +39,25 @@ class ConfigParser(
     }
 
     private fun parseMode(key: String): CodeGenMode {
-        val option = options[key]
+        val option = options[key] ?: return singleModuleMode()
 
-        return if (option != null) {
-            return when (option) {
-                MODE_DESTINATIONS -> {
-                    parseGenNavGraphsObjectConfig(false)
-                    CodeGenMode.Destinations
-                }
-
-                MODE_NAV_GRAPHS -> {
-                    parseGenNavGraphsObjectConfig(false)
-                    CodeGenMode.NavGraphs
-                }
-
-                MODE_SINGLE_MODULE -> singleModuleMode()
-
-                else -> throw WrongConfigurationSetup(
-                    message = "$key has wrong value! It has to be one of: " +
-                            "'$MODE_NAV_GRAPHS', '$MODE_DESTINATIONS', '$MODE_SINGLE_MODULE'"
-                )
+        return when (option) {
+            MODE_DESTINATIONS -> {
+                parseGenNavGraphsObjectConfig(false)
+                CodeGenMode.Destinations
             }
-        } else {
-            singleModuleMode()
+
+            MODE_NAV_GRAPHS -> {
+                parseGenNavGraphsObjectConfig(false)
+                CodeGenMode.NavGraphs
+            }
+
+            MODE_SINGLE_MODULE -> singleModuleMode()
+
+            else -> throw WrongConfigurationSetup(
+                message = "$key has wrong value! It has to be one of: " +
+                        "'$MODE_NAV_GRAPHS', '$MODE_DESTINATIONS', '$MODE_SINGLE_MODULE'"
+            )
         }
     }
 

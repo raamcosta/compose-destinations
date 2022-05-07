@@ -4,6 +4,7 @@ data class GeneratedDestination(
     val sourceIds: List<String>,
     val qualifiedName: String,
     val simpleName: String,
+    val navArgsImportable: Importable?,
     val navGraphInfo: NavGraphInfo,
     val requireOptInAnnotationTypes: List<Importable>
 )
