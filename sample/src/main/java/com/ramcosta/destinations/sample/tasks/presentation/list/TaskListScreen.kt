@@ -40,35 +40,22 @@ fun TaskListScreen(
             }
         }
     ){
-        Column(
+
+        val tasks by viewModel.tasks.collectAsState()
+
+        LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Button(onClick = { navigator.navigate(LoginScreenDestination) }) {
-                    Text("Login")
-                }
-                Button(onClick = { navigator.navigate(SettingsScreenDestination) }) {
-                    Text("Settings")
-                }
-            }
-
-            val tasks by viewModel.tasks.collectAsState()
-
-            LazyColumn {
-                items(tasks) { item ->
-                    TaskItem(
-                        task = item,
-                        onCheckedChange = {
-                            viewModel.onCheckboxChecked(item, it)
-                        },
-                        onTaskClicked = {
-                            navigator.navigate(TaskScreenDestination(item.id))
-                        }
-                    )
-                }
+            items(tasks) { item ->
+                TaskItem(
+                    task = item,
+                    onCheckedChange = {
+                        viewModel.onCheckboxChecked(item.task, it)
+                    },
+                    onTaskClicked = {
+                        navigator.navigate(TaskScreenDestination(item.task.id))
+                    }
+                )
             }
         }
     }

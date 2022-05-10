@@ -5,11 +5,16 @@ import com.ramcosta.destinations.sample.MainActivity
 import com.ramcosta.destinations.sample.MainViewModel
 import com.ramcosta.destinations.sample.account.AccountViewModel
 import com.ramcosta.destinations.sample.login.data.LoginStateRepository
+import com.ramcosta.destinations.sample.navArgs
 import com.ramcosta.destinations.sample.tasks.data.StepsRepository
 import com.ramcosta.destinations.sample.tasks.data.TasksRepository
+import com.ramcosta.destinations.sample.tasks.presentation.details.StepDetailsViewModel
+import com.ramcosta.destinations.sample.tasks.presentation.details.StepScreenNavArgs
 import com.ramcosta.destinations.sample.tasks.presentation.details.TaskDetailsViewModel
 import com.ramcosta.destinations.sample.tasks.presentation.list.TaskListViewModel
-import com.ramcosta.destinations.sample.tasks.presentation.newtask.AddTaskViewModel
+import com.ramcosta.destinations.sample.tasks.presentation.new.AddStepDialogNavArgs
+import com.ramcosta.destinations.sample.tasks.presentation.new.AddStepViewModel
+import com.ramcosta.destinations.sample.tasks.presentation.new.AddTaskViewModel
 
 class DependencyContainer(
     val activity: MainActivity
@@ -26,10 +31,19 @@ class DependencyContainer(
         return when (modelClass) {
             MainViewModel::class.java -> MainViewModel(loginStateRepository)
             AccountViewModel::class.java -> AccountViewModel(loginStateRepository)
-            TaskListViewModel::class.java -> TaskListViewModel(tasksRepository)
+            TaskListViewModel::class.java -> TaskListViewModel(tasksRepository, stepsRepository)
             AddTaskViewModel::class.java -> AddTaskViewModel(tasksRepository)
+            AddStepViewModel::class.java -> AddStepViewModel(
+                handle.navArgs<AddStepDialogNavArgs>().taskId,
+                stepsRepository
+            )
             TaskDetailsViewModel::class.java -> TaskDetailsViewModel(
                 handle,
+                tasksRepository,
+                stepsRepository
+            )
+            StepDetailsViewModel::class.java -> StepDetailsViewModel(
+                handle.navArgs<StepScreenNavArgs>().stepId,
                 tasksRepository,
                 stepsRepository
             )

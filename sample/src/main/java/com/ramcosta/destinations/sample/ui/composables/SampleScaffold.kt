@@ -21,12 +21,13 @@ import com.ramcosta.destinations.sample.startAppDestination
 fun SampleScaffold(
     startRoute: Route,
     navController: NavHostController,
-    topBar: @Composable (Destination) -> Unit,
+    topBar: @Composable (Destination, NavBackStackEntry?) -> Unit,
     bottomBar: @Composable (Destination) -> Unit,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val destination = navController.appCurrentDestinationAsState().value
         ?: startRoute.startAppDestination
+    val navBackStackEntry = navController.currentBackStackEntry
 
     // 👇 only for debugging, you shouldn't use backQueue API as it is restricted by annotation
     navController.backQueue.print()
@@ -40,7 +41,7 @@ fun SampleScaffold(
         sheetShape = RoundedCornerShape(16.dp)
     ) {
         Scaffold(
-            topBar = { topBar(destination) },
+            topBar = { topBar(destination, navBackStackEntry) },
             bottomBar = { bottomBar(destination) },
             content = content
         )

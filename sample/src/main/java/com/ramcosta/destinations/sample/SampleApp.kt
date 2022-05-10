@@ -32,7 +32,7 @@ fun SampleApp() {
     SampleScaffold(
         navController = navController,
         startRoute = startRoute,
-        topBar = { AnimatedVisibility(it.shouldShowScaffoldElements) { TopBar(it) } },
+        topBar = { dest, backStackEntry -> AnimatedVisibility(dest.shouldShowScaffoldElements) { TopBar(dest, backStackEntry) } },
         bottomBar = { AnimatedVisibility(it.shouldShowScaffoldElements) { BottomBar(navController) } }
     ) {
         DestinationsNavHost(

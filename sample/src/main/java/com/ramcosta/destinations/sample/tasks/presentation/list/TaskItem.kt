@@ -11,11 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ramcosta.destinations.sample.tasks.domain.Task
 
 @Composable
 fun TaskItem(
-    task: Task,
+    task: TaskUiItem,
     onCheckedChange: (Boolean) -> Unit,
     onTaskClicked: () -> Unit
 ) {
@@ -26,12 +25,18 @@ fun TaskItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
-            checked = task.completed,
+            checked = task.task.completed,
             onCheckedChange = onCheckedChange
         )
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Text(task.title)
+        Text(task.task.title)
+
+        if (task.steps.isNotEmpty()) {
+            Spacer(modifier = Modifier.weight(1f))
+
+            Text("${task.steps.filter { it.completed }.size}/${task.steps.size}")
+        }
     }
 }

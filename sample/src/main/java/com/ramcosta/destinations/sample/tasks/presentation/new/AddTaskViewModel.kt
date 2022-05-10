@@ -1,4 +1,4 @@
-package com.ramcosta.destinations.sample.tasks.presentation.newtask
+package com.ramcosta.destinations.sample.tasks.presentation.new
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
