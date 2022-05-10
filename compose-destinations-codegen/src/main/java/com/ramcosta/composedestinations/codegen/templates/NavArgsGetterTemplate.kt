@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.codegen.templates
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 
 const val NAV_ARGS_METHOD_WHEN_CASES = "[NAV_ARGS_METHOD_WHEN_CASES]"
+private const val CLASS_ESCAPED = "\${argsClass}"
 
 val navArgsGettersTemplate = """
 package $codeGenBasePackageName
@@ -18,7 +19,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}inline fun <reified T> SavedStateHandle
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}fun <T> navArgs(argsClass: Class<T>, savedStateHandle: SavedStateHandle): T {
     return when (argsClass) {
 $NAV_ARGS_METHOD_WHEN_CASES
-        else -> error("Impossible due to this method being updated automatically on build")
+        else -> error("Class $CLASS_ESCAPED is not a navigation arguments class!")
     }
 }
 
