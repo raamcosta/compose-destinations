@@ -54,7 +54,7 @@ val Route.startAppDestination: $typeAliasDestination
  * Finds the [$typeAliasDestination] correspondent to this [NavBackStackEntry].
  */
 fun NavBackStackEntry.appDestination(): $typeAliasDestination {
-    return destination() as Destination
+    return destination() as $typeAliasDestination
 }
 
 /**
