@@ -47,7 +47,7 @@ class CodeGenerator(
             sealedDestinationWriter.write()
         }
 
-        if (shouldWriteKtxSerializableNavTypeSerializer(destinations)) {
+        if (shouldWriteKtxSerializableNavTypeSerializer(destinationsWithNavArgs)) {
             defaultKtxSerializableNavTypeSerializerWriter.write()
         }
 
@@ -68,18 +68,18 @@ class CodeGenerator(
     }
 
     private fun shouldWriteKtxSerializableNavTypeSerializer(
-        destinations: List<DestinationGeneratingParams>,
+        destinations: List<DestinationGeneratingParamsWithNavArgs>,
     ) = destinations.any {
-        it.parameters.any { param ->
-            if (param.type.isCustomArrayOrArrayListTypeNavArg()) {
-               param.type.value.firstTypeInfoArg.run {
+        it.navArgs.any { navArg ->
+            if (navArg.type.isCustomArrayOrArrayListTypeNavArg()) {
+               navArg.type.value.firstTypeInfoArg.run {
                    isKtxSerializable &&
                            !hasCustomTypeSerializer &&
                            !isParcelable &&
                            !isSerializable
                }
             } else {
-                param.type.run {
+                navArg.type.run {
                     isKtxSerializable &&
                             !hasCustomTypeSerializer &&
                             !isParcelable &&
