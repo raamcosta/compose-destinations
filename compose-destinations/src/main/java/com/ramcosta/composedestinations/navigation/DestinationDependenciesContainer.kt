@@ -1,11 +1,15 @@
 package com.ramcosta.composedestinations.navigation
 
+import com.ramcosta.composedestinations.dynamic.originalDestination
 import com.ramcosta.composedestinations.scope.DestinationScope
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.utils.navGraph
 import kotlin.reflect.KClass
 
 /**
  * Interface through which you can add dependencies to a [DestinationDependenciesContainer].
- * Use [dependency] method to do that.
+ * Use [dependency] methods to do that.
  * `DestinationsNavHost` has a lambda called for each destination with an instance of this interface
  * which lets you add dependencies to it.
  *
@@ -22,6 +26,34 @@ inline fun <reified D: Any, T> DependenciesContainerBuilder<T>.dependency(depend
 }
 
 /**
+ * Adds [dependencyProvider] return object to this container builder.
+ * If [navGraph] is passed in, then only provides the dependency to destinations
+ * that belongs to it.
+ */
+inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
+    navGraph: NavGraphSpec,
+    dependencyProvider: () -> D
+) {
+    if (navBackStackEntry.navGraph().route == navGraph.route) {
+        (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(), asType = D::class)
+    }
+}
+
+/**
+ * Adds [dependencyProvider] return object to this container builder.
+ * If [navGraph] is passed in, then only provides the dependency to destinations
+ * that belongs to it.
+ */
+inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
+    destination: DestinationSpec<*>,
+    dependencyProvider: () -> D
+) {
+    if (this.destination.originalDestination.route == destination.originalDestination.route) {
+        (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(), asType = D::class)
+    }
+}
+
+/**
  * Container of all dependencies that can be used in a certain `Destination` Composable.
  * You can use `DestinationsNavHost` to add dependencies to it via
  * [DependenciesContainerBuilder.dependency]
@@ -30,11 +62,10 @@ class DestinationDependenciesContainer<T>(
     destinationScope: DestinationScope<T>
 ): DependenciesContainerBuilder<T>, DestinationScope<T> by destinationScope {
 
-    private val _map: MutableMap<Class<*>, Any> = mutableMapOf()
-    private val map: Map<Class<*>, Any> = _map
+    private val map: MutableMap<Class<*>, Any> = mutableMapOf()
 
     fun <D: Any> dependency(dependency: D, asType: KClass<in D>) {
-        _map[asType.java] = dependency
+        map[asType.java] = dependency
     }
 
     inline fun <reified D: Any> require(): D {

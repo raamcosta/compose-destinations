@@ -12,11 +12,12 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.animations.utils.animatedComposable
 import com.ramcosta.composedestinations.animations.utils.bottomSheetComposable
-import com.ramcosta.composedestinations.manualcomposablecalls.*
+import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
+import com.ramcosta.composedestinations.manualcomposablecalls.animatedComposable
+import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.scope.resultBackNavigator
 import com.ramcosta.composedestinations.scope.resultRecipient
-import com.ramcosta.composedestinations.utils.contains
 import com.ramcosta.composedestinations.utils.dialogComposable
 import com.ramcosta.samples.playground.commons.DrawerController
 import com.ramcosta.samples.playground.di.viewModel
@@ -66,14 +67,11 @@ fun AppNavigation(
         dependenciesContainerBuilder = {
             dependency(drawerController)
 
-            if (NavGraphs.settings.contains(destination)) {
-                val parentEntry =
-                    remember { navController.getBackStackEntry(NavGraphs.settings.route) }
-                dependency(
-                    androidx.lifecycle.viewmodel.compose.viewModel<SettingsViewModel>(
-                        parentEntry
-                    )
-                )
+            dependency(NavGraphs.settings) {
+                val parentEntry = remember {
+                    navController.getBackStackEntry(NavGraphs.settings.route)
+                }
+                viewModel<SettingsViewModel>(parentEntry)
             }
         }
     ) {

@@ -11,10 +11,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavBackStackEntry
 import androidx.savedstate.SavedStateRegistryOwner
 import com.ramcosta.destinations.sample.LocalDependencyContainer
-import com.ramcosta.destinations.sample.MainViewModel
-import com.ramcosta.destinations.sample.account.AccountViewModel
 import com.ramcosta.destinations.sample.core.di.DependencyContainer
-import com.ramcosta.destinations.sample.tasks.presentation.list.TaskListViewModel
 
 @Composable
 inline fun <reified VM : ViewModel> viewModel(

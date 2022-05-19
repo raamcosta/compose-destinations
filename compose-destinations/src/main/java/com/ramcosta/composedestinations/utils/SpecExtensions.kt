@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Route
@@ -17,7 +18,9 @@ import kotlinx.coroutines.flow.map
  */
 val NavController.navGraph: NavGraphSpec
     get() {
-        return NavGraphSpecHolder.topLevelNavGraph(this)
+        return graph.route?.let {
+            NavGraphRegistry[it]?.topLevelNavGraph(this)
+        }
             ?: error("Cannot call rootNavGraph before DestinationsNavHost!")
     }
 
@@ -25,11 +28,19 @@ val NavController.navGraph: NavGraphSpec
  * Finds the [DestinationSpec] correspondent to this [NavBackStackEntry].
  */
 fun NavBackStackEntry.destination(): DestinationSpec<*> {
-    val navGraphSpec = NavGraphSpecHolder.closestNavGraph(this)
+    val navGraphSpec = navGraphHolder?.closestNavGraph(this)
         ?: error("Cannot call NavBackStackEntry.destination() before DestinationsNavHost!")
 
     return destination.route?.let { navGraphSpec.findDestination(it) }
         ?: navGraphSpec.startDestination
+}
+
+/**
+ * Finds the [NavGraphSpec] that this [NavBackStackEntry] belongs to.
+ */
+fun NavBackStackEntry.navGraph(): NavGraphSpec {
+    return navGraphHolder?.closestNavGraph(this)
+        ?: error("Cannot call NavBackStackEntry.navGraph() before DestinationsNavHost!")
 }
 
 /**
@@ -48,6 +59,14 @@ fun NavController.currentDestinationAsState(): State<DestinationSpec<*>?> {
 }
 
 /**
+ * Checks if a given [Route] (which is either [com.ramcosta.composedestinations.spec.NavGraphSpec]
+ * or [com.ramcosta.composedestinations.spec.DestinationSpec]) is currently somewhere in the back stack.
+ */
+fun NavController.isRouteOnBackStack(route: Route): Boolean {
+    return runCatching { getBackStackEntry(route.route) }.isSuccess
+}
+
+/**
  * If this [Route] is a [DestinationSpec], returns it
  *
  * If this [Route] is a [NavGraphSpec], returns its
@@ -58,14 +77,6 @@ val Route.startDestination get(): DestinationSpec<*> {
         is DestinationSpec<*> -> this
         is NavGraphSpec -> startRoute.startDestination
     }
-}
-
-/**
- * Checks if a given [Route] (which is either [com.ramcosta.composedestinations.spec.NavGraphSpec]
- * or [com.ramcosta.composedestinations.spec.DestinationSpec]) is currently somewhere in the back stack.
- */
-fun NavController.isRouteOnBackStack(route: Route): Boolean {
-    return runCatching { getBackStackEntry(route.route) }.isSuccess
 }
 
 /**
@@ -125,6 +136,12 @@ fun NavGraphSpec.findDestination(route: String): DestinationSpec<*>? {
 
     return null
 }
+
+private val NavBackStackEntry.navGraphHolder
+    get() = topLevelGraphRoute?.let { NavGraphRegistry[it] }
+
+private val NavBackStackEntry.topLevelGraphRoute
+    get() = destination.hierarchy.last().route
 
 // region deprecated APIs
 

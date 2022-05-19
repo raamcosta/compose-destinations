@@ -151,7 +151,8 @@ fun <T> DestinationSpec<T>.withDeepLinks(deepLinks: List<NavDeepLink>): Destinat
     }
 }
 
-private val <T> DestinationSpec<T>.originalDestination
+@PublishedApi
+internal val <T> DestinationSpec<T>.originalDestination
     get(): DestinationSpec<T> =
         if (this is DynamicDestinationSpec<T>) {
             this.originalDestination

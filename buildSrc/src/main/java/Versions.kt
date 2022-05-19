@@ -5,7 +5,7 @@ object Versions {
 
     const val kotlin = "1.6.10"
     const val dependencyCheckPlugin = "0.42.0"
-    const val gradlePluginVersion = "7.1.1"
+    const val gradlePluginVersion = "7.2.0"
 
     const val composeViewModel = "2.4.1"
     const val activityCompose = "1.4.0"

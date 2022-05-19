@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
+import com.ramcosta.composedestinations.dynamic.originalDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 
@@ -19,11 +19,7 @@ internal fun <R> resultBackNavigator(
     val backNavigator = remember {
         ResultBackNavigatorImpl(
             navController = navController,
-            resultOriginType = if (destination is DynamicDestinationSpec) {
-                destination.originalDestination.javaClass
-            } else {
-                destination.javaClass
-            },
+            resultOriginType = destination.originalDestination.javaClass,
             resultType = resultType
         )
     }

@@ -16,8 +16,6 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
 import com.ramcosta.destinations.sample.destinations.AddTaskDialogDestination
-import com.ramcosta.destinations.sample.destinations.LoginScreenDestination
-import com.ramcosta.destinations.sample.destinations.SettingsScreenDestination
 import com.ramcosta.destinations.sample.destinations.TaskScreenDestination
 
 @RootNavGraph(start = true)

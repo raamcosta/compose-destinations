@@ -35,7 +35,9 @@ class InitialValidator(
 
             destination.warnIgnoredAnnotationArguments()
 
-            destination.validateResultParams(destinationsByName)
+            destination.validateOpenResultRecipients()
+
+            destination.validateClosedResultRecipients(destinationsByName)
 
             cleanRoutes.add(destination.cleanRoute)
             composableNames.add(destination.composableName)
@@ -153,15 +155,20 @@ class InitialValidator(
         }
     }
 
-    private fun DestinationGeneratingParams.validateResultParams(
+    private fun DestinationGeneratingParams.validateClosedResultRecipients(
         destinationsByName: Lazy<Map<String, DestinationGeneratingParams>>
     ) {
-        val resultRecipientParams = parameters.filter { it.type.importable.qualifiedName == RESULT_RECIPIENT_QUALIFIED_NAME }
+        val resultRecipientParams = parameters
+            .filter { it.type.importable.qualifiedName == RESULT_RECIPIENT_QUALIFIED_NAME }
+
         val destinationResultOriginForAllResultTypes = mutableSetOf<String>()
+
         resultRecipientParams.forEach { parameter ->
             val resultOriginDestinationName = parameter.getFirstArgTypeSimpleName()
             val resultType = (parameter.type.typeArguments[1] as? TypeArgument.Typed)?.type
-                ?: throw IllegalDestinationsSetup("ResultRecipient second type argument must be a valid type with no '*' variance.")
+                ?: throw IllegalDestinationsSetup(
+                    "ResultRecipient second type argument must be a valid type with no '*' variance."
+                )
 
             validateResultType(resultType)
             destinationResultOriginForAllResultTypes.add(resultOriginDestinationName)
@@ -194,6 +201,21 @@ class InitialValidator(
                 "Composable '${composableName}': " +
                         "Destination annotated Composables must have at most one ResultBackNavigator"
             )
+        }
+    }
+
+    private fun DestinationGeneratingParams.validateOpenResultRecipients() {
+        val openResultRecipientParams = parameters
+            .filter { it.type.importable.qualifiedName == OPEN_RESULT_RECIPIENT_QUALIFIED_NAME }
+
+        openResultRecipientParams.forEach { parameter ->
+            val resultType =
+                (parameter.type.typeArguments.firstOrNull() as? TypeArgument.Typed?)?.type
+                    ?: throw IllegalDestinationsSetup(
+                        "OpenResultRecipient type argument must be a valid type with no type arguments."
+                    )
+
+            validateResultType(resultType)
         }
     }
 
@@ -235,8 +257,19 @@ class InitialValidator(
     }
 
     private fun DestinationGeneratingParams.checkLegacyNavGraphInfo() {
-        if (navGraphInfo is NavGraphInfo.Legacy && !navGraphInfo.isDefault) {
-            logger.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.")
+        if (navGraphInfo !is NavGraphInfo.Legacy || navGraphInfo.isDefault) return
+
+        val navGraphRoute = (navGraphInfo as NavGraphInfo.Legacy).navGraphRoute
+        val isStart = (navGraphInfo as NavGraphInfo.Legacy).start
+
+        if (navGraphRoute == "root") {
+            // user didn't change navGraph, so he changed start to true, so:
+            logger.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.\n" +
+                    "Use '@RootNavGraph(start = true)' instead.")
+        } else {
+            logger.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.\n" +
+                "Use '@MyNavGraph${if (isStart) "(start = true)" else ""}' instead, replacing \"My\" with the nav graph name " +
+                    "(Read about nav graph annotations in documentation website under the nav graph definition section).")
         }
     }
 }

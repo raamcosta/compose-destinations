@@ -1,7 +1,6 @@
 package com.ramcosta.samples.playground.ui.screens.greeting
 
 import android.widget.Toast
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -31,7 +30,6 @@ import com.ramcosta.samples.playground.ui.screens.profile.Things
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalAnimationApi::class)
 @RootNavGraph(start = true)
 @Destination(style = GreetingTransitions::class)
 @Composable

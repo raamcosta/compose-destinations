@@ -15,7 +15,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  * If declared as a parameter of a `@Destination` annotated Composable,
  * Compose Destinations will provide a correct implementation. If you're
  * manually calling that Composable, then you can use
- * [com.ramcosta.composedestinations.manualcomposablecalls.resultRecipient]
+ * [com.ramcosta.composedestinations.result.resultRecipient]
  * extension function to get a correctly typed implementation.
  *
  * Type safety related limitations (compile time enforced):
@@ -27,7 +27,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  *
  * @see [com.ramcosta.composedestinations.result.ResultBackNavigator]
  */
-interface ResultRecipient<D : DestinationSpec<*>, R> {
+interface ResultRecipient<D : DestinationSpec<*>, R> : OpenResultRecipient<R> {
 
     /**
      * Install a [listener] that will be called when the [D] destination
@@ -42,7 +42,7 @@ interface ResultRecipient<D : DestinationSpec<*>, R> {
      * for example.
      */
     @Composable
-    fun onNavResult(listener: @DisallowComposableCalls (NavResult<R>) -> Unit)
+    override fun onNavResult(listener: @DisallowComposableCalls (NavResult<R>) -> Unit)
 
     /**
      * Install a [listener] that will be called when the [D] destination

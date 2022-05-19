@@ -46,10 +46,6 @@ fun ProfileScreen() { /*...*/ }
 
 2. Add navigation arguments to the function declaration:
 
-`Parcelable`, `Serializable`, `Enum` and classes annotated with [`@kotlinx.serialization.Serializable`](https://github.com/Kotlin/kotlinx.serialization) (as well as `Array`s and `ArrayList`s of these) work out of the box!
-> Besides, you can make any other type a navigation argument type with some setup. Read about it [here](https://composedestinations.rafaelcosta.xyz/destination-arguments/navigation-arguments#custom-navigation-argument-types)
-
-
 ```kotlin
 @Destination
 @Composable
@@ -59,6 +55,9 @@ fun ProfileScreen(
    isOwnUser: Boolean = false // <-- optional navigation argument
 ) { /*...*/ }
 ```
+
+`Parcelable`, `Serializable`, `Enum` and classes annotated with [`@kotlinx.serialization.Serializable`](https://github.com/Kotlin/kotlinx.serialization) (as well as `Array`s and `ArrayList`s of these) work out of the box!
+You can also make any other type a navigation argument type. Read about it [here](https://composedestinations.rafaelcosta.xyz/destination-arguments/navigation-arguments#custom-navigation-argument-types)
 
 > There is an alternative way to define the destination arguments in case you don't need to use them
 inside the Composable (as is likely the case when using ViewModel). Read more [here](https://composedestinations.rafaelcosta.xyz/destination-arguments/navigation-arguments#navigation-arguments-class-delegate).

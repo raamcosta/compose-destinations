@@ -1,9 +1,9 @@
 package com.ramcosta.composedestinations.codegen.commons
 
 import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.model.TypeArgument.Star.varianceLabel
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import java.io.Serializable
-import java.util.ArrayList
 import kotlin.reflect.KClass
 
 val coreTypes = mapOf(
@@ -104,7 +104,7 @@ fun TypeInfo.isCustomTypeNavArg(): Boolean {
 }
 
 fun CodeGenType.isCustomArrayOrArrayListTypeNavArg(): Boolean {
-    if(!isArrayOrArrayList()) return false
+    if (!isArrayOrArrayList()) return false
 
     val typeArg = (typeArguments.firstOrNull() as? TypeArgument.Typed)?.type ?: return false
 
