@@ -19,19 +19,23 @@ object DestinationsBooleanArrayListNavType : DestinationsNavType<ArrayList<Boole
     }
 
     override fun parseValue(value: String): ArrayList<Boolean>? {
-        return if (value == DECODED_NULL) {
-            null
-        } else {
-            if (value.contains(encodedComma)) {
-                value.split(encodedComma)
-            } else {
-                value.split(",")
-            }.mapTo(ArrayList()) { BoolType.parseValue(it) }
+        return when (value) {
+            DECODED_NULL -> null
+            "[]" -> arrayListOf()
+            else -> {
+                val contentValue = value.subSequence(1, value.length - 1)
+                if (contentValue.contains(encodedComma)) {
+                    contentValue.split(encodedComma)
+                } else {
+                    contentValue.split(",")
+                }.mapTo(ArrayList()) { BoolType.parseValue(it) }
+            }
         }
     }
 
     override fun serializeValue(value: ArrayList<Boolean>?): String {
-        return value?.joinToString(",") { it.toString() } ?: ENCODED_NULL
+        value ?: return ENCODED_NULL
+        return "[${value.joinToString(",") { it.toString() }}]"
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): ArrayList<Boolean>? {

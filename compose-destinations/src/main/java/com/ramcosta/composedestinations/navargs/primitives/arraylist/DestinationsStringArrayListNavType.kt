@@ -23,7 +23,10 @@ object DestinationsStringArrayListNavType : DestinationsNavType<ArrayList<String
     override fun parseValue(value: String): ArrayList<String>? {
         return when (value) {
             DECODED_NULL -> null
-            else -> value.split(encodedComma).mapTo(ArrayList()) {
+            "[]" -> arrayListOf()
+            else -> value
+                .subSequence(1, value.length - 1)
+                .split(encodedComma).mapTo(ArrayList()) {
                 when (it) {
                     DestinationsStringNavType.DECODED_EMPTY_STRING -> ""
                     else -> it
@@ -36,9 +39,9 @@ object DestinationsStringArrayListNavType : DestinationsNavType<ArrayList<String
         return when (value) {
             null -> ENCODED_NULL
             else -> encodeForRoute(
-                value.joinToString(encodedComma) {
+                "[" + value.joinToString(encodedComma) {
                     it.ifEmpty { DestinationsStringNavType.ENCODED_EMPTY_STRING }
-                }
+                } + "]"
             )
         }
     }

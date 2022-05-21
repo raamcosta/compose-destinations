@@ -19,21 +19,25 @@ object DestinationsIntArrayNavType : DestinationsNavType<IntArray?>() {
     }
 
     override fun parseValue(value: String): IntArray? {
-        return if (value == DECODED_NULL) {
-            null
-        } else {
-            val splits = if (value.contains(encodedComma)) {
-                value.split(encodedComma)
-            } else {
-                value.split(",")
-            }
+        return when (value) {
+            DECODED_NULL -> null
+            "[]" -> intArrayOf()
+            else -> {
+                val contentValue = value.subSequence(1, value.length - 1)
+                val splits = if (contentValue.contains(encodedComma)) {
+                    contentValue.split(encodedComma)
+                } else {
+                    contentValue.split(",")
+                }
 
-            IntArray(splits.size) { IntType.parseValue(splits[it]) }
+                IntArray(splits.size) { IntType.parseValue(splits[it]) }
+            }
         }
     }
 
     override fun serializeValue(value: IntArray?): String {
-        return value?.joinToString(",") { it.toString() } ?: ENCODED_NULL
+        value ?: return ENCODED_NULL
+        return "[${value.joinToString(",") { it.toString() }}]"
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): IntArray? {

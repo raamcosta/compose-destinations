@@ -19,21 +19,24 @@ object DestinationsLongArrayNavType : DestinationsNavType<LongArray?>() {
     }
 
     override fun parseValue(value: String): LongArray? {
-        return if (value == DECODED_NULL) {
-            null
-        } else {
-            val splits = if (value.contains(encodedComma)) {
-                value.split(encodedComma)
-            } else {
-                value.split(",")
-            }
+        return when (value) {
+            DECODED_NULL -> null
+            "[]" -> longArrayOf()
+            else -> {
+                val splits = if (value.contains(encodedComma)) {
+                    value.split(encodedComma)
+                } else {
+                    value.split(",")
+                }
 
-            LongArray(splits.size) { LongType.parseValue(splits[it]) }
+                LongArray(splits.size) { LongType.parseValue(splits[it]) }
+            }
         }
     }
 
     override fun serializeValue(value: LongArray?): String {
-        return value?.joinToString(",") { it.toString() } ?: ENCODED_NULL
+        value ?: return ENCODED_NULL
+        return "[${value.joinToString(",") { it.toString() }}]"
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): LongArray? {

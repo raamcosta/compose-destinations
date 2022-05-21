@@ -19,21 +19,25 @@ object DestinationsFloatArrayNavType : DestinationsNavType<FloatArray?>() {
     }
 
     override fun parseValue(value: String): FloatArray? {
-        return if (value == DECODED_NULL) {
-            null
-        } else {
-            val splits = if (value.contains(encodedComma)) {
-                value.split(encodedComma)
-            } else {
-                value.split(",")
-            }
+        return when (value) {
+            DECODED_NULL -> null
+            "[]" -> floatArrayOf()
+            else -> {
+                val contentValue = value.subSequence(1, value.length - 1)
+                val splits = if (contentValue.contains(encodedComma)) {
+                    contentValue.split(encodedComma)
+                } else {
+                    contentValue.split(",")
+                }
 
-            FloatArray(splits.size) { FloatType.parseValue(splits[it]) }
+                FloatArray(splits.size) { FloatType.parseValue(splits[it]) }
+            }
         }
     }
 
     override fun serializeValue(value: FloatArray?): String {
-        return value?.joinToString(",") { it.toString() } ?: ENCODED_NULL
+        value ?: return ENCODED_NULL
+        return "[${value.joinToString(",") { it.toString() }}]"
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): FloatArray? {

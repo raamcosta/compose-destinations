@@ -19,19 +19,23 @@ object DestinationsIntArrayListNavType : DestinationsNavType<ArrayList<Int>?>() 
     }
 
     override fun parseValue(value: String): ArrayList<Int>? {
-        return if (value == DECODED_NULL) {
-            null
-        } else {
-            if (value.contains(encodedComma)) {
-                value.split(encodedComma)
-            } else {
-                value.split(",")
-            }.mapTo(ArrayList()) { IntType.parseValue(it) }
+        return when (value) {
+            DECODED_NULL -> null
+            "[]" -> arrayListOf()
+            else -> {
+                val contentValue = value.subSequence(1, value.length - 1)
+                if (contentValue.contains(encodedComma)) {
+                    contentValue.split(encodedComma)
+                } else {
+                    contentValue.split(",")
+                }.mapTo(ArrayList()) { IntType.parseValue(it) }
+            }
         }
     }
 
     override fun serializeValue(value: ArrayList<Int>?): String {
-        return value?.joinToString(",") { it.toString() } ?: ENCODED_NULL
+        value ?: return ENCODED_NULL
+        return "[${value.joinToString(",") { it.toString() }}]"
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): ArrayList<Int>? {

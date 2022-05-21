@@ -42,12 +42,16 @@ class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     }
 
     override fun parseValue(value: String): Array<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
-        return if (value == DECODED_NULL) {
-            null
-        } else {
-            return value.split(encodedComma).map {
-                serializer.fromRouteString(it)
-            }.toTypedArray()
+        return when (value) {
+            DECODED_NULL -> null
+            "[]" -> arrayOf()
+            else -> {
+                value
+                    .subSequence(1, value.length - 1)
+                    .split(encodedComma).map {
+                        serializer.fromRouteString(it)
+                    }.toTypedArray()
+            }
         }
     }
 
@@ -56,7 +60,7 @@ class $ARRAY_CUSTOM_NAV_TYPE_NAME(
             ENCODED_NULL
         } else {
             encodeForRoute(
-                value.joinToString(encodedComma) { serializer.toRouteString(it) }
+                "[" + value.joinToString(encodedComma) { serializer.toRouteString(it) } + "]"
             )
         }
     }
@@ -132,11 +136,16 @@ class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     }
 
     override fun parseValue(value: String): Array<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
-        return if (value == DECODED_NULL) {
-            null
-        } else {
-            val splits = value.split(encodedComma).toTypedArray()
-            return splits.toTypeArray()
+        return when (value) {
+            DECODED_NULL -> null
+            "[]" -> arrayOf()
+            else -> {
+                value
+                    .subSequence(1, value.length - 1)
+                    .split(encodedComma)
+                    .toTypedArray()
+                    .toTypeArray()
+            }
         }
     }
 
@@ -145,7 +154,7 @@ class $ARRAY_CUSTOM_NAV_TYPE_NAME(
             ENCODED_NULL
         } else {
             encodeForRoute(
-                value.joinToString(encodedComma) { serializer.toRouteString(it) }
+                "[" + value.joinToString(encodedComma) { serializer.toRouteString(it) } + "]"
             )
         }
     }
@@ -197,12 +206,14 @@ class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     }
 
     override fun parseValue(value: String): Array<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
-        return if (value == DECODED_NULL) {
-            null
-        } else {
-            val splits = value.split(encodedComma)
-            return Array<$TYPE_ARG_CLASS_SIMPLE_NAME>(splits.size) {
-                serializer.fromRouteString(splits[it]) as $TYPE_ARG_CLASS_SIMPLE_NAME
+        return when (value) {
+            DECODED_NULL -> null
+            "[]" -> arrayOf()
+            else -> {
+                val splits = value.subSequence(1, value.length - 1).split(encodedComma)
+                Array<$TYPE_ARG_CLASS_SIMPLE_NAME>(splits.size) {
+                    serializer.fromRouteString(splits[it]) as $TYPE_ARG_CLASS_SIMPLE_NAME
+                }
             }
         }
     }
@@ -212,7 +223,7 @@ class $ARRAY_CUSTOM_NAV_TYPE_NAME(
             ENCODED_NULL
         } else {
             encodeForRoute(
-                value.joinToString(encodedComma) { serializer.toRouteString(it) }
+                "[" + value.joinToString(encodedComma) { serializer.toRouteString(it) } + "]"
             )
         }
     }
@@ -259,12 +270,14 @@ class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     }
 
     override fun parseValue(value: String): Array<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
-        return if (value == DECODED_NULL) {
-            null
-        } else {
-            val splits = value.split(encodedComma)
-            return Array<$TYPE_ARG_CLASS_SIMPLE_NAME>(splits.size) {
-                serializer.fromRouteString(splits[it]) as $TYPE_ARG_CLASS_SIMPLE_NAME
+        return when (value) {
+            DECODED_NULL -> null
+            "[]" -> arrayOf()
+            else -> {
+                val splits = value.subSequence(1, value.length - 1).split(encodedComma)
+                Array<$TYPE_ARG_CLASS_SIMPLE_NAME>(splits.size) {
+                    serializer.fromRouteString(splits[it]) as $TYPE_ARG_CLASS_SIMPLE_NAME
+                }
             }
         }
     }
@@ -274,7 +287,7 @@ class $ARRAY_CUSTOM_NAV_TYPE_NAME(
             ENCODED_NULL
         } else {
             encodeForRoute(
-                value.joinToString(encodedComma) { serializer.toRouteString(it) }
+                "[" + value.joinToString(encodedComma) { serializer.toRouteString(it) } + "]"
             )
         }
     }

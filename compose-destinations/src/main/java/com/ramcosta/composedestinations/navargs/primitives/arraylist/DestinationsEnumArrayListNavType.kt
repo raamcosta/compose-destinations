@@ -25,10 +25,13 @@ class DestinationsEnumArrayListNavType<E : Enum<*>>(
     override fun parseValue(value: String): ArrayList<E>? {
         if (value == DECODED_NULL) return null
 
-        return if (value.contains(encodedComma)) {
-            value.split(encodedComma)
+        if (value == "[]") return arrayListOf()
+
+        val contentValue = value.subSequence(1, value.length - 1)
+        return if (contentValue.contains(encodedComma)) {
+            contentValue.split(encodedComma)
         } else {
-            value.split(",")
+            contentValue.split(",")
         }.mapTo(ArrayList()) { enumType.valueOfIgnoreCase(it) }
     }
 

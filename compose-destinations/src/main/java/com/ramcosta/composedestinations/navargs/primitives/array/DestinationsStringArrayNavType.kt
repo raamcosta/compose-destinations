@@ -23,14 +23,17 @@ object DestinationsStringArrayNavType : DestinationsNavType<Array<String>?>() {
     override fun parseValue(value: String): Array<String>? {
         return when (value) {
             DECODED_NULL -> null
-            else -> value.split(encodedComma).let { splits ->
-                Array(splits.size) {
-                    when (val split = splits[it]) {
-                        DestinationsStringNavType.DECODED_EMPTY_STRING -> ""
-                        else -> split
+            "[]" -> arrayOf()
+            else -> value
+                .subSequence(1, value.length - 1)
+                .split(encodedComma).let { splits ->
+                    Array(splits.size) {
+                        when (val split = splits[it]) {
+                            DestinationsStringNavType.DECODED_EMPTY_STRING -> ""
+                            else -> split
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -38,9 +41,9 @@ object DestinationsStringArrayNavType : DestinationsNavType<Array<String>?>() {
         return when (value) {
             null -> ENCODED_NULL
             else -> encodeForRoute(
-                value.joinToString(encodedComma) {
+                "[" + value.joinToString(encodedComma) {
                     it.ifEmpty { DestinationsStringNavType.ENCODED_EMPTY_STRING }
-                }
+                } + "]"
             )
         }
     }

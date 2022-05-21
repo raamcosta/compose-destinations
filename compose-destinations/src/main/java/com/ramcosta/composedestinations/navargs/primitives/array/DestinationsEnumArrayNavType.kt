@@ -24,18 +24,21 @@ class DestinationsEnumArrayNavType<E : Enum<*>>(
     override fun parseValue(value: String): Array<E>? {
         if (value == DECODED_NULL) return null
 
-        val splits = if (value.contains(encodedComma)) {
-            value.split(encodedComma)
+        if (value == "[]") return converter(listOf())
+
+        val contentValue = value.subSequence(1, value.length - 1)
+        val splits = if (contentValue.contains(encodedComma)) {
+            contentValue.split(encodedComma)
         } else {
-            value.split(",")
+            contentValue.split(",")
         }
 
         return converter(splits)
     }
 
     override fun serializeValue(value: Array<E>?): String {
-        if (value == null) return ENCODED_NULL
-        return value.joinToString(",") { it.name }
+        value ?: return ENCODED_NULL
+        return "[${value.joinToString(",") { it.name }}]"
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): Array<E>? {
