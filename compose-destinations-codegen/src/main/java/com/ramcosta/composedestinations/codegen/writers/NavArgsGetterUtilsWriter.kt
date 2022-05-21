@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.commons.sanitizePackageName
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
@@ -73,7 +74,7 @@ class NavArgsGettersWriter(
         val sb = StringBuilder()
 
         additionalImports.sorted().forEachIndexed { idx, it ->
-            sb += "import $it"
+            sb += "import ${it.sanitizePackageName()}"
 
             if (idx < additionalImports.size - 1) {
                 sb += "\n"

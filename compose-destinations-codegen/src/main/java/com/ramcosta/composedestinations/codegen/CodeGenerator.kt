@@ -58,7 +58,7 @@ class CodeGenerator(
         destinations: List<DestinationGeneratingParams>,
         shouldWriteSealedDestinations: Boolean
     ) {
-        codeGenBasePackageName = codeGenConfig.packageName ?: destinations.getCommonPackageNamePart()
+        codeGenBasePackageName = (codeGenConfig.packageName ?: destinations.getCommonPackageNamePart()).sanitizePackageName()
         moduleName = codeGenConfig.moduleName?.replaceFirstChar { it.uppercase(Locale.US) } ?: ""
 
         if (shouldWriteSealedDestinations) {

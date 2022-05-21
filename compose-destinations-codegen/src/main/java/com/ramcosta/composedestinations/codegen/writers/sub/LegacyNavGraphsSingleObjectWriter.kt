@@ -43,7 +43,7 @@ class LegacyNavGraphsSingleObjectWriter(
         additionalImports.sorted().forEachIndexed { idx, it ->
             if (idx == 0) imports += "\n"
 
-            imports += "\nimport $it"
+            imports += "\nimport ${it.sanitizePackageName()}"
         }
 
         return imports.toString()

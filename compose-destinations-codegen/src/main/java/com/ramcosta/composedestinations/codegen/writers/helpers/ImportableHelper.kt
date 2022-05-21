@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.writers.helpers
 
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.commons.sanitizePackageName
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
 import com.ramcosta.composedestinations.codegen.model.Importable
 
@@ -36,7 +37,7 @@ class ImportableHelper(
             imports.groupBy { it.simpleName }
         importableImportsBySimpleName.forEach {
             if (it.value.size > 1) {
-                imports.removeAll(it.value.filter { import -> import !in priorityImports })
+                imports.removeAll(it.value.filterTo(mutableSetOf()) { import -> import !in priorityImports })
             }
         }
 
@@ -55,7 +56,7 @@ class ImportableHelper(
             .map { it.qualifiedName }
             .sorted()
             .forEach {
-                importsStr += "\nimport $it"
+                importsStr += "\nimport ${it.sanitizePackageName()}"
             }
 
         return importsStr.toString()

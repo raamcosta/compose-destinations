@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.commons.sanitizePackageName
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
@@ -71,7 +72,7 @@ class DestinationsModeWriter(
         additionalImports.sorted().forEachIndexed { idx, it ->
             if (idx == 0) imports += "\n"
 
-            imports += "import $it\n"
+            imports += "import ${it.sanitizePackageName()}\n"
         }
 
         return imports.toString()

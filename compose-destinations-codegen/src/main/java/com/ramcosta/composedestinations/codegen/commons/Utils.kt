@@ -26,5 +26,10 @@ fun String.removeInstancesOf(vararg toRemove: String): String {
     return result
 }
 
+fun String.sanitizePackageName(): String {
+    return split(".")
+        .joinToString(".") { if (it == "in") "`in`" else it }
+}
+
 private val humps = "(?<=.)(?=\\p{Upper})".toRegex()
 fun String.toSnakeCase() = replace(humps, "_").lowercase(Locale.US)

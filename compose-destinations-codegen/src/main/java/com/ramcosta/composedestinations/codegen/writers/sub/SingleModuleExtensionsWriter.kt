@@ -37,7 +37,7 @@ class SingleModuleExtensionsWriter(
             val additionalImports = StringBuilder()
             requireOptInAnnotationTypes.forEach {
                 annotationsCode += "@${it.simpleName}\n"
-                additionalImports += "\nimport ${it.qualifiedName}"
+                additionalImports += "\nimport ${it.qualifiedName.sanitizePackageName()}"
             }
 
             code.replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, annotationsCode.toString())

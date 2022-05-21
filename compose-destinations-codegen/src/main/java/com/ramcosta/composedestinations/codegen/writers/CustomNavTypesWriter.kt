@@ -98,7 +98,7 @@ class CustomNavTypesWriter(
                 } else it.importable
 
                 if (!typeImports.contains(importable.qualifiedName)) {
-                    typeImports += "\nimport ${importable.qualifiedName}"
+                    typeImports += "\nimport ${importable.qualifiedName.sanitizePackageName()}"
                 }
                 val instantiateNavType = when {
                     it.isArrayList() -> "DestinationsEnumArrayListNavType(${importable.simpleName}::class.java)"
@@ -407,9 +407,9 @@ class CustomNavTypesWriter(
         type: Type,
         customSerializer: NavTypeSerializer?
     ): String {
-        var imports = "\nimport ${type.importable.qualifiedName}"
+        var imports = "\nimport ${type.importable.qualifiedName.sanitizePackageName()}"
         imports += if (customSerializer != null) {
-            "\nimport ${customSerializer.serializerType.qualifiedName}"
+            "\nimport ${customSerializer.serializerType.qualifiedName.sanitizePackageName()}"
         } else {
             "\nimport $CORE_PACKAGE_NAME.navargs.parcelable.DefaultParcelableNavTypeSerializer"
         }
@@ -421,9 +421,9 @@ class CustomNavTypesWriter(
         type: Type,
         customSerializer: NavTypeSerializer?
     ): String {
-        var imports = "\nimport ${type.importable.qualifiedName}"
+        var imports = "\nimport ${type.importable.qualifiedName.sanitizePackageName()}"
         imports += if (customSerializer != null) {
-            "\nimport ${customSerializer.serializerType.qualifiedName}"
+            "\nimport ${customSerializer.serializerType.qualifiedName.sanitizePackageName()}"
         } else {
             "\nimport $CORE_PACKAGE_NAME.navargs.serializable.DefaultSerializableNavTypeSerializer"
         }
@@ -434,7 +434,7 @@ class CustomNavTypesWriter(
     private fun ktxSerializableAdditionalImports(
         type: Type
     ): String = """
-        import ${type.importable.qualifiedName}
+        import ${type.importable.qualifiedName.sanitizePackageName()}
         import ${codeGenBasePackageName}.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer
     """.trimIndent()
 
@@ -442,8 +442,8 @@ class CustomNavTypesWriter(
         type: Type,
         customSerializer: NavTypeSerializer,
     ): String = """
-        import ${type.importable.qualifiedName}
-        import ${customSerializer.serializerType.qualifiedName}
+        import ${type.importable.qualifiedName.sanitizePackageName()}
+        import ${customSerializer.serializerType.qualifiedName.sanitizePackageName()}
     """.trimIndent()
 
     private fun Type.getNavTypeName(): String {

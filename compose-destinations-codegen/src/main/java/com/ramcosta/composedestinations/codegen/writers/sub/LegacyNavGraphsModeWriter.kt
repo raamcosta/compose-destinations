@@ -95,7 +95,7 @@ class LegacyNavGraphsModeWriter(
         additionalImports.sorted().forEachIndexed { idx, it ->
             if (idx == 0) imports += "\n"
 
-            imports += "import $it\n"
+            imports += "import ${it.sanitizePackageName()}\n"
         }
 
         return imports.toString()
