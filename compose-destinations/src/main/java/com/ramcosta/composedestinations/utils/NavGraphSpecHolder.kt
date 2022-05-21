@@ -10,10 +10,11 @@ import com.ramcosta.composedestinations.spec.NavGraphSpec
 internal object NavGraphRegistry {
 
     private val holderByTopLevelRoute = mutableMapOf<String, NavGraphSpecHolder>()
+    private val uniqueCheckRoutes = mutableSetOf<String>()
 
     fun addGraph(navGraph: NavGraphSpec) {
         if (holderByTopLevelRoute.containsKey(navGraph.route)) {
-            error("Calling multiple DestinationsNavHost with a navigation graph containing the same route ('${navGraph.route}')")
+            return
         }
 
         holderByTopLevelRoute[navGraph.route] = NavGraphSpecHolder().apply {
@@ -21,12 +22,18 @@ internal object NavGraphRegistry {
         }
     }
 
-    fun removeGraph(navGraph: NavGraphSpec) {
-        holderByTopLevelRoute.remove(navGraph.route)
-    }
-
     operator fun get(topLevelRoute: String): NavGraphSpecHolder? {
         return holderByTopLevelRoute[topLevelRoute]
+    }
+
+    fun checkUniqueness(navGraph: NavGraphSpec) {
+        if (!uniqueCheckRoutes.add(navGraph.route)) {
+            error("Calling multiple DestinationsNavHost with a navigation graph containing the same route ('${navGraph.route}')")
+        }
+    }
+
+    fun removeGraphForUniqueness(navGraph: NavGraphSpec) {
+        uniqueCheckRoutes.remove(navGraph.route)
     }
 
 }

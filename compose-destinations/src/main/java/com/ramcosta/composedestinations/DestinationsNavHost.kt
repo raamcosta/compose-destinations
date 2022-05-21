@@ -66,13 +66,7 @@ fun DestinationsNavHost(
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit = {},
     manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit = {}
 ) {
-    DisposableEffect(key1 = navController) {
-        NavGraphRegistry.addGraph(navGraph)
-
-        onDispose {
-            NavGraphRegistry.removeGraph(navGraph)
-        }
-    }
+    HandleNavGraphRegistry(navGraph, navController)
 
     engine.NavHost(
         modifier = modifier,
@@ -93,6 +87,22 @@ fun DestinationsNavHost(
 }
 
 //region internals
+
+@Composable
+private fun HandleNavGraphRegistry(
+    navGraph: NavGraphSpec,
+    navController: NavHostController
+) {
+    NavGraphRegistry.addGraph(navGraph)
+
+    DisposableEffect(key1 = navController) {
+        NavGraphRegistry.checkUniqueness(navGraph)
+
+        onDispose {
+            NavGraphRegistry.removeGraphForUniqueness(navGraph)
+        }
+    }
+}
 
 private fun NavGraphBuilder.addNavGraphDestinations(
     engine: NavHostEngine,
