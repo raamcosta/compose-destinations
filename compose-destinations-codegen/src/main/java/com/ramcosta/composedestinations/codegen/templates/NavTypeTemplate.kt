@@ -14,7 +14,6 @@ val parcelableNavTypeTemplate = """
 package $codeGenBasePackageName.navtype
 
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavBackStackEntry
 import $CORE_PACKAGE_NAME.navargs.DestinationsNavType

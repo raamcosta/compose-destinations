@@ -407,14 +407,23 @@ class CustomNavTypesWriter(
         type: Type,
         customSerializer: NavTypeSerializer?
     ): String {
-        var imports = "\nimport ${type.importable.qualifiedName.sanitizePackageName()}"
-        imports += if (customSerializer != null) {
-            "\nimport ${customSerializer.serializerType.qualifiedName.sanitizePackageName()}"
-        } else {
-            "\nimport $CORE_PACKAGE_NAME.navargs.parcelable.DefaultParcelableNavTypeSerializer"
+        val importsSet = mutableSetOf<String>().apply {
+            add("android.os.Parcelable")
+            add(type.importable.qualifiedName.sanitizePackageName())
+            if (customSerializer != null) {
+                add(customSerializer.serializerType.qualifiedName.sanitizePackageName())
+            } else {
+                add("$CORE_PACKAGE_NAME.navargs.parcelable.DefaultParcelableNavTypeSerializer")
+            }
         }
 
-        return imports
+        val importsStr = StringBuilder()
+
+        importsSet.forEach {
+            importsStr += "\nimport $it"
+        }
+
+        return importsStr.toString()
     }
 
     private fun serializableAdditionalImports(
