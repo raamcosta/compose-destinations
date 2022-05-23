@@ -106,7 +106,7 @@ fun GreetingScreen(
                 onClick = {
                     navigator.navigate(
                         TestScreenDestination(
-                            id = "test-id",
+//                            id = "test-id",
                             stuff1 = arrayListOf("%sqwe", "asd", "4", "zxc"),
                             stuff2 = arrayOf(Stuff.STUFF2, Stuff.STUFF2 ,Stuff.STUFF1),
                             stuff3 = arrayListOf(Color.Blue, Color.Red, Color.Green, Color.Cyan),

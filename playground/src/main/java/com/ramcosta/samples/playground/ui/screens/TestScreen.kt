@@ -23,7 +23,7 @@ import kotlinx.serialization.Serializable
 @Destination
 @Composable
 fun TestScreen(
-    id: String,
+    id: Long = 0,
     stuff1: ArrayList<String> = arrayListOf(),
     stuff2: Array<Stuff>?,
     stuff3: ArrayList<Color>? = arrayListOf(),

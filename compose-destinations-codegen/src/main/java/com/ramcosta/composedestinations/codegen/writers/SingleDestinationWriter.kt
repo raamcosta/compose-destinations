@@ -518,12 +518,9 @@ class SingleDestinationWriter(
             return "\tdefaultValue = null\n\t\t"
         }
 
-        return if(param.type.typeArguments.any { it is TypeArgument.Typed }) {
-            "\tval defValue: ${param.type.toTypeCode(importableHelper)} = ${defaultValue.code}\n\t\t" +
-            "\tdefaultValue = defValue\n\t\t"
-        } else {
-            "\tdefaultValue = ${defaultValue.code}\n\t\t"
-        }
+        // we always have a val with the type of the param to avoid wrong types to be inferred by kotlin
+        return "\tval defValue: ${param.type.toTypeCode(importableHelper)} = ${defaultValue.code}\n\t\t" +
+                "\tdefaultValue = defValue\n\t\t"
     }
 
     private fun Parameter.toNavTypeCode(): String {
