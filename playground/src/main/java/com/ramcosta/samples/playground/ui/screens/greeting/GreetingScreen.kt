@@ -35,11 +35,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun GreetingScreen(
     navigator: DestinationsNavigator,
+    testProfileDeepLink: () -> Unit,
     drawerController: DrawerController,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     uiEvents: GreetingUiEvents,
     uiState: GreetingUiState,
-    resultRecipient: ResultRecipient<GoToProfileConfirmationDestination, Boolean>
+    resultRecipient: ResultRecipient<GoToProfileConfirmationDestination, Boolean>,
 ) {
     val context = LocalContext.current
     resultRecipient.onNavResult { result ->
@@ -122,6 +123,14 @@ fun GreetingScreen(
                 }
             ) {
                 Text(text = stringResource(R.string.go_to_test_screen))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = testProfileDeepLink
+            ) {
+                Text(text = stringResource(R.string.test_deep_link))
             }
 
             Spacer(modifier = Modifier.height(8.dp))

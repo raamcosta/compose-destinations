@@ -44,6 +44,7 @@ fun AppNavigation(
     modifier: Modifier = Modifier,
     drawerController: DrawerController,
     navController: NavHostController,
+    testProfileDeepLink: () -> Unit,
 ) {
     // ------- Defining default animations for root and nested nav graphs example -------
 //    val navHostEngine = rememberAnimatedNavHostEngine(
@@ -76,7 +77,7 @@ fun AppNavigation(
         }
     ) {
         profileScreen()
-        greetingScreen(drawerController)
+        greetingScreen(testProfileDeepLink, drawerController)
     }
 }
 
@@ -95,16 +96,20 @@ private fun ManualComposableCallsBuilder.profileScreen() {
     }
 }
 
-private fun ManualComposableCallsBuilder.greetingScreen(drawerController: DrawerController) {
+private fun ManualComposableCallsBuilder.greetingScreen(
+    testProfileDeepLink: () -> Unit,
+    drawerController: DrawerController
+) {
     composable(GreetingScreenDestination) {
         val vm = viewModel<GreetingViewModel>()
 
         GreetingScreen(
             navigator = destinationsNavigator,
+            testProfileDeepLink = testProfileDeepLink,
             drawerController = drawerController,
             uiEvents = vm as GreetingUiEvents,
             uiState = vm as GreetingUiState,
-            resultRecipient = resultRecipient()
+            resultRecipient = resultRecipient(),
         )
     }
 }
@@ -117,7 +122,8 @@ private fun ManualComposableCallsBuilder.greetingScreen(drawerController: Drawer
 fun SampleAppAnimatedNavHostExample(
     modifier: Modifier,
     navController: NavHostController,
-    drawerController: DrawerController
+    drawerController: DrawerController,
+    testProfileDeepLink: () -> Unit
 ) {
     AnimatedNavHost(
         modifier = modifier,
@@ -134,7 +140,8 @@ fun SampleAppAnimatedNavHostExample(
                 drawerController = drawerController,
                 uiEvents = vm as GreetingUiEvents,
                 uiState = vm as GreetingUiState,
-                resultRecipient = resultRecipient()
+                resultRecipient = resultRecipient(),
+                testProfileDeepLink = testProfileDeepLink
             )
         }
 

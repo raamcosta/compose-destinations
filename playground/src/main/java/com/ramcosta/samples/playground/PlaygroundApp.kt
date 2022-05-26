@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun PlaygroundApp() {
+fun PlaygroundApp(testProfileDeepLink: () -> Unit) {
     PlaygroundTheme {
         val scaffoldState = rememberScaffoldState()
         val coroutineScope = rememberCoroutineScope()
@@ -57,6 +57,7 @@ fun PlaygroundApp() {
         ) { paddingValues ->
             AppNavigation(
                 modifier = Modifier.padding(paddingValues),
+                testProfileDeepLink = testProfileDeepLink,
                 drawerController = remember(scaffoldState) { DrawerControllerImpl(scaffoldState.drawerState) },
                 navController = navController,
             )

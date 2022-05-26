@@ -1,5 +1,7 @@
 package com.ramcosta.composedestinations.utils
 
+import android.os.Handler
+import android.os.Looper
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.spec.NavGraphSpec
@@ -10,7 +12,10 @@ import com.ramcosta.composedestinations.spec.NavGraphSpec
 internal object NavGraphRegistry {
 
     private val holderByTopLevelRoute = mutableMapOf<String, NavGraphSpecHolder>()
-    private val uniqueCheckRoutes = mutableSetOf<String>()
+    private val uniqueCheckRoutes = mutableMapOf<String, Int>()
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val runnablesByNavGraph = mutableMapOf<NavGraphSpec, UniqueRouteCheckRunnable>()
 
     fun addGraph(navGraph: NavGraphSpec) {
         if (holderByTopLevelRoute.containsKey(navGraph.route)) {
@@ -26,15 +31,45 @@ internal object NavGraphRegistry {
         return holderByTopLevelRoute[topLevelRoute]
     }
 
+    // region uniqueness logic
+
+    /**
+     * We let all additions and removals of a NavGraphSpec happen freely. After 3 seconds
+     * we check how many NavHosts we have for a given top level route.
+     *
+     * Since the DisposableEffect onDispose runs after the call for the new one,
+     * we also reset the timer to make sure we always wait after the last addition to see
+     * if we're gonna have a matching removal.
+     */
     fun checkUniqueness(navGraph: NavGraphSpec) {
-        if (!uniqueCheckRoutes.add(navGraph.route)) {
-            error("Calling multiple DestinationsNavHost with a navigation graph containing the same route ('${navGraph.route}')")
+        runnablesByNavGraph[navGraph]?.let {
+            handler.removeCallbacks(it)
+            handler.postDelayed(it, 3000)
+            return
         }
+
+        val routeRunnable = UniqueRouteCheckRunnable(navGraph)
+        runnablesByNavGraph[navGraph] = routeRunnable
+        handler.postDelayed(routeRunnable, 3000)
     }
 
-    fun removeGraphForUniqueness(navGraph: NavGraphSpec) {
-        uniqueCheckRoutes.remove(navGraph.route)
+    fun addGraphForUniquenessCheck(navGraph: NavGraphSpec) {
+        uniqueCheckRoutes[navGraph.route] = uniqueCheckRoutes.getOrElse(navGraph.route) { 0 } + 1
     }
+
+    fun removeGraphForUniquenessCheck(navGraph: NavGraphSpec) {
+        uniqueCheckRoutes[navGraph.route] = uniqueCheckRoutes.getOrElse(navGraph.route) { 0 } - 1
+    }
+
+    private class UniqueRouteCheckRunnable(val navGraph: NavGraphSpec) : Runnable {
+        override fun run() {
+            runnablesByNavGraph.remove(navGraph)
+            if (uniqueCheckRoutes.getOrElse(navGraph.route) { 0 } > 1) {
+                error("Calling multiple DestinationsNavHost with a navigation graph containing the same route ('${navGraph.route}')")
+            }
+        }
+    }
+    // endregion
 
 }
 
