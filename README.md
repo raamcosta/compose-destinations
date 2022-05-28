@@ -99,7 +99,7 @@ Compose destinations is available via maven central.
 
 #### 1. Add the KSP plugin:
 
-> The version you chose for the KSP plugin depends on the Kotlin version your project uses. </br>
+> ℹ️ The version you chose for the KSP plugin depends on the Kotlin version your project uses. </br>
 You can check https://github.com/google/ksp/releases for the list of KSP versions, then pick the last release that matches your Kotlin version.
 Example:
 If you're using `1.6.10` Kotlin version, then the last KSP version is `1.6.10-1.0.4`.
@@ -146,7 +146,7 @@ ksp("io.github.raamcosta.compose-destinations:ksp:1.5.8-beta")
 ```
 </details>
 
-> If you want to use animations between screens and/or bottom sheet screens, replace above core dependency with: </br>
+> ℹ️ If you want to use animations between screens and/or bottom sheet screens, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
 > this will use [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation) and [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/styles-and-animations)
