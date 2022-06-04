@@ -93,14 +93,12 @@ private fun HandleNavGraphRegistry(
     navGraph: NavGraphSpec,
     navController: NavHostController
 ) {
-    NavGraphRegistry.addGraph(navGraph)
+    NavGraphRegistry.addGraph(navController, navGraph)
 
     DisposableEffect(key1 = navController) {
-        NavGraphRegistry.addGraphForUniquenessCheck(navGraph)
-        NavGraphRegistry.checkUniqueness(navGraph)
 
         onDispose {
-            NavGraphRegistry.removeGraphForUniquenessCheck(navGraph)
+            NavGraphRegistry.removeGraph(navController)
         }
     }
 }

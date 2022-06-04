@@ -1,9 +1,8 @@
 package com.ramcosta.composedestinations.utils
 
-import android.os.Handler
-import android.os.Looper
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 
 /**
@@ -11,66 +10,52 @@ import com.ramcosta.composedestinations.spec.NavGraphSpec
  */
 internal object NavGraphRegistry {
 
-    private val holderByTopLevelRoute = mutableMapOf<String, NavGraphSpecHolder>()
-    private val uniqueCheckRoutes = mutableMapOf<String, Int>()
+    private val holderByTopLevelRoute = mutableMapOf<NavController, NavGraphSpecHolder>()
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val runnablesByNavGraph = mutableMapOf<NavGraphSpec, UniqueRouteCheckRunnable>()
-
-    fun addGraph(navGraph: NavGraphSpec) {
-        if (holderByTopLevelRoute.containsKey(navGraph.route)) {
+    fun addGraph(navController: NavController, navGraph: NavGraphSpec) {
+        if (holderByTopLevelRoute.containsKey(navController)) {
             return
         }
 
-        holderByTopLevelRoute[navGraph.route] = NavGraphSpecHolder().apply {
+        holderByTopLevelRoute[navController] = NavGraphSpecHolder().apply {
             addGraph(navGraph)
         }
     }
 
-    operator fun get(topLevelRoute: String): NavGraphSpecHolder? {
-        return holderByTopLevelRoute[topLevelRoute]
+    fun removeGraph(navController: NavController) {
+        holderByTopLevelRoute.remove(navController)
     }
 
-    // region uniqueness logic
+    operator fun get(navController: NavController): NavGraphSpecHolder? {
+        return holderByTopLevelRoute[navController]
+    }
 
-    /**
-     * We let all additions and removals of a NavGraphSpec happen freely. After 3 seconds
-     * we check how many NavHosts we have for a given top level route.
-     *
-     * Since the DisposableEffect onDispose runs after the call for the new one,
-     * we also reset the timer to make sure we always wait after the last addition to see
-     * if we're gonna have a matching removal.
-     */
-    fun checkUniqueness(navGraph: NavGraphSpec) {
-        runnablesByNavGraph[navGraph]?.let {
-            handler.removeCallbacks(it)
-            handler.postDelayed(it, 3000)
-            return
+    operator fun get(navBackStackEntry: NavBackStackEntry): NavGraphSpecHolder? {
+        val topLevelRoute = navBackStackEntry.destination.hierarchy.last().route
+        val navControllersWithTopLevelRoute = holderByTopLevelRoute.keys.filter {
+            it.graph.route == topLevelRoute
         }
 
-        val routeRunnable = UniqueRouteCheckRunnable(navGraph)
-        runnablesByNavGraph[navGraph] = routeRunnable
-        handler.postDelayed(routeRunnable, 3000)
-    }
+        // Most likely we only have one NavController for a given top level route
+        // If that's the case, return early
+        if (navControllersWithTopLevelRoute.size == 1) {
+            return get(navControllersWithTopLevelRoute.first())
+        } else if (navControllersWithTopLevelRoute.isEmpty()) {
+            return null
+        }
 
-    fun addGraphForUniquenessCheck(navGraph: NavGraphSpec) {
-        uniqueCheckRoutes[navGraph.route] = uniqueCheckRoutes.getOrElse(navGraph.route) { 0 } + 1
-    }
-
-    fun removeGraphForUniquenessCheck(navGraph: NavGraphSpec) {
-        uniqueCheckRoutes[navGraph.route] = uniqueCheckRoutes.getOrElse(navGraph.route) { 0 } - 1
-    }
-
-    private class UniqueRouteCheckRunnable(val navGraph: NavGraphSpec) : Runnable {
-        override fun run() {
-            runnablesByNavGraph.remove(navGraph)
-            if (uniqueCheckRoutes.getOrElse(navGraph.route) { 0 } > 1) {
-                error("Calling multiple DestinationsNavHost with a navigation graph containing the same route ('${navGraph.route}')")
+        // If not, we need to find the one that actually contains this navBackStackEntry
+        val navController =
+            navControllersWithTopLevelRoute.find { navController ->
+                navBackStackEntry.destination.route?.let {
+                    kotlin.runCatching {
+                        navController.getBackStackEntry(it)
+                    }.getOrNull() == navBackStackEntry
+                } ?: false
             }
-        }
-    }
-    // endregion
 
+        return navController?.let { get(it) } ?: get(navControllersWithTopLevelRoute.first())
+    }
 }
 
 /**

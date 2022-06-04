@@ -69,7 +69,7 @@ fun AppNavigation(
             dependency(drawerController)
 
             dependency(NavGraphs.settings) {
-                val parentEntry = remember {
+                val parentEntry = remember(navBackStackEntry) {
                     navController.getBackStackEntry(NavGraphs.settings.route)
                 }
                 viewModel<SettingsViewModel>(parentEntry)

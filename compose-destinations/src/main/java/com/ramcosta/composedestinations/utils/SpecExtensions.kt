@@ -18,9 +18,7 @@ import kotlinx.coroutines.flow.map
  */
 val NavController.navGraph: NavGraphSpec
     get() {
-        return graph.route?.let {
-            NavGraphRegistry[it]?.topLevelNavGraph(this)
-        }
+        return NavGraphRegistry[this]?.topLevelNavGraph(this)
             ?: error("Cannot call rootNavGraph before DestinationsNavHost!")
     }
 
@@ -28,7 +26,7 @@ val NavController.navGraph: NavGraphSpec
  * Finds the [DestinationSpec] correspondent to this [NavBackStackEntry].
  */
 fun NavBackStackEntry.destination(): DestinationSpec<*> {
-    val navGraphSpec = navGraphHolder?.closestNavGraph(this)
+    val navGraphSpec = NavGraphRegistry[this]?.closestNavGraph(this)
         ?: error("Cannot call NavBackStackEntry.destination() before DestinationsNavHost!")
 
     return destination.route?.let { navGraphSpec.findDestination(it) }
@@ -39,7 +37,7 @@ fun NavBackStackEntry.destination(): DestinationSpec<*> {
  * Finds the [NavGraphSpec] that this [NavBackStackEntry] belongs to.
  */
 fun NavBackStackEntry.navGraph(): NavGraphSpec {
-    return navGraphHolder?.closestNavGraph(this)
+    return NavGraphRegistry[this]?.closestNavGraph(this)
         ?: error("Cannot call NavBackStackEntry.navGraph() before DestinationsNavHost!")
 }
 
@@ -136,12 +134,6 @@ fun NavGraphSpec.findDestination(route: String): DestinationSpec<*>? {
 
     return null
 }
-
-private val NavBackStackEntry.navGraphHolder
-    get() = topLevelGraphRoute?.let { NavGraphRegistry[it] }
-
-private val NavBackStackEntry.topLevelGraphRoute
-    get() = destination.hierarchy.last().route
 
 // region deprecated APIs
 
