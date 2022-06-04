@@ -99,10 +99,10 @@ Compose destinations is available via maven central.
 
 #### 1. Add the KSP plugin:
 
-> The version you chose for the KSP plugin depends on the Kotlin version your project uses. </br>
+> ℹ️ The version you chose for the KSP plugin depends on the Kotlin version your project uses. </br>
 You can check https://github.com/google/ksp/releases for the list of KSP versions, then pick the last release that matches your Kotlin version.
 Example:
-If you're using `1.5.31` Kotlin version, then the last KSP version is `1.5.31-1.0.1`.
+If you're using `1.6.10` Kotlin version, then the last KSP version is `1.6.10-1.0.4`.
 
 <details open>
   <summary>groovy - build.gradle(:module-name)</summary>
@@ -110,7 +110,7 @@ If you're using `1.5.31` Kotlin version, then the last KSP version is `1.5.31-1.
 ```gradle
 plugins {
     //...
-    id 'com.google.devtools.ksp' version '1.5.31-1.0.1' // Depends on your kotlin version
+    id 'com.google.devtools.ksp' version '1.6.10-1.0.4' // Depends on your kotlin version
 }
 ```
 </details>
@@ -121,7 +121,7 @@ plugins {
 ```gradle
 plugins {
     //...
-    id("com.google.devtools.ksp") version "1.5.31-1.0.1" // Depends on your kotlin version
+    id("com.google.devtools.ksp") version "1.6.10-1.0.4" // Depends on your kotlin version
 }
 ```
 </details>
@@ -146,7 +146,7 @@ ksp("io.github.raamcosta.compose-destinations:ksp:1.5.9-beta")
 ```
 </details>
 
-> If you want to use animations between screens and/or bottom sheet screens, replace above core dependency with: </br>
+> ℹ️ If you want to use animations between screens and/or bottom sheet screens, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
 > this will use [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation) and [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/styles-and-animations)
@@ -156,7 +156,7 @@ ksp("io.github.raamcosta.compose-destinations:ksp:1.5.9-beta")
 See KSP related [issue](https://github.com/google/ksp/issues/37).  
 Here is an example of how to do that for all your build variants (inside `android` block):
 
-> !! Replace `applicationVariants` with `libraryVariants` if the module uses `'com.android.library'` plugin!
+> ⚠️ Replace `applicationVariants` with `libraryVariants` if the module uses `'com.android.library'` plugin!
 
 <details open>
   <summary>groovy - build.gradle(:module-name)</summary>
