@@ -95,7 +95,7 @@ $START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
     message = "Api will be removed! Use `appDestination()` instead.",
     replaceWith = ReplaceWith("appDestination()")
 )
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}val NavBackStackEntry.navDestination: $typeAliasDestination?
+val NavBackStackEntry.navDestination: $typeAliasDestination?
     get() = appDestination()
 $END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
 /**
