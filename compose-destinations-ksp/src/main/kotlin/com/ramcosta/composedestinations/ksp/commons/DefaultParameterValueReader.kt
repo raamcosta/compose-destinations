@@ -79,12 +79,14 @@ object DefaultParameterValueReader {
                 result = result.removeRange(index, result.length)
         }
 
-        if (result == "true" || result == "false" || result.first().isDigit()) {
+        if (result == "true"
+            || result == "false"
+            || result == "null"
+            || result.first().isDigit()) {
             return DefaultValue(result)
         }
 
-        val importableAux = result
-            .removeFromTo("(", ")")
+        val importableAux = result.removeFromTo("(", ")")
 
         if (result.length - importableAux.length > 2) {
             //we detected a function call with args, we can't resolve this
@@ -111,6 +113,12 @@ object DefaultParameterValueReader {
 
         if (validImports.size == 1) {
             return DefaultValue(result, listOf(validImports[0]))
+        }
+
+        if (result.startsWith("arrayListOf(") //std kotlin lib
+            || result.startsWith("arrayOf(") //std kotlin lib
+        ) {
+            return DefaultValue(result)
         }
 
         if (resolver.invoke(packageName, importable).existsAndIsPrivate()) {

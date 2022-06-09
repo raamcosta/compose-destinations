@@ -32,7 +32,12 @@ import androidx.navigation.navArgument
 import $CORE_PACKAGE_NAME.scope.DestinationScope
 import $CORE_PACKAGE_NAME.navigation.DestinationDependenciesContainer
 import $CORE_PACKAGE_NAME.navigation.DependenciesContainerBuilder
-import $CORE_PACKAGE_NAME.spec.*$ADDITIONAL_IMPORTS
+import $CORE_PACKAGE_NAME.spec.DestinationSpec
+import $CORE_PACKAGE_NAME.spec.DestinationStyle
+import $CORE_PACKAGE_NAME.spec.Direction
+import $CORE_PACKAGE_NAME.spec.DirectionDestinationSpec
+import $CORE_PACKAGE_NAME.spec.NavGraphSpec
+import $CORE_PACKAGE_NAME.spec.Route$ADDITIONAL_IMPORTS
 
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $SUPERTYPE {
     $ARGS_TO_DIRECTION_METHOD
