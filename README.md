@@ -132,8 +132,8 @@ plugins {
   <summary>groovy - build.gradle(:module-name)</summary>
 
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:1.5.9-beta'
-ksp 'io.github.raamcosta.compose-destinations:ksp:1.5.9-beta'    
+implementation 'io.github.raamcosta.compose-destinations:core:1.5.10-beta'
+ksp 'io.github.raamcosta.compose-destinations:ksp:1.5.10-beta'
 ```
 </details>
 
@@ -141,8 +141,8 @@ ksp 'io.github.raamcosta.compose-destinations:ksp:1.5.9-beta'
   <summary>kotlin - build.gradle.kts(:module-name)</summary>  
 
 ```gradle
-implementation("io.github.raamcosta.compose-destinations:core:1.5.9-beta")
-ksp("io.github.raamcosta.compose-destinations:ksp:1.5.9-beta")
+implementation("io.github.raamcosta.compose-destinations:core:1.5.10-beta")
+ksp("io.github.raamcosta.compose-destinations:ksp:1.5.10-beta")
 ```
 </details>
 
