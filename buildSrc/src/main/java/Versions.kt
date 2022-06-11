@@ -1,9 +1,9 @@
 object Versions {
     const val minSdk = 21
-    const val compileSdk = 31
+    const val compileSdk = 32
     const val targetSdk = compileSdk
 
-    const val kotlin = "1.6.10"
+    const val kotlin = "1.6.21"
     const val dependencyCheckPlugin = "0.42.0"
     const val gradlePluginVersion = "7.2.1"
 
@@ -14,14 +14,14 @@ object Versions {
     const val lifecycleKtx = "2.5.0"
     const val lifecycleRuntimeKtx = lifecycleKtx
 
-    const val ksp = "1.6.10-1.0.4"
+    const val ksp = "1.6.21-1.0.6"
 
     const val junit = "4.13.2"
 
-    const val compose = "1.1.1"
+    const val compose = "1.2.0-rc01"
     const val composeCompiler = compose
     const val composeNavigation = "2.5.0"
-    const val accompanist = "0.23.1"
+    const val accompanist = "0.24.11-rc"
 
     const val ktxSerialization = "1.3.3"
     const val mockk = "1.12.4"

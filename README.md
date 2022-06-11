@@ -102,7 +102,7 @@ Compose destinations is available via maven central.
 > ℹ️ The version you chose for the KSP plugin depends on the Kotlin version your project uses. </br>
 You can check https://github.com/google/ksp/releases for the list of KSP versions, then pick the last release that matches your Kotlin version.
 Example:
-If you're using `1.6.10` Kotlin version, then the last KSP version is `1.6.10-1.0.4`.
+If you're using `1.6.21` Kotlin version, then the last KSP version is `1.6.21-1.0.6`.
 
 <details open>
   <summary>groovy - build.gradle(:module-name)</summary>
@@ -110,7 +110,7 @@ If you're using `1.6.10` Kotlin version, then the last KSP version is `1.6.10-1.
 ```gradle
 plugins {
     //...
-    id 'com.google.devtools.ksp' version '1.6.10-1.0.4' // Depends on your kotlin version
+    id 'com.google.devtools.ksp' version '1.6.21-1.0.6' // Depends on your kotlin version
 }
 ```
 </details>
@@ -121,19 +121,33 @@ plugins {
 ```gradle
 plugins {
     //...
-    id("com.google.devtools.ksp") version "1.6.10-1.0.4" // Depends on your kotlin version
+    id("com.google.devtools.ksp") version "1.6.21-1.0.6" // Depends on your kotlin version
 }
 ```
 </details>
 
 #### 2. Add the dependencies:
 
+Compose Destinations has two active versions. One uses only stable Compose dependencies and the other uses the latest versions.
+Choose the one that matches your Compose version, looking at this table:
+
+<table>
+ <tr>
+  <td>Compose 1.1 (1.1.x)</td><td><img alt="Maven Central" src="https://img.shields.io/maven-metadata/v?versionPrefix=1.5&color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/io/github/raamcosta/compose-destinations/core/maven-metadata.xml&style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)"></td>
+ </tr>
+ <tr>
+  <td>Compose 1.2 (1.2.x)</td><td><img alt="Maven Central" src="https://img.shields.io/maven-metadata/v?versionPrefix=1.6&color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/io/github/raamcosta/compose-destinations/core/maven-metadata.xml&style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)"></td>
+ </tr>
+</table>
+
+> ⚠️ If you choose a version that uses Compose with a higher version then the one you're setting for your app, gradle will upgrade your Compose version via transitive dependency.
+
 <details open>
   <summary>groovy - build.gradle(:module-name)</summary>
 
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:1.5.12-beta'
-ksp 'io.github.raamcosta.compose-destinations:ksp:1.5.12-beta'
+implementation 'io.github.raamcosta.compose-destinations:core:<version>'
+ksp 'io.github.raamcosta.compose-destinations:ksp:<version>'
 ```
 </details>
 
@@ -141,8 +155,8 @@ ksp 'io.github.raamcosta.compose-destinations:ksp:1.5.12-beta'
   <summary>kotlin - build.gradle.kts(:module-name)</summary>  
 
 ```gradle
-implementation("io.github.raamcosta.compose-destinations:core:1.5.12-beta")
-ksp("io.github.raamcosta.compose-destinations:ksp:1.5.12-beta")
+implementation("io.github.raamcosta.compose-destinations:core:<version>")
+ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
 ```
 </details>
 
