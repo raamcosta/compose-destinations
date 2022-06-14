@@ -23,10 +23,11 @@ object DestinationsLongArrayNavType : DestinationsNavType<LongArray?>() {
             DECODED_NULL -> null
             "[]" -> longArrayOf()
             else -> {
-                val splits = if (value.contains(encodedComma)) {
-                    value.split(encodedComma)
+                val contentValue = value.subSequence(1, value.length - 1)
+                val splits = if (contentValue.contains(encodedComma)) {
+                    contentValue.split(encodedComma)
                 } else {
-                    value.split(",")
+                    contentValue.split(",")
                 }
 
                 LongArray(splits.size) { LongType.parseValue(splits[it]) }
