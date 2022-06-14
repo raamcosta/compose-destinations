@@ -2,19 +2,14 @@ package com.ramcosta.composedestinations.codegen.writers.helpers
 
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.sanitizePackageName
-import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
 import com.ramcosta.composedestinations.codegen.model.Importable
 
 class ImportableHelper(
-    destination: DestinationGeneratingParamsWithNavArgs,
+    initialImports: Set<Importable> = emptySet()
 ) {
 
-    private val imports = mutableSetOf<Importable>()
-    private val priorityImports = mutableSetOf<Importable>()
-
-    init {
-        addPriorityQualifiedImport(destination.composableQualifiedName, destination.composableName)
-    }
+    private val imports = initialImports.toMutableSet()
+    private val priorityImports = initialImports.toMutableSet()
 
     fun addPriorityQualifiedImport(qualifiedName: String, simpleName: String? = null) {
         val element = Importable(
@@ -25,12 +20,20 @@ class ImportableHelper(
         priorityImports.add(element)
     }
 
-    fun addImportableAndGetPlaceholder(importable: Importable): String {
+    fun addAndGetPlaceholder(importable: Importable): String {
         imports.add(importable)
         return importable.qualifiedName
     }
 
-    fun resolveImportablePlaceHolders(importsPlaceHolder: String, currentFile: String): String {
+    fun addAll(importables: Set<Importable>){
+        imports.addAll(importables)
+    }
+
+    fun add(importable: Importable){
+        imports.add(importable)
+    }
+
+    fun addResolvedImportsToSrcCode(currentFile: String): String {
         var final = currentFile
 
         val importableImportsBySimpleName: Map<String, List<Importable>> =
@@ -45,7 +48,7 @@ class ImportableHelper(
             final = final.replace(it.qualifiedName, it.simpleName)
         }
 
-        return final.replace(importsPlaceHolder, additionalImports())
+        return "${additionalImports()}\n\n$final"
     }
 
     private fun additionalImports(): String {

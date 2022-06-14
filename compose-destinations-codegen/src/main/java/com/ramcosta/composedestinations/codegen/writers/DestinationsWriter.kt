@@ -19,7 +19,7 @@ class DestinationsWriter(
         val generatedFiles = mutableListOf<GeneratedDestination>()
 
         destinations.forEach { destination ->
-            val importableHelper = ImportableHelper(destination)
+            val importableHelper = ImportableHelper()
             val generatedDestination = SingleDestinationWriter(
                 codeGenerator,
                 logger,

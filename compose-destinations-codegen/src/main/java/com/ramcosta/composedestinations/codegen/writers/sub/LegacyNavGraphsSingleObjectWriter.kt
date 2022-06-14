@@ -4,49 +4,36 @@ import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
+import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavGraphGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
-import com.ramcosta.composedestinations.codegen.templates.ADDITIONAL_IMPORTS
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
-import java.io.OutputStream
+import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
+import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 
 class LegacyNavGraphsSingleObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val logger: Logger,
 ) {
 
-    private val additionalImports = mutableSetOf<String>()
+    private val importableHelper = ImportableHelper(navGraphsObjectTemplate.imports)
 
     fun write(generatedDestinations: List<GeneratedDestination>): List<NavGraphGeneratingParams> {
-        val file: OutputStream = codeGenerator.makeFile(
+        val navGraphsParams = generatedDestinations.mapToNavGraphs()
+        codeGenerator.makeFile(
             packageName = codeGenBasePackageName,
             name = GENERATED_NAV_GRAPHS_OBJECT,
             sourceIds = sourceIds(generatedDestinations).toTypedArray()
+        ).writeSourceFile(
+            packageStatement = navGraphsObjectTemplate.packageStatement,
+            importableHelper = importableHelper,
+            sourceCode = navGraphsObjectTemplate.sourceCode
+                .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(navGraphsParams))
         )
 
-        val navGraphsParams = generatedDestinations.mapToNavGraphs()
-        file += navGraphsObjectTemplate
-            .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(navGraphsParams))
-            .replace(ADDITIONAL_IMPORTS, additionalImports())
-
-        file.close()
-
         return navGraphsParams
-    }
-
-    private fun additionalImports(): String {
-        val imports = StringBuilder()
-
-        additionalImports.sorted().forEachIndexed { idx, it ->
-            if (idx == 0) imports += "\n"
-
-            imports += "\nimport ${it.sanitizePackageName()}"
-        }
-
-        return imports.toString()
     }
 
     private fun navGraphsDeclaration(navGraphsParams: List<NavGraphGeneratingParams>): String {
@@ -96,8 +83,7 @@ class LegacyNavGraphsSingleObjectWriter(
         val code = StringBuilder()
 
         navGraphRequireOptInImportables.forEach { annotationType ->
-            additionalImports.add(annotationType.qualifiedName)
-            code += "@${annotationType.simpleName}\n\t"
+            code += "@${importableHelper.addAndGetPlaceholder(annotationType)}\n\t"
         }
 
         return code.toString()

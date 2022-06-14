@@ -2,21 +2,21 @@ package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
-import com.ramcosta.composedestinations.codegen.commons.sanitizePackageName
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
-import com.ramcosta.composedestinations.codegen.templates.ADDITIONAL_IMPORTS
 import com.ramcosta.composedestinations.codegen.templates.NAV_ARGS_METHOD_WHEN_CASES
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navArgsGettersTemplate
+import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
+import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import java.io.OutputStream
 
 class NavArgsGettersWriter(
     private val codeGenerator: CodeOutputStreamMaker
 ) {
 
-    private val additionalImports = mutableSetOf<String>()
+    private val importableHelper = ImportableHelper(navArgsGettersTemplate.imports)
 
     fun write(generatedDestinations: List<GeneratedDestination>) {
         if (generatedDestinations.all { it.navArgsImportable == null }) {
@@ -34,11 +34,13 @@ class NavArgsGettersWriter(
             .values
             .toList()
 
-        file += navArgsGettersTemplate
-            .replace(NAV_ARGS_METHOD_WHEN_CASES, navArgsMethodWhenCases(destinationsWithNavArgs))
-            .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinationsWithNavArgs))
-            .replace(ADDITIONAL_IMPORTS, additionalImports())
-        file.close()
+        file.writeSourceFile(
+            packageStatement = navArgsGettersTemplate.packageStatement,
+            importableHelper = importableHelper,
+            sourceCode = navArgsGettersTemplate.sourceCode
+                .replace(NAV_ARGS_METHOD_WHEN_CASES, navArgsMethodWhenCases(destinationsWithNavArgs))
+                .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinationsWithNavArgs))
+        )
     }
 
     private fun requireOptInAnnotations(destinationsWithNavArgs: List<GeneratedDestination>): String {
@@ -46,8 +48,7 @@ class NavArgsGettersWriter(
         val code = StringBuilder()
 
         requireOptInClassTypes.forEach { annotationType ->
-            additionalImports.add(annotationType.qualifiedName)
-            code += "@${annotationType.simpleName}\n"
+            code += "@${importableHelper.addAndGetPlaceholder(annotationType)}\n"
         }
 
         return code.toString()
@@ -57,10 +58,8 @@ class NavArgsGettersWriter(
         val sb = StringBuilder()
 
         destinationsWithNavArgs.forEachIndexed { idx, it ->
-            sb += "\t\t${it.navArgsImportable!!.simpleName}::class.java -> ${it.simpleName}.argsFrom(savedStateHandle) as T"
-
-            additionalImports.add(it.qualifiedName)
-            additionalImports.add(it.navArgsImportable!!.qualifiedName)
+            sb += "\t\t${importableHelper.addAndGetPlaceholder(it.navArgsImportable!!)}::class.java " +
+                    "-> ${importableHelper.addAndGetPlaceholder(it.destinationImportable)}.argsFrom(savedStateHandle) as T"
 
             if (idx < destinationsWithNavArgs.lastIndex) {
                 sb += "\n"
@@ -69,20 +68,4 @@ class NavArgsGettersWriter(
 
         return sb.toString()
     }
-
-    private fun additionalImports(): String {
-        val sb = StringBuilder()
-
-        additionalImports.sorted().forEachIndexed { idx, it ->
-            sb += "import ${it.sanitizePackageName()}"
-
-            if (idx < additionalImports.size - 1) {
-                sb += "\n"
-            }
-        }
-
-        return sb.toString()
-    }
-
-
 }

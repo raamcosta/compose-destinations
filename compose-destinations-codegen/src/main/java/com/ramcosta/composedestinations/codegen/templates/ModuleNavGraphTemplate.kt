@@ -1,7 +1,10 @@
 package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.CORE_NAV_GRAPH_SPEC
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
+import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 
 const val NAV_GRAPH_NAME_PLACEHOLDER = "[NAV_GRAPH_NAME_PLACEHOLDER]"
 const val NAV_GRAPH_ROUTE_PLACEHOLDER = "[NAV_GRAPH_ROUTE_PLACEHOLDER]"
@@ -9,12 +12,13 @@ const val NAV_GRAPH_START_ROUTE_PLACEHOLDER = "[NAV_GRAPH_START_ROUTE_PLACEHOLDE
 const val NAV_GRAPH_DESTINATIONS = "[NAV_GRAPH_DESTINATIONS]"
 const val NESTED_NAV_GRAPHS = "[NESTED_NAV_GRAPHS]"
 
-val moduleNavGraphTemplate = """
-package $codeGenBasePackageName
-
-import $CORE_PACKAGE_NAME.spec.$CORE_NAV_GRAPH_SPEC
-import ${codeGenBasePackageName}.destinations.*$ADDITIONAL_IMPORTS
-
+val moduleNavGraphTemplate = FileTemplate(
+    packageStatement = "package $codeGenBasePackageName",
+    imports = setOfImportable(
+        "$CORE_PACKAGE_NAME.spec.$CORE_NAV_GRAPH_SPEC",
+        "${codeGenBasePackageName}.destinations.*",
+    ),
+    sourceCode = """
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $NAV_GRAPH_NAME_PLACEHOLDER : $CORE_NAV_GRAPH_SPEC {
     
     override val route = $NAV_GRAPH_ROUTE_PLACEHOLDER
@@ -28,3 +32,4 @@ $NESTED_NAV_GRAPHS
 }
 
 """.trimIndent()
+)

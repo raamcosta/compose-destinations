@@ -40,7 +40,7 @@ fun TypeInfo.recursiveRequireOptInAnnotations(): List<Importable> {
 }
 
 fun TypeInfo.toTypeCode(importableHelper: ImportableHelper? = null): String {
-    val importableName = importableHelper?.addImportableAndGetPlaceholder(importable)
+    val importableName = importableHelper?.addAndGetPlaceholder(importable)
         ?: importable.simpleName
 
     if (typeArguments.isEmpty()) {

@@ -17,7 +17,7 @@ class DestinationContentFunctionWriter(
 
         val (args, needsDependencyContainer) = prepareArguments()
         if (needsDependencyContainer) {
-            val rememberPlaceholder = importableHelper.addImportableAndGetPlaceholder(
+            val rememberPlaceholder = importableHelper.addAndGetPlaceholder(
                 Importable(
                     "remember",
                     "androidx.compose.runtime.remember"
@@ -44,7 +44,7 @@ class DestinationContentFunctionWriter(
     private fun prepareReceiver(): String {
         return when (destination.composableReceiverSimpleName) {
             ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME -> {
-                val animatedVisPlaceholder = importableHelper.addImportableAndGetPlaceholder(
+                val animatedVisPlaceholder = importableHelper.addAndGetPlaceholder(
                     Importable(
                         ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME,
                         ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
@@ -55,7 +55,7 @@ class DestinationContentFunctionWriter(
             }
 
             COLUMN_SCOPE_SIMPLE_NAME -> {
-                val columnScopePlaceholder = importableHelper.addImportableAndGetPlaceholder(
+                val columnScopePlaceholder = importableHelper.addAndGetPlaceholder(
                     Importable(
                         COLUMN_SCOPE_SIMPLE_NAME,
                         COLUMN_SCOPE_QUALIFIED_NAME
@@ -104,7 +104,7 @@ class DestinationContentFunctionWriter(
             NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
             DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "destinationsNavigator"
             RESULT_RECIPIENT_QUALIFIED_NAME -> {
-                val placeHolder = importableHelper.addImportableAndGetPlaceholder(
+                val placeHolder = importableHelper.addAndGetPlaceholder(
                     Importable(
                         "resultRecipient",
                         "$CORE_PACKAGE_NAME.scope.resultRecipient"
@@ -113,7 +113,7 @@ class DestinationContentFunctionWriter(
                 "$placeHolder()"
             }
             RESULT_BACK_NAVIGATOR_QUALIFIED_NAME -> {
-                val placeHolder = importableHelper.addImportableAndGetPlaceholder(
+                val placeHolder = importableHelper.addAndGetPlaceholder(
                     Importable(
                         "resultBackNavigator",
                         "$CORE_PACKAGE_NAME.scope.resultBackNavigator"

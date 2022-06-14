@@ -7,7 +7,8 @@ import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
 import com.ramcosta.composedestinations.codegen.templates.*
-import java.io.OutputStream
+import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
+import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import java.util.*
 
 class LegacyNavGraphsModeWriter(
@@ -15,7 +16,7 @@ class LegacyNavGraphsModeWriter(
     private val codeGenConfig: CodeGenConfig
 ) {
 
-    private val additionalImports = mutableSetOf<String>()
+    private val importableHelper = ImportableHelper(moduleNavGraphTemplate.imports)
 
     fun write(generatedDestinations: List<GeneratedDestination>) {
         val navGraphNames = generatedDestinations.map { it.asLegacy().navGraphRoute }
@@ -58,22 +59,22 @@ class LegacyNavGraphsModeWriter(
 
     private fun writeNavGraph(navGraphRoute: String, destinations: List<GeneratedDestination>) {
         val navGraphName = navGraphRoute.replaceFirstChar { it.uppercase(Locale.US) } + "NavGraph"
-        val file: OutputStream = codeGenerator.makeFile(
+        codeGenerator.makeFile(
             packageName = codeGenBasePackageName,
             name = navGraphName,
             sourceIds = sourceIds(destinations).toTypedArray()
         )
-
-        file += moduleNavGraphTemplate
-            .replace(NAV_GRAPH_NAME_PLACEHOLDER, navGraphName)
-            .replace(NAV_GRAPH_ROUTE_PLACEHOLDER, "\"${navGraphRoute.toSnakeCase()}\"")
-            .replace(NAV_GRAPH_START_ROUTE_PLACEHOLDER, legacyStartingDestination(navGraphRoute, destinations))
-            .replace(NAV_GRAPH_DESTINATIONS, navGraphDestinationsCode(destinations))
-            .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinations))
-            .replace(ADDITIONAL_IMPORTS, additionalImports())
-            .removeInstancesOf(NESTED_NAV_GRAPHS)
-
-        file.close()
+            .writeSourceFile(
+                packageStatement = moduleNavGraphTemplate.packageStatement,
+                importableHelper = importableHelper,
+                sourceCode = moduleNavGraphTemplate.sourceCode
+                    .replace(NAV_GRAPH_NAME_PLACEHOLDER, navGraphName)
+                    .replace(NAV_GRAPH_ROUTE_PLACEHOLDER, "\"${navGraphRoute.toSnakeCase()}\"")
+                    .replace(NAV_GRAPH_START_ROUTE_PLACEHOLDER, legacyStartingDestination(navGraphRoute, destinations))
+                    .replace(NAV_GRAPH_DESTINATIONS, navGraphDestinationsCode(destinations))
+                    .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinations))
+                    .removeInstancesOf(NESTED_NAV_GRAPHS)
+            )
     }
 
     private fun navGraphDestinationsCode(destinations: List<GeneratedDestination>): String {
@@ -89,25 +90,12 @@ class LegacyNavGraphsModeWriter(
         return code.toString()
     }
 
-    private fun additionalImports(): String {
-        val imports = StringBuilder()
-
-        additionalImports.sorted().forEachIndexed { idx, it ->
-            if (idx == 0) imports += "\n"
-
-            imports += "import ${it.sanitizePackageName()}\n"
-        }
-
-        return imports.toString()
-    }
-
     private fun requireOptInAnnotations(generatedDestinations: List<GeneratedDestination>): String {
         val requireOptInClassTypes = generatedDestinations.flatMapTo(mutableSetOf()) { it.requireOptInAnnotationTypes }
         val code = StringBuilder()
 
         requireOptInClassTypes.forEach { annotationType ->
-            additionalImports.add(annotationType.qualifiedName)
-            code += "@${annotationType.simpleName}\n"
+            code += "@${importableHelper.addAndGetPlaceholder(annotationType)}\n"
         }
 
         return code.toString()

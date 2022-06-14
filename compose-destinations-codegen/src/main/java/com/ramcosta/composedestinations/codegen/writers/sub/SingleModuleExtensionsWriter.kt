@@ -6,6 +6,8 @@ import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.NavGraphGeneratingParams
 import com.ramcosta.composedestinations.codegen.templates.*
+import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
+import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import java.io.OutputStream
 
 class SingleModuleExtensionsWriter(
@@ -13,13 +15,15 @@ class SingleModuleExtensionsWriter(
     private val logger: Logger
 ) {
 
+    private val importableHelper = ImportableHelper(singleModuleExtensionsTemplate.imports)
+
     fun write(generatedNavGraphs: List<NavGraphGeneratingParams>) {
         val coreExtensions: OutputStream = codeGenerator.makeFile(
             packageName = codeGenBasePackageName,
             name = SINGLE_MODULE_EXTENSIONS
         )
 
-        var code = singleModuleExtensionsTemplate
+        var code = singleModuleExtensionsTemplate.sourceCode
 
         val nestedNavGraphs: List<NavGraphGeneratingParams> = generatedNavGraphs
             .flatMapTo(mutableSetOf()) { it.nestedNavGraphRoutes }
@@ -34,14 +38,11 @@ class SingleModuleExtensionsWriter(
             val requireOptInAnnotationTypes = rootLevelNavGraphs.first().requireOptInAnnotationTypes
 
             val annotationsCode = StringBuilder()
-            val additionalImports = StringBuilder()
             requireOptInAnnotationTypes.forEach {
-                annotationsCode += "@${it.simpleName}\n"
-                additionalImports += "\nimport ${it.qualifiedName.sanitizePackageName()}"
+                annotationsCode += "@${importableHelper.addAndGetPlaceholder(it)}\n"
             }
 
             code.replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, annotationsCode.toString())
-                .replace(ADDITIONAL_IMPORTS, additionalImports.toString())
                 .replace(".root", ".${navGraphFieldName(rootLevelNavGraphs.first().route)}")
                 .removeInstancesOf(
                     START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR,
@@ -59,7 +60,10 @@ class SingleModuleExtensionsWriter(
                 .removeInstancesOf(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, ADDITIONAL_IMPORTS)
         }
 
-        coreExtensions += code
-        coreExtensions.close()
+        coreExtensions.writeSourceFile(
+            packageStatement = singleModuleExtensionsTemplate.packageStatement,
+            importableHelper = importableHelper,
+            sourceCode = code
+        )
     }
 }

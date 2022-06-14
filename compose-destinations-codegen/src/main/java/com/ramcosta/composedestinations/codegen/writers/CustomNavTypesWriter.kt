@@ -6,18 +6,31 @@ import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.templates.*
+import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.*
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.*
+import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
+import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import java.io.OutputStream
 import java.util.*
 
 class CustomNavTypesWriter(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val logger: Logger
+    private val logger: Logger,
 ) {
     private val typesForNavTypeName: MutableMap<Type, CustomNavType> = mutableMapOf()
+    private val parcelableImportable = Importable(
+        "Parcelable",
+        "android.os.Parcelable"
+    )
+    private val serializableImportable = Importable(
+        "Serializable",
+        "java.io.Serializable"
+    )
 
     fun write(
         destinations: List<DestinationGeneratingParamsWithNavArgs>,
-        navTypeSerializers: List<NavTypeSerializer>
+        navTypeSerializers: List<NavTypeSerializer>,
     ): Map<Type, CustomNavType> {
         val serializersByType: Map<Importable, NavTypeSerializer> =
             navTypeSerializers.associateBy { it.genericType }
@@ -175,54 +188,71 @@ class CustomNavTypesWriter(
         out: OutputStream,
         className: String,
         navTypeName: String,
-        navTypeSerializer: NavTypeSerializer?
+        navTypeSerializer: NavTypeSerializer?,
     ) {
         val typeArg = firstTypeArg
 
         val templateWithReplacements = when {
-            typeArg.isParcelable -> TemplateWithReplacements(
-                template = parcelableArrayNavTypeTemplate,
-                additionalImports = parcelableAdditionalImports(typeArg, navTypeSerializer),
-                navTypeSerializerInit = typeArg.parcelableNavTypeSerializerCode(navTypeSerializer),
-                serializerTypeArg = if (navTypeSerializer == null) "Parcelable" else typeArg.importable.simpleName
-            )
+            typeArg.isParcelable -> {
+                val importableHelper = ImportableHelper(parcelableArrayNavTypeTemplate.imports)
+                TemplateWithReplacements(
+                    template = parcelableArrayNavTypeTemplate,
+                    importableHelper = importableHelper.parcelableAdditionalImports(typeArg, navTypeSerializer),
+                    navTypeSerializerInit = typeArg.parcelableNavTypeSerializerCode(navTypeSerializer),
+                    serializerTypeArg = if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(parcelableImportable)
+                    else importableHelper.addAndGetPlaceholder(typeArg.importable)
+                )
+            }
 
-            typeArg.isSerializable -> TemplateWithReplacements(
-                template = serializableArrayNavTypeTemplate,
-                additionalImports = serializableAdditionalImports(typeArg, navTypeSerializer),
-                navTypeSerializerInit = serializableNavTypeSerializerCode(navTypeSerializer),
-                serializerTypeArg = if (navTypeSerializer == null) "Serializable" else typeArg.importable.simpleName
-            )
+            typeArg.isSerializable -> {
+                val importableHelper = ImportableHelper(serializableArrayNavTypeTemplate.imports)
+                TemplateWithReplacements(
+                    template = serializableArrayNavTypeTemplate,
+                    importableHelper = importableHelper.serializableAdditionalImports(typeArg, navTypeSerializer),
+                    navTypeSerializerInit = serializableNavTypeSerializerCode(navTypeSerializer),
+                    serializerTypeArg = if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(serializableImportable)
+                    else importableHelper.addAndGetPlaceholder(typeArg.importable)
+                )
+            }
 
-            navTypeSerializer != null -> TemplateWithReplacements(
-                template = customTypeArrayNavTypeTemplate,
-                additionalImports = customTypeSerializerAdditionalImports(typeArg, navTypeSerializer),
-                navTypeSerializerInit = navTypeSerializerCode(navTypeSerializer),
-                serializerTypeArg = typeArg.importable.simpleName,
-            )
+            navTypeSerializer != null -> {
+                val importableHelper = ImportableHelper(customTypeArrayNavTypeTemplate.imports)
+                TemplateWithReplacements(
+                    template = customTypeArrayNavTypeTemplate,
+                    importableHelper = importableHelper.customTypeSerializerAdditionalImports(typeArg, navTypeSerializer),
+                    navTypeSerializerInit = navTypeSerializerCode(navTypeSerializer),
+                    serializerTypeArg = importableHelper.addAndGetPlaceholder(typeArg.importable),
+                )
+            }
 
-            typeArg.isKtxSerializable -> TemplateWithReplacements(
-                template = ktxSerializableArrayNavTypeTemplate,
-                additionalImports = ktxSerializableAdditionalImports(typeArg),
-                navTypeSerializerInit = "DefaultKtxSerializableNavTypeSerializer(${typeArg.importable.simpleName}.serializer())",
-                serializerTypeArg = typeArg.importable.simpleName,
-            )
+            typeArg.isKtxSerializable -> {
+                val importableHelper = ImportableHelper(ktxSerializableArrayNavTypeTemplate.imports)
+                TemplateWithReplacements(
+                    template = ktxSerializableArrayNavTypeTemplate,
+                    importableHelper = importableHelper.ktxSerializableAdditionalImports(typeArg),
+                    navTypeSerializerInit = "DefaultKtxSerializableNavTypeSerializer(${importableHelper.addAndGetPlaceholder(typeArg.importable)}.serializer())",
+                    serializerTypeArg = importableHelper.addAndGetPlaceholder(typeArg.importable),
+                )
+            }
 
-            else -> error("Unexpected typeArg $typeArg")
+            else -> {
+                error("Unexpected typeArg $typeArg")
+            }
         }
 
         with(templateWithReplacements) {
-            out += template
-                .replace(TYPE_ARG_CLASS_SIMPLE_NAME, typeArg.importable.simpleName)
-                .replace(ARRAY_CUSTOM_NAV_TYPE_NAME, className)
-                .replace(SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME, serializerTypeArg)
-                .replace(
-                    NAV_TYPE_INITIALIZATION_CODE,
-                    "val $navTypeName = $className($navTypeSerializerInit)\n"
-                )
-                .replace(ADDITIONAL_IMPORTS, additionalImports)
-
-            out.close()
+            out.writeSourceFile(
+                packageStatement = template.packageStatement,
+                importableHelper = importableHelper,
+                sourceCode = template.sourceCode
+                    .replace(TYPE_ARG_CLASS_SIMPLE_NAME, typeArg.importable.simpleName)
+                    .replace(ARRAY_CUSTOM_NAV_TYPE_NAME, className)
+                    .replace(SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME, serializerTypeArg)
+                    .replace(
+                        NAV_TYPE_INITIALIZATION_CODE,
+                        "val $navTypeName = $className($navTypeSerializerInit)\n"
+                    )
+            )
         }
     }
 
@@ -230,54 +260,80 @@ class CustomNavTypesWriter(
         out: OutputStream,
         className: String,
         navTypeName: String,
-        navTypeSerializer: NavTypeSerializer?
+        navTypeSerializer: NavTypeSerializer?,
     ) {
         val typeArg = firstTypeArg
 
         val templateWithReplacements = when {
-            typeArg.isParcelable -> TemplateWithReplacements(
-                template = parcelableArrayListNavTypeTemplate,
-                additionalImports = parcelableAdditionalImports(typeArg, navTypeSerializer),
-                navTypeSerializerInit = typeArg.parcelableNavTypeSerializerCode(navTypeSerializer),
-                serializerTypeArg = if (navTypeSerializer == null) "Parcelable" else typeArg.importable.simpleName
-            )
+            typeArg.isParcelable -> {
+                val importableHelper = ImportableHelper(parcelableArrayListNavTypeTemplate.imports)
+                TemplateWithReplacements(
+                    template = parcelableArrayListNavTypeTemplate,
+                    importableHelper = importableHelper.parcelableAdditionalImports(typeArg,
+                        navTypeSerializer),
+                    navTypeSerializerInit = typeArg.parcelableNavTypeSerializerCode(
+                        navTypeSerializer),
+                    serializerTypeArg = if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(
+                        parcelableImportable)
+                    else importableHelper.addAndGetPlaceholder(typeArg.importable)
+                )
+            }
 
-            typeArg.isSerializable -> TemplateWithReplacements(
-                template = serializableArrayListNavTypeTemplate,
-                additionalImports = serializableAdditionalImports(typeArg, navTypeSerializer),
-                navTypeSerializerInit = serializableNavTypeSerializerCode(navTypeSerializer),
-                serializerTypeArg = if (navTypeSerializer == null) "Serializable" else typeArg.importable.simpleName
-            )
+            typeArg.isSerializable -> {
+                val importableHelper =
+                    ImportableHelper(serializableArrayListNavTypeTemplate.imports)
+                TemplateWithReplacements(
+                    template = serializableArrayListNavTypeTemplate,
+                    importableHelper = importableHelper.serializableAdditionalImports(typeArg,
+                        navTypeSerializer),
+                    navTypeSerializerInit = serializableNavTypeSerializerCode(navTypeSerializer),
+                    serializerTypeArg = if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(
+                        serializableImportable)
+                    else importableHelper.addAndGetPlaceholder(typeArg.importable)
+                )
+            }
 
-            navTypeSerializer != null -> TemplateWithReplacements(
-                template = customTypeArrayListNavTypeTemplate,
-                additionalImports = customTypeSerializerAdditionalImports(typeArg, navTypeSerializer),
-                navTypeSerializerInit = navTypeSerializerCode(navTypeSerializer),
-                serializerTypeArg = typeArg.importable.simpleName,
-            )
+            navTypeSerializer != null -> {
+                val importableHelper = ImportableHelper(customTypeArrayListNavTypeTemplate.imports)
+                TemplateWithReplacements(
+                    template = customTypeArrayListNavTypeTemplate,
+                    importableHelper = importableHelper.customTypeSerializerAdditionalImports(
+                        typeArg,
+                        navTypeSerializer),
+                    navTypeSerializerInit = navTypeSerializerCode(navTypeSerializer),
+                    serializerTypeArg = importableHelper.addAndGetPlaceholder(typeArg.importable),
+                )
+            }
 
-            typeArg.isKtxSerializable -> TemplateWithReplacements(
-                template = ktxSerializableArrayListNavTypeTemplate,
-                additionalImports = ktxSerializableAdditionalImports(typeArg),
-                navTypeSerializerInit = "DefaultKtxSerializableNavTypeSerializer(${typeArg.importable.simpleName}.serializer())",
-                serializerTypeArg = typeArg.importable.simpleName,
-            )
+            typeArg.isKtxSerializable -> {
+                val importableHelper =
+                    ImportableHelper(ktxSerializableArrayListNavTypeTemplate.imports)
+                TemplateWithReplacements(
+                    template = ktxSerializableArrayListNavTypeTemplate,
+                    importableHelper = importableHelper.ktxSerializableAdditionalImports(typeArg),
+                    navTypeSerializerInit = "DefaultKtxSerializableNavTypeSerializer(${importableHelper.addAndGetPlaceholder(typeArg.importable)}.serializer())",
+                    serializerTypeArg = importableHelper.addAndGetPlaceholder(typeArg.importable),
+                )
+            }
 
-            else -> error("Unexpected typeArg $typeArg")
+            else -> {
+                error("Unexpected typeArg $typeArg")
+            }
         }
 
         with(templateWithReplacements) {
-            out += template
-                .replace(TYPE_ARG_CLASS_SIMPLE_NAME, typeArg.importable.simpleName)
-                .replace(ARRAY_CUSTOM_NAV_TYPE_NAME, className)
-                .replace(SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME, serializerTypeArg)
-                .replace(
-                    NAV_TYPE_INITIALIZATION_CODE,
-                    "val $navTypeName = $className($navTypeSerializerInit)\n"
-                )
-                .replace(ADDITIONAL_IMPORTS, additionalImports)
-
-            out.close()
+            out.writeSourceFile(
+                packageStatement = template.packageStatement,
+                importableHelper = importableHelper,
+                sourceCode = template.sourceCode
+                    .replace(TYPE_ARG_CLASS_SIMPLE_NAME, typeArg.importable.simpleName)
+                    .replace(ARRAY_CUSTOM_NAV_TYPE_NAME, className)
+                    .replace(SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME, serializerTypeArg)
+                    .replace(
+                        NAV_TYPE_INITIALIZATION_CODE,
+                        "val $navTypeName = $className($navTypeSerializerInit)\n"
+                    )
+            )
         }
     }
 
@@ -285,99 +341,114 @@ class CustomNavTypesWriter(
         navTypeClassName: String,
         navTypeSerializer: NavTypeSerializer?,
         out: OutputStream,
-        navTypeName: String
+        navTypeName: String,
     ) {
-        out += serializableNavTypeTemplate
-            .replace(NAV_TYPE_NAME, navTypeName)
-            .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
-            .replace(
-                SERIALIZER_SIMPLE_CLASS_NAME,
-                serializableNavTypeSerializerCode(navTypeSerializer)
-            )
-            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importable.simpleName)
-            .replace(
-                PARSE_VALUE_CAST_TO_CLASS,
-                if (navTypeSerializer == null) " as ${importable.simpleName}" else ""
-            )
-            .replace(
-                DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
-                if (navTypeSerializer == null) "Serializable" else importable.simpleName
-            )
-            .replace(ADDITIONAL_IMPORTS, serializableAdditionalImports(this, navTypeSerializer))
+        val importableHelper = ImportableHelper(serializableNavTypeTemplate.imports)
 
-        out.close()
+        out.writeSourceFile(
+            packageStatement = serializableNavTypeTemplate.packageStatement,
+            importableHelper = importableHelper.serializableAdditionalImports(
+                type = this,
+                customSerializer = navTypeSerializer
+            ),
+            sourceCode = serializableNavTypeTemplate.sourceCode
+                .replace(NAV_TYPE_NAME, navTypeName)
+                .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
+                .replace(
+                    SERIALIZER_SIMPLE_CLASS_NAME,
+                    serializableNavTypeSerializerCode(navTypeSerializer)
+                )
+                .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importableHelper.addAndGetPlaceholder(importable))
+                .replace(
+                    PARSE_VALUE_CAST_TO_CLASS,
+                    if (navTypeSerializer == null) " as ${importableHelper.addAndGetPlaceholder(importable)}"
+                    else ""
+                )
+                .replace(
+                    DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
+                    if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(serializableImportable)
+                    else importableHelper.addAndGetPlaceholder(importable)
+                )
+        )
     }
 
     private fun Type.generateKtxSerializableCustomNavType(
         navTypeClassName: String,
         out: OutputStream,
-        navTypeName: String
+        navTypeName: String,
     ) {
-        out += ktxSerializableNavTypeTemplate
-            .replace(NAV_TYPE_NAME, navTypeName)
-            .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
-            .replace(
-                SERIALIZER_SIMPLE_CLASS_NAME,
-                "DefaultKtxSerializableNavTypeSerializer(${importable.simpleName}.serializer())"
-            )
-            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importable.simpleName)
-            .replace(
-                DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
-                importable.simpleName,
-            )
-            .replace(ADDITIONAL_IMPORTS, ktxSerializableAdditionalImports(this))
+        val importableHelper = ImportableHelper(ktxSerializableNavTypeTemplate.imports)
 
-        out.close()
+        out.writeSourceFile(
+            packageStatement = ktxSerializableNavTypeTemplate.packageStatement,
+            importableHelper = importableHelper.ktxSerializableAdditionalImports(this),
+            sourceCode = ktxSerializableNavTypeTemplate.sourceCode
+                .replace(NAV_TYPE_NAME, navTypeName)
+                .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
+                .replace(
+                    SERIALIZER_SIMPLE_CLASS_NAME,
+                    "DefaultKtxSerializableNavTypeSerializer(${importable.simpleName}.serializer())"
+                )
+                .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importable.simpleName)
+                .replace(
+                    DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
+                    importable.simpleName,
+                )
+        )
     }
 
     private fun Type.generateCustomTypeSerializerNavType(
         navTypeClassName: String,
         navTypeSerializer: NavTypeSerializer,
         out: OutputStream,
-        navTypeName: String
+        navTypeName: String,
     ) {
-        out += customTypeSerializerNavTypeTemplate
-            .replace(NAV_TYPE_NAME, navTypeName)
-            .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
-            .replace(
-                SERIALIZER_SIMPLE_CLASS_NAME,
-                navTypeSerializerCode(navTypeSerializer)
-            )
-            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importable.simpleName)
-            .replace(DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE, importable.simpleName)
-            .replace(
-                ADDITIONAL_IMPORTS,
-                customTypeSerializerAdditionalImports(this, navTypeSerializer),
-            )
-
-        out.close()
+        val importableHelper = ImportableHelper(customTypeSerializerNavTypeTemplate.imports)
+        out.writeSourceFile(
+            packageStatement = customTypeSerializerNavTypeTemplate.packageStatement,
+            importableHelper = importableHelper.customTypeSerializerAdditionalImports(this, navTypeSerializer),
+            sourceCode = customTypeSerializerNavTypeTemplate.sourceCode
+                .replace(NAV_TYPE_NAME, navTypeName)
+                .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
+                .replace(
+                    SERIALIZER_SIMPLE_CLASS_NAME,
+                    navTypeSerializerCode(navTypeSerializer)
+                )
+                .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importableHelper.addAndGetPlaceholder(importable))
+                .replace(DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE, importableHelper.addAndGetPlaceholder(importable))
+        )
     }
 
     private fun Type.generateParcelableCustomNavType(
         navTypeClassName: String,
         navTypeSerializer: NavTypeSerializer?,
         out: OutputStream,
-        navTypeName: String
+        navTypeName: String,
     ) {
-        out += parcelableNavTypeTemplate
-            .replace(NAV_TYPE_NAME, navTypeName)
-            .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
-            .replace(
-                SERIALIZER_SIMPLE_CLASS_NAME,
-                parcelableNavTypeSerializerCode(navTypeSerializer)
-            )
-            .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importable.simpleName)
-            .replace(
-                PARSE_VALUE_CAST_TO_CLASS,
-                if (navTypeSerializer == null) " as ${importable.simpleName}" else ""
-            )
-            .replace(
-                DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
-                if (navTypeSerializer == null) "Parcelable" else importable.simpleName
-            )
-            .replace(ADDITIONAL_IMPORTS, parcelableAdditionalImports(this, navTypeSerializer))
+        val importableHelper = ImportableHelper(parcelableNavTypeTemplate.imports)
 
-        out.close()
+        out.writeSourceFile(
+            packageStatement = parcelableNavTypeTemplate.packageStatement,
+            importableHelper = importableHelper.parcelableAdditionalImports(this, navTypeSerializer),
+            sourceCode = parcelableNavTypeTemplate.sourceCode
+                .replace(NAV_TYPE_NAME, navTypeName)
+                .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
+                .replace(
+                    SERIALIZER_SIMPLE_CLASS_NAME,
+                    parcelableNavTypeSerializerCode(navTypeSerializer)
+                )
+                .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importableHelper.addAndGetPlaceholder(importable))
+                .replace(
+                    PARSE_VALUE_CAST_TO_CLASS,
+                    if (navTypeSerializer == null) " as ${importableHelper.addAndGetPlaceholder(importable)}"
+                    else ""
+                )
+                .replace(
+                    DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
+                    if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(parcelableImportable)
+                    else importableHelper.addAndGetPlaceholder(importable)
+                )
+        )
     }
 
     private fun Type.parcelableNavTypeSerializerCode(navTypeSerializer: NavTypeSerializer?): String {
@@ -403,57 +474,62 @@ class CustomNavTypesWriter(
     }
 
 
-    private fun parcelableAdditionalImports(
+    private fun ImportableHelper.parcelableAdditionalImports(
         type: Type,
-        customSerializer: NavTypeSerializer?
-    ): String {
-        val importsSet = mutableSetOf<String>().apply {
-            add("android.os.Parcelable")
-            add(type.importable.qualifiedName.sanitizePackageName())
-            if (customSerializer != null) {
-                add(customSerializer.serializerType.qualifiedName.sanitizePackageName())
-            } else {
-                add("$CORE_PACKAGE_NAME.navargs.parcelable.DefaultParcelableNavTypeSerializer")
-            }
-        }
-
-        val importsStr = StringBuilder()
-
-        importsSet.forEach {
-            importsStr += "\nimport $it"
-        }
-
-        return importsStr.toString()
-    }
-
-    private fun serializableAdditionalImports(
-        type: Type,
-        customSerializer: NavTypeSerializer?
-    ): String {
-        var imports = "\nimport ${type.importable.qualifiedName.sanitizePackageName()}"
-        imports += if (customSerializer != null) {
-            "\nimport ${customSerializer.serializerType.qualifiedName.sanitizePackageName()}"
+        customSerializer: NavTypeSerializer?,
+    ): ImportableHelper {
+        add(parcelableImportable)
+        add(type.importable)
+        if (customSerializer != null) {
+            add(customSerializer.serializerType)
         } else {
-            "\nimport $CORE_PACKAGE_NAME.navargs.serializable.DefaultSerializableNavTypeSerializer"
+            add(Importable(
+                "DefaultParcelableNavTypeSerializer",
+                "$CORE_PACKAGE_NAME.navargs.parcelable.DefaultParcelableNavTypeSerializer")
+            )
         }
 
-        return imports
+        return this
     }
 
-    private fun ktxSerializableAdditionalImports(
-        type: Type
-    ): String = """
-        import ${type.importable.qualifiedName.sanitizePackageName()}
-        import ${codeGenBasePackageName}.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer
-    """.trimIndent()
+    private fun ImportableHelper.serializableAdditionalImports(
+        type: Type,
+        customSerializer: NavTypeSerializer?,
+    ): ImportableHelper {
+        add(type.importable)
+        if (customSerializer != null) {
+            add(customSerializer.serializerType)
+        } else {
+            add(Importable(
+                "DefaultSerializableNavTypeSerializer",
+                "$CORE_PACKAGE_NAME.navargs.serializable.DefaultSerializableNavTypeSerializer")
+            )
+        }
 
-    private fun customTypeSerializerAdditionalImports(
+        return this
+    }
+
+    private fun ImportableHelper.ktxSerializableAdditionalImports(
+        type: Type,
+    ): ImportableHelper {
+        add(type.importable)
+        add(Importable(
+            "DefaultKtxSerializableNavTypeSerializer",
+            "${codeGenBasePackageName}.navargs.ktxserializable.DefaultKtxSerializableNavTypeSerializer")
+        )
+
+        return this
+    }
+
+    private fun ImportableHelper.customTypeSerializerAdditionalImports(
         type: Type,
         customSerializer: NavTypeSerializer,
-    ): String = """
-        import ${type.importable.qualifiedName.sanitizePackageName()}
-        import ${customSerializer.serializerType.qualifiedName.sanitizePackageName()}
-    """.trimIndent()
+    ): ImportableHelper {
+        add(type.importable)
+        add(customSerializer.serializerType)
+
+        return this
+    }
 
     private fun Type.getNavTypeName(): String {
         val importableToUse = if (isCustomArrayOrArrayListTypeNavArg()) {
@@ -464,7 +540,7 @@ class CustomNavTypesWriter(
 
         val navTypeName =
             "${importableToUse.simpleName.replaceFirstChar { it.lowercase(Locale.US) }}${
-                if (isEnum || (isCustomArrayOrArrayListTypeNavArg() && firstTypeArg.isEnum)) "Enum" 
+                if (isEnum || (isCustomArrayOrArrayListTypeNavArg() && firstTypeArg.isEnum)) "Enum"
                 else ""
             }${
                 when {
@@ -505,10 +581,10 @@ class CustomNavTypesWriter(
     }
 
     class TemplateWithReplacements(
-        val template: String,
-        val additionalImports: String,
+        val template: FileTemplate,
+        val importableHelper: ImportableHelper,
         val navTypeSerializerInit: String,
-        val serializerTypeArg: String
+        val serializerTypeArg: String,
     )
 
 }

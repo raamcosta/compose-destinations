@@ -10,6 +10,7 @@ import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
+import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFunctionWriter
 
 class SingleDestinationWriter(
@@ -29,6 +30,9 @@ class SingleDestinationWriter(
         if (destination.navGraphInfo.start && destination.navArgs.any { it.isMandatory }) {
             throw IllegalDestinationsSetup("\"'${destination.composableName}' composable: Start destinations cannot have mandatory navigation arguments!")
         }
+
+        importableHelper.addAll(destinationTemplate.imports)
+        importableHelper.addPriorityQualifiedImport(destination.composableQualifiedName, destination.composableName)
     }
 
     fun write(): GeneratedDestination = with(destination) {
@@ -36,8 +40,10 @@ class SingleDestinationWriter(
             packageName = packageName,
             name = name,
             sourceIds = sourceIds.toTypedArray()
-        ).use {
-            it += destinationTemplate
+        ).writeSourceFile(
+            packageStatement = destinationTemplate.packageStatement,
+            importableHelper = importableHelper,
+            sourceCode = destinationTemplate.sourceCode
                 .replace(DESTINATION_NAME, name)
                 .replaceSuperclassDestination()
                 .addNavArgsDataClass()
@@ -51,8 +57,7 @@ class SingleDestinationWriter(
                 .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
                 .replace(ARGS_TO_DIRECTION_METHOD, invokeMethodsCode())
                 .replace(ARGS_FROM_METHODS, argsFromFunctions())
-                .replaceImportablePlaceHolders()
-        }
+        )
 
         return GeneratedDestination(
             sourceIds = sourceIds,
@@ -60,7 +65,7 @@ class SingleDestinationWriter(
             simpleName = name,
             navArgsImportable = navArgsDataClassImportable()?.let {
                 if (navArgsDelegateType == null) {
-                    it.copy(simpleName = "$name.NavArgs", qualifiedName = "$packageName.$name")
+                    it.copy(simpleName = "$name.NavArgs", qualifiedName = "$packageName.$name.NavArgs")
                 } else {
                     it
                 }
@@ -546,14 +551,10 @@ class SingleDestinationWriter(
     )
 
     private fun Importable.getCodePlaceHolder(): String  {
-        return importableHelper.addImportableAndGetPlaceholder(this)
+        return importableHelper.addAndGetPlaceholder(this)
     }
 
     private fun Importable.addImport()  {
-        importableHelper.addImportableAndGetPlaceholder(this)
-    }
-
-    private fun String.replaceImportablePlaceHolders(): String {
-        return importableHelper.resolveImportablePlaceHolders(ADDITIONAL_IMPORTS, this)
+        importableHelper.addAndGetPlaceholder(this)
     }
 }

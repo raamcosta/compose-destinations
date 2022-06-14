@@ -1,16 +1,18 @@
 package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
+import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 
 const val NAV_ARGS_METHOD_WHEN_CASES = "[NAV_ARGS_METHOD_WHEN_CASES]"
 private const val CLASS_ESCAPED = "\${argsClass}"
 
-val navArgsGettersTemplate = """
-package $codeGenBasePackageName
-
-import androidx.lifecycle.SavedStateHandle
-$ADDITIONAL_IMPORTS
-
+val navArgsGettersTemplate = FileTemplate(
+    packageStatement = "package $codeGenBasePackageName",
+    imports = setOfImportable(
+        "androidx.lifecycle.SavedStateHandle"
+    ),
+    sourceCode = """
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}inline fun <reified T> SavedStateHandle.navArgs(): T {
     return navArgs(T::class.java, this)
 }
@@ -24,3 +26,4 @@ $NAV_ARGS_METHOD_WHEN_CASES
 }
 
 """.trimIndent()
+)

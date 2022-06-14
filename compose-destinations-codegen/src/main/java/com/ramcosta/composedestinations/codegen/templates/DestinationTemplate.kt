@@ -2,6 +2,8 @@ package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
+import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 
 //region anchors
 const val ADDITIONAL_IMPORTS = "[ADDITIONAL_IMPORTS]"
@@ -20,25 +22,26 @@ const val SUPERTYPE = "[SUPERTYPE]"
 const val NAV_ARGS_CLASS_SIMPLE_NAME = "[NAV_ARGS_CLASS_SIMPLE_NAME]"
 //endregion
 
-val destinationTemplate="""
-package $codeGenBasePackageName.destinations
-
-import androidx.annotation.RestrictTo
-import androidx.compose.runtime.Composable
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import $CORE_PACKAGE_NAME.scope.DestinationScope
-import $CORE_PACKAGE_NAME.navigation.DestinationDependenciesContainer
-import $CORE_PACKAGE_NAME.navigation.DependenciesContainerBuilder
-import $CORE_PACKAGE_NAME.spec.DestinationSpec
-import $CORE_PACKAGE_NAME.spec.DestinationStyle
-import $CORE_PACKAGE_NAME.spec.Direction
-import $CORE_PACKAGE_NAME.spec.DirectionDestinationSpec
-import $CORE_PACKAGE_NAME.spec.NavGraphSpec
-import $CORE_PACKAGE_NAME.spec.Route$ADDITIONAL_IMPORTS
-
+val destinationTemplate = FileTemplate(
+    packageStatement = "package $codeGenBasePackageName.destinations",
+    imports = setOfImportable(
+        "androidx.annotation.RestrictTo",
+        "androidx.compose.runtime.Composable",
+        "androidx.navigation.NavBackStackEntry",
+        "androidx.navigation.NavHostController",
+        "androidx.navigation.NavType",
+        "androidx.navigation.navArgument",
+        "$CORE_PACKAGE_NAME.scope.DestinationScope",
+        "$CORE_PACKAGE_NAME.navigation.DestinationDependenciesContainer",
+        "$CORE_PACKAGE_NAME.navigation.DependenciesContainerBuilder",
+        "$CORE_PACKAGE_NAME.spec.DestinationSpec",
+        "$CORE_PACKAGE_NAME.spec.DestinationStyle",
+        "$CORE_PACKAGE_NAME.spec.Direction",
+        "$CORE_PACKAGE_NAME.spec.DirectionDestinationSpec",
+        "$CORE_PACKAGE_NAME.spec.NavGraphSpec",
+        "$CORE_PACKAGE_NAME.spec.Route",
+    ),
+    sourceCode = """
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $SUPERTYPE {
     $ARGS_TO_DIRECTION_METHOD
     @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
@@ -55,3 +58,4 @@ $CONTENT_FUNCTION_CODE
     $ARGS_FROM_METHODS$NAV_ARGS_DATA_CLASS
 }
 """.trimIndent()
+)

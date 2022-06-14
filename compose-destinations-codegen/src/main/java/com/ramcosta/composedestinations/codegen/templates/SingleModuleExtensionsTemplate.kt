@@ -1,8 +1,10 @@
 package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.codeGenDestination
+import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
+import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 
 const val START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR = "[START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR]"
 const val END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR = "[END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR]"
@@ -11,21 +13,22 @@ const val END_NAV_DESTINATION_DEPRECATED_ROOT_DEFAULT_ANCHOR = "[END_NAV_DESTINA
 const val START_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = "[START_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR]"
 const val END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = "[END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR]"
 
-val singleModuleExtensionsTemplate = """
-package $codeGenBasePackageName
-
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
-import $codeGenBasePackageName.destinations.*
-import $CORE_PACKAGE_NAME.spec.*
-import $CORE_PACKAGE_NAME.utils.startDestination
-import $CORE_PACKAGE_NAME.utils.destination
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map$ADDITIONAL_IMPORTS
-
+val singleModuleExtensionsTemplate = FileTemplate(
+    packageStatement = "package $codeGenBasePackageName",
+    imports = setOfImportable(
+        "androidx.compose.runtime.Composable",
+        "androidx.compose.runtime.State",
+        "androidx.compose.runtime.collectAsState",
+        "androidx.navigation.NavBackStackEntry",
+        "androidx.navigation.NavController",
+        "$codeGenBasePackageName.destinations.*",
+        "$CORE_PACKAGE_NAME.spec.*",
+        "$CORE_PACKAGE_NAME.utils.startDestination",
+        "$CORE_PACKAGE_NAME.utils.destination",
+        "kotlinx.coroutines.flow.Flow",
+        "kotlinx.coroutines.flow.map",
+    ),
+    sourceCode = """
 /**
  * Realization of [$CORE_NAV_GRAPH_SPEC] for the app.
  * It uses [$codeGenDestination] instead of [$CORE_DESTINATION_SPEC].
@@ -127,3 +130,4 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}fun NavBackStackEntry.appDestination(na
 // endregion
 
 """.trimIndent()
+)

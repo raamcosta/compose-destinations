@@ -30,7 +30,7 @@ class NavArgResolver(
 
     fun customNavTypeCode(type: TypeInfo): String {
         val navTypeName = customNavTypeByType[type.value]!!.name
-        return importableHelper.addImportableAndGetPlaceholder(
+        return importableHelper.addAndGetPlaceholder(
             Importable(
                 navTypeName,
                 "$codeGenBasePackageName.navtype.$navTypeName"
