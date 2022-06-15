@@ -6,7 +6,6 @@ import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 
 //region anchors
-const val ADDITIONAL_IMPORTS = "[ADDITIONAL_IMPORTS]"
 const val DESTINATION_NAME = "[DESTINATION_NAME]"
 const val BASE_ROUTE = "[ROUTE_ID]"
 const val COMPOSED_ROUTE = "[COMPOSED_ROUTE]"
