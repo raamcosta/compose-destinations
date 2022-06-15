@@ -1,7 +1,6 @@
 package com.ramcosta.samples.playground.ui.screens.settings
 
 import android.widget.Toast
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +29,6 @@ import com.ramcosta.samples.playground.ui.screens.styles.SettingsTransitions
 
 const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 
-@OptIn(ExperimentalAnimationApi::class)
 @SettingsNavGraph(start = true)
 @Destination(
     deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],

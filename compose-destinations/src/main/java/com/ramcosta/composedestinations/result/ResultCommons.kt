@@ -32,13 +32,11 @@ internal fun <R> resultBackNavigator(
 @Composable
 @PublishedApi
 internal fun <D : DestinationSpec<*>, R> resultRecipient(
-    destination: DestinationSpec<*>,
     navBackStackEntry: NavBackStackEntry,
     originType: Class<D>,
     resultType: Class<R>
 ): ResultRecipient<D, R> = remember {
     ResultRecipientImpl(
-        isRecipientDialogStyled = destination.style is DestinationStyle.Dialog,
         navBackStackEntry = navBackStackEntry,
         resultOriginType = originType,
         resultType = resultType,
