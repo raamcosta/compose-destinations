@@ -53,5 +53,6 @@ val Destination.title
             ThemeSettingsDestination -> R.string.theme_settings_screen
             GoToProfileConfirmationDestination -> null
             TestScreenDestination -> null
+            TestScreen2Destination -> null
         }
     }

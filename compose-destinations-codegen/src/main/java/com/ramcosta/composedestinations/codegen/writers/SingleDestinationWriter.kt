@@ -65,7 +65,7 @@ class SingleDestinationWriter(
             simpleName = name,
             navArgsImportable = navArgsDataClassImportable()?.let {
                 if (navArgsDelegateType == null) {
-                    it.copy(simpleName = "$name.NavArgs", qualifiedName = "$packageName.$name.NavArgs")
+                    it.copy(simpleName = "NavArgs", qualifiedName = "$packageName.$name.NavArgs")
                 } else {
                     it
                 }

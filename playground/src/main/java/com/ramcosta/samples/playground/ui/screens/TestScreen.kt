@@ -85,3 +85,17 @@ class ColorTypeSerializer : DestinationsNavTypeSerializer<Color> {
     override fun fromRouteString(routeStr: String): Color =
         Color(routeStr.toInt())
 }
+
+// Just to test generation of multiple similar destinations
+@Suppress("UNUSED_PARAMETER")
+@Destination
+@Composable
+fun TestScreen2(
+    id: Long = 0,
+    stuff1: ArrayList<String> = arrayListOf(),
+    stuff2: Array<Stuff>?,
+    stuff3: ArrayList<Color>? = arrayListOf(),
+    stuff4: SerializableExampleWithNavTypeSerializer? = SerializableExampleWithNavTypeSerializer(),
+    stuff5: Color,
+    stuff6: OtherThings,
+) { }

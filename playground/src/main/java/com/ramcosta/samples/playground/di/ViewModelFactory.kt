@@ -17,7 +17,9 @@ import com.ramcosta.samples.playground.ui.screens.settings.SettingsViewModel
 
 @Composable
 inline fun <reified VM : ViewModel> DependenciesContainerBuilder<*>.viewModel(navGraphSpec: NavGraphSpec): VM {
-    val parentEntry = remember { navController.getBackStackEntry(navGraphSpec.route) }
+    val parentEntry = remember(navBackStackEntry) {
+        navController.getBackStackEntry(navGraphSpec.route)
+    }
 
     return viewModel(parentEntry, parentEntry)
 }
@@ -49,7 +51,7 @@ class ViewModelFactory(
 ) {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(
+    override fun <T : ViewModel> create(
         key: String,
         modelClass: Class<T>,
         handle: SavedStateHandle
