@@ -54,7 +54,7 @@ inline fun <reified R> NavGraphBuilderDestinationScope<*>.resultBackNavigator(
  */
 @Composable
 inline fun <reified D : DestinationSpec<*>, reified R> NavGraphBuilderDestinationScope<*>.resultRecipient(): ResultRecipient<D, R> =
-    resultRecipient(destination, navBackStackEntry, D::class.java, R::class.java)
+    resultRecipient(navBackStackEntry, D::class.java, R::class.java)
 
 /**
  * Like [NavGraphBuilderDestinationScope] but also [ColumnScope] so that

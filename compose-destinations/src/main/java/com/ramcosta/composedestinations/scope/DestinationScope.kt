@@ -59,7 +59,7 @@ inline fun <reified R> DestinationScope<*>.resultBackNavigator(): ResultBackNavi
  */
 @Composable
 inline fun <reified D : DestinationSpec<*>, reified R> DestinationScope<*>.resultRecipient(): ResultRecipient<D, R> =
-    resultRecipient(destination, navBackStackEntry, D::class.java, R::class.java)
+    resultRecipient(navBackStackEntry, D::class.java, R::class.java)
 
 /**
  * Like [DestinationScope] but also [AnimatedVisibilityScope] so that

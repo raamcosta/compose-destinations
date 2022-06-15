@@ -42,7 +42,7 @@ fun TaskListScreen(
         val tasks by viewModel.tasks.collectAsState()
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().padding(it)
         ) {
             items(tasks) { item ->
                 TaskItem(

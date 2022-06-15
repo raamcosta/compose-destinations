@@ -26,8 +26,8 @@ internal class ResultBackNavigatorImpl<R>(
 
     override fun setResult(result: R) {
         navController.previousBackStackEntry?.savedStateHandle?.let {
-            it.set(canceledKey, false)
-            it.set(resultKey, result)
+            it[canceledKey] = false
+            it[resultKey] = result
         }
     }
 
@@ -51,7 +51,7 @@ internal class ResultBackNavigatorImpl<R>(
                             if (!savedStateHandle.contains(canceledKey)) {
                                 // We set canceled to true when this destination becomes visible
                                 // When a value to be returned is set, we will put the canceled to `false`
-                                savedStateHandle.set(canceledKey, true)
+                                savedStateHandle[canceledKey] = true
                                 currentNavBackStackEntry.lifecycle.removeObserver(this)
                             }
                         }

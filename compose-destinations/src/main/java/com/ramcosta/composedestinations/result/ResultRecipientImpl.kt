@@ -15,7 +15,6 @@ import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
 internal class ResultRecipientImpl<D : DestinationSpec<*>, R>(
-    private val isRecipientDialogStyled: Boolean,
     private val navBackStackEntry: NavBackStackEntry,
     resultOriginType: Class<D>,
     resultType: Class<R>,
@@ -32,15 +31,9 @@ internal class ResultRecipientImpl<D : DestinationSpec<*>, R>(
             val observer = object : LifecycleEventObserver {
                 override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                     when (event) {
-                        Lifecycle.Event.ON_START -> {
-                            // If the destination listening is a Dialog, then we need to consider
-                            // ON_START as well, since moving between Dialogs, don't trigger ON_RESUME
-                            if (isRecipientDialogStyled && hasAnyResult()) {
-                                handleResult(currentListener)
-                            }
-                        }
+                        Lifecycle.Event.ON_START,
                         Lifecycle.Event.ON_RESUME -> {
-                            handleResult(currentListener)
+                            handleResultIfPresent(currentListener)
                         }
 
                         Lifecycle.Event.ON_DESTROY -> {
@@ -60,18 +53,17 @@ internal class ResultRecipientImpl<D : DestinationSpec<*>, R>(
         }
     }
 
-    private fun hasAnyResult(): Boolean {
-        return navBackStackEntry.savedStateHandle.contains(canceledKey) ||
-                navBackStackEntry.savedStateHandle.contains(resultKey)
-    }
+    private fun handleResultIfPresent(listener: (NavResult<R>) -> Unit) {
+        if (!hasAnyResult()) {
+            return
+        }
 
-    private fun handleResult(currentListener: (NavResult<R>) -> Unit) {
         val canceled = navBackStackEntry.savedStateHandle.remove<Boolean>(canceledKey)
 
         if (canceled == true) {
-            currentListener(NavResult.Canceled)
+            listener(NavResult.Canceled)
         } else if (navBackStackEntry.savedStateHandle.contains(resultKey)) {
-            currentListener(
+            listener(
                 NavResult.Value(
                     navBackStackEntry.savedStateHandle.remove<R>(resultKey) as R
                 )
@@ -79,7 +71,12 @@ internal class ResultRecipientImpl<D : DestinationSpec<*>, R>(
         }
     }
 
-    @Suppress("OverridingDeprecatedMember")
+    private fun hasAnyResult(): Boolean {
+        return navBackStackEntry.savedStateHandle.contains(canceledKey) ||
+                navBackStackEntry.savedStateHandle.contains(resultKey)
+    }
+
+    @Suppress("OVERRIDE_DEPRECATION", "OverridingDeprecatedMember")
     @Composable
     override fun onResult(listener: (R) -> Unit) {
         val currentListener by rememberUpdatedState(listener)
