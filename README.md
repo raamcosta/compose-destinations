@@ -26,7 +26,7 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
 
 For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
 
-## Materials
+### Materials
 
 - Philipp Lackner's Youtube video [_Compose Navigation Just Got SO MUCH EASIER_ 😱](https://www.youtube.com/watch?v=Q3iZyW2etm4)
 - Rafael Costa's blog post [_Compose Destinations: simpler and safer navigation in Compose with no compromises_](https://proandroiddev.com/compose-destinations-simpler-and-safer-navigation-in-compose-with-no-compromises-74a59c6b727d)
