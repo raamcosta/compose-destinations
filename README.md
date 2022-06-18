@@ -99,7 +99,7 @@ Compose destinations is available via maven central.
 
 #### 1. Add the KSP plugin:
 
-> ℹ️ The version you chose for the KSP plugin depends on the Kotlin version your project uses. </br>
+> **Note**: The version you chose for the KSP plugin depends on the Kotlin version your project uses. </br>
 You can check https://github.com/google/ksp/releases for the list of KSP versions, then pick the last release that matches your Kotlin version.
 Example:
 If you're using `1.6.21` Kotlin version, then the last KSP version is `1.6.21-1.0.6`.
@@ -128,8 +128,7 @@ plugins {
 
 #### 2. Add the dependencies:
 
-Compose Destinations has two active versions. One uses only stable Compose dependencies and the other uses the latest versions.
-Choose the one that matches your Compose version, looking at this table:
+Compose Destinations has two active versions. One uses only stable Compose dependencies and the other uses the latest versions. Choose the one that matches your Compose version, considering this table:
 
 <table>
  <tr>
@@ -140,7 +139,7 @@ Choose the one that matches your Compose version, looking at this table:
  </tr>
 </table>
 
-> ⚠️ If you choose a version that uses Compose with a higher version then the one you're setting for your app, gradle will upgrade your Compose version via transitive dependency.
+> **Warning**: If you choose a version that uses a higher version of Compose than the one you're setting for your app, gradle will upgrade your Compose version via transitive dependency.
 
 <details open>
   <summary>groovy - build.gradle(:module-name)</summary>
@@ -160,7 +159,7 @@ ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
 ```
 </details>
 
-> ℹ️ If you want to use animations between screens and/or bottom sheet screens, replace above core dependency with: </br>
+> **Note**: If you want to use animations between screens and/or bottom sheet screens, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
 > this will use [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation) and [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/styles-and-animations)
@@ -170,7 +169,7 @@ ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
 See KSP related [issue](https://github.com/google/ksp/issues/37).  
 Here is an example of how to do that for all your build variants (inside `android` block):
 
-> ⚠️ Replace `applicationVariants` with `libraryVariants` if the module uses `'com.android.library'` plugin!
+> **Warning**: Replace `applicationVariants` with `libraryVariants` if the module uses `'com.android.library'` plugin!
 
 <details open>
   <summary>groovy - build.gradle(:module-name)</summary>
