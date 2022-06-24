@@ -59,7 +59,7 @@ class NavArgsGettersWriter(
 
         destinationsWithNavArgs.forEachIndexed { idx, it ->
             sb += "\t\t${importableHelper.addAndGetPlaceholder(it.navArgsImportable!!)}::class.java " +
-                    "-> ${importableHelper.addAndGetPlaceholder(it.destinationImportable)}.argsFrom(savedStateHandle) as T"
+                    "-> ${importableHelper.addAndGetPlaceholder(it.destinationImportable)}.argsFrom(argsContainer) as T"
 
             if (idx < destinationsWithNavArgs.lastIndex) {
                 sb += "\n"
