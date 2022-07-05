@@ -59,7 +59,12 @@ class NavGraphsSingleObjectWriter(
                     destinations = destinations,
                     startRouteFieldName = startingDestination(codeGenConfig, rawGraph.name, destinations, nestedNavGraphs),
                     nestedNavGraphRoutes = nestedNavGraphs.map { it.route },
-                    requireOptInAnnotationTypes = destinations.requireOptInAnnotationClassTypes(),
+                    requireOptInAnnotationTypes = destinations.requireOptInAnnotationClassTypes()
+                        .apply {
+                            nestedNavGraphs.forEach {
+                                addAll(destinationsByNavGraphParams[it]!!.requireOptInAnnotationClassTypes())
+                            }
+                        },
                 )
             }
 
