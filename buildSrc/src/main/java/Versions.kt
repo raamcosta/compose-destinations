@@ -5,13 +5,13 @@ object Versions {
 
     const val kotlin = "1.6.10"
     const val dependencyCheckPlugin = "0.42.0"
-    const val gradlePluginVersion = "7.2.0"
+    const val gradlePluginVersion = "7.2.1"
 
-    const val composeViewModel = "2.4.1"
-    const val activityCompose = "1.4.0"
+    const val composeViewModel = "2.5.0"
+    const val activityCompose = "1.5.0"
 
-    const val material = "1.6.0"
-    const val lifecycleKtx = "2.4.1"
+    const val material = "1.6.1"
+    const val lifecycleKtx = "2.5.0"
     const val lifecycleRuntimeKtx = lifecycleKtx
 
     const val ksp = "1.6.10-1.0.4"
@@ -20,11 +20,11 @@ object Versions {
 
     const val compose = "1.1.1"
     const val composeCompiler = compose
-    const val composeNavigation = "2.4.2"
+    const val composeNavigation = "2.5.0"
     const val accompanist = "0.23.1"
 
-    const val ktxSerialization = "1.3.2"
-    const val mockk = "1.12.3"
+    const val ktxSerialization = "1.3.3"
+    const val mockk = "1.12.4"
 }
 
 object Deps {
