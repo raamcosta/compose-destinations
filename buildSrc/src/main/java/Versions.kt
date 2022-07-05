@@ -18,10 +18,10 @@ object Versions {
 
     const val junit = "4.13.2"
 
-    const val compose = "1.2.0-rc01"
-    const val composeCompiler = compose
+    const val compose = "1.2.0-rc03"
+    const val composeCompiler = "1.2.0-rc02"
     const val composeNavigation = "2.5.0"
-    const val accompanist = "0.24.11-rc"
+    const val accompanist = "0.24.13-rc"
 
     const val ktxSerialization = "1.3.3"
     const val mockk = "1.12.4"
