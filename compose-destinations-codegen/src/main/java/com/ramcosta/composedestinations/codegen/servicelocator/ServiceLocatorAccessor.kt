@@ -76,7 +76,7 @@ internal val ServiceLocatorAccessor.sealedDestinationWriter get() = SealedDestin
     codeGenerator,
 )
 
-internal val ServiceLocatorAccessor.destinationWithNavArgsMapper get() = DestinationWithNavArgsMapper()
+internal val ServiceLocatorAccessor.destinationWithNavArgsMapper get() = DestinationWithNavArgsMapper(logger)
 
 internal val ServiceLocatorAccessor.initialValidator get() = InitialValidator(
     codeGenConfig,

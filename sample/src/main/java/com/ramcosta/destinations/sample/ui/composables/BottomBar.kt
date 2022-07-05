@@ -20,7 +20,6 @@ import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 import com.ramcosta.destinations.sample.NavGraphs
 import com.ramcosta.destinations.sample.R
 import com.ramcosta.destinations.sample.destinations.*
-import com.ramcosta.destinations.sample.startAppDestination
 
 @Composable
 fun BottomBar(
@@ -43,7 +42,7 @@ fun BottomBar(
                         // Pop up to the root of the graph to
                         // avoid building up a large stack of destinations
                         // on the back stack as users select items
-                        popUpTo(NavGraphs.root.startAppDestination) {
+                        popUpTo(NavGraphs.root) {
                             saveState = true
                         }
 

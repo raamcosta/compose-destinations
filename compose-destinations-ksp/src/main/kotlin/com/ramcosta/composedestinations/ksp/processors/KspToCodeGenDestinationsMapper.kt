@@ -233,12 +233,19 @@ class KspToCodeGenDestinationsMapper(
 
     private fun KSValueParameter.toParameter(composableName: String): Parameter {
         val resolvedType = type.resolve()
+        val type = resolvedType.toType(location)
+            ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of " +
+                    "composable $composableName was not resolvable: please review it.")
 
         return Parameter(
-            name!!.asString(),
-            resolvedType.toType(location) ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of composable $composableName was not resolvable: please review it."),
-            hasDefault,
-            lazy { getDefaultValue(resolver) }
+            name = name!!.asString(),
+            type = type,
+            hasDefault = hasDefault,
+            isMarkedNavHostParam = this.annotations.any {
+                it.shortName.asString() == "NavHostParam" &&
+                        it.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_HOST_PARAM_ANNOTATION_QUALIFIED
+            },
+            lazyDefaultValue = lazy { getDefaultValue(resolver) }
         )
     }
 

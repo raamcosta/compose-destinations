@@ -21,10 +21,7 @@ import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.utils.dialogComposable
 import com.ramcosta.samples.playground.commons.DrawerController
 import com.ramcosta.samples.playground.di.viewModel
-import com.ramcosta.samples.playground.ui.screens.Feed
-import com.ramcosta.samples.playground.ui.screens.GoToProfileConfirmation
-import com.ramcosta.samples.playground.ui.screens.NavGraphs
-import com.ramcosta.samples.playground.ui.screens.TestScreen
+import com.ramcosta.samples.playground.ui.screens.*
 import com.ramcosta.samples.playground.ui.screens.destinations.*
 import com.ramcosta.samples.playground.ui.screens.greeting.GreetingScreen
 import com.ramcosta.samples.playground.ui.screens.greeting.GreetingUiEvents
@@ -91,7 +88,8 @@ private fun ManualComposableCallsBuilder.profileScreen() {
 
         ProfileScreen(
             vm as ProfileUiState,
-            vm as ProfileUiEvents
+            vm as ProfileUiEvents,
+            test = "testing param from NavHost"
         )
     }
 }
@@ -171,7 +169,8 @@ fun SampleAppAnimatedNavHostExample(
 
             ProfileScreen(
                 vm as ProfileUiState,
-                vm as ProfileUiEvents
+                vm as ProfileUiEvents,
+                test = "testing param from NavHost"
             )
         }
 

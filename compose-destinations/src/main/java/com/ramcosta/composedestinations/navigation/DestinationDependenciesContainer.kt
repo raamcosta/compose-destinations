@@ -16,12 +16,12 @@ import kotlin.reflect.KClass
  * Each dependency added is associated with a given class (reified in [dependency]). The calling
  * `Destination` can then declare arguments of those class types or super types.
  */
-sealed interface DependenciesContainerBuilder<T>: DestinationScope<T>
+sealed interface DependenciesContainerBuilder<T> : DestinationScope<T>
 
 /**
  * Adds [dependency] to this container builder.
  */
-inline fun <reified D: Any, T> DependenciesContainerBuilder<T>.dependency(dependency: D) {
+inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(dependency: D) {
     (this as DestinationDependenciesContainer<*>).dependency(dependency, asType = D::class)
 }
 
@@ -32,10 +32,11 @@ inline fun <reified D: Any, T> DependenciesContainerBuilder<T>.dependency(depend
  */
 inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
     navGraph: NavGraphSpec,
-    dependencyProvider: () -> D
+    dependencyProvider: () -> D,
 ) {
     if (navBackStackEntry.navGraph().route == navGraph.route) {
-        (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(), asType = D::class)
+        (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(),
+            asType = D::class)
     }
 }
 
@@ -46,10 +47,11 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
  */
 inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
     destination: DestinationSpec<*>,
-    dependencyProvider: () -> D
+    dependencyProvider: () -> D,
 ) {
     if (this.destination.originalDestination.route == destination.originalDestination.route) {
-        (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(), asType = D::class)
+        (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(),
+            asType = D::class)
     }
 }
 
@@ -59,22 +61,24 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
  * [DependenciesContainerBuilder.dependency]
  */
 class DestinationDependenciesContainer<T>(
-    destinationScope: DestinationScope<T>
-): DependenciesContainerBuilder<T>, DestinationScope<T> by destinationScope {
+    destinationScope: DestinationScope<T>,
+) : DependenciesContainerBuilder<T>, DestinationScope<T> by destinationScope {
 
     private val map: MutableMap<Class<*>, Any> = mutableMapOf()
 
-    fun <D: Any> dependency(dependency: D, asType: KClass<in D>) {
+    fun <D : Any> dependency(dependency: D, asType: KClass<in D>) {
         map[asType.java] = dependency
     }
 
-    inline fun <reified D: Any> require(): D {
-        return require(D::class)
+    inline fun <reified D : Any> require(
+        isMarkedNavHostParam: Boolean = false,
+    ): D {
+        return require(D::class, isMarkedNavHostParam)
     }
 
     @Suppress("UNCHECKED_CAST")
     @PublishedApi
-    internal fun <D: Any> require(type: KClass<in D>): D {
+    internal fun <D : Any> require(type: KClass<in D>, isMarkedNavHostParam: Boolean): D {
         var depForType: D? = map[type.java] as? D
 
         if (depForType == null) {
@@ -89,6 +93,13 @@ class DestinationDependenciesContainer<T>(
         }
 
         return depForType
-            ?: throw RuntimeException("${type.java.simpleName} was requested, but it is not present")
+            ?: throw RuntimeException(
+                if (isMarkedNavHostParam) {
+                    "${type.java.simpleName} was requested and it is marked with @NavHostParam but it " +
+                            "was not provided via dependency container"
+                } else {
+                    "${type.java.simpleName} was requested, but it is not present"
+                }
+            )
     }
 }

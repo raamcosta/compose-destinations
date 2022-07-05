@@ -132,7 +132,11 @@ class DestinationContentFunctionWriter(
 
                     !parameter.hasDefault -> {
                         needsDependencyContainer = true
-                        "dependencyContainer.require()"
+                        if (parameter.isMarkedNavHostParam) {
+                            "dependencyContainer.require(true)"
+                        } else {
+                            "dependencyContainer.require()"
+                        }
                     }
 
                     else -> null

@@ -39,7 +39,7 @@ object DestinationsStringNavType : DestinationsNavType<String?>() {
         return when {
             value == null -> ENCODED_NULL
             value.isEmpty() -> ENCODED_EMPTY_STRING
-            else ->  encodeForRoute(value)
+            else -> encodeForRoute(value)
         }
     }
 

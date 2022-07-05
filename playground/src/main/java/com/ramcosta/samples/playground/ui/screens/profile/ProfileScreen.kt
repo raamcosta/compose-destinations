@@ -1,7 +1,6 @@
 package com.ramcosta.samples.playground.ui.screens.profile
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
+import com.ramcosta.composedestinations.annotation.NavHostParam
 
-@OptIn(ExperimentalAnimationApi::class)
 @Destination(
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
@@ -30,7 +29,8 @@ import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 @Composable
 fun AnimatedVisibilityScope.ProfileScreen(
     uiState: ProfileUiState,
-    uiEvents: ProfileUiEvents
+    uiEvents: ProfileUiEvents,
+    @NavHostParam test: String
 ) {
     Box(
         modifier = Modifier
