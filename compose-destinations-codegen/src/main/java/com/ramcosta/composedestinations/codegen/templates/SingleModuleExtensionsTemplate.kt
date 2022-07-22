@@ -39,26 +39,39 @@ data class $GENERATED_NAV_GRAPH(
     override val route: String,
     override val startRoute: Route,
     val destinations: List<$typeAliasDestination>,
-    override val nestedNavGraphs: List<$GENERATED_NAV_GRAPH> = emptyList(),
-    override val parent: String?
+    override val nestedNavGraphs: List<$GENERATED_NAV_GRAPH> = emptyList()
 ): $CORE_NAV_GRAPH_SPEC {
     override val destinationsByRoute: Map<String, $typeAliasDestination> = destinations.associateBy { it.route }
 }
 
-val DestinationSpec<*>.parent: NavGraph
-    get() {
-        val parent = NavGraphs.all.find {
-            it.destinations.contains(this)
-        }
-
-        return parent
-            ?: throw InvalidObjectException("The calling object should always have a parent!")
+/**
+ * Return the parent of this [Destination][DestinationSpec] by searching through the [NavGraph]s in
+ * the [NavGraphs] object.
+ *
+ * This variable should **NEVER** be null. If `first { ... }` throws a [NoSuchElementException], it
+ * means this [Destination][DestinationSpec] somehow isn't part of a [NavGraph].
+ */
+val $CORE_DESTINATION_SPEC<*>.parent: $GENERATED_NAV_GRAPH
+    get() = $GENERATED_NAV_GRAPHS_OBJECT.all.first {
+        it.destinations.contains(this)
     }
 
-val $CORE_NAV_GRAPH_SPEC.parent: NavGraph?
-    get() = NavGraphs.all.find {
+/**
+ * Return the parent of this [NavGraphSpec] by searching through the [NavGraph]s'
+ * [NavGraph.nestedNavGraphs] in the [NavGraphs] object.
+ */
+val $CORE_NAV_GRAPH_SPEC.parent: $GENERATED_NAV_GRAPH?
+    get() = $GENERATED_NAV_GRAPHS_OBJECT.all.find {
         it.nestedNavGraphs.contains(this)
     }
+   
+/**
+ * Provides a sequence of the [DestinationSpec]'s hierarchy. The hierarchy starts with this
+ * [DestinationSpec]'s [parent][DestinationSpec.parent] [NavGraph], then that graph's parent, and up 
+ * the hierarchy until you've reached the root navigation graph.
+ */
+val $CORE_DESTINATION_SPEC<*>.hierarchy: Sequence<$GENERATED_NAV_GRAPH>
+    get() = generateSequence(this.parent) { it.parent }
 
 /**
  * If this [Route] is a [$typeAliasDestination], returns it

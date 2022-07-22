@@ -64,16 +64,13 @@ class LegacyNavGraphsSingleObjectWriter(
         val nestedGraphsAnchor = "[NESTED_GRAPHS]"
         val requireOptInAnnotationsAnchor = "[REQUIRE_OPT_IN_ANNOTATIONS_ANCHOR]"
 
-        val parent = if (route == "root") "null" else "\"${navGraphParams.parent}\""
-
         return """
        |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(route)} = $GENERATED_NAV_GRAPH(
        |        route = "$route",
        |        startRoute = ${startRouteFieldName},
        |        destinations = listOf(
        |            $destinationsAnchor
-       |        )${if (nestedNavGraphRoutes.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"},
-       |        parent = $parent
+       |        )${if (nestedNavGraphRoutes.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"}
        |    )
         """.trimMargin()
             .replace(destinationsAnchor, destinationsInsideList(destinations))
@@ -158,8 +155,7 @@ class LegacyNavGraphsSingleObjectWriter(
                     destinations = it.value,
                     startRouteFieldName = legacyStartingDestination(navGraphRoute, it.value),
                     nestedNavGraphRoutes = emptyList(),
-                    requireOptInAnnotationTypes = requireOptInClassTypes,
-                    parent = it.key
+                    requireOptInAnnotationTypes = requireOptInClassTypes
                 )
             )
         }
@@ -172,8 +168,7 @@ class LegacyNavGraphsSingleObjectWriter(
                 nestedNavGraphRoutes = nestedNavGraphs,
                 requireOptInAnnotationTypes = rootDestinations.orEmpty()
                     .requireOptInAnnotationClassTypes()
-                    .apply { addAll(nestedNavGraphsRequireOptInAnnotations) },
-                parent = null
+                    .apply { addAll(nestedNavGraphsRequireOptInAnnotations) }
             )
         )
 

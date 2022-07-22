@@ -9,7 +9,6 @@ import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 const val DESTINATION_NAME = "[DESTINATION_NAME]"
 const val BASE_ROUTE = "[ROUTE_ID]"
 const val COMPOSED_ROUTE = "[COMPOSED_ROUTE]"
-const val DESTINATION_PARENT = "[DESTINATION_PARENT]"
 const val NAV_ARGUMENTS = "[NAV_ARGUMENTS]"
 const val DEEP_LINKS = "[DEEP_LINKS]"
 const val DESTINATION_STYLE = "[DESTINATION_STYLE]"
@@ -48,8 +47,6 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $SUPERTYPE {
     override val baseRoute = "$BASE_ROUTE"
 
     override val route = $COMPOSED_ROUTE
-    
-    override val parent = $DESTINATION_PARENT
     $NAV_ARGUMENTS$DEEP_LINKS$DESTINATION_STYLE
     @Composable
     override fun DestinationScope<$NAV_ARGS_CLASS_SIMPLE_NAME>.Content(

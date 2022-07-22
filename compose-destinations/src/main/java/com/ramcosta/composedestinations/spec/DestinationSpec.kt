@@ -66,11 +66,6 @@ interface DestinationSpec<T> : Route {
     val deepLinks: List<NavDeepLink> get() = emptyList()
 
     /**
-     * The parent [NavGraph][NavGraphSpec] of the current destination
-     */
-    val parent: NavGraphSpec
-
-    /**
      * Style of this destination. It can be one of:
      * - [DestinationStyle.Default]
      * - [DestinationStyle.Animated]

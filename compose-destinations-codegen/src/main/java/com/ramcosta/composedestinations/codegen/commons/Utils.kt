@@ -33,9 +33,3 @@ fun String.sanitizePackageName(): String {
 
 private val humps = "(?<=.)(?=\\p{Upper})".toRegex()
 fun String.toSnakeCase() = replace(humps, "_").lowercase(Locale.US)
-
-fun String.asNavGraphName(): String {
-    var lower = this.lowercase(Locale.US)
-    lower = lower.replace("navgraph", "")
-    return this.substring(0, lower.length).replaceFirstChar { it.lowercase() }
-}
