@@ -51,6 +51,8 @@ infix fun <T> DestinationSpec<T>.routedIn(navGraph: NavGraphSpec): DestinationSp
         override val route = "${navGraph.route}/${this@routedIn.route}"
 
         override val originalDestination = this@routedIn.originalDestination
+
+        override val parent: NavGraphSpec = navGraph
     }
 }
 

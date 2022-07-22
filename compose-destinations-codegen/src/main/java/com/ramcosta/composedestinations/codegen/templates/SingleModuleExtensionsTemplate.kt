@@ -39,10 +39,26 @@ data class $GENERATED_NAV_GRAPH(
     override val route: String,
     override val startRoute: Route,
     val destinations: List<$typeAliasDestination>,
-    override val nestedNavGraphs: List<$GENERATED_NAV_GRAPH> = emptyList()
+    override val nestedNavGraphs: List<$GENERATED_NAV_GRAPH> = emptyList(),
+    override val parent: String?
 ): $CORE_NAV_GRAPH_SPEC {
     override val destinationsByRoute: Map<String, $typeAliasDestination> = destinations.associateBy { it.route }
 }
+
+val DestinationSpec<*>.parent: NavGraph
+    get() {
+        val parent = NavGraphs.all.find {
+            it.destinations.contains(this)
+        }
+
+        return parent
+            ?: throw InvalidObjectException("The calling object should always have a parent!")
+    }
+
+val $CORE_NAV_GRAPH_SPEC.parent: NavGraph?
+    get() = NavGraphs.all.find {
+        it.nestedNavGraphs.contains(this)
+    }
 
 /**
  * If this [Route] is a [$typeAliasDestination], returns it

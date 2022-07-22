@@ -5,5 +5,6 @@ data class NavGraphGeneratingParams(
     val destinations: List<GeneratedDestination>,
     val startRouteFieldName: String,
     val nestedNavGraphRoutes: List<String>,
-    val requireOptInAnnotationTypes: Set<Importable>
+    val requireOptInAnnotationTypes: Set<Importable>,
+    val parent: String?
 )

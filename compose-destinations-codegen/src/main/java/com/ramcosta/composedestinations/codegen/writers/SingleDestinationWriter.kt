@@ -51,6 +51,7 @@ class SingleDestinationWriter(
                 .replace(BASE_ROUTE, destination.cleanRoute)
                 .replace(NAV_ARGS_CLASS_SIMPLE_NAME, navArgsDataClassName())
                 .replace(COMPOSED_ROUTE, constructRouteFieldCode())
+                .replace(DESTINATION_PARENT, parentNavGraph())
                 .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
                 .replace(DEEP_LINKS, deepLinksDeclarationCode())
                 .replace(DESTINATION_STYLE, destinationStyle())
@@ -351,6 +352,30 @@ class SingleDestinationWriter(
             navArgs,
             importableHelper
         ).write()
+    }
+
+    private fun parentNavGraph(): String {
+        return when (val navGraph = destination.navGraphInfo) {
+            is NavGraphInfo.Legacy -> {
+                // Get the NavGraph object from its route
+                importableHelper.addAndGetPlaceholder(
+                    Importable(
+                        navGraph.navGraphRoute,
+                        "$codeGenBasePackageName.$GENERATED_NAV_GRAPHS_OBJECT.${navGraph.navGraphRoute}"
+                    )
+                )
+            }
+            is NavGraphInfo.AnnotatedSource -> {
+                // Get the NavGraph object from its route too
+                navGraph.graphType.toString()
+                importableHelper.addAndGetPlaceholder(
+                    Importable(
+                        navGraph.graphType.simpleName.asNavGraphName(),
+                        "$codeGenBasePackageName.$GENERATED_NAV_GRAPHS_OBJECT.${navGraph.graphType.simpleName.asNavGraphName()}"
+                    )
+                )
+            }
+        }
     }
 
     private fun navArgumentsDeclarationCode(): String {

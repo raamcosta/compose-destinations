@@ -9,6 +9,7 @@ import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 
 const val NAV_GRAPHS_PLACEHOLDER = "[NAV_GRAPHS_PLACEHOLDER]"
+const val NAV_GRAPHS_LIST_PLACEHOLDER = "[NAV_GRAPHS_LIST_PLACEHOLDER]"
 
 val navGraphsObjectTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName",
@@ -24,6 +25,8 @@ val navGraphsObjectTemplate = FileTemplate(
 object $GENERATED_NAV_GRAPHS_OBJECT {
 
 $NAV_GRAPHS_PLACEHOLDER
+
+$NAV_GRAPHS_LIST_PLACEHOLDER
 }
 """.trimIndent()
 )

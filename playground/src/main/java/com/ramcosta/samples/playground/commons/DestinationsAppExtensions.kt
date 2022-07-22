@@ -9,8 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.samples.playground.R
+import com.ramcosta.samples.playground.ui.screens.NavGraph
+import com.ramcosta.samples.playground.ui.screens.NavGraphs
 import com.ramcosta.samples.playground.ui.screens.destinations.*
+import java.io.InvalidObjectException
 
 @Composable
 fun DirectionDestination.DrawerContent(
@@ -55,4 +59,13 @@ val Destination.title
             TestScreenDestination -> null
             TestScreen2Destination -> null
         }
+    }
+
+val DestinationSpec<*>.parent: NavGraph
+    get() {
+        val parent =  NavGraphs.all.find {
+            it.destinations.contains(this)
+        }
+
+        return parent ?: throw InvalidObjectException("The calling object should always have a parent!")
     }

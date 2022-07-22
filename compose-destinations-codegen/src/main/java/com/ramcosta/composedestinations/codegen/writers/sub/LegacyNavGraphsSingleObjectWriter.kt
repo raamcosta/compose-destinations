@@ -8,10 +8,12 @@ import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavGraphGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_LIST_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
+import java.util.Collections.addAll
 
 class LegacyNavGraphsSingleObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
@@ -31,6 +33,7 @@ class LegacyNavGraphsSingleObjectWriter(
             importableHelper = importableHelper,
             sourceCode = navGraphsObjectTemplate.sourceCode
                 .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(navGraphsParams))
+                .replace(NAV_GRAPHS_LIST_PLACEHOLDER, navGraphsListDeclaration(navGraphsParams))
         )
 
         return navGraphsParams
@@ -61,13 +64,16 @@ class LegacyNavGraphsSingleObjectWriter(
         val nestedGraphsAnchor = "[NESTED_GRAPHS]"
         val requireOptInAnnotationsAnchor = "[REQUIRE_OPT_IN_ANNOTATIONS_ANCHOR]"
 
+        val parent = if (route == "root") "null" else "\"${navGraphParams.parent}\""
+
         return """
        |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(route)} = $GENERATED_NAV_GRAPH(
        |        route = "$route",
        |        startRoute = ${startRouteFieldName},
        |        destinations = listOf(
        |            $destinationsAnchor
-       |        )${if (nestedNavGraphRoutes.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"}
+       |        )${if (nestedNavGraphRoutes.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"},
+       |        parent = $parent
        |    )
         """.trimMargin()
             .replace(destinationsAnchor, destinationsInsideList(destinations))
@@ -77,6 +83,19 @@ class LegacyNavGraphsSingleObjectWriter(
                 requireOptInAnnotations(requireOptInAnnotationTypes)
             )
 
+    }
+
+    private fun navGraphsListDeclaration(navGraphsParams: List<NavGraphGeneratingParams>): String {
+        val navGraphsAnchor = "[NAV_GRAPHS]"
+        val navGraphFieldNames = navGraphsParams.joinToString(",\n\t\t") {
+            navGraphFieldName(it.route)
+        }
+        return """
+       |    val all: List<$GENERATED_NAV_GRAPH> = listOf(
+       |        $navGraphsAnchor
+       |    )
+        """.trimMargin()
+            .replace(navGraphsAnchor, navGraphFieldNames)
     }
 
     private fun requireOptInAnnotations(navGraphRequireOptInImportables: Set<Importable>): String {
@@ -139,7 +158,8 @@ class LegacyNavGraphsSingleObjectWriter(
                     destinations = it.value,
                     startRouteFieldName = legacyStartingDestination(navGraphRoute, it.value),
                     nestedNavGraphRoutes = emptyList(),
-                    requireOptInAnnotationTypes = requireOptInClassTypes
+                    requireOptInAnnotationTypes = requireOptInClassTypes,
+                    parent = it.key
                 )
             )
         }
@@ -152,7 +172,8 @@ class LegacyNavGraphsSingleObjectWriter(
                 nestedNavGraphRoutes = nestedNavGraphs,
                 requireOptInAnnotationTypes = rootDestinations.orEmpty()
                     .requireOptInAnnotationClassTypes()
-                    .apply { addAll(nestedNavGraphsRequireOptInAnnotations) }
+                    .apply { addAll(nestedNavGraphsRequireOptInAnnotations) },
+                parent = null
             )
         )
 

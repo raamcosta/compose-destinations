@@ -17,6 +17,11 @@ interface NavGraphSpec: Direction, Route {
     val startRoute: Route
 
     /**
+     * The parent route of the current NavGraph if any
+     */
+    val parent: String?
+
+    /**
      * All destinations which belong to this navigation graph
      * by their route
      */
