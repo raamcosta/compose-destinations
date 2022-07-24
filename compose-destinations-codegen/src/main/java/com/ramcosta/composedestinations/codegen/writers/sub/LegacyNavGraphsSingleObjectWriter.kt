@@ -3,10 +3,9 @@ package com.ramcosta.composedestinations.codegen.writers.sub
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.model.Importable
-import com.ramcosta.composedestinations.codegen.model.NavGraphGeneratingParams
+import com.ramcosta.composedestinations.codegen.model.LegacyNavGraphGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
@@ -15,12 +14,11 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 
 class LegacyNavGraphsSingleObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val logger: Logger,
 ) {
 
     private val importableHelper = ImportableHelper(navGraphsObjectTemplate.imports)
 
-    fun write(generatedDestinations: List<GeneratedDestination>): List<NavGraphGeneratingParams> {
+    fun write(generatedDestinations: List<GeneratedDestination>): List<LegacyNavGraphGeneratingParams> {
         val navGraphsParams = generatedDestinations.mapToNavGraphs()
         codeGenerator.makeFile(
             packageName = codeGenBasePackageName,
@@ -36,7 +34,7 @@ class LegacyNavGraphsSingleObjectWriter(
         return navGraphsParams
     }
 
-    private fun navGraphsDeclaration(navGraphsParams: List<NavGraphGeneratingParams>): String {
+    private fun navGraphsDeclaration(navGraphsParams: List<LegacyNavGraphGeneratingParams>): String {
         val navGraphsDeclaration = StringBuilder()
 
         navGraphsParams.forEachIndexed { idx, navGraphParams ->
@@ -51,7 +49,7 @@ class LegacyNavGraphsSingleObjectWriter(
     }
 
     private fun navGraphDeclaration(
-        navGraphParams: NavGraphGeneratingParams
+        navGraphParams: LegacyNavGraphGeneratingParams
     ): String = with(navGraphParams) {
         if (route == "root" && destinations.isEmpty()) {
             return "\tval root: NavGraph = throw RuntimeException(\"No found destinations for 'root' navigation graph\")"
@@ -117,8 +115,8 @@ class LegacyNavGraphsSingleObjectWriter(
         return code.toString()
     }
 
-    private fun List<GeneratedDestination>.mapToNavGraphs(): List<NavGraphGeneratingParams> {
-        val result = mutableListOf<NavGraphGeneratingParams>()
+    private fun List<GeneratedDestination>.mapToNavGraphs(): List<LegacyNavGraphGeneratingParams> {
+        val result = mutableListOf<LegacyNavGraphGeneratingParams>()
         val destinationsByNavGraph: MutableMap<String, List<GeneratedDestination>> =
             groupBy { (it.navGraphInfo as NavGraphInfo.Legacy).navGraphRoute }.toMutableMap()
 
@@ -134,7 +132,7 @@ class LegacyNavGraphsSingleObjectWriter(
             nestedNavGraphsRequireOptInAnnotations.addAll(requireOptInClassTypes)
 
             result.add(
-                NavGraphGeneratingParams(
+                LegacyNavGraphGeneratingParams(
                     route = navGraphRoute,
                     destinations = it.value,
                     startRouteFieldName = legacyStartingDestination(navGraphRoute, it.value),
@@ -145,7 +143,7 @@ class LegacyNavGraphsSingleObjectWriter(
         }
 
         result.add(
-            NavGraphGeneratingParams(
+            LegacyNavGraphGeneratingParams(
                 route = "root",
                 destinations = rootDestinations.orEmpty(),
                 startRouteFieldName = legacyStartingDestination("root", rootDestinations.orEmpty()),

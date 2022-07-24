@@ -5,7 +5,6 @@ import com.ramcosta.composedestinations.codegen.codeGenDestination
 import com.ramcosta.composedestinations.codegen.codeGenNoArgsDestination
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
@@ -15,7 +14,6 @@ import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFu
 
 class SingleDestinationWriter(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val logger: Logger,
     private val core: Core,
     private val navArgResolver: NavArgResolver,
     private val destination: DestinationGeneratingParamsWithNavArgs,

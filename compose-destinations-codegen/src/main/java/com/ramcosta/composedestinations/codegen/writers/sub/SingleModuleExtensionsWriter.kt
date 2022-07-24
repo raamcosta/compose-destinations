@@ -3,7 +3,6 @@ package com.ramcosta.composedestinations.codegen.writers.sub
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.NavGraphGeneratingParams
 import com.ramcosta.composedestinations.codegen.templates.*
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
@@ -12,7 +11,6 @@ import java.io.OutputStream
 
 class SingleModuleExtensionsWriter(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val logger: Logger
 ) {
 
     private val importableHelper = ImportableHelper(singleModuleExtensionsTemplate.imports)
@@ -32,7 +30,7 @@ class SingleModuleExtensionsWriter(
                     ?: throw UnexpectedException("Check your NavGraphs annotations and their imports!")
             }
 
-        val rootLevelNavGraphs = generatedNavGraphs - nestedNavGraphs
+        val rootLevelNavGraphs = generatedNavGraphs - nestedNavGraphs.toSet()
 
         code = if (generatedNavGraphs.isNotEmpty() && rootLevelNavGraphs.size == 1) {
             val requireOptInAnnotationTypes = rootLevelNavGraphs.first().requireOptInAnnotationTypes

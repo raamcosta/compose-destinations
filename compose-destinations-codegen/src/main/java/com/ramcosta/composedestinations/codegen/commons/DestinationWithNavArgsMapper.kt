@@ -1,12 +1,12 @@
 package com.ramcosta.composedestinations.codegen.commons
 
 import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
+import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
 
-class DestinationWithNavArgsMapper(private val logger: Logger) {
+class DestinationWithNavArgsMapper {
 
     fun map(destinations: List<DestinationGeneratingParams>): List<DestinationGeneratingParamsWithNavArgs> {
         return destinations.map {
@@ -39,7 +39,7 @@ class DestinationWithNavArgsMapper(private val logger: Logger) {
     private fun Parameter.isNavArg(): Boolean {
         if (isMarkedNavHostParam) {
             if (!type.isNavArgType()) {
-                logger.info("Parameter ${this.name}: annotation @NavHostParam is redundant since it" +
+                Logger.instance.info("Parameter ${this.name}: annotation @NavHostParam is redundant since it" +
                         " is not a navigation argument type anyway.")
             }
             return false

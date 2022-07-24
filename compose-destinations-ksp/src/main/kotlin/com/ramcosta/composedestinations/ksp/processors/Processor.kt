@@ -7,6 +7,7 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.*
 import com.ramcosta.composedestinations.codegen.CodeGenerator
 import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.model.ClassKind
 import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
@@ -19,11 +20,12 @@ class Processor(
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        Logger.instance = KspLogger(logger)
+
         val annotatedDestinations = resolver.getComposableDestinations()
         if (!annotatedDestinations.iterator().hasNext()) {
             return emptyList()
         }
-        val kspLogger = KspLogger(logger)
 
         val navTypeSerializers = resolver.getNavTypeSerializers()
         val navGraphAnnotations = resolver.getNavGraphAnnotations()
@@ -33,7 +35,6 @@ class Processor(
 
         val functionsToDestinationsMapper = KspToCodeGenDestinationsMapper(
             resolver,
-            kspLogger,
             navTypeSerializers.associateBy { it.genericType }
         )
         val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, functionsToDestinationsMapper)
@@ -41,7 +42,6 @@ class Processor(
         val destinations = functionsToDestinationsMapper.map(annotatedDestinations)
 
         CodeGenerator(
-            logger = kspLogger,
             codeGenerator = kspCodeOutputStreamMaker,
             core = resolver.getCoreType(),
             codeGenConfig = ConfigParser(logger, options).parse()
