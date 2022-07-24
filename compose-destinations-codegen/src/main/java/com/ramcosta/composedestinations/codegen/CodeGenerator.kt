@@ -18,7 +18,6 @@ internal val codeGenDestination get() = _generatedDestination ?: CORE_DESTINATIO
 internal val codeGenNoArgsDestination get() = _generatedNoArgsDestination ?: CORE_DIRECTION_DESTINATION_SPEC
 
 class CodeGenerator(
-    override val logger: Logger,
     override val codeGenerator: CodeOutputStreamMaker,
     override val core: Core,
     override val codeGenConfig: CodeGenConfig

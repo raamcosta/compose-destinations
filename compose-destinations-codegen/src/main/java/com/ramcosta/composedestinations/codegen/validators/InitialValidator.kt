@@ -6,7 +6,6 @@ import com.ramcosta.composedestinations.codegen.model.*
 
 class InitialValidator(
     private val codeGenConfig: CodeGenConfig,
-    private val logger: Logger,
     private val core: Core
 ) {
 
@@ -79,14 +78,14 @@ class InitialValidator(
             when (val info = navGraphInfo) {
                 is NavGraphInfo.Legacy -> {
                     if (info.navGraphRoute != "root") {
-                        logger.warn(
+                        Logger.instance.warn(
                             "'${composableName}' composable: a navGraph was set but it will be ignored. " +
                                     "Reason: nav graphs generation was disabled by ksp gradle configuration."
                         )
                     }
 
                     if (info.start) {
-                        logger.warn(
+                        Logger.instance.warn(
                             "'${composableName}' composable: destination was set as the start destination but that will be ignored. " +
                                     "Reason: nav graphs generation was disabled by ksp gradle configuration."
                         )
@@ -94,7 +93,7 @@ class InitialValidator(
                 }
 
                 is NavGraphInfo.AnnotatedSource -> {
-                    logger.warn(
+                    Logger.instance.warn(
                         "'${composableName}' composable: is annotated with a `NavGraph` annotation, but it will be ignored." +
                                 "Reason: nav graphs generation was disabled by ksp gradle configuration."
                     )
@@ -264,10 +263,10 @@ class InitialValidator(
 
         if (navGraphRoute == "root") {
             // user didn't change navGraph, so he changed start to true, so:
-            logger.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.\n" +
+            Logger.instance.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.\n" +
                     "Use '@RootNavGraph(start = true)' instead.")
         } else {
-            logger.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.\n" +
+            Logger.instance.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.\n" +
                 "Use '@MyNavGraph${if (isStart) "(start = true)" else ""}' instead, replacing \"My\" with the nav graph name " +
                     "(Read about nav graph annotations in documentation website under the nav graph definition section).")
         }

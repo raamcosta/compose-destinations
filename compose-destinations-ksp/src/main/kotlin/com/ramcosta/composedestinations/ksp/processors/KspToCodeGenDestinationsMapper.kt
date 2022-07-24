@@ -5,13 +5,11 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.*
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.model.*
-import com.ramcosta.composedestinations.ksp.codegen.KspLogger
 import com.ramcosta.composedestinations.ksp.commons.*
 import java.io.File
 
 class KspToCodeGenDestinationsMapper(
     private val resolver: Resolver,
-    private val logger: KspLogger,
     private val navTypeSerializersByType: Map<Importable, NavTypeSerializer>,
 ) : KSFileSourceMapper {
 

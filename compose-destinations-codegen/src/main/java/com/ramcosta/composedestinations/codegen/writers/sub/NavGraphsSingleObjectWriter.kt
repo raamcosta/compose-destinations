@@ -3,7 +3,6 @@ package com.ramcosta.composedestinations.codegen.writers.sub
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
@@ -12,7 +11,6 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 
 class NavGraphsSingleObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val logger: Logger,
     private val codeGenConfig: CodeGenConfig,
 ) {
 
@@ -45,16 +43,13 @@ class NavGraphsSingleObjectWriter(
                     }
                 )
             }
-            .mapNotNull { rawGraph ->
+            .map { rawGraph ->
 
                 val destinations = destinationsByNavGraphParams[rawGraph].orEmpty()
                 val nestedNavGraphs = navGraphsByParentType[rawGraph.type].orEmpty()
 
-                if (destinations.isEmpty() && nestedNavGraphs.isEmpty()) {
-                    return@mapNotNull null
-                }
-
-                NavGraphGeneratingParams(
+                NavGraphGeneratingParamsImpl(
+                    rawParams = rawGraph,
                     route = rawGraph.route,
                     destinations = destinations,
                     startRouteFieldName = startingDestination(codeGenConfig, rawGraph.name, destinations, nestedNavGraphs),
@@ -62,11 +57,13 @@ class NavGraphsSingleObjectWriter(
                     requireOptInAnnotationTypes = destinations.requireOptInAnnotationClassTypes()
                         .apply {
                             nestedNavGraphs.forEach {
-                                addAll(destinationsByNavGraphParams[it]!!.requireOptInAnnotationClassTypes())
+                                addAll(destinationsByNavGraphParams[it].orEmpty().requireOptInAnnotationClassTypes())
                             }
                         },
                 )
             }
+
+        checkUniquenessOnNavGraphFieldNames(orderedNavGraphGenParams)
 
         writeFile(generatedDestinations, orderedNavGraphGenParams)
 
@@ -102,6 +99,24 @@ class NavGraphsSingleObjectWriter(
         }
 
         return navGraphsDeclaration.toString()
+    }
+
+    private fun checkUniquenessOnNavGraphFieldNames(navGraphsParams: List<NavGraphGeneratingParamsImpl>) {
+        val nonUniqueFieldNames = navGraphsParams.groupBy { navGraphFieldName(it.route) }
+            .filter {
+                it.value.size > 1
+            }.flatMap {
+                it.value
+            }.map {
+                it.rawParams.type.simpleName
+            }
+
+        if (nonUniqueFieldNames.isNotEmpty()) {
+            throw IllegalDestinationsSetup(
+                "NavGraphs $nonUniqueFieldNames result in the same field for the NavGraphs " +
+                        "final object. Use only letters in your NavGraph annotations!"
+            )
+        }
     }
 
     private fun navGraphDeclaration(

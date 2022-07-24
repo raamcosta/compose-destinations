@@ -16,7 +16,6 @@ import java.util.*
 
 class CustomNavTypesWriter(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val logger: Logger,
 ) {
     private val typesForNavTypeName: MutableMap<Type, CustomNavType> = mutableMapOf()
     private val parcelableImportable = Importable(

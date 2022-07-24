@@ -11,4 +11,8 @@ interface Logger {
     fun error(message: String)
 
     fun exception(e: Throwable)
+
+    companion object {
+        lateinit var instance: Logger
+    }
 }
