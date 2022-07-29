@@ -4,7 +4,7 @@ import com.ramcosta.composedestinations.dynamic.originalDestination
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
-import com.ramcosta.composedestinations.utils.navGraph
+import com.ramcosta.composedestinations.utils.findDestination
 import kotlin.reflect.KClass
 
 /**
@@ -34,7 +34,9 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
     navGraph: NavGraphSpec,
     dependencyProvider: () -> D,
 ) {
-    if (navBackStackEntry.navGraph().route == navGraph.route) {
+    val route = requireNotNull(navBackStackEntry.destination.route)
+
+    if (navGraph.findDestination(route) != null) {
         (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(),
             asType = D::class)
     }
@@ -42,8 +44,8 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
 
 /**
  * Adds [dependencyProvider] return object to this container builder.
- * If [navGraph] is passed in, then only provides the dependency to destinations
- * that belongs to it.
+ * If [destination] is passed in, then only provides the dependency in case that is the
+ * destination being navigated to.
  */
 inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
     destination: DestinationSpec<*>,
