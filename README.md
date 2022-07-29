@@ -128,7 +128,9 @@ plugins {
 
 #### 2. Add the dependencies:
 
-Compose Destinations has two active versions. One uses only stable Compose dependencies and the other uses the latest versions. Choose the one that matches your Compose version, considering this table:
+Compose Destinations has multiple active versions. 
+The higher one uses the latest versions for Compose and Accompanist, while the others use only stable versions.
+Choose the one that matches your Compose version, considering this table:
 
 <table>
  <tr>
@@ -136,6 +138,9 @@ Compose Destinations has two active versions. One uses only stable Compose depen
  </tr>
  <tr>
   <td>Compose 1.2 (1.2.x)</td><td><img alt="Maven Central" src="https://img.shields.io/maven-metadata/v?versionPrefix=1.6&color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/io/github/raamcosta/compose-destinations/core/maven-metadata.xml&style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)"></td>
+ </tr>
+ <tr>
+  <td>Compose 1.3 (1.3.x)</td><td><img alt="Maven Central" src="https://img.shields.io/maven-metadata/v?versionPrefix=1.7&color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/io/github/raamcosta/compose-destinations/core/maven-metadata.xml&style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)"></td>
  </tr>
 </table>
 

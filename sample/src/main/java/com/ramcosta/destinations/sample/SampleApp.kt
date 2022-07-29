@@ -1,6 +1,5 @@
 package com.ramcosta.destinations.sample
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -32,8 +31,16 @@ fun SampleApp() {
     SampleScaffold(
         navController = navController,
         startRoute = startRoute,
-        topBar = { dest, backStackEntry -> AnimatedVisibility(dest.shouldShowScaffoldElements) { TopBar(dest, backStackEntry) } },
-        bottomBar = { AnimatedVisibility(it.shouldShowScaffoldElements) { BottomBar(navController) } }
+        topBar = { dest, backStackEntry ->
+            if (dest.shouldShowScaffoldElements) {
+                TopBar(dest, backStackEntry)
+            }
+        },
+        bottomBar = {
+            if (it.shouldShowScaffoldElements) {
+                BottomBar(navController)
+            }
+        }
     ) {
         DestinationsNavHost(
             engine = engine,
