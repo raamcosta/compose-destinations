@@ -3,28 +3,28 @@ object Versions {
     const val compileSdk = 32
     const val targetSdk = compileSdk
 
-    const val kotlin = "1.6.21"
+    const val kotlin = "1.7.0"
     const val dependencyCheckPlugin = "0.42.0"
     const val gradlePluginVersion = "7.2.1"
 
-    const val composeViewModel = "2.5.0"
-    const val activityCompose = "1.5.0"
+    const val composeViewModel = "2.5.1"
+    const val activityCompose = "1.5.1"
 
     const val material = "1.6.1"
-    const val lifecycleKtx = "2.5.0"
+    const val lifecycleKtx = "2.5.1"
     const val lifecycleRuntimeKtx = lifecycleKtx
 
-    const val ksp = "1.6.21-1.0.6"
+    const val ksp = "1.7.0-1.0.6"
 
     const val junit = "4.13.2"
 
-    const val compose = "1.2.0-rc03"
-    const val composeCompiler = "1.2.0-rc02"
-    const val composeNavigation = "2.5.0"
-    const val accompanist = "0.24.13-rc"
+    const val compose = "1.2.0"
+    const val composeCompiler = "1.2.0"
+    const val composeNavigation = "2.5.1"
+    const val accompanist = "0.25.0"
 
     const val ktxSerialization = "1.3.3"
-    const val mockk = "1.12.4"
+    const val mockk = "1.12.5"
 }
 
 object Deps {
