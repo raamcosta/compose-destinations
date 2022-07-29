@@ -22,6 +22,7 @@ import com.ramcosta.composedestinations.result.EmptyResultRecipient
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.samples.playground.commons.SettingsNavGraph
 import com.ramcosta.samples.playground.commons.requireTitle
+import com.ramcosta.samples.playground.ui.screens.NavGraphs
 import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
 import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
@@ -60,6 +61,12 @@ fun SettingsScreen(
                 onClick = { navigator.navigate(ThemeSettingsDestination) }
             ) {
                 Text(text = stringResource(id = ThemeSettingsDestination.requireTitle))
+            }
+
+            Button(
+                onClick = { navigator.navigate(NavGraphs.profileSettings) }
+            ) {
+                Text(text = "Navigate to Profile Settings nav graph")
             }
 
             Text(
