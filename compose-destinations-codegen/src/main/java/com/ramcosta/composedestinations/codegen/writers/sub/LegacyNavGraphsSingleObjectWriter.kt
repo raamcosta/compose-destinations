@@ -7,10 +7,12 @@ import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.LegacyNavGraphGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_LIST_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
+import java.util.Collections.addAll
 
 class LegacyNavGraphsSingleObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
@@ -29,6 +31,7 @@ class LegacyNavGraphsSingleObjectWriter(
             importableHelper = importableHelper,
             sourceCode = navGraphsObjectTemplate.sourceCode
                 .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(navGraphsParams))
+                .replace(NAV_GRAPHS_LIST_PLACEHOLDER, navGraphsListDeclaration(navGraphsParams))
         )
 
         return navGraphsParams
@@ -75,6 +78,19 @@ class LegacyNavGraphsSingleObjectWriter(
                 requireOptInAnnotations(requireOptInAnnotationTypes)
             )
 
+    }
+
+    private fun navGraphsListDeclaration(navGraphsParams: List<NavGraphGeneratingParams>): String {
+        val navGraphsAnchor = "[NAV_GRAPHS]"
+        val navGraphFieldNames = navGraphsParams.joinToString(",\n\t\t") {
+            navGraphFieldName(it.route)
+        }
+        return """
+       |    val all: List<$GENERATED_NAV_GRAPH> = listOf(
+       |        $navGraphsAnchor
+       |    )
+        """.trimMargin()
+            .replace(navGraphsAnchor, navGraphFieldNames)
     }
 
     private fun requireOptInAnnotations(navGraphRequireOptInImportables: Set<Importable>): String {
