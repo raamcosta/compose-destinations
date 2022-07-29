@@ -54,5 +54,6 @@ val Destination.title
             GoToProfileConfirmationDestination -> null
             TestScreenDestination -> null
             TestScreen2Destination -> null
+            ProfileSettingsScreenDestination -> null
         }
     }

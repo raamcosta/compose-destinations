@@ -124,8 +124,8 @@ fun NavGraphSpec.findDestination(route: String): DestinationSpec<*>? {
         return destination
     }
 
-    nestedNavGraphs.forEach {
-        val nestedDestination = it.findDestination(route)
+    for (nestedGraph in nestedNavGraphs) {
+        val nestedDestination = nestedGraph.findDestination(route)
 
         if (nestedDestination != null) {
             return nestedDestination

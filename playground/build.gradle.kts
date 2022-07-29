@@ -63,7 +63,7 @@ android {
     }
 
     // Possible Compose Destinations configs:
-//    ksp {
+    ksp {
 //        // Module name.
 //        // It will be used as the generated sealed Destinations prefix
 //        arg("compose-destinations.moduleName", "featureX")
@@ -83,8 +83,8 @@ android {
 //        arg("compose-destinations.generateNavGraphs", "false")
 //
 //        // To change the package name where the generated files will be placed
-//        arg("compose-destinations.codeGenPackageName", "your.preferred.packagename")
-//    }
+        arg("compose-destinations.codeGenPackageName", "com.ramcosta.samples.playground.ui.screens")
+    }
 }
 
 dependencies {
