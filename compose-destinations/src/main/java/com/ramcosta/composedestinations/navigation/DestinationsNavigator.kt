@@ -3,13 +3,13 @@ package com.ramcosta.composedestinations.navigation
 import androidx.annotation.MainThread
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
-import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.Route
 
 /**
- * Contract for a navigator of [DestinationSpec].
+ * Contract for a navigator of [TypedDestinationSpec].
  * It uses components of [NavController] so implementations
  * will need one to do actual navigation.
  *

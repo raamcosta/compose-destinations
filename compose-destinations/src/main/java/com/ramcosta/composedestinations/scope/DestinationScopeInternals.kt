@@ -5,11 +5,11 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.navigation.DestinationsNavController
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 abstract class DestinationScopeImpl<T>(
-    override val destination: DestinationSpec<T>,
+    override val destination: TypedDestinationSpec<T>,
     override val navBackStackEntry: NavBackStackEntry,
     override val navController: NavController,
 ) : DestinationScope<T> {
@@ -22,7 +22,7 @@ abstract class DestinationScopeImpl<T>(
         get() = DestinationsNavController(navController, navBackStackEntry)
 
     internal class Default<T>(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navBackStackEntry: NavBackStackEntry,
         navController: NavController,
     ) : DestinationScopeImpl<T>(
@@ -34,7 +34,7 @@ abstract class DestinationScopeImpl<T>(
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 abstract class NavGraphBuilderDestinationScopeImpl<T>(
-    override val destination: DestinationSpec<T>,
+    override val destination: TypedDestinationSpec<T>,
     override val navBackStackEntry: NavBackStackEntry,
 ) : NavGraphBuilderDestinationScope<T> {
 
@@ -47,7 +47,7 @@ abstract class NavGraphBuilderDestinationScopeImpl<T>(
     }
 
     internal class Default<T>(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navBackStackEntry: NavBackStackEntry,
     ) : NavGraphBuilderDestinationScopeImpl<T>(
         destination,

@@ -7,6 +7,9 @@ import androidx.navigation.*
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 
+
+typealias DestinationSpec = TypedDestinationSpec<*>
+
 /**
  * Defines what a Destination needs to have to be able to be
  * added to a navigation graph and composed on the screen
@@ -15,13 +18,7 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
  * [T] is the type of the class that holds all navigation arguments
  * for of this Destination.
  */
-interface DestinationSpec<T> : Route {
-
-    /**
-     * Function to get a [Direction] you can then pass to [com.ramcosta.composedestinations.navigation.DestinationsNavigator]
-     * or to [NavController].navigateTo() to safely navigate to this Destination.
-     */
-    operator fun invoke(navArgs: T): Direction
+interface TypedDestinationSpec<T> : TypedRoute<T> {
 
     /**
      * Method that returns the navigation arguments class of this Composable
@@ -52,18 +49,6 @@ interface DestinationSpec<T> : Route {
      */
     @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
     val baseRoute: String
-
-    /**
-     * All [NamedNavArgument]s that will be added to the navigation
-     * graph for this destination
-     */
-    val arguments: List<NamedNavArgument> get() = emptyList()
-
-    /**
-     * All [NavDeepLink]s that will be added to the navigation
-     * graph for this destination
-     */
-    val deepLinks: List<NavDeepLink> get() = emptyList()
 
     /**
      * Style of this destination. It can be one of:

@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.scope.*
-import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 @ExperimentalAnimationApi
 internal class AnimatedDestinationScopeImpl<T>(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     navBackStackEntry: NavBackStackEntry,
     navController: NavController,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -21,7 +21,7 @@ internal class AnimatedDestinationScopeImpl<T>(
 ), AnimatedDestinationScope<T>, AnimatedVisibilityScope by animatedVisibilityScope
 
 internal class BottomSheetDestinationScopeImpl<T>(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     navBackStackEntry: NavBackStackEntry,
     navController: NavController,
     columnScope: ColumnScope,
@@ -33,7 +33,7 @@ internal class BottomSheetDestinationScopeImpl<T>(
 
 @ExperimentalAnimationApi
 internal class AnimatedNavGraphBuilderDestinationScopeImpl<T>(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     navBackStackEntry: NavBackStackEntry,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) : NavGraphBuilderDestinationScopeImpl<T>(
@@ -42,7 +42,7 @@ internal class AnimatedNavGraphBuilderDestinationScopeImpl<T>(
 ), AnimatedNavGraphBuilderDestinationScope<T>, AnimatedVisibilityScope by animatedVisibilityScope
 
 internal class BottomSheetNavGraphBuilderDestinationScopeImpl<T>(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     navBackStackEntry: NavBackStackEntry,
     columnScope: ColumnScope,
 ) : NavGraphBuilderDestinationScopeImpl<T>(

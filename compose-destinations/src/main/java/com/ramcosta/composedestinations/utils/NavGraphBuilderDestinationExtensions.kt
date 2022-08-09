@@ -7,12 +7,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import com.ramcosta.composedestinations.scope.NavGraphBuilderDestinationScopeImpl
 import com.ramcosta.composedestinations.scope.NavGraphBuilderDestinationScope
-import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 
 /**
  * Like [androidx.navigation.compose.composable] but accepts
- * a [DestinationSpec] to get the route, arguments and deep links.
+ * a [TypedDestinationSpec] to get the route, arguments and deep links.
  *
  * The [content] lambda will receive the navigation arguments class ([T]).
  *
@@ -28,7 +28,7 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
  * ```
  */
 fun <T> NavGraphBuilder.composable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable NavGraphBuilderDestinationScope<T>.() -> Unit
 ) = with(destination) {
     composable(
@@ -49,7 +49,7 @@ fun <T> NavGraphBuilder.composable(
 
 /**
  * Like [androidx.navigation.compose.dialog] but accepts
- * a [DestinationSpec] to get the route, arguments and deep links.
+ * a [TypedDestinationSpec] to get the route, arguments and deep links.
  *
  * The [content] lambda will receive the navigation arguments class ([T]).
  *
@@ -65,7 +65,7 @@ fun <T> NavGraphBuilder.composable(
  * ```
  */
 fun <T> NavGraphBuilder.dialogComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable NavGraphBuilderDestinationScope<T>.() -> Unit
 ) = with(destination) {
     val style = destination.style

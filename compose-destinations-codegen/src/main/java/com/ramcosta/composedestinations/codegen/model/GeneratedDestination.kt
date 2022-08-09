@@ -5,8 +5,9 @@ data class GeneratedDestination(
     val qualifiedName: String,
     val simpleName: String,
     val navArgsImportable: Importable?,
+    val hasMandatoryNavArgs: Boolean,
     val navGraphInfo: NavGraphInfo,
-    val requireOptInAnnotationTypes: List<Importable>
+    val requireOptInAnnotationTypes: List<Importable>,
 ) {
     val destinationImportable = Importable(simpleName, qualifiedName)
 }

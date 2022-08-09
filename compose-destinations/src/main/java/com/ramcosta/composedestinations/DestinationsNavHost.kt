@@ -8,7 +8,7 @@ import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
-import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.Route
@@ -27,7 +27,7 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
  * can provide. If you do this, it is advisable that you create your `NavGraphs` file with your
  * navigation graphs in the form of [NavGraphSpec] implementations.
  *
- * @param navGraph [NavGraphSpec] to use the [DestinationSpec]s from and register the navigation graph.
+ * @param navGraph [NavGraphSpec] to use the [TypedDestinationSpec]s from and register the navigation graph.
  *
  * @param modifier [Modifier] to apply to this Composable
  *
@@ -49,10 +49,10 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
  * dependencies by their class via [com.ramcosta.composedestinations.navigation.dependency].
  * The lambda will be called when a Composable screen gets navigated to and
  * [DependenciesContainerBuilder] also implements [com.ramcosta.composedestinations.scope.DestinationScope]
- * so you can access all information about what [DestinationSpec] is being navigated to.
+ * so you can access all information about what [TypedDestinationSpec] is being navigated to.
  *
  * @param manualComposableCallsBuilder this will offer a [ManualComposableCallsBuilder] scope where you can
- * make manual calls to specific [DestinationSpec] Composables which belong to this [navGraph].
+ * make manual calls to specific [TypedDestinationSpec] Composables which belong to this [navGraph].
  * This can be useful if you have some specific case where you want to pass something to a specific screen
  * that would not work (Compose runtime related classes f.e) or would be awkward with [dependenciesContainerBuilder].
  */

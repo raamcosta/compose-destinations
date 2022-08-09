@@ -39,7 +39,7 @@ class Processor(
         )
         val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, functionsToDestinationsMapper)
 
-        val destinations = functionsToDestinationsMapper.map(annotatedDestinations)
+        val destinations = functionsToDestinationsMapper.map(annotatedDestinations, navGraphs)
 
         CodeGenerator(
             codeGenerator = kspCodeOutputStreamMaker,

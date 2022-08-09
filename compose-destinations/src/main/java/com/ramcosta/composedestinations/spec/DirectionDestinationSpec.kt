@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavBackStackEntry
 
 /**
- * [DestinationSpec] that does not contain any navigation arguments.
+ * [TypedDestinationSpec] that does not contain any navigation arguments.
  * It itself is a [Direction]
  */
-interface DirectionDestinationSpec: DestinationSpec<Unit>, Direction {
+interface DirectionDestinationSpec: TypedDestinationSpec<Unit>, Direction {
 
     override fun invoke(navArgs: Unit): Direction = this
 

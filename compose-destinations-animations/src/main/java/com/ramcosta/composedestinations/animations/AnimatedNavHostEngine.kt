@@ -106,12 +106,32 @@ internal class AnimatedNavHostEngine(
             exitTransition = this?.exitTransition?.toAccompanist(),
             popEnterTransition = this?.popEnterTransition?.toAccompanist(),
             popExitTransition = this?.popExitTransition?.toAccompanist(),
-            builder = builder,
-        )
+
+        ) {
+            navGraph.arguments.forEach {
+                argument(it.name) {
+                    if (it.argument.isDefaultValuePresent) {
+                        defaultValue = it.argument.defaultValue
+                    }
+                    type = it.argument.type
+                    nullable = it.argument.isNullable
+                }
+            }
+
+            navGraph.deepLinks.forEach {
+                deepLink {
+                    action = it.action
+                    mimeType = it.mimeType
+                    uriPattern = it.uriPattern
+                }
+            }
+
+            builder()
+        }
     }
 
     override fun <T> NavGraphBuilder.composable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
@@ -161,7 +181,7 @@ internal class AnimatedNavHostEngine(
     }
 
     private fun <T> NavGraphBuilder.addComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
@@ -186,7 +206,7 @@ internal class AnimatedNavHostEngine(
 
     private fun <T> NavGraphBuilder.addAnimatedComposable(
         animatedStyle: DestinationStyle.Animated,
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
@@ -214,7 +234,7 @@ internal class AnimatedNavHostEngine(
     }
 
     private fun <T> NavGraphBuilder.addBottomSheetComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
@@ -240,7 +260,7 @@ internal class AnimatedNavHostEngine(
     @Suppress("UNCHECKED_CAST")
     @Composable
     private fun <T> ColumnScope.CallComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
@@ -266,7 +286,7 @@ internal class AnimatedNavHostEngine(
     @Suppress("UNCHECKED_CAST")
     @Composable
     private fun <T> AnimatedVisibilityScope.CallComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,

@@ -70,7 +70,7 @@ class LegacyNavGraphsModeWriter(
                 sourceCode = moduleNavGraphTemplate.sourceCode
                     .replace(NAV_GRAPH_NAME_PLACEHOLDER, navGraphName)
                     .replace(NAV_GRAPH_ROUTE_PLACEHOLDER, "\"${navGraphRoute.toSnakeCase()}\"")
-                    .replace(NAV_GRAPH_START_ROUTE_PLACEHOLDER, legacyStartingDestination(navGraphRoute, destinations))
+                    .replace(NAV_GRAPH_START_ROUTE_PLACEHOLDER, legacyStartingDestination(navGraphRoute, destinations).simpleName)
                     .replace(NAV_GRAPH_DESTINATIONS, navGraphDestinationsCode(destinations))
                     .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinations))
                     .removeInstancesOf(NESTED_NAV_GRAPHS)

@@ -39,14 +39,24 @@ internal val ServiceLocatorAccessor.destinationsListModeWriter get() = Destinati
     codeGenerator,
 )
 
-internal val ServiceLocatorAccessor.navGraphsModeWriter get() = NavGraphsModeWriter(
-    codeGenerator,
-    codeGenConfig
+internal val ServiceLocatorAccessor.sealedNavGraphWriter get() = SealedNavGraphWriter(
+    codeGenerator
 )
+
+internal val ServiceLocatorAccessor.navGraphsModeWriter: NavGraphsModeWriter
+    get() {
+        return NavGraphsModeWriter(
+            codeGenerator,
+            codeGenConfig,
+            sealedNavGraphWriter,
+            ::SingleNavGraphWriter,
+        )
+    }
 
 internal val ServiceLocatorAccessor.navGraphsSingleObjectWriter get() = NavGraphsSingleObjectWriter(
     codeGenerator,
-    codeGenConfig
+    sealedNavGraphWriter,
+    ::SingleNavGraphWriter
 )
 
 //region legacy navgraphs setup

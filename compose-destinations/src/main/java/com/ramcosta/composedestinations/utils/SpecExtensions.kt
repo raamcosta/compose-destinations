@@ -5,12 +5,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 
 /**
  * The top level navigation graph associated with this [NavController].
@@ -23,14 +23,13 @@ val NavController.navGraph: NavGraphSpec
     }
 
 /**
- * Finds the [DestinationSpec] correspondent to this [NavBackStackEntry].
+ * Finds the [TypedDestinationSpec] correspondent to this [NavBackStackEntry].
  */
-fun NavBackStackEntry.destination(): DestinationSpec<*> {
+fun NavBackStackEntry.destination(): DestinationSpec {
     val navGraphSpec = NavGraphRegistry[this]?.closestNavGraph(this)
         ?: error("Cannot call NavBackStackEntry.destination() before DestinationsNavHost!")
 
-    return destination.route?.let { navGraphSpec.findDestination(it) }
-        ?: navGraphSpec.startDestination
+    return destinationForClosestNavGraph(navGraphSpec)
 }
 
 /**
@@ -42,37 +41,47 @@ fun NavBackStackEntry.navGraph(): NavGraphSpec {
 }
 
 /**
- * Emits the currently active [DestinationSpec] whenever it changes. If
- * there is no active [DestinationSpec], no item will be emitted.
+ * Emits the currently active [TypedDestinationSpec] whenever it changes. If
+ * there is no active [TypedDestinationSpec], no item will be emitted.
  */
-val NavController.currentDestinationFlow: Flow<DestinationSpec<*>>
-    get() = currentBackStackEntryFlow.map { it.destination() }
+val NavController.currentDestinationFlow: Flow<DestinationSpec>
+    get() = currentBackStackEntryFlow.transform {
+        val closestNavGraph = NavGraphRegistry[it]?.closestNavGraph(it)
+        if (closestNavGraph != null) {
+            emit(it.destinationForClosestNavGraph(closestNavGraph))
+        }
+    }
+
+private fun NavBackStackEntry.destinationForClosestNavGraph(closestNavGraph: NavGraphSpec): DestinationSpec {
+    return destination.route?.let { closestNavGraph.findDestination(it) }
+        ?: closestNavGraph.startDestination
+}
 
 /**
- * Gets the current [DestinationSpec] as a [State].
+ * Gets the current [TypedDestinationSpec] as a [State].
  */
 @Composable
-fun NavController.currentDestinationAsState(): State<DestinationSpec<*>?> {
+fun NavController.currentDestinationAsState(): State<DestinationSpec?> {
     return currentDestinationFlow.collectAsState(initial = null)
 }
 
 /**
- * Checks if a given [Route] (which is either [com.ramcosta.composedestinations.spec.NavGraphSpec]
- * or [com.ramcosta.composedestinations.spec.DestinationSpec]) is currently somewhere in the back stack.
+ * Checks if a given [Route] (which is either [NavGraphSpec]
+ * or [com.ramcosta.composedestinations.spec.TypedDestinationSpec]) is currently somewhere in the back stack.
  */
 fun NavController.isRouteOnBackStack(route: Route): Boolean {
     return runCatching { getBackStackEntry(route.route) }.isSuccess
 }
 
 /**
- * If this [Route] is a [DestinationSpec], returns it
+ * If this [Route] is a [TypedDestinationSpec], returns it
  *
  * If this [Route] is a [NavGraphSpec], returns its
- * start [DestinationSpec].
+ * start [TypedDestinationSpec].
  */
-val Route.startDestination get(): DestinationSpec<*> {
+val Route.startDestination get(): DestinationSpec {
     return when (this) {
-        is DestinationSpec<*> -> this
+        is DestinationSpec -> this
         is NavGraphSpec -> startRoute.startDestination
     }
 }
@@ -80,28 +89,28 @@ val Route.startDestination get(): DestinationSpec<*> {
 /**
  * Filters all destinations of this [NavGraphSpec] and its nested nav graphs with given [predicate]
  */
-inline fun NavGraphSpec.filterDestinations(predicate: (DestinationSpec<*>) -> Boolean): List<DestinationSpec<*>> {
+inline fun NavGraphSpec.filterDestinations(predicate: (DestinationSpec) -> Boolean): List<DestinationSpec> {
     return allDestinations.filter { predicate(it) }
 }
 
 /**
  * Checks if any destination of this [NavGraphSpec] matches with given [predicate]
  */
-inline fun NavGraphSpec.anyDestination(predicate: (DestinationSpec<*>) -> Boolean): Boolean {
+inline fun NavGraphSpec.anyDestination(predicate: (DestinationSpec) -> Boolean): Boolean {
     return allDestinations.any { predicate(it) }
 }
 
 /**
  * Checks if this [NavGraphSpec] contains given [destination]
  */
-fun NavGraphSpec.contains(destination: DestinationSpec<*>): Boolean {
+fun NavGraphSpec.contains(destination: DestinationSpec): Boolean {
     return allDestinations.contains(destination)
 }
 
 /**
- * Returns all [DestinationSpec]s including those of nested graphs
+ * Returns all [TypedDestinationSpec]s including those of nested graphs
  */
-val NavGraphSpec.allDestinations get(): List<DestinationSpec<*>> {
+val NavGraphSpec.allDestinations get(): List<DestinationSpec> {
     val destinations = destinationsByRoute
         .values
         .toMutableList()
@@ -117,7 +126,7 @@ val NavGraphSpec.allDestinations get(): List<DestinationSpec<*>> {
  * or its nested graphs.
  * Returns `null` if there is no such destination.
  */
-fun NavGraphSpec.findDestination(route: String): DestinationSpec<*>? {
+fun NavGraphSpec.findDestination(route: String): DestinationSpec? {
     val destination = destinationsByRoute[route]
 
     if (destination != null) {
@@ -145,7 +154,7 @@ fun NavGraphSpec.findDestination(route: String): DestinationSpec<*>? {
     message = "Api will be removed! Use `destination` instead.",
     replaceWith = ReplaceWith("destination()")
 )
-fun NavBackStackEntry.destination(navGraph: NavGraphSpec): DestinationSpec<*>? {
+fun NavBackStackEntry.destination(navGraph: NavGraphSpec): DestinationSpec? {
     return destination.route?.let { navGraph.findDestination(it) }
 }
 
@@ -157,23 +166,23 @@ fun NavBackStackEntry.destination(navGraph: NavGraphSpec): DestinationSpec<*>? {
     message = "Api will be removed! Use `destination(NavGraphSpec)` instead.",
     replaceWith = ReplaceWith("destination()")
 )
-fun NavBackStackEntry.destinationSpec(navGraph: NavGraphSpec): DestinationSpec<*>? {
+fun NavBackStackEntry.destinationSpec(navGraph: NavGraphSpec): DestinationSpec? {
     return destination.route?.let { navGraph.findDestination(it) }
 }
 
 /**
- * If this [Route] is a [DestinationSpec], returns it
+ * If this [Route] is a [TypedDestinationSpec], returns it
  *
  * If this [Route] is a [NavGraphSpec], returns its
- * start [DestinationSpec].
+ * start [TypedDestinationSpec].
  */
 @Deprecated(
     message = "Api will be removed! Use `startDestination` instead.",
     replaceWith = ReplaceWith("startDestination")
 )
-val Route.startDestinationSpec get(): DestinationSpec<*> {
+val Route.startDestinationSpec get(): DestinationSpec {
     return when (this) {
-        is DestinationSpec<*> -> this
+        is DestinationSpec -> this
         is NavGraphSpec -> startRoute.startDestination
     }
 }

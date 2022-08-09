@@ -40,15 +40,19 @@ class KspToCodeGenDestinationsMapper(
 
     private val sourceFilesById = mutableMapOf<String, KSFile?>()
 
-    fun map(composableDestinations: Sequence<KSFunctionDeclaration>): List<RawDestinationGenParams> {
-        return composableDestinations.map { it.toDestination() }.toList()
+    fun map(
+        composableDestinations: Sequence<KSFunctionDeclaration>,
+        navGraphs: List<RawNavGraphGenParams>
+    ): List<RawDestinationGenParams> {
+        val navGraphsByTypeQualifiedName = navGraphs.associateBy { it.type.qualifiedName }
+        return composableDestinations.map { it.toDestination(navGraphsByTypeQualifiedName) }.toList()
     }
 
     override fun mapToKSFile(sourceId: String): KSFile? {
         return sourceFilesById[sourceId]
     }
 
-    private fun KSFunctionDeclaration.toDestination(): RawDestinationGenParams {
+    private fun KSFunctionDeclaration.toDestination(navGraphsByTypeQualifiedName: Map<String, RawNavGraphGenParams>): RawDestinationGenParams {
         val composableName = simpleName.asString()
         val name = composableName + GENERATED_DESTINATION_SUFFIX
         val destinationAnnotation = findAnnotation(DESTINATION_ANNOTATION)
@@ -70,28 +74,53 @@ class KspToCodeGenDestinationsMapper(
             destinationStyleType = destinationAnnotation.getDestinationStyleType(composableName),
             parameters = parameters.map { it.toParameter(composableName) },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
-            navGraphInfo = getNavGraphInfo(destinationAnnotation),
+            navGraphInfo = getNavGraphInfo(destinationAnnotation, navGraphsByTypeQualifiedName),
             composableReceiverSimpleName = extensionReceiver?.toString(),
             requireOptInAnnotationTypes = findAllRequireOptInAnnotations(),
             navArgsDelegateType = navArgsDelegateTypeAndFile?.first
         )
     }
 
-    private fun KSFunctionDeclaration.getNavGraphInfo(destinationAnnotation: KSAnnotation): NavGraphInfo {
-        var resolvedAnnotation: KSType? = null
+    private fun KSFunctionDeclaration.getNavGraphInfo(
+        destinationAnnotation: KSAnnotation,
+        navGraphsByTypeQualifiedName: Map<String, RawNavGraphGenParams>
+    ): NavGraphInfo {
+        var resolvedAnnotation: KSDeclaration? = null
+        var isTopLevelNavGraph = true
         val navGraphAnnotation = annotations.find { functionAnnotation ->
             val annotationShortName = functionAnnotation.shortName.asString()
             if (annotationShortName == "Composable" || annotationShortName == "Destination") {
                 return@find false
             }
 
-            val functionAnnotationType = functionAnnotation.annotationType.resolve()
-            functionAnnotationType.declaration.annotations.any { annotationOfAnnotation ->
-                annotationOfAnnotation.shortName.asString() == "NavGraph"
+            val functionAnnotationTypeDeclaration = functionAnnotation.annotationType.resolve().declaration
+            for (annotationOfAnnotation in functionAnnotationTypeDeclaration.annotations) {
+                val currentResolvedAnnotationType: KSDeclaration = annotationOfAnnotation.annotationType.resolve().declaration
+                val isNavGraph = annotationOfAnnotation.shortName.asString() == "NavGraph"
                         && annotationOfAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_GRAPH_ANNOTATION_QUALIFIED
-            }.also {
-                if (it) resolvedAnnotation = functionAnnotationType
+
+                if (isNavGraph) {
+                    // We found a nav graph annotation, which means we also saved the its resolved type
+                    resolvedAnnotation = functionAnnotationTypeDeclaration
+
+                } else if (isTopLevelNavGraph) {
+                    // If the current annotation contains itself another NavGraph annotation, then its not top level NavGraph
+                    val currentAnnotationQualifiedName = currentResolvedAnnotationType.qualifiedName!!.asString()
+                    val foundParentGraph = currentAnnotationQualifiedName == rootNavGraphType.qualifiedName
+                            || navGraphsByTypeQualifiedName[currentAnnotationQualifiedName] != null
+
+                    if (foundParentGraph) {
+                        isTopLevelNavGraph = false
+                    }
+                }
+
+                if (!isTopLevelNavGraph && resolvedAnnotation != null) {
+                    // We found both things we were looking for, we can break from the loop
+                    break
+                }
             }
+
+            resolvedAnnotation != null
         }
             ?: return NavGraphInfo.Legacy(
                 start = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
@@ -100,9 +129,10 @@ class KspToCodeGenDestinationsMapper(
 
         return NavGraphInfo.AnnotatedSource(
             start = navGraphAnnotation.arguments.first().value as Boolean,
+            isTopLevelGraph = isTopLevelNavGraph,
             graphType = Importable(
-                resolvedAnnotation!!.declaration.simpleName.asString(),
-                resolvedAnnotation!!.declaration.qualifiedName!!.asString()
+                resolvedAnnotation!!.simpleName.asString(),
+                resolvedAnnotation!!.qualifiedName!!.asString()
             )
         )
     }

@@ -59,12 +59,14 @@ internal class DefaultNavHostEngine : NavHostEngine {
         navigation(
             startDestination = navGraph.startRoute.route,
             route = navGraph.route,
+            arguments = navGraph.arguments,
+            deepLinks = navGraph.deepLinks,
             builder = builder
         )
     }
 
     override fun <T> NavGraphBuilder.composable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
@@ -95,7 +97,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
     }
 
     private fun <T> NavGraphBuilder.addComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
@@ -120,7 +122,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
 
     private fun <T> NavGraphBuilder.addDialogComposable(
         dialogStyle: DestinationStyle.Dialog,
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
@@ -147,7 +149,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
     @Suppress("UNCHECKED_CAST")
     @Composable
     private fun <T> CallComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,

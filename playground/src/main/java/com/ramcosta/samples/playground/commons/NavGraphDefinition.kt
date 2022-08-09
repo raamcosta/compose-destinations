@@ -6,6 +6,11 @@ import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.samples.playground.ui.screens.settings.SettingsViewModel
 
+@NavGraph
+annotation class MainNavGraph(
+    val start: Boolean = false
+)
+
 @RootNavGraph
 @NavGraph
 annotation class SettingsNavGraph(
@@ -25,4 +30,11 @@ fun ProfileSettingsScreen(
     vm: SettingsViewModel
 ) {
     println("VM toggle ON? ${vm.isToggleOn}")
+}
+
+@MainNavGraph(start = true)
+@Destination
+@Composable
+fun MainScreen(
+) {
 }

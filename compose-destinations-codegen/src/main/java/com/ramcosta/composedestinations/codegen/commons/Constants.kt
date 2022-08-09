@@ -34,12 +34,17 @@ const val SINGLE_MODULE_EXTENSIONS = "SingleModuleExtensions"
 const val NO_PREFIX_GENERATED_DESTINATION = "TypedDestination"
 const val NO_PREFIX_GENERATED_NO_ARGS_DESTINATION = "DirectionDestination"
 const val GENERATED_NAV_GRAPH = "NavGraph"
+const val GENERATED_TYPED_NAV_GRAPH = "TypedNavGraph"
+const val GENERATED_DIRECTION_NAV_GRAPH = "DirectionNavGraph"
 const val GENERATED_NAV_GRAPHS_OBJECT = "NavGraphs"
 const val GENERATED_DESTINATION_SUFFIX = "Destination"
 
 const val CORE_DESTINATION_SPEC = "DestinationSpec"
+const val CORE_TYPED_DESTINATION_SPEC = "TypedDestinationSpec"
 const val CORE_DIRECTION_DESTINATION_SPEC = "DirectionDestinationSpec"
 const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
+val CORE_DIRECTION_NAV_GRAPH_SPEC = Importable("DirectionNavGraphSpec", "$CORE_PACKAGE_NAME.spec.DirectionNavGraphSpec")
+val CORE_TYPED_NAV_GRAPH_SPEC = Importable("TypedNavGraphSpec", "$CORE_PACKAGE_NAME.spec.TypedNavGraphSpec")
 val CORE_STRING_NAV_TYPE = Importable("DestinationsStringNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsStringNavType")
 val CORE_INT_NAV_TYPE = Importable("DestinationsIntNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsIntNavType")
 val CORE_BOOLEAN_NAV_TYPE = Importable("DestinationsBooleanNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsBooleanNavType")

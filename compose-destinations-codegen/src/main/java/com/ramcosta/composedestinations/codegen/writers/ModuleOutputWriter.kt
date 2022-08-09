@@ -1,9 +1,10 @@
 package com.ramcosta.composedestinations.codegen.writers
 
+import com.ramcosta.composedestinations.codegen.commons.makeNavGraphTrees
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.writers.sub.*
 
-class ModuleOutputWriter(
+internal class ModuleOutputWriter(
     private val codeGenConfig: CodeGenConfig,
     private val navGraphsModeWriter: NavGraphsModeWriter,
     private val legacyNavGraphsModeWriter: LegacyNavGraphsModeWriter,
@@ -23,7 +24,8 @@ class ModuleOutputWriter(
         return when (codeGenConfig.mode) {
             is CodeGenMode.NavGraphs -> {
                 if (usingNavGraphAnnotations) {
-                    navGraphsModeWriter.write(navGraphs, generatedDestinations)
+                    val graphTrees = makeNavGraphTrees(navGraphs, generatedDestinations)
+                    navGraphsModeWriter.write(graphTrees)
                 } else {
                     legacyNavGraphsModeWriter.write(generatedDestinations)
                 }
@@ -34,19 +36,19 @@ class ModuleOutputWriter(
             }
 
             is CodeGenMode.SingleModule -> {
-                val generatedNavGraphs = if (codeGenConfig.mode.generateNavGraphs) {
+                val graphTrees = makeNavGraphTrees(navGraphs, generatedDestinations)
+                if (codeGenConfig.mode.generateNavGraphs) {
                     if (usingNavGraphAnnotations) {
-                        navGraphsSingleObjectWriter.write(navGraphs, generatedDestinations)
+                        navGraphsSingleObjectWriter.write(graphTrees, generatedDestinations)
                     } else {
                         legacyNavGraphsSingleObjectWriter.write(generatedDestinations)
                     }
                 } else {
                     // We fallback to just generate a list of all destinations
                     destinationsListModeWriter.write(generatedDestinations)
-                    emptyList()
                 }
 
-                singleModuleExtensionsWriter.write(generatedNavGraphs)
+                singleModuleExtensionsWriter.write(graphTrees)
             }
         }
     }

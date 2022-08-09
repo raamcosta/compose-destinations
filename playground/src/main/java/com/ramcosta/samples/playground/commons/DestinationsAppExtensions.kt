@@ -31,8 +31,10 @@ fun DirectionDestination.DrawerContent(
             )
         }
         GoToProfileConfirmationDestination,
-        SettingsScreenDestination,
-        ThemeSettingsDestination -> Unit
+//        SettingsScreenDestination,
+        ThemeSettingsDestination,
+        MainScreenDestination,
+        ProfileSettingsScreenDestination -> Unit
     }
 }
 
@@ -55,5 +57,6 @@ val Destination.title
             TestScreenDestination -> null
             TestScreen2Destination -> null
             ProfileSettingsScreenDestination -> null
+            MainScreenDestination -> null
         }
     }

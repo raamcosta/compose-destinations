@@ -7,10 +7,11 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Recipient where you can install a listener to be notified of results (of type [R])
- * from a specific [DestinationSpec] (of type [D]).
+ * from a specific [TypedDestinationSpec] (of type [D]).
  *
  * If declared as a parameter of a `@Destination` annotated Composable,
  * Compose Destinations will provide a correct implementation. If you're
@@ -22,12 +23,12 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  * - [R] must be one of String, Boolean, Float, Int, Long, Serializable, or Parcelable.
  * They can be nullable.
  * - [R] type cannot have type arguments itself (f.e you can't use Array<String> even though it is Serializable)
- * - Each annotated Composable can have at most one parameter of type [ResultRecipient] for a given [DestinationSpec] ([D])
+ * - Each annotated Composable can have at most one parameter of type [ResultRecipient] for a given [TypedDestinationSpec] ([D])
  * - [D] destination Composable must have a corresponding [ResultBackNavigator] of the same type [R]
  *
  * @see [com.ramcosta.composedestinations.result.ResultBackNavigator]
  */
-interface ResultRecipient<D : DestinationSpec<*>, R> : OpenResultRecipient<R> {
+interface ResultRecipient<D : DestinationSpec, R> : OpenResultRecipient<R> {
 
     /**
      * Install a [listener] that will be called when the [D] destination

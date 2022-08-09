@@ -28,12 +28,17 @@ import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDest
 import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.playground.ui.screens.styles.SettingsTransitions
 
-const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
+const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings/{id}"
+
+data class SettingsScreenNavArgs(
+    val id: String,
+)
 
 @SettingsNavGraph(start = true)
 @Destination(
     deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],
-    style = SettingsTransitions::class
+    style = SettingsTransitions::class,
+    navArgsDelegate = SettingsScreenNavArgs::class
 )
 @Composable
 fun SettingsScreen(

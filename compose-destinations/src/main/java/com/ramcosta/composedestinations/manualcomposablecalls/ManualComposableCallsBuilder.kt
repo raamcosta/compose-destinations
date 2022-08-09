@@ -7,10 +7,7 @@ import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
 import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
 import com.ramcosta.composedestinations.scope.BottomSheetDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
-import com.ramcosta.composedestinations.spec.DestinationSpec
-import com.ramcosta.composedestinations.spec.DestinationStyle
-import com.ramcosta.composedestinations.spec.NavGraphSpec
-import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.*
 import com.ramcosta.composedestinations.utils.allDestinations
 
 /**
@@ -22,7 +19,7 @@ import com.ramcosta.composedestinations.utils.allDestinations
  * arguments, the back stack entry and navigators.
  */
 fun <T> ManualComposableCallsBuilder.composable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable DestinationScope<T>.() -> Unit
 ) {
     add(
@@ -42,12 +39,12 @@ fun <T> ManualComposableCallsBuilder.composable(
  * Like [composable] but the [content] is scoped in a [AnimatedDestinationScope].
  *
  * Can only be called if you're using "io.github.raamcosta.compose-destinations:animations-core"
- * and the [destination] has a [DestinationSpec.style] of [com.ramcosta.composedestinations.spec.DestinationStyle.Animated]
+ * and the [destination] has a [TypedDestinationSpec.style] of [com.ramcosta.composedestinations.spec.DestinationStyle.Animated]
  * or [com.ramcosta.composedestinations.spec.DestinationStyle.Default].
  */
 @ExperimentalAnimationApi
 fun <T> ManualComposableCallsBuilder.animatedComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable AnimatedDestinationScope<T>.() -> Unit
 ) {
     validateAnimated(destination)
@@ -69,11 +66,11 @@ fun <T> ManualComposableCallsBuilder.animatedComposable(
  * Like [composable] but the [content] is scoped in a [BottomSheetDestinationScope].
  *
  * Can only be called if you're using "io.github.raamcosta.compose-destinations:animations-core"
- * and the [destination] has a [DestinationSpec.style] of
+ * and the [destination] has a [TypedDestinationSpec.style] of
  * [com.ramcosta.composedestinations.spec.DestinationStyle.BottomSheet]
  */
 fun <T> ManualComposableCallsBuilder.bottomSheetComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable BottomSheetDestinationScope<T>.() -> Unit
 ) {
     validateBottomSheet(destination)
@@ -90,7 +87,7 @@ class ManualComposableCallsBuilder internal constructor(
 ) {
 
     private val map: MutableMap<String, DestinationLambda<*>> = mutableMapOf()
-    private val dynamicDestinationsBySingletonDestination: Map<DestinationSpec<*>, List<DynamicDestinationSpec<*>>> =
+    private val dynamicDestinationsBySingletonDestination: Map<DestinationSpec, List<DynamicDestinationSpec<*>>> =
         navGraph.allDestinations
             .filterIsInstance<DynamicDestinationSpec<*>>()
             .groupBy { it.originalDestination }
@@ -100,7 +97,7 @@ class ManualComposableCallsBuilder internal constructor(
     @SuppressLint("RestrictedApi")
     internal fun add(
         lambda: DestinationLambda<*>,
-        destination: DestinationSpec<*>,
+        destination: DestinationSpec,
     ) {
         map[destination.baseRoute] = lambda
         dynamicDestinationsBySingletonDestination[destination]?.forEach {
@@ -111,7 +108,7 @@ class ManualComposableCallsBuilder internal constructor(
 
 @ExperimentalAnimationApi
 private fun ManualComposableCallsBuilder.validateAnimated(
-    destination: DestinationSpec<*>
+    destination: DestinationSpec
 ) {
     if (engineType == NavHostEngine.Type.DEFAULT) {
         error("'animatedComposable' can only be called with a 'AnimatedNavHostEngine'")
@@ -123,7 +120,7 @@ private fun ManualComposableCallsBuilder.validateAnimated(
 }
 
 private fun ManualComposableCallsBuilder.validateBottomSheet(
-    destination: DestinationSpec<*>
+    destination: DestinationSpec
 ) {
     if (engineType == NavHostEngine.Type.DEFAULT) {
         error("'bottomSheetComposable' can only be called with a 'AnimatedNavHostEngine'")

@@ -113,7 +113,8 @@ class CodeGenerator(
                         arg("compose-destinations.codeGenPackageName", "your.preferred.package.name")
                     }
                     And report this issue (with steps to reproduce) if possible. 
-                """.trimIndent())
+                """.trimIndent()
+                )
             }
     }
 }

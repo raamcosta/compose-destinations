@@ -15,6 +15,7 @@ import com.ramcosta.samples.playground.commons.composables.PlaygroundScaffold
 import com.ramcosta.samples.playground.commons.composables.MyDrawer
 import com.ramcosta.samples.playground.commons.composables.TopBar
 import com.ramcosta.samples.playground.ui.screens.NavGraphs
+import com.ramcosta.samples.playground.ui.screens.settings.SettingsScreenNavArgs
 import com.ramcosta.samples.playground.ui.theme.PlaygroundTheme
 import kotlinx.coroutines.launch
 
@@ -33,7 +34,7 @@ fun PlaygroundApp(testProfileDeepLink: () -> Unit) {
                 TopBar(
                     destination = destination,
                     onDrawerClick = { coroutineScope.launch { scaffoldState.drawerState.open() } },
-                    onSettingsClick = { navController.navigate(NavGraphs.settings) }
+                    onSettingsClick = { navController.navigate(NavGraphs.settings(SettingsScreenNavArgs(id = "123"))) }
                 )
             },
             bottomBar = { destination ->

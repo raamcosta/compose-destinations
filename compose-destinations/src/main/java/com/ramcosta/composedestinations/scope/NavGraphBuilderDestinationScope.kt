@@ -11,16 +11,17 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.resultBackNavigator
-import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.result.resultRecipient
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 @Immutable
 interface NavGraphBuilderDestinationScope<T> {
 
     /**
-     * [DestinationSpec] related to this scope
+     * [TypedDestinationSpec] related to this scope
      */
-    val destination: DestinationSpec<T>
+    val destination: TypedDestinationSpec<T>
 
     /**
      * [NavBackStackEntry] of the current destination
@@ -53,7 +54,7 @@ inline fun <reified R> NavGraphBuilderDestinationScope<*>.resultBackNavigator(
  * Returns a well typed [ResultRecipient] for this [NavGraphBuilderDestinationScope]
  */
 @Composable
-inline fun <reified D : DestinationSpec<*>, reified R> NavGraphBuilderDestinationScope<*>.resultRecipient(): ResultRecipient<D, R> =
+inline fun <reified D : DestinationSpec, reified R> NavGraphBuilderDestinationScope<*>.resultRecipient(): ResultRecipient<D, R> =
     resultRecipient(navBackStackEntry, D::class.java, R::class.java)
 
 /**

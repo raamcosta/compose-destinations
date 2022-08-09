@@ -59,8 +59,11 @@ class LegacyNavGraphsSingleObjectWriter(
         val nestedGraphsAnchor = "[NESTED_GRAPHS]"
         val requireOptInAnnotationsAnchor = "[REQUIRE_OPT_IN_ANNOTATIONS_ANCHOR]"
 
+//        val navGraphClassName =
+//            if (navGraphParams.startRouteHasNavArgs) GENERATED_TYPED_NAV_GRAPH else GENERATED_DIRECTION_NAV_GRAPH
+//TODO RACOSTA
         return """
-       |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(route)} = $GENERATED_NAV_GRAPH(
+       |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(route)} = ERROR(
        |        route = "$route",
        |        startRoute = ${startRouteFieldName},
        |        destinations = listOf(
@@ -131,11 +134,12 @@ class LegacyNavGraphsSingleObjectWriter(
             val requireOptInClassTypes = it.value.requireOptInAnnotationClassTypes()
             nestedNavGraphsRequireOptInAnnotations.addAll(requireOptInClassTypes)
 
+            val startDestination = legacyStartingDestination(navGraphRoute, it.value)
             result.add(
                 LegacyNavGraphGeneratingParams(
                     route = navGraphRoute,
                     destinations = it.value,
-                    startRouteFieldName = legacyStartingDestination(navGraphRoute, it.value),
+                    startRouteFieldName = startDestination.simpleName,
                     nestedNavGraphRoutes = emptyList(),
                     requireOptInAnnotationTypes = requireOptInClassTypes
                 )
@@ -146,7 +150,7 @@ class LegacyNavGraphsSingleObjectWriter(
             LegacyNavGraphGeneratingParams(
                 route = "root",
                 destinations = rootDestinations.orEmpty(),
-                startRouteFieldName = legacyStartingDestination("root", rootDestinations.orEmpty()),
+                startRouteFieldName = legacyStartingDestination("root", rootDestinations.orEmpty()).simpleName,
                 nestedNavGraphRoutes = nestedNavGraphs,
                 requireOptInAnnotationTypes = rootDestinations.orEmpty()
                     .requireOptInAnnotationClassTypes()

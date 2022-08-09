@@ -5,7 +5,7 @@ import androidx.compose.runtime.DisallowComposableCalls
 
 /**
  * Recipient where you can install a listener to be notified of results (of type [R])
- * from an non-determined [com.ramcosta.composedestinations.spec.DestinationSpec].
+ * from an non-determined [com.ramcosta.composedestinations.spec.TypedDestinationSpec].
  * !!! ATTENTION !!! - prefer [ResultRecipient]. Use this only when your recipient is
  * in a module that doesn't depend on the corresponding [ResultBackNavigator].
  *

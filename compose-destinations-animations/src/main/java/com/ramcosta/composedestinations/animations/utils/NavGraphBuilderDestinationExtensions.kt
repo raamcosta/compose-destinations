@@ -11,12 +11,12 @@ import com.ramcosta.composedestinations.animations.scope.AnimatedNavGraphBuilder
 import com.ramcosta.composedestinations.animations.scope.BottomSheetNavGraphBuilderDestinationScopeImpl
 import com.ramcosta.composedestinations.scope.AnimatedNavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.scope.BottomSheetNavGraphBuilderDestinationScope
-import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 
 /**
  * Like [com.google.accompanist.navigation.animation.composable] but accepts
- * a [DestinationSpec] to get the route, arguments and deep links.
+ * a [TypedDestinationSpec] to get the route, arguments and deep links.
  *
  * The [content] lambda will receive the navigation arguments class ([T]).
  *
@@ -33,7 +33,7 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
  */
 @ExperimentalAnimationApi
 fun <T> NavGraphBuilder.animatedComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable AnimatedNavGraphBuilderDestinationScope<T>.() -> Unit
 ) {
     when (val style = destination.style) {
@@ -90,7 +90,7 @@ fun <T> NavGraphBuilder.animatedComposable(
 
 /**
  * Like [com.google.accompanist.navigation.material.bottomSheet] but accepts
- * a [DestinationSpec] to get the route, arguments and deep links.
+ * a [TypedDestinationSpec] to get the route, arguments and deep links.
  *
  * The [content] lambda will receive the navigation arguments class ([T]).
  *
@@ -107,7 +107,7 @@ fun <T> NavGraphBuilder.animatedComposable(
  */
 @ExperimentalMaterialNavigationApi
 fun <T> NavGraphBuilder.bottomSheetComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable BottomSheetNavGraphBuilderDestinationScope<T>.() -> Unit
 ) {
     when (destination.style) {

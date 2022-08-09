@@ -66,10 +66,10 @@ interface NavHostEngine {
     )
 
     /**
-     * Adds a specific [DestinationSpec] to this [NavGraphBuilder]
+     * Adds a specific [TypedDestinationSpec] to this [NavGraphBuilder]
      */
     fun <T> NavGraphBuilder.composable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,

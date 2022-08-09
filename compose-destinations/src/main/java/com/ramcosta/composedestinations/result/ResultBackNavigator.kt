@@ -2,8 +2,6 @@ package com.ramcosta.composedestinations.result
 
 import androidx.compose.runtime.*
 import androidx.navigation.NavController
-import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
-import com.ramcosta.composedestinations.spec.DestinationSpec
 
 /**
  * Navigator that allows navigating back while passing

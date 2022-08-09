@@ -12,6 +12,8 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFunctionWriter
 
+val destinationsPackageName = "$codeGenBasePackageName.destinations"
+
 class SingleDestinationWriter(
     private val codeGenerator: CodeOutputStreamMaker,
     private val core: Core,
@@ -21,12 +23,11 @@ class SingleDestinationWriter(
     private val importableHelper: ImportableHelper
 ) {
 
-    private val packageName = "$codeGenBasePackageName.destinations"
     private val navArgs get() = destination.navArgs
 
     init {
-        if (destination.navGraphInfo.start && destination.navArgs.any { it.isMandatory }) {
-            throw IllegalDestinationsSetup("\"'${destination.composableName}' composable: Start destinations cannot have mandatory navigation arguments!")
+        if (destination.navGraphInfo.start && destination.navGraphInfo.isTopLevelGraph && navArgs.any { it.isMandatory }) {
+            throw IllegalDestinationsSetup("\"'${destination.composableName}' composable: Start destinations of top level navigation graphs cannot have mandatory navigation arguments!")
         }
 
         importableHelper.addAll(destinationTemplate.imports)
@@ -35,7 +36,7 @@ class SingleDestinationWriter(
 
     fun write(): GeneratedDestination = with(destination) {
         codeGenerator.makeFile(
-            packageName = packageName,
+            packageName = destinationsPackageName,
             name = name,
             sourceIds = sourceIds.toTypedArray()
         ).writeSourceFile(
@@ -59,15 +60,16 @@ class SingleDestinationWriter(
 
         return GeneratedDestination(
             sourceIds = sourceIds,
-            qualifiedName = "$packageName.$name",
+            qualifiedName = "$destinationsPackageName.$name",
             simpleName = name,
             navArgsImportable = navArgsDataClassImportable()?.let {
                 if (navArgsDelegateType == null) {
-                    it.copy(simpleName = "NavArgs", qualifiedName = "$packageName.$name.NavArgs")
+                    it.copy(simpleName = "NavArgs", qualifiedName = "$destinationsPackageName.$name.NavArgs")
                 } else {
                     it
                 }
             },
+            hasMandatoryNavArgs = navArgs.any { it.isMandatory },
             navGraphInfo = navGraphInfo,
             requireOptInAnnotationTypes = gatherOptInAnnotations()
                 .filter { !it.isOptedIn }
@@ -256,7 +258,7 @@ class SingleDestinationWriter(
             } else {
                 Importable(
                     "NavArgs",
-                    "$packageName.${destination.name}.NavArgs"
+                    "$destinationsPackageName.${destination.name}.NavArgs"
                 )
             }
     }

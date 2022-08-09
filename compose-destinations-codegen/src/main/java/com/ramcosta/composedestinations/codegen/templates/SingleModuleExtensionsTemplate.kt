@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.codeGenDestination
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
@@ -22,27 +21,15 @@ val singleModuleExtensionsTemplate = FileTemplate(
         "androidx.navigation.NavBackStackEntry",
         "androidx.navigation.NavController",
         "$codeGenBasePackageName.destinations.*",
+        "$codeGenBasePackageName.navgraphs.*",
         "$CORE_PACKAGE_NAME.spec.*",
         "$CORE_PACKAGE_NAME.utils.startDestination",
         "$CORE_PACKAGE_NAME.utils.destination",
+        "$CORE_PACKAGE_NAME.utils.currentDestinationFlow",
         "kotlinx.coroutines.flow.Flow",
         "kotlinx.coroutines.flow.map",
     ),
     sourceCode = """
-/**
- * Realization of [$CORE_NAV_GRAPH_SPEC] for the app.
- * It uses [$codeGenDestination] instead of [$CORE_DESTINATION_SPEC].
- * 
- * @see [$CORE_NAV_GRAPH_SPEC]
- */
-data class $GENERATED_NAV_GRAPH(
-    override val route: String,
-    override val startRoute: Route,
-    val destinations: List<$typeAliasDestination>,
-    override val nestedNavGraphs: List<$GENERATED_NAV_GRAPH> = emptyList()
-): $CORE_NAV_GRAPH_SPEC {
-    override val destinationsByRoute: Map<String, $typeAliasDestination> = destinations.associateBy { it.route }
-}
 
 /**
  * If this [Route] is a [$typeAliasDestination], returns it
@@ -65,7 +52,7 @@ fun NavBackStackEntry.appDestination(): $typeAliasDestination {
  * there is no active [$typeAliasDestination], no item will be emitted.
  */
 val NavController.appCurrentDestinationFlow: Flow<$typeAliasDestination>
-    get() = currentBackStackEntryFlow.map { it.appDestination() }
+    get() = currentDestinationFlow.map { it as $typeAliasDestination }
 
 /**
  * Gets the current [$typeAliasDestination] as a [State].
