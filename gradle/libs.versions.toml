@@ -1,13 +1,13 @@
-# TODO: Figure this out.
-# minSdk = 21
-# compileSdk = 32
-# targetSdk = compileSdk
-
 [versions]
 
+minSdk = "21"
+compileSdk = "32"
+targetSdk = "32"
+
 kotlin = "1.7.10"
-dependencyCheckPlugin = "0.42.0"
+dependencyCheckPluginVersion = "0.42.0"
 gradlePluginVersion = "7.2.1"
+mavenPublishPluginVersion = "0.18.0"
 
 composeViewModel = "2.5.1"
 activityCompose = "1.5.1"
@@ -30,13 +30,16 @@ mockk = "1.12.5"
 
 
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlinSerialization = { id = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
-dependencyCheckPlugin = { id = "com.github.ben-manes.versions" }
-pluginVersion = { id = "com.android.tools.build:gradle", version.ref = "gradlePluginVersion" }
+dependencyCheckPlugin = { id = "com.github.ben-manes.versions", version.ref = "dependencyCheckPluginVersion" }
 
 
 [libraries]
+
+# Plugins
+kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlinSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+pluginVersion = { module = "com.android.tools.build:gradle", version.ref = "gradlePluginVersion" }
+mavenPublishPlugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "mavenPublishPluginVersion" }
 
 # Android
 androidMaterial = { module = "com.google.android.material:material", version.ref = "material" }
