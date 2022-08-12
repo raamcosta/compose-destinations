@@ -18,6 +18,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 dependencies {
     implementation(project(mapOf("path" to ":compose-destinations-codegen")))
 
-    implementation(Deps.Ksp.api)
-    implementation(Deps.Test.junit)
+    implementation(libs.ksp.api)
+    implementation(libs.test.junit)
 }
