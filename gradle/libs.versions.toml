@@ -1,32 +1,32 @@
 [versions]
 
 minSdk = "21"
-compileSdk = "32"
-targetSdk = "32"
+compileSdk = "31"
+targetSdk = "31"
 
-kotlin = "1.7.10"
+kotlin = "1.6.10"
 dependencyCheckPluginVersion = "0.42.0"
 gradlePluginVersion = "7.2.1"
 mavenPublishPluginVersion = "0.18.0"
 
-composeViewModel = "2.5.1"
-activityCompose = "1.5.1"
+composeViewModel = "2.5.0"
+activityCompose = "1.5.0"
 
 material = "1.6.1"
-lifecycleKtx = "2.5.1"
-lifecycleRuntimeKtx = "2.5.1"
+lifecycleKtx = "2.5.0"
+lifecycleRuntimeKtx = "2.5.0"
 
-ksp = "1.7.10-1.0.6"
+ksp = "1.6.10-1.0.4"
 
 junit = "4.13.2"
 
-compose = "1.3.0-alpha02"
-composeCompiler = "1.3.0-rc01"
-composeNavigation = "2.5.1"
-accompanist = "0.26.0-alpha"
+compose = "1.1.1"
+composeCompiler = "1.1.1"
+composeNavigation = "2.5.0"
+accompanist = "0.23.1"
 
 ktxSerialization = "1.3.3"
-mockk = "1.12.5"
+mockk = "1.12.4"
 
 
 [plugins]
