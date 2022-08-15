@@ -4,7 +4,7 @@ minSdk = "21"
 compileSdk = "32"
 targetSdk = "32"
 
-kotlin = "1.7.0"
+kotlin = "1.7.10"
 dependencyCheckPluginVersion = "0.42.0"
 gradlePluginVersion = "7.2.1"
 mavenPublishPluginVersion = "0.18.0"
@@ -16,14 +16,14 @@ material = "1.6.1"
 lifecycleKtx = "2.5.1"
 lifecycleRuntimeKtx = "2.5.1"
 
-ksp = "1.7.0-1.0.6"
+ksp = "1.7.10-1.0.6"
 
 junit = "4.13.2"
 
-compose = "1.2.0"
-composeCompiler = "1.2.0"
+compose = "1.3.0-alpha02"
+composeCompiler = "1.3.0-rc01"
 composeNavigation = "2.5.1"
-accompanist = "0.25.0"
+accompanist = "0.26.0-alpha"
 
 ktxSerialization = "1.3.3"
 mockk = "1.12.5"
