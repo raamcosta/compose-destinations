@@ -32,9 +32,8 @@ fun DirectionDestination.DrawerContent(
         }
         GoToProfileConfirmationDestination,
         SettingsScreenDestination,
-        ThemeSettingsDestination -> Unit
-
-        else -> { TODO() }
+        ThemeSettingsDestination,
+        ProfileSettingsScreenDestination -> Unit
     }
 }
 
