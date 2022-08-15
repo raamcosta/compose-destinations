@@ -1,8 +1,10 @@
+// TODO: Remove this after https://youtrack.jetbrains.com/issue/KTIJ-19369 is resolved.
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("com.android.application")
-    id("kotlin-android")
-    id("com.google.devtools.ksp") version Versions.ksp
-    id("kotlin-parcelize")
+    kotlin("android")
+    id("com.google.devtools.ksp") version libs.versions.ksp.get()
+    kotlin("plugin.parcelize")
     kotlin("plugin.serialization")
 }
 
@@ -11,12 +13,12 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 android {
-    compileSdk = Versions.compileSdk
+    compileSdk = libs.versions.compileSdk.get().toIntOrNull()
 
     defaultConfig {
         applicationId = "com.ramcosta.samples.playground"
-        minSdk = Versions.minSdk
-        targetSdk = Versions.targetSdk
+        minSdk = libs.versions.minSdk.get().toIntOrNull()
+        targetSdk = libs.versions.targetSdk.get().toIntOrNull()
         versionCode = 1
         versionName = "1.0"
 
@@ -47,7 +49,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Versions.composeCompiler
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 
     packagingOptions {
@@ -92,27 +94,17 @@ dependencies {
     implementation(project(mapOf("path" to ":compose-destinations-animations")))
     ksp(project(":compose-destinations-ksp"))
 
-    with(Deps.Android) {
-        implementation(material)
-    }
+    implementation(libs.androidMaterial)
 
-    with(Deps.Compose) {
-        implementation(ui)
-        implementation(material)
-        implementation(viewModel)
-    }
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material)
+    implementation(libs.compose.viewModel)
 
-    with(Deps.AndroidX) {
-        implementation(lifecycleRuntimeKtx)
-        implementation(activityCompose)
-    }
+    implementation(libs.androidx.lifecycleRuntimeKtx)
+    implementation(libs.androidx.activityCompose)
 
-    with(Deps.KtxSerialization) {
-        implementation(json)
-    }
+    implementation(libs.ktxSerializationJson)
 
-    with(Deps.Test) {
-        testImplementation(junit)
-        testImplementation(mockk)
-    }
+    testImplementation(libs.test.junit)
+    testImplementation(libs.test.mockk)
 }
