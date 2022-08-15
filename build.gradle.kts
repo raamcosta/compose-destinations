@@ -1,8 +1,10 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+// Top-level build file where you can add configuration options common to all subprojects/modules.
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
+// TODO: Remove this after https://youtrack.jetbrains.com/issue/KTIJ-19369 is resolved.
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id(Deps.Gradle.dependencyCheckPlugin) version Versions.dependencyCheckPlugin
+    alias(libs.plugins.dependencyCheckPlugin)
 }
 
 buildscript {
@@ -13,12 +15,10 @@ buildscript {
     }
 
     dependencies {
-        with(Deps.Gradle) {
-            classpath(pluginVersion)
-            classpath(kotlin)
-            classpath(kotlinSerialization)
-            classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
-        }
+        classpath(libs.pluginVersion)
+        classpath(libs.kotlin)
+        classpath(libs.kotlinSerialization)
+        classpath(libs.mavenPublishPlugin)
     }
 }
 
@@ -33,7 +33,7 @@ tasks.register<Delete>("clean") {
  */
 tasks.withType<DependencyUpdatesTask> {
     rejectVersionIf {
-        // Don't allow non stable versions, unless we are already using one for this dependency
+        // Don't allow non-stable versions, unless we are already using one for this dependency
         isNonStable(candidate.version) && !isNonStable(currentVersion)
     }
 }
