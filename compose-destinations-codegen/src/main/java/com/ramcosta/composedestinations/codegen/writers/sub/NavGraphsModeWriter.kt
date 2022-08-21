@@ -86,7 +86,7 @@ class NavGraphsModeWriter(
                     .replace(NAV_GRAPH_ROUTE_PLACEHOLDER, "\"$navGraphRoute\"")
                     .replace(
                         NAV_GRAPH_START_ROUTE_PLACEHOLDER,
-                        startingDestination(codeGenConfig, navGraphName, destinations, nestedNavGraphs)
+                        startingRoute(codeGenConfig, navGraphName, destinations, nestedNavGraphs)
                     )
                     .replace(NAV_GRAPH_DESTINATIONS, navGraphDestinationsCode(destinations))
                     .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinations))
