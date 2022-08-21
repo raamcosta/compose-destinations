@@ -21,7 +21,7 @@ internal fun legacyStartingDestination(
     return startingDestinations[0].simpleName
 }
 
-internal fun startingDestination(
+internal fun startingRoute(
     codeGenConfig: CodeGenConfig,
     navGraphName: String,
     generatedDestinations: List<GeneratedDestination>,

@@ -33,9 +33,15 @@ class NavGraphsSingleObjectWriter(
                 }
             }
 
-        val navGraphsByParentType = navGraphs.groupBy { it.parent }
+        val allNavGraphs = navGraphs + rootNavGraphGenParams
+        val allNavGraphsByParentType = allNavGraphs.groupBy { it.parent }
 
-        val orderedNavGraphGenParams = (navGraphs + rootNavGraphGenParams)
+        val relevantNavGraphs = allNavGraphs.filter {
+            it.isNotEmptyRecursively(destinationsByNavGraphParams, allNavGraphsByParentType)
+        }
+        val relevantNavGraphsByParentType = relevantNavGraphs.groupBy { it.parent }
+
+        val orderedNavGraphGenParams = relevantNavGraphs
             .sortedByDescending {
                 it.distanceToRoot(
                     navGraphsByType.toMutableMap().apply {
@@ -46,13 +52,13 @@ class NavGraphsSingleObjectWriter(
             .map { rawGraph ->
 
                 val destinations = destinationsByNavGraphParams[rawGraph].orEmpty()
-                val nestedNavGraphs = navGraphsByParentType[rawGraph.type].orEmpty()
+                val nestedNavGraphs = relevantNavGraphsByParentType[rawGraph.type].orEmpty()
 
                 NavGraphGeneratingParamsImpl(
                     rawParams = rawGraph,
                     route = rawGraph.route,
                     destinations = destinations,
-                    startRouteFieldName = startingDestination(codeGenConfig, rawGraph.name, destinations, nestedNavGraphs),
+                    startRouteFieldName = startingRoute(codeGenConfig, rawGraph.name, destinations, nestedNavGraphs),
                     nestedNavGraphRoutes = nestedNavGraphs.map { it.route },
                     requireOptInAnnotationTypes = destinations.requireOptInAnnotationClassTypes()
                         .apply {
@@ -85,6 +91,18 @@ class NavGraphsSingleObjectWriter(
                 .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(orderedNavGraphGenParams))
 
         )
+    }
+
+    private fun RawNavGraphGenParams.isNotEmptyRecursively(
+        destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<GeneratedDestination>>,
+        navGraphsByParentType: Map<Importable?, List<RawNavGraphGenParams>>
+    ): Boolean {
+        val dest = destinationsByNavGraphParams[this].orEmpty()
+        val nested = navGraphsByParentType[this.type].orEmpty()
+
+        return dest.isNotEmpty() || nested.any {
+            it.isNotEmptyRecursively(destinationsByNavGraphParams, navGraphsByParentType)
+        }
     }
 
     private fun navGraphsDeclaration(navGraphsParams: List<NavGraphGeneratingParams>): String {
