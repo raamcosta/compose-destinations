@@ -55,7 +55,7 @@ class $ARRAY_CUSTOM_NAV_TYPE_NAME(
             ENCODED_NULL
         } else {
             encodeForRoute(
-                "[" + value.joinToString(encodedComma) { serializer.toRouteString(it) } + ]"
+                "[" + value.joinToString(encodedComma) { serializer.toRouteString(it) } + "]"
             )
         }
     }
