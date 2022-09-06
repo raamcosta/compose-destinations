@@ -339,7 +339,7 @@ class SingleDestinationWriter(
             }
         }
 
-        return if (args.isEmpty()) "baseRoute"
+        return if (args.isEmpty()) "\$baseRoute"
         else "\$baseRoute$mandatoryArgs$optionalArgs"
     }
 
