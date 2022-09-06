@@ -184,7 +184,7 @@ class SingleDestinationWriter(
         |    
         """.trimMargin()
 
-        var route = "\"${constructRoute()}\""
+        var route = "\"${constructRoute(true)}\""
             .replace("/", "\" + \n\t\t\t\t\t\"/")
             .replace("?", "\" + \n\t\t\t\t\t\"?")
 
@@ -319,16 +319,17 @@ class SingleDestinationWriter(
     }
 
     private fun constructRouteFieldCode(): String {
-        val route = constructRoute()
-
         return if (navArgs.isEmpty()) {
-            route
+            constructRoute(false)
         } else {
-            "\"$route\""
+            "\"${constructRoute(true)}\""
         }
     }
 
-    private fun constructRoute(args: List<Parameter> = navArgs): String {
+    private fun constructRoute(
+        isConcatenatingInString: Boolean,
+        args: List<Parameter> = navArgs
+    ): String {
         val mandatoryArgs = StringBuilder()
         val optionalArgs = StringBuilder()
         args.forEach {
@@ -339,8 +340,14 @@ class SingleDestinationWriter(
             }
         }
 
-        return if (args.isEmpty()) "\$baseRoute"
-        else "\$baseRoute$mandatoryArgs$optionalArgs"
+        val baseRoutePrefix = if (isConcatenatingInString) {
+            "\$baseRoute"
+        } else {
+            "baseRoute"
+        }
+
+        return if (args.isEmpty()) baseRoutePrefix
+        else "$baseRoutePrefix$mandatoryArgs$optionalArgs"
     }
 
     private fun contentFunctionCode(): String {
@@ -442,7 +449,7 @@ class SingleDestinationWriter(
                 }
             }
 
-        return constructRoute(args)
+        return constructRoute(true, args)
     }
 
     private fun destinationStyle(): String {
