@@ -1,8 +1,8 @@
 [versions]
 
 minSdk = "21"
-compileSdk = "32"
-targetSdk = "32"
+compileSdk = "33"
+targetSdk = "33"
 
 kotlin = "1.7.10"
 dependencyCheckPluginVersion = "0.42.0"
@@ -23,7 +23,7 @@ junit = "4.13.2"
 compose = "1.3.0-beta02"
 composeCompiler = "1.3.1"
 composeNavigation = "2.5.2"
-accompanist = "0.25.1"
+accompanist = "0.26.3-beta"
 
 ktxSerialization = "1.4.0"
 mockk = "1.12.7"
