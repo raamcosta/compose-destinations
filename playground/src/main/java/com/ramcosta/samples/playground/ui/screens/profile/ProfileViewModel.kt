@@ -21,7 +21,7 @@ class ProfileViewModel(
         Log.d("ProfileViewModel", "navArgs= $navArgs")
     }
 
-    override val groupName: String = navArgs.groupName?.ifEmpty { "user doesn't belong to any group" } ?: "null"
+    override val groupName: String = navArgs.groupName?.ifEmpty { "\"\"" } ?: "null"
 
     override val id: Long = navArgs.id
 
