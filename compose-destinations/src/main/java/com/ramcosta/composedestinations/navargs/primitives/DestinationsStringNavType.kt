@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.navargs.primitives
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavBackStackEntry
@@ -10,10 +9,10 @@ import com.ramcosta.composedestinations.navargs.utils.encodeForRoute
 object DestinationsStringNavType : DestinationsNavType<String?>() {
 
     internal const val ENCODED_EMPTY_STRING = "%02%03"
-    internal val DECODED_EMPTY_STRING: String = Uri.decode(ENCODED_EMPTY_STRING)
+    internal const val DECODED_EMPTY_STRING: String = "\u0002\u0003"
 
-    private const val ENCODED_DEFAULT_VALUE_STRING_PREFIX = "%@def@"
-    private val DECODED_DEFAULT_VALUE_STRING_PREFIX: String = Uri.decode(ENCODED_DEFAULT_VALUE_STRING_PREFIX)
+    private const val ENCODED_DEFAULT_VALUE_STRING_PREFIX = "%02def%03"
+    private const val DECODED_DEFAULT_VALUE_STRING_PREFIX: String = "\u0002def\u0003"
 
     override fun put(bundle: Bundle, key: String, value: String?) {
         StringType.put(bundle, key, value)

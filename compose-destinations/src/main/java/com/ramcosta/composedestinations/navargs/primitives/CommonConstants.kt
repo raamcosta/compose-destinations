@@ -1,12 +1,9 @@
 package com.ramcosta.composedestinations.navargs.primitives
 
-import android.net.Uri
-import com.ramcosta.composedestinations.navargs.utils.encodeForRoute
+const val ENCODED_NULL = "%02null%03"
+const val DECODED_NULL: String = "\u0002null\u0003"
 
-const val ENCODED_NULL = "%@null@"
-val DECODED_NULL: String = Uri.decode(ENCODED_NULL)
-
-val encodedComma = encodeForRoute(",")
+const val encodedComma = "%2C"
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 fun <E: Enum<*>> Class<E>.valueOfIgnoreCase(enumValueName: String): E {

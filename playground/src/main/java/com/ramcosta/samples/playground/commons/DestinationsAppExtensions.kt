@@ -32,7 +32,9 @@ fun DirectionDestination.DrawerContent(
         }
         GoToProfileConfirmationDestination,
         SettingsScreenDestination,
-        ThemeSettingsDestination -> Unit
+        ThemeSettingsDestination,
+        TestScreen3Destination,
+        ProfileSettingsScreenDestination -> Unit
     }
 }
 
