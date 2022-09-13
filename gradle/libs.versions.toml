@@ -6,15 +6,15 @@ targetSdk = "31"
 
 kotlin = "1.6.10"
 dependencyCheckPluginVersion = "0.42.0"
-gradlePluginVersion = "7.2.1"
+gradlePluginVersion = "7.2.2"
 mavenPublishPluginVersion = "0.18.0"
 
-composeViewModel = "2.5.0"
-activityCompose = "1.5.0"
+composeViewModel = "2.5.1"
+activityCompose = "1.5.1"
 
 material = "1.6.1"
-lifecycleKtx = "2.5.0"
-lifecycleRuntimeKtx = "2.5.0"
+lifecycleKtx = "2.5.1"
+lifecycleRuntimeKtx = "2.5.1"
 
 ksp = "1.6.10-1.0.4"
 
@@ -22,11 +22,11 @@ junit = "4.13.2"
 
 compose = "1.1.1"
 composeCompiler = "1.1.1"
-composeNavigation = "2.5.0"
+composeNavigation = "2.5.2"
 accompanist = "0.23.1"
 
-ktxSerialization = "1.3.3"
-mockk = "1.12.4"
+ktxSerialization = "1.4.0"
+mockk = "1.12.7"
 
 
 [plugins]
