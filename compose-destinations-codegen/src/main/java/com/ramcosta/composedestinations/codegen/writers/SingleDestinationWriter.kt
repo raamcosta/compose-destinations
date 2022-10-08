@@ -187,6 +187,7 @@ class SingleDestinationWriter(
         var route = "\"${constructRoute(true)}\""
             .replace("/", "\" + \n\t\t\t\t\t\"/")
             .replace("?", "\" + \n\t\t\t\t\t\"?")
+            .replace("&", "\" + \n\t\t\t\t\t\"&")
 
         navArgs.forEach {
             route = route.replace("{${it.name}}", "\${${it.stringifyForNavigation()}}")
@@ -336,7 +337,8 @@ class SingleDestinationWriter(
             if (it.isMandatory) {
                 mandatoryArgs += "/{${it.name}}"
             } else {
-                optionalArgs += "?${it.name}={${it.name}}"
+                val leadingSign = if (optionalArgs.isEmpty()) "?" else "&"
+                optionalArgs += "$leadingSign${it.name}={${it.name}}"
             }
         }
 
