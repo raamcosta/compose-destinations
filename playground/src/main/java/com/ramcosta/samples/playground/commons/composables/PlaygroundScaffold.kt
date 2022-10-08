@@ -15,11 +15,9 @@ import androidx.navigation.plusAssign
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import com.ramcosta.samples.playground.ui.screens.NavGraphs
-import com.ramcosta.samples.playground.ui.screens.appCurrentDestinationAsState
-import com.ramcosta.samples.playground.ui.screens.appDestination
+import com.ramcosta.composedestinations.utils.route
+import com.ramcosta.samples.playground.ui.screens.*
 import com.ramcosta.samples.playground.ui.screens.destinations.Destination
-import com.ramcosta.samples.playground.ui.screens.startAppDestination
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalMaterialApi::class)
 @Composable
@@ -56,8 +54,9 @@ fun PlaygroundScaffold(
 
 fun ArrayDeque<NavBackStackEntry>.print(prefix: String = "stack") {
     val stack = toMutableList()
-        .filter { it.destination.route !in listOf(NavGraphs.root.route, NavGraphs.settings.route) }
-        .map { it.appDestination().javaClass.simpleName + "@" + it.toString().split("@")[1] }
+        .map { it.route() }
+        .filterIsInstance<Destination>()
+        .map { it.javaClass.simpleName + "@" + it.toString().split("@")[1] }
         .toTypedArray().contentToString()
     println("$prefix = $stack")
 }
