@@ -49,6 +49,7 @@ fun TaskScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(it)
                 .padding(8.dp)
         ) {
             Row(
