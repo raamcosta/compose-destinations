@@ -25,6 +25,7 @@ val singleModuleExtensionsTemplate = FileTemplate(
         "$CORE_PACKAGE_NAME.spec.*",
         "$CORE_PACKAGE_NAME.utils.startDestination",
         "$CORE_PACKAGE_NAME.utils.destination",
+        "$CORE_PACKAGE_NAME.utils.navGraph",
         "kotlinx.coroutines.flow.Flow",
         "kotlinx.coroutines.flow.map",
     ),
@@ -55,6 +56,12 @@ val Route.startAppDestination: $typeAliasDestination
 
 /**
  * Finds the [$typeAliasDestination] correspondent to this [NavBackStackEntry].
+ * Some [NavBackStackEntry] are not [$typeAliasDestination], but are [$GENERATED_NAV_GRAPH] instead.
+ * If you want a method that works for both, use [route] extension function instead.
+ *
+ * Use this ONLY if you're sure your [NavBackStackEntry] corresponds to a [$typeAliasDestination],
+ * for example when converting from "current NavBackStackEntry", since a [$GENERATED_NAV_GRAPH] is never
+ * the "current destination" shown on screen.
  */
 fun NavBackStackEntry.appDestination(): $typeAliasDestination {
     return destination() as $typeAliasDestination

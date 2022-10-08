@@ -76,8 +76,10 @@ internal class NavGraphSpecHolder {
         return navGraphSpecsByRoute[navController.graph.route!!]
     }
 
-    fun closestNavGraph(navBackStackEntry: NavBackStackEntry): NavGraphSpec? {
-        return navGraphSpecsByRoute[navBackStackEntry.destination.parent?.route!!]
+    fun parentNavGraph(navBackStackEntry: NavBackStackEntry): NavGraphSpec? {
+        val parent = navBackStackEntry.destination.parent ?: return null
+
+        return navGraphSpecsByRoute[parent.route!!]
     }
 
     private fun addUnique(navGraph: NavGraphSpec) {
@@ -86,5 +88,9 @@ internal class NavGraphSpecHolder {
         require(previousValue == null || previousValue === navGraph) {
             "Registering multiple navigation graphs with same route ('${navGraph.route}') is not allowed."
         }
+    }
+
+    fun navGraph(navBackStackEntry: NavBackStackEntry): NavGraphSpec? {
+        return navGraphSpecsByRoute[navBackStackEntry.destination.route!!]
     }
 }

@@ -5,7 +5,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Route
@@ -24,21 +23,51 @@ val NavController.navGraph: NavGraphSpec
 
 /**
  * Finds the [DestinationSpec] correspondent to this [NavBackStackEntry].
+ * Some [NavBackStackEntry] are not [DestinationSpec], but are [NavGraphSpec] instead.
+ * If you want a method that works for both, use [route] extension function instead.
+ *
+ * Use this ONLY if you're sure your [NavBackStackEntry] corresponds to a [DestinationSpec],
+ * for example when converting from "current NavBackStackEntry", since a [NavGraphSpec] is never
+ * the "current destination" shown on screen.
  */
 fun NavBackStackEntry.destination(): DestinationSpec<*> {
-    val navGraphSpec = NavGraphRegistry[this]?.closestNavGraph(this)
+    return when (val route = route()) {
+        is DestinationSpec<*> -> route
+        is NavGraphSpec -> error(
+            "Cannot call `destination()` for a NavBackStackEntry which corresponds to a nav graph, use `route()` instead!"
+        )
+    }
+}
+
+/**
+ * Finds the [Route] (so either a [DestinationSpec] or a [NavGraphSpec])
+ * correspondent to this [NavBackStackEntry].
+ */
+fun NavBackStackEntry.route(): Route {
+    val registry = NavGraphRegistry[this]
         ?: error("Cannot call NavBackStackEntry.destination() before DestinationsNavHost!")
 
-    return destination.route?.let { navGraphSpec.findDestination(it) }
-        ?: navGraphSpec.startDestination
+    val navGraph = registry.navGraph(this)
+    if (navGraph != null) {
+        return navGraph
+    }
+
+    // If it's not a nav graph, then it must have a parent
+    val parentNavGraph = registry.parentNavGraph(this)!!
+    return destination.route?.let { parentNavGraph.findDestination(it) }
+        ?: parentNavGraph.startDestination
 }
 
 /**
  * Finds the [NavGraphSpec] that this [NavBackStackEntry] belongs to.
+ * If [NavBackStackEntry] corresponds to the top level nav graph (i.e, there is no parent),
+ * then this returns the top level [NavGraphSpec].
  */
 fun NavBackStackEntry.navGraph(): NavGraphSpec {
-    return NavGraphRegistry[this]?.closestNavGraph(this)
-        ?: error("Cannot call NavBackStackEntry.navGraph() before DestinationsNavHost!")
+    val registry = NavGraphRegistry[this]
+        ?: error("Cannot call NavBackStackEntry.parentNavGraph() before DestinationsNavHost!")
+
+    return registry.parentNavGraph(this) ?: route() as NavGraphSpec
 }
 
 /**
