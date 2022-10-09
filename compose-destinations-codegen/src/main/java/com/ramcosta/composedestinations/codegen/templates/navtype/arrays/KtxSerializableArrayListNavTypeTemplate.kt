@@ -35,6 +35,7 @@ public class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     }
 
     override fun get(bundle: Bundle, key: String): ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
+        @Suppress("DEPRECATION")
         return bundle.getParcelableArrayList<ParcelableByteArrayList>(key)?.toTypeArrayList()
     }
 
@@ -63,6 +64,7 @@ public class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
+        @Suppress("DEPRECATION")
         return navBackStackEntry.arguments?.getParcelableArrayList<ParcelableByteArrayList>(key)?.toTypeArrayList()
     }
 

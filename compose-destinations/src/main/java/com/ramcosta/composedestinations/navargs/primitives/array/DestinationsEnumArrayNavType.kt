@@ -18,6 +18,7 @@ class DestinationsEnumArrayNavType<E : Enum<*>>(
     }
 
     override fun get(bundle: Bundle, key: String): Array<E>? {
+        @Suppress("DEPRECATION")
         return bundle.getSerializable(key) as Array<E>?
     }
 
@@ -42,6 +43,7 @@ class DestinationsEnumArrayNavType<E : Enum<*>>(
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): Array<E>? {
+        @Suppress("DEPRECATION")
         return navBackStackEntry.arguments?.getSerializable(key) as Array<E>?
     }
 

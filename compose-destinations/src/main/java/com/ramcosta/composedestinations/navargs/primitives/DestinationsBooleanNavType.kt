@@ -16,6 +16,7 @@ object DestinationsBooleanNavType : DestinationsNavType<Boolean?>() {
     }
 
     override fun get(bundle: Bundle, key: String): Boolean? {
+        @Suppress("DEPRECATION")
         return booleanValue(bundle[key])
     }
 
@@ -32,6 +33,7 @@ object DestinationsBooleanNavType : DestinationsNavType<Boolean?>() {
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): Boolean? {
+        @Suppress("DEPRECATION")
         return booleanValue(navBackStackEntry.arguments?.get(key))
     }
 

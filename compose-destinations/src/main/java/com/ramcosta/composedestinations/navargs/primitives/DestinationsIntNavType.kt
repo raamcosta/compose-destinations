@@ -16,6 +16,7 @@ object DestinationsIntNavType : DestinationsNavType<Int?>() {
     }
 
     override fun get(bundle: Bundle, key: String): Int? {
+        @Suppress("DEPRECATION")
         return intValue(bundle[key])
     }
 
@@ -32,6 +33,7 @@ object DestinationsIntNavType : DestinationsNavType<Int?>() {
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): Int? {
+        @Suppress("DEPRECATION")
         return intValue(navBackStackEntry.arguments?.get(key))
     }
 

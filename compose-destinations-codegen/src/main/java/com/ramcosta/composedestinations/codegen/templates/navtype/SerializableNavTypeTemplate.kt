@@ -26,6 +26,7 @@ public class $NAV_TYPE_CLASS_SIMPLE_NAME(
 ) : DestinationsNavType<$CLASS_SIMPLE_NAME_CAMEL_CASE?>() {
 
     override fun get(bundle: Bundle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
+        @Suppress("DEPRECATION")
         return bundle.getSerializable(key) as $CLASS_SIMPLE_NAME_CAMEL_CASE?
     }
 
@@ -50,6 +51,7 @@ public class $NAV_TYPE_CLASS_SIMPLE_NAME(
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
+        @Suppress("DEPRECATION")
         return navBackStackEntry.arguments?.getSerializable(key) as? $CLASS_SIMPLE_NAME_CAMEL_CASE?
     }
 

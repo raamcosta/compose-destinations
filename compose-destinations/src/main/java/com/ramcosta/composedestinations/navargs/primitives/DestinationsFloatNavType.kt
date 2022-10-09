@@ -16,6 +16,7 @@ object DestinationsFloatNavType : DestinationsNavType<Float?>() {
     }
 
     override fun get(bundle: Bundle, key: String): Float? {
+        @Suppress("DEPRECATION")
         return floatValue(bundle[key])
     }
 
@@ -32,6 +33,7 @@ object DestinationsFloatNavType : DestinationsNavType<Float?>() {
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): Float? {
+        @Suppress("DEPRECATION")
         return floatValue(navBackStackEntry.arguments?.get(key))
     }
 

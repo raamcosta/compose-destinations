@@ -16,6 +16,7 @@ object DestinationsLongNavType : DestinationsNavType<Long?>() {
     }
 
     override fun get(bundle: Bundle, key: String): Long? {
+        @Suppress("DEPRECATION")
         return longValue(bundle[key])
     }
 
@@ -32,6 +33,7 @@ object DestinationsLongNavType : DestinationsNavType<Long?>() {
     }
 
     override fun get(navBackStackEntry: NavBackStackEntry, key: String): Long? {
+        @Suppress("DEPRECATION")
         return longValue(navBackStackEntry.arguments?.get(key))
     }
 
