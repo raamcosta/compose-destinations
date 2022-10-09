@@ -21,7 +21,7 @@ annotation class ProfileSettingsNavGraph(
 @ProfileSettingsNavGraph(start = true)
 @Destination
 @Composable
-fun ProfileSettingsScreen(
+internal fun ProfileSettingsScreen(
     vm: SettingsViewModel
 ) {
     println("VM toggle ON? ${vm.isToggleOn}")

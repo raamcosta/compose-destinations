@@ -21,7 +21,7 @@ val navGraphsObjectTemplate = FileTemplate(
  * Class generated if any Composable is annotated with `@Destination`.
  * It aggregates all [$codeGenDestination]s in their [$GENERATED_NAV_GRAPH]s.
  */
-object $GENERATED_NAV_GRAPHS_OBJECT {
+public object $GENERATED_NAV_GRAPHS_OBJECT {
 
 $NAV_GRAPHS_PLACEHOLDER
 }

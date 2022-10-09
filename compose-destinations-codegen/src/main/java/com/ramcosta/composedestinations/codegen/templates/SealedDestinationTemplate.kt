@@ -24,17 +24,17 @@ val sealedDestinationTemplate = FileTemplate(
  * Handy typealias of [$codeGenDestination] when you don't
  * care about the generic type (probably most cases for app's use)
  */
-typealias $typeAliasDestination = $codeGenDestination<*>
+public typealias $typeAliasDestination = $codeGenDestination<*>
 
 /**
  * $codeGenDestination is a sealed version of [$CORE_DESTINATION_SPEC]
  */
-sealed interface $codeGenDestination<T>: $CORE_DESTINATION_SPEC<T>
+public sealed interface $codeGenDestination<T>: $CORE_DESTINATION_SPEC<T>
 
 /**
  * $codeGenNoArgsDestination is a sealed version of [$CORE_DIRECTION_DESTINATION_SPEC]
  */
-sealed interface $codeGenNoArgsDestination: $codeGenDestination<Unit>, $CORE_DIRECTION_DESTINATION_SPEC
+public sealed interface $codeGenNoArgsDestination: $codeGenDestination<Unit>, $CORE_DIRECTION_DESTINATION_SPEC
 
 """.trimIndent()
 )

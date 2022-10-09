@@ -35,7 +35,7 @@ val defaultKtxSerializableNavTypeSerializerTemplate = FileTemplate(
  * passed as navigation argument.
  */
 @ExperimentalSerializationApi
-class $DEFAULT_KTX_SERIALIZABLE_NAV_TYPE_SERIALIZER_TEMPLATE_NAME<T : @Serializable Any>(
+public class $DEFAULT_KTX_SERIALIZABLE_NAV_TYPE_SERIALIZER_TEMPLATE_NAME<T : @Serializable Any>(
     private val serializer: KSerializer<T>,
 ) : DestinationsNavTypeSerializer<T> {
 
@@ -48,13 +48,13 @@ class $DEFAULT_KTX_SERIALIZABLE_NAV_TYPE_SERIALIZER_TEMPLATE_NAME<T : @Serializa
         return fromByteArray(bytes)
     }
     
-    fun toByteArray(value: T): ByteArray =
+    public fun toByteArray(value: T): ByteArray =
         ByteArrayOutputStream().use {
             Json.encodeToStream(serializer, value, it)
             it.toByteArray()
         }
     
-    fun fromByteArray(bytes: ByteArray): T =
+    public fun fromByteArray(bytes: ByteArray): T =
         ByteArrayInputStream(bytes).use {
             Json.decodeFromStream(serializer, it)
         }

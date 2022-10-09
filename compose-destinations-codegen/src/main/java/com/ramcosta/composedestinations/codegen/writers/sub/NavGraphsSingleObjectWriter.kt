@@ -146,7 +146,7 @@ class NavGraphsSingleObjectWriter(
         val requireOptInAnnotationsAnchor = "[REQUIRE_OPT_IN_ANNOTATIONS_ANCHOR]"
 
         return """
-       |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(route)} = $GENERATED_NAV_GRAPH(
+       |    ${requireOptInAnnotationsAnchor}public val ${navGraphFieldName(route)}: NavGraph = $GENERATED_NAV_GRAPH(
        |        route = "$route",
        |        startRoute = ${startRouteFieldName},
        |        destinations = listOf(
