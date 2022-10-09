@@ -1,10 +1,13 @@
 package com.ramcosta.composedestinations.ksp.processors
 
 import com.google.devtools.ksp.getClassDeclarationByName
+import com.google.devtools.ksp.isInternal
+import com.google.devtools.ksp.isPrivate
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.*
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.model.Visibility
 import com.ramcosta.composedestinations.ksp.commons.*
 import java.io.File
 
@@ -66,6 +69,7 @@ class KspToCodeGenDestinationsMapper(
             name = name,
             composableName = composableName,
             composableQualifiedName = qualifiedName!!.asString(),
+            visibility = getDestinationVisibility(),
             cleanRoute = cleanRoute,
             destinationStyleType = destinationAnnotation.getDestinationStyleType(composableName),
             parameters = parameters.map { it.toParameter(composableName) },
@@ -75,6 +79,14 @@ class KspToCodeGenDestinationsMapper(
             requireOptInAnnotationTypes = findAllRequireOptInAnnotations(),
             navArgsDelegateType = navArgsDelegateTypeAndFile?.first
         )
+    }
+
+    private fun KSFunctionDeclaration.getDestinationVisibility(): Visibility {
+        if (isPrivate()) {
+            throw IllegalDestinationsSetup("Composable functions annotated with @Destination cannot be private!")
+        }
+
+        return if (isInternal()) Visibility.INTERNAL else Visibility.PUBLIC
     }
 
     private fun KSFunctionDeclaration.getNavGraphInfo(destinationAnnotation: KSAnnotation): NavGraphInfo {

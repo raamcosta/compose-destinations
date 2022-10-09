@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.navigation
 
 import androidx.annotation.MainThread
+import androidx.compose.runtime.Stable
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
@@ -16,6 +17,7 @@ import com.ramcosta.composedestinations.spec.Route
  * It is meant as a dependency inversion wrapper to make
  * Composables that depend on it be testable and "preview-able".
  */
+@Stable
 interface DestinationsNavigator {
 
     /**

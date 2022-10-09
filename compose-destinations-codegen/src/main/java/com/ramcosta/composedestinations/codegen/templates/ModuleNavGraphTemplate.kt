@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.commons.CORE_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_NAV_GRAPH_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
@@ -19,13 +20,13 @@ val moduleNavGraphTemplate = FileTemplate(
         "${codeGenBasePackageName}.destinations.*",
     ),
     sourceCode = """
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $NAV_GRAPH_NAME_PLACEHOLDER : $CORE_NAV_GRAPH_SPEC {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public object $NAV_GRAPH_NAME_PLACEHOLDER : $CORE_NAV_GRAPH_SPEC {
     
-    override val route = $NAV_GRAPH_ROUTE_PLACEHOLDER
+    override val route: String = $NAV_GRAPH_ROUTE_PLACEHOLDER
     
-    override val startRoute = $NAV_GRAPH_START_ROUTE_PLACEHOLDER
+    override val startRoute: Route = $NAV_GRAPH_START_ROUTE_PLACEHOLDER
     
-    override val destinationsByRoute = listOf(
+    override val destinationsByRoute: Map<String, $CORE_DESTINATION_SPEC<*>> = listOf(
 $NAV_GRAPH_DESTINATIONS
     ).associateBy { it.route }
 $NESTED_NAV_GRAPHS

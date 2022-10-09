@@ -112,13 +112,19 @@ class CustomNavTypesWriter(
                 if (!typeImports.contains(importable.qualifiedName)) {
                     typeImports += "\nimport ${importable.qualifiedName.sanitizePackageName()}"
                 }
-                val instantiateNavType = when {
-                    it.isArrayList() -> "DestinationsEnumArrayListNavType(${importable.simpleName}::class.java)"
-                    it.isArray() -> "DestinationsEnumArrayNavType { Array<${importable.simpleName}>(it.size) { idx -> ${importable.simpleName}::class.java.valueOfIgnoreCase(it[idx]) } }"
-                    else -> "DestinationsEnumNavType(${importable.simpleName}::class.java)"
+                val (instantiateNavType, navType) = when {
+                    it.isArrayList() -> {
+                        "DestinationsEnumArrayListNavType(${importable.simpleName}::class.java)" to "DestinationsEnumArrayListNavType<${importable.simpleName}>"
+                    }
+                    it.isArray() -> {
+                        "DestinationsEnumArrayNavType { Array<${importable.simpleName}>(it.size) { idx -> ${importable.simpleName}::class.java.valueOfIgnoreCase(it[idx]) } }" to "DestinationsEnumArrayNavType<${importable.simpleName}>"
+                    }
+                    else -> {
+                        "DestinationsEnumNavType(${importable.simpleName}::class.java)" to "DestinationsEnumNavType<${importable.simpleName}>"
+                    }
                 }
 
-                allEnums += "\n\nval $navTypeName = $instantiateNavType"
+                allEnums += "\n\npublic val $navTypeName: $navType = $instantiateNavType"
 
                 typesForNavTypeName[it] = CustomNavType(navTypeName, null)
             }
@@ -249,7 +255,7 @@ class CustomNavTypesWriter(
                     .replace(SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME, serializerTypeArg)
                     .replace(
                         NAV_TYPE_INITIALIZATION_CODE,
-                        "val $navTypeName = $className($navTypeSerializerInit)\n"
+                        "public val $navTypeName: $className = $className($navTypeSerializerInit)\n"
                     )
             )
         }
@@ -330,7 +336,7 @@ class CustomNavTypesWriter(
                     .replace(SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME, serializerTypeArg)
                     .replace(
                         NAV_TYPE_INITIALIZATION_CODE,
-                        "val $navTypeName = $className($navTypeSerializerInit)\n"
+                        "public val $navTypeName: $className = $className($navTypeSerializerInit)\n"
                     )
             )
         }

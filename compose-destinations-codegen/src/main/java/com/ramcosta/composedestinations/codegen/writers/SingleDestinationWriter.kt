@@ -46,6 +46,7 @@ class SingleDestinationWriter(
                 .replaceSuperclassDestination()
                 .addNavArgsDataClass()
                 .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
+                .replace(DESTINATION_VISIBILITY_PLACEHOLDER, getDestinationVisibilityModifier())
                 .replace(BASE_ROUTE, destination.cleanRoute)
                 .replace(NAV_ARGS_CLASS_SIMPLE_NAME, navArgsDataClassName())
                 .replace(COMPOSED_ROUTE, constructRouteFieldCode())
@@ -76,6 +77,9 @@ class SingleDestinationWriter(
         )
     }
 
+    private fun getDestinationVisibilityModifier() =
+        if (destination.visibility == Visibility.INTERNAL) "internal" else "public"
+
     private fun String.replaceSuperclassDestination(): String {
         if (navArgs.isEmpty()) {
             return replace(SUPERTYPE, codeGenNoArgsDestination)
@@ -97,7 +101,7 @@ class SingleDestinationWriter(
 
         val code = StringBuilder()
         code += "\n\n"
-        code += "\tdata class NavArgs(\n"
+        code += "\tpublic data class NavArgs(\n"
         code += "${innerNavArgsParametersCode(true)}\n"
         code += "\t)"
 
@@ -163,7 +167,7 @@ class SingleDestinationWriter(
 
             return """
             |     
-            |    operator fun invoke() = this
+            |    public operator fun invoke(): $CORE_DIRECTION  = this
             |    
             """.trimMargin()
         }
@@ -174,7 +178,7 @@ class SingleDestinationWriter(
 		|        invoke(%s2)
 	    |    }
         |     
-        |    operator fun invoke(
+        |    public operator fun invoke(
         |%s3
         |    ): $CORE_DIRECTION {
         |        return object : $CORE_DIRECTION {
@@ -187,6 +191,7 @@ class SingleDestinationWriter(
         var route = "\"${constructRoute(true)}\""
             .replace("/", "\" + \n\t\t\t\t\t\"/")
             .replace("?", "\" + \n\t\t\t\t\t\"?")
+            .replace("&", "\" + \n\t\t\t\t\t\"&")
 
         navArgs.forEach {
             route = route.replace("{${it.name}}", "\${${it.stringifyForNavigation()}}")
@@ -336,7 +341,8 @@ class SingleDestinationWriter(
             if (it.isMandatory) {
                 mandatoryArgs += "/{${it.name}}"
             } else {
-                optionalArgs += "?${it.name}={${it.name}}"
+                val leadingSign = if (optionalArgs.isEmpty()) "?" else "&"
+                optionalArgs += "$leadingSign${it.name}={${it.name}}"
             }
         }
 
@@ -363,7 +369,7 @@ class SingleDestinationWriter(
 
         navArgs.forEachIndexed { i, it ->
             if (i == 0) {
-                code += "\n\toverride val arguments get() = listOf(\n\t\t"
+                code += "\n\toverride val arguments: List<NamedNavArgument> get() = listOf(\n\t\t"
             }
 
             val toNavTypeCode = it.toNavTypeCode()
@@ -394,7 +400,7 @@ class SingleDestinationWriter(
 
         destination.deepLinks.forEachIndexed { i, it ->
             if (i == 0) {
-                code += "\n\toverride val deepLinks get() = listOf(\n\t\t"
+                code += "\n\toverride val deepLinks: List<NavDeepLink> get() = listOf(\n\t\t"
             }
 
             code += "$navDeepLinkPlaceholder {\n\t\t"
@@ -489,7 +495,7 @@ class SingleDestinationWriter(
     }
 
     private fun destinationStyleDialog(destinationStyleType: DestinationStyleType.Dialog): String {
-        return "\n\toverride val style = ${destinationStyleType.type.importable.getCodePlaceHolder()}\n"
+        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.type.importable.getCodePlaceHolder()}\n"
     }
 
     private fun destinationStyleAnimated(destinationStyleType: DestinationStyleType.Animated): String {
@@ -506,7 +512,7 @@ class SingleDestinationWriter(
             ).addImport()
         }
 
-        return "\n\toverride val style = ${destinationStyleType.type.importable.getCodePlaceHolder()}\n"
+        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.type.importable.getCodePlaceHolder()}\n"
     }
 
     private fun destinationStyleBottomSheet(): String {
@@ -514,7 +520,7 @@ class SingleDestinationWriter(
             throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
         }
 
-        return "\n\toverride val style = $CORE_BOTTOM_SHEET_DESTINATION_STYLE\n"
+        return "\n\toverride val style: DestinationStyle = $CORE_BOTTOM_SHEET_DESTINATION_STYLE\n"
     }
 
     private fun navArgDefaultCode(param: Parameter): String = param.defaultValue.let { defaultValue ->

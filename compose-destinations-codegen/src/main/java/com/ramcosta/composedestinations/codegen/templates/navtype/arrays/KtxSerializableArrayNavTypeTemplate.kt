@@ -26,7 +26,7 @@ val ktxSerializableArrayNavTypeTemplate = FileTemplate(
 @OptIn(ExperimentalSerializationApi::class)
 $NAV_TYPE_INITIALIZATION_CODE
 @OptIn(ExperimentalSerializationApi::class)
-class $ARRAY_CUSTOM_NAV_TYPE_NAME(
+public class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     private val serializer: DefaultKtxSerializableNavTypeSerializer<$TYPE_ARG_CLASS_SIMPLE_NAME>
 ) : DestinationsNavType<Array<$TYPE_ARG_CLASS_SIMPLE_NAME>?>() {
 
