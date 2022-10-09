@@ -36,7 +36,7 @@ val singleModuleExtensionsTemplate = FileTemplate(
  * 
  * @see [$CORE_NAV_GRAPH_SPEC]
  */
-data class $GENERATED_NAV_GRAPH(
+public data class $GENERATED_NAV_GRAPH(
     override val route: String,
     override val startRoute: Route,
     val destinations: List<$typeAliasDestination>,
@@ -51,7 +51,7 @@ data class $GENERATED_NAV_GRAPH(
  * If this [Route] is a [$GENERATED_NAV_GRAPH], returns its
  * start [$typeAliasDestination].
  */
-val Route.startAppDestination: $typeAliasDestination
+public val Route.startAppDestination: $typeAliasDestination
     get() = startDestination as $typeAliasDestination
 
 /**
@@ -63,7 +63,7 @@ val Route.startAppDestination: $typeAliasDestination
  * for example when converting from "current NavBackStackEntry", since a [$GENERATED_NAV_GRAPH] is never
  * the "current destination" shown on screen.
  */
-fun NavBackStackEntry.appDestination(): $typeAliasDestination {
+public fun NavBackStackEntry.appDestination(): $typeAliasDestination {
     return destination() as $typeAliasDestination
 }
 
@@ -71,14 +71,14 @@ fun NavBackStackEntry.appDestination(): $typeAliasDestination {
  * Emits the currently active [$typeAliasDestination] whenever it changes. If
  * there is no active [$typeAliasDestination], no item will be emitted.
  */
-val NavController.appCurrentDestinationFlow: Flow<$typeAliasDestination>
+public val NavController.appCurrentDestinationFlow: Flow<$typeAliasDestination>
     get() = currentBackStackEntryFlow.map { it.appDestination() }
 
 /**
  * Gets the current [$typeAliasDestination] as a [State].
  */
 @Composable
-fun NavController.appCurrentDestinationAsState(): State<$typeAliasDestination?> {
+public fun NavController.appCurrentDestinationAsState(): State<$typeAliasDestination?> {
     return appCurrentDestinationFlow.collectAsState(initial = null)
 }
 
@@ -94,7 +94,7 @@ fun NavController.appCurrentDestinationAsState(): State<$typeAliasDestination?> 
     message = "Api will be removed! Use `startAppDestination` instead.",
     replaceWith = ReplaceWith("startAppDestination")
 )
-val Route.startDestination: $typeAliasDestination
+public val Route.startDestination: $typeAliasDestination
     get() = startDestination as $typeAliasDestination
 $START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
 /**
@@ -105,7 +105,7 @@ $START_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
     message = "Api will be removed! Use `appDestination()` instead.",
     replaceWith = ReplaceWith("appDestination()")
 )
-val NavBackStackEntry.navDestination: $typeAliasDestination?
+public val NavBackStackEntry.navDestination: $typeAliasDestination?
     get() = appDestination()
 $END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
 /**
@@ -116,7 +116,7 @@ $END_NO_NAV_GRAPHS_NAV_DESTINATION_ANCHOR
     message = "Api will be removed! Use `appDestination()` instead.",
     replaceWith = ReplaceWith("appDestination")
 )
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}fun NavBackStackEntry.navDestination(navGraph: $GENERATED_NAV_GRAPH$START_NAV_DESTINATION_DEPRECATED_ROOT_DEFAULT_ANCHOR = $GENERATED_NAV_GRAPHS_OBJECT.root$END_NAV_DESTINATION_DEPRECATED_ROOT_DEFAULT_ANCHOR): $typeAliasDestination? {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public fun NavBackStackEntry.navDestination(navGraph: $GENERATED_NAV_GRAPH$START_NAV_DESTINATION_DEPRECATED_ROOT_DEFAULT_ANCHOR = $GENERATED_NAV_GRAPHS_OBJECT.root$END_NAV_DESTINATION_DEPRECATED_ROOT_DEFAULT_ANCHOR): $typeAliasDestination? {
     @Suppress("DEPRECATION")
     return destination(navGraph) as $typeAliasDestination
 }
@@ -129,7 +129,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}fun NavBackStackEntry.navDestination(na
      message = "Api will be removed! Use `appDestination()` instead.",
      replaceWith = ReplaceWith("appDestination")
  )
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}fun NavBackStackEntry.appDestination(navGraph: $GENERATED_NAV_GRAPH$START_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = $GENERATED_NAV_GRAPHS_OBJECT.root$END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR): $typeAliasDestination? {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public fun NavBackStackEntry.appDestination(navGraph: $GENERATED_NAV_GRAPH$START_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR = $GENERATED_NAV_GRAPHS_OBJECT.root$END_NAV_DESTINATION_ROOT_DEFAULT_ANCHOR): $typeAliasDestination? {
     @Suppress("DEPRECATION")
     return destination(navGraph) as $typeAliasDestination
 }

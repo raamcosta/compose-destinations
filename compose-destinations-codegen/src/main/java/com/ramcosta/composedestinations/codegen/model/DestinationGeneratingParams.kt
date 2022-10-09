@@ -5,6 +5,7 @@ interface DestinationGeneratingParams {
     val name: String
     val composableName: String
     val composableQualifiedName: String
+    val visibility: Visibility
     val cleanRoute: String
     val parameters: List<Parameter>
     val deepLinks: List<DeepLink>
@@ -20,6 +21,7 @@ data class RawDestinationGenParams(
     override val name: String,
     override val composableName: String,
     override val composableQualifiedName: String,
+    override val visibility: Visibility,
     override val cleanRoute: String,
     override val parameters: List<Parameter>,
     override val deepLinks: List<DeepLink>,

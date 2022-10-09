@@ -52,7 +52,7 @@ class LegacyNavGraphsSingleObjectWriter(
         navGraphParams: LegacyNavGraphGeneratingParams
     ): String = with(navGraphParams) {
         if (route == "root" && destinations.isEmpty()) {
-            return "\tval root: NavGraph = throw RuntimeException(\"No found destinations for 'root' navigation graph\")"
+            return "\tpublic val root: NavGraph = throw RuntimeException(\"No found destinations for 'root' navigation graph\")"
         }
 
         val destinationsAnchor = "[DESTINATIONS]"
@@ -60,7 +60,7 @@ class LegacyNavGraphsSingleObjectWriter(
         val requireOptInAnnotationsAnchor = "[REQUIRE_OPT_IN_ANNOTATIONS_ANCHOR]"
 
         return """
-       |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(route)} = $GENERATED_NAV_GRAPH(
+       |    ${requireOptInAnnotationsAnchor}public val ${navGraphFieldName(route)}: NavGraph = $GENERATED_NAV_GRAPH(
        |        route = "$route",
        |        startRoute = ${startRouteFieldName},
        |        destinations = listOf(

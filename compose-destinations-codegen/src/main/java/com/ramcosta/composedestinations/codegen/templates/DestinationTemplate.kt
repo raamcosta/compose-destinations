@@ -16,6 +16,7 @@ const val ARGS_TO_DIRECTION_METHOD = "[ARGS_TO_DIRECTION_METHOD]"
 const val ARGS_FROM_METHODS = "[ARGS_FROM_METHODS]"
 const val CONTENT_FUNCTION_CODE = "[CONTENT_FUNCTION_CODE]"
 const val REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER = "[REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER]"
+const val DESTINATION_VISIBILITY_PLACEHOLDER = "[DESTINATION_VISIBILITY_PLACEHOLDER]"
 const val NAV_ARGS_DATA_CLASS = "[NAV_ARGS_DATA_CLASS]"
 const val SUPERTYPE = "[SUPERTYPE]"
 const val NAV_ARGS_CLASS_SIMPLE_NAME = "[NAV_ARGS_CLASS_SIMPLE_NAME]"
@@ -30,6 +31,8 @@ val destinationTemplate = FileTemplate(
         "androidx.navigation.NavHostController",
         "androidx.navigation.NavType",
         "androidx.navigation.navArgument",
+        "androidx.navigation.NamedNavArgument",
+        "androidx.navigation.NavDeepLink",
         "$CORE_PACKAGE_NAME.scope.DestinationScope",
         "$CORE_PACKAGE_NAME.navigation.DestinationDependenciesContainer",
         "$CORE_PACKAGE_NAME.navigation.DependenciesContainerBuilder",
@@ -41,12 +44,12 @@ val destinationTemplate = FileTemplate(
         "$CORE_PACKAGE_NAME.spec.Route",
     ),
     sourceCode = """
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}object $DESTINATION_NAME : $SUPERTYPE {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}${DESTINATION_VISIBILITY_PLACEHOLDER} object $DESTINATION_NAME : $SUPERTYPE {
     $ARGS_TO_DIRECTION_METHOD
     @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
-    override val baseRoute = "$BASE_ROUTE"
+    override val baseRoute: String = "$BASE_ROUTE"
 
-    override val route = $COMPOSED_ROUTE
+    override val route: String = $COMPOSED_ROUTE
     $NAV_ARGUMENTS$DEEP_LINKS$DESTINATION_STYLE
     @Composable
     override fun DestinationScope<$NAV_ARGS_CLASS_SIMPLE_NAME>.Content(

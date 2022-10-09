@@ -13,7 +13,7 @@ val moduleDestinationTemplate = FileTemplate(
         "${codeGenBasePackageName}.destinations.*"
     ),
     sourceCode = """
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}val $MODULE_DESTINATIONS_LIST_NAME_PLACEHOLDER = listOf(
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public val $MODULE_DESTINATIONS_LIST_NAME_PLACEHOLDER = listOf(
 $MODULE_DESTINATIONS_PLACEHOLDER
 )
 

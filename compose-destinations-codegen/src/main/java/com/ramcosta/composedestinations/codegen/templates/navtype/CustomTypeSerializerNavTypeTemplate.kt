@@ -18,9 +18,9 @@ val customTypeSerializerNavTypeTemplate = FileTemplate(
         "$CORE_PACKAGE_NAME.navargs.primitives.ENCODED_NULL",
     ),
     sourceCode = """
-val $NAV_TYPE_NAME = $NAV_TYPE_CLASS_SIMPLE_NAME($SERIALIZER_SIMPLE_CLASS_NAME)
+public val $NAV_TYPE_NAME: $NAV_TYPE_CLASS_SIMPLE_NAME = $NAV_TYPE_CLASS_SIMPLE_NAME($SERIALIZER_SIMPLE_CLASS_NAME)
 
-class $NAV_TYPE_CLASS_SIMPLE_NAME(
+public class $NAV_TYPE_CLASS_SIMPLE_NAME(
     private val customSerializer: DestinationsNavTypeSerializer<$DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE>
 ) : DestinationsNavType<$CLASS_SIMPLE_NAME_CAMEL_CASE?>() {
 

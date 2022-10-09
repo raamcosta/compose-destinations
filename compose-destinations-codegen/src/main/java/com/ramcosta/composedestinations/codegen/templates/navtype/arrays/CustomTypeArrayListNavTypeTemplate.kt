@@ -22,7 +22,7 @@ val customTypeArrayListNavTypeTemplate = FileTemplate(
     ),
     sourceCode = """
 $NAV_TYPE_INITIALIZATION_CODE
-class $ARRAY_CUSTOM_NAV_TYPE_NAME(
+public class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     private val serializer: DestinationsNavTypeSerializer<$SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME>
 ) : DestinationsNavType<ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>?>() {
 
