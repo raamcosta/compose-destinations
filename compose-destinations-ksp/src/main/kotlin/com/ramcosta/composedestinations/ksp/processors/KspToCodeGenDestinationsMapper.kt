@@ -59,8 +59,10 @@ class KspToCodeGenDestinationsMapper(
 
         val cleanRoute = destinationAnnotation.prepareRoute(composableName)
 
-        val navArgsDelegateTypeAndFile = destinationAnnotation.getNavArgsDelegateType(composableName)?.also {
-            sourceFilesById[it.second.fileName] = it.second
+        val navArgsDelegateTypeAndFile = destinationAnnotation.getNavArgsDelegateType(composableName)?.also { typeAndFile ->
+            typeAndFile.second?.let {
+                sourceFilesById[it.fileName] = it
+            }
         }
         sourceFilesById[containingFile!!.fileName] = containingFile
 
@@ -121,7 +123,7 @@ class KspToCodeGenDestinationsMapper(
 
     private fun KSAnnotation.getNavArgsDelegateType(
         composableName: String
-    ): Pair<NavArgsDelegateType?, KSFile>? = kotlin.runCatching {
+    ): Pair<NavArgsDelegateType?, KSFile?>? = kotlin.runCatching {
         val ksType = findArgumentValue<KSType>(DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT)!!
 
         val ksClassDeclaration = ksType.declaration as KSClassDeclaration
@@ -142,7 +144,7 @@ class KspToCodeGenDestinationsMapper(
                     ksClassDeclaration.qualifiedName!!.asString(),
                 )
             ),
-            ksClassDeclaration.containingFile!!
+            ksClassDeclaration.containingFile
         )
     }.getOrElse {
         throw IllegalDestinationsSetup("There was an issue with '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT'" +
