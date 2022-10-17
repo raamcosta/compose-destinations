@@ -58,6 +58,10 @@ interface ResultBackNavigator<R> {
      * or just navigating if no result was set..
      *
      * It uses [NavController.navigateUp] internally to go back.
+     *
+     * @param onlyIfResumed if true, will ignore the navigation action if the current `NavBackStackEntry`
+     * is not in the RESUMED state. This avoids duplicate navigation actions.
+     * By default is false to have the same behaviour as [NavController].
      */
-    fun navigateBack()
+    fun navigateBack(onlyIfResumed: Boolean = false)
 }

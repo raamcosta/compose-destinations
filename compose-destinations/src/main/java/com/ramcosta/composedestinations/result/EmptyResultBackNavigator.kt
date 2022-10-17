@@ -10,5 +10,5 @@ class EmptyResultBackNavigator<R> : ResultBackNavigator<R> {
 
     override fun setResult(result: R) = Unit
 
-    override fun navigateBack() = Unit
+    override fun navigateBack(onlyIfResumed: Boolean) = Unit
 }
