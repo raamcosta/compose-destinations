@@ -249,9 +249,9 @@ class InitialValidator(
             Float::class.qualifiedName,
             Int::class.qualifiedName
         )
-        if (resultType.importable.qualifiedName !in primitives && !resultType.isSerializable && !resultType.isParcelable) {
+        if (resultType.importable.qualifiedName !in primitives && !resultType.isSerializable && !resultType.isParcelable && !resultType.isKtxSerializable) {
             throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: " +
-                    "Result types must be one of: ${listOf("String", "Long", "Boolean", "Float", "Int", "Parcelable", "Serializable").joinToString(", ")}")
+                    "Result types must be one of: ${listOf("String", "Long", "Boolean", "Float", "Int", "Parcelable", "Serializable", "kotlinx.serialization.Serializable").joinToString(", ")}")
         }
     }
 

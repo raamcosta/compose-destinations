@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     id("com.vanniktech.maven.publish")
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -48,4 +49,5 @@ android {
 
 dependencies {
     api(libs.compose.navigation)
+    api(libs.ktxSerializationJson)
 }

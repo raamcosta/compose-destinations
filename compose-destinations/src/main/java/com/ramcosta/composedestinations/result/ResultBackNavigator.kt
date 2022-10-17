@@ -2,8 +2,7 @@ package com.ramcosta.composedestinations.result
 
 import androidx.compose.runtime.*
 import androidx.navigation.NavController
-import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
-import com.ramcosta.composedestinations.spec.DestinationSpec
+import kotlin.reflect.KType
 
 /**
  * Navigator that allows navigating back while passing
@@ -32,8 +31,10 @@ interface ResultBackNavigator<R> {
      *
      * Check [com.ramcosta.composedestinations.result.ResultRecipient] to see
      * how to get the result.
+     *
+     * For kotlinx.serialization result you must fill [type] parameter.
      */
-    fun navigateBack(result: R)
+    fun navigateBack(result: R, type: KType? = null)
 
     /**
      * Sets a [result] to be sent on the next [navigateBack] call.
@@ -43,8 +44,10 @@ interface ResultBackNavigator<R> {
      *
      * If multiple calls are done, the last one will be the result sent back.
      * This also applies if you call [navigateBack] (with result) after calling this.
+     *
+     * For kotlinx.serialization result you must fill [type] parameter.
      */
-    fun setResult(result: R)
+    fun setResult(result: R, type: KType? = null)
 
     /**
      * Goes back to previous destination sending the last result set with [setResult]

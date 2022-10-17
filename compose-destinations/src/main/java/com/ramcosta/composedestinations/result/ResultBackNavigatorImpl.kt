@@ -9,6 +9,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
+import kotlin.reflect.KType
 
 internal class ResultBackNavigatorImpl<R>(
     private val navController: NavController,
@@ -19,15 +22,15 @@ internal class ResultBackNavigatorImpl<R>(
     private val resultKey = resultKey(resultOriginType, resultType)
     private val canceledKey = canceledKey(resultOriginType, resultType)
 
-    override fun navigateBack(result: R) {
-        setResult(result)
+    override fun navigateBack(result: R, type: KType?) {
+        setResult(result, type)
         navigateBack()
     }
 
-    override fun setResult(result: R) {
+    override fun setResult(result: R, type: KType?) {
         navController.previousBackStackEntry?.savedStateHandle?.let {
             it[canceledKey] = false
-            it[resultKey] = result
+            it[resultKey] = trySerializeWithKotlinX(result, type) ?: result
         }
     }
 
@@ -67,5 +70,10 @@ internal class ResultBackNavigatorImpl<R>(
                 currentNavBackStackEntry.lifecycle.removeObserver(observer)
             }
         }
+    }
+
+    private fun trySerializeWithKotlinX(result: R, type: KType?): String? {
+        val serializer = type?.let { serializer(it) }
+        return serializer?.let { Json.encodeToString(it, result) }
     }
 }
