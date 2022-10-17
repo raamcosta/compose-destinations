@@ -13,6 +13,7 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFunctionWriter
 
 class SingleDestinationWriter(
+    private val codeGenConfig: CodeGenConfig,
     private val codeGenerator: CodeOutputStreamMaker,
     private val core: Core,
     private val navArgResolver: NavArgResolver,
@@ -77,8 +78,10 @@ class SingleDestinationWriter(
         )
     }
 
-    private fun getDestinationVisibilityModifier() =
-        if (destination.visibility == Visibility.INTERNAL) "internal" else "public"
+    private fun getDestinationVisibilityModifier(): String {
+        return if (codeGenConfig.useComposableVisibility && destination.visibility == Visibility.INTERNAL) "internal"
+        else "public"
+    }
 
     private fun String.replaceSuperclassDestination(): String {
         if (navArgs.isEmpty()) {

@@ -15,6 +15,7 @@ class ConfigParser(
         private const val PREFIX = "compose-destinations"
 
         // Configs
+        private const val USE_COMPOSABLE_VISIBILITY = "$PREFIX.useComposableVisibility"
         private const val GEN_NAV_GRAPHS = "$PREFIX.generateNavGraphs"
         private const val GEN_PACKAGE_NAME = "$PREFIX.codeGenPackageName"
         private const val MODULE_NAME = "$PREFIX.moduleName"
@@ -29,12 +30,14 @@ class ConfigParser(
     fun parse(): CodeGenConfig {
         val packageName = options[GEN_PACKAGE_NAME]?.trim()?.removeSuffix(".")
         val moduleName = options[MODULE_NAME]?.trim()?.filter { it.isLetter() }
+        val useComposableVisibility = parseBoolean(USE_COMPOSABLE_VISIBILITY) ?: false
         val mode = parseMode(MODE)
 
         return CodeGenConfig(
             moduleName = moduleName,
             mode = mode,
-            packageName = packageName
+            packageName = packageName,
+            useComposableVisibility = useComposableVisibility
         )
     }
 
@@ -80,7 +83,7 @@ class ConfigParser(
         return options[key]?.runCatching {
             toBooleanStrict()
         }?.getOrElse {
-            throw WrongConfigurationSetup("$GEN_NAV_GRAPHS must be a boolean value!", cause = it)
+            throw WrongConfigurationSetup("$key must be a boolean value!", cause = it)
         }
     }
 }
