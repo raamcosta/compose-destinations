@@ -32,7 +32,7 @@ interface ResultBackNavigator<R> {
      * Check [com.ramcosta.composedestinations.result.ResultRecipient] to see
      * how to get the result.
      *
-     * For kotlinx.serialization result you must fill [type] parameter.
+     * @param type must be used only with @kotlinx.serialization.Serializable [result]
      */
     fun navigateBack(result: R, type: KType? = null)
 
@@ -45,7 +45,7 @@ interface ResultBackNavigator<R> {
      * If multiple calls are done, the last one will be the result sent back.
      * This also applies if you call [navigateBack] (with result) after calling this.
      *
-     * For kotlinx.serialization result you must fill [type] parameter.
+     * @param type must be used only with @kotlinx.serialization.Serializable [result]
      */
     fun setResult(result: R, type: KType? = null)
 

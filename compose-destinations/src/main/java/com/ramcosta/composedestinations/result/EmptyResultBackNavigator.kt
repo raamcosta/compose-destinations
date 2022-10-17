@@ -10,7 +10,7 @@ class EmptyResultBackNavigator<R> : ResultBackNavigator<R> {
 
     override fun navigateBack(result: R, type: KType?) = Unit
 
-    override fun setResult(result: R, kType: KType?) = Unit
+    override fun setResult(result: R, type: KType?) = Unit
 
     override fun navigateBack() = Unit
 }
