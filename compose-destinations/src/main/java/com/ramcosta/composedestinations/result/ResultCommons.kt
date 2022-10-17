@@ -14,11 +14,13 @@ internal fun <R> resultBackNavigator(
     destination: DestinationSpec<*>,
     resultType: Class<R>,
     navController: NavController,
+    navBackStackEntry: NavBackStackEntry
 ): ResultBackNavigator<R> {
 
     val backNavigator = remember {
         ResultBackNavigatorImpl(
             navController = navController,
+            navBackStackEntry = navBackStackEntry,
             resultOriginType = destination.originalDestination.javaClass,
             resultType = resultType
         )

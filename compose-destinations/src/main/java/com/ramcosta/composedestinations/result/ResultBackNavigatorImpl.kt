@@ -7,11 +7,13 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
 internal class ResultBackNavigatorImpl<R>(
     private val navController: NavController,
+    private val navBackStackEntry: NavBackStackEntry,
     resultOriginType: Class<out DestinationSpec<*>>,
     resultType: Class<R>
 ) : ResultBackNavigator<R> {
@@ -19,7 +21,14 @@ internal class ResultBackNavigatorImpl<R>(
     private val resultKey = resultKey(resultOriginType, resultType)
     private val canceledKey = canceledKey(resultOriginType, resultType)
 
-    override fun navigateBack(result: R) {
+    override fun navigateBack(
+        result: R,
+        onlyIfResumed: Boolean
+    ) {
+        if (onlyIfResumed && navBackStackEntry.lifecycle.currentState != Lifecycle.State.RESUMED) {
+            return
+        }
+
         setResult(result)
         navigateBack()
     }

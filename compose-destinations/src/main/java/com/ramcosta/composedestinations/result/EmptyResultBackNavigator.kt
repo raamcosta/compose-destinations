@@ -6,7 +6,7 @@ package com.ramcosta.composedestinations.result
  */
 class EmptyResultBackNavigator<R> : ResultBackNavigator<R> {
 
-    override fun navigateBack(result: R) = Unit
+    override fun navigateBack(result: R, onlyIfResumed: Boolean) = Unit
 
     override fun setResult(result: R) = Unit
 
