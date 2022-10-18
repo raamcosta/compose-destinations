@@ -21,14 +21,14 @@ internal class ResultBackNavigatorImpl<R>(
     private val resultKey = resultKey(resultOriginType, resultType)
     private val canceledKey = canceledKey(resultOriginType, resultType)
 
-    private val isNotResumed: Boolean
-        get() = navBackStackEntry.lifecycle.currentState != Lifecycle.State.RESUMED
+    private val isResumed: Boolean
+        get() = navBackStackEntry.lifecycle.currentState == Lifecycle.State.RESUMED
 
     override fun navigateBack(
         result: R,
         onlyIfResumed: Boolean
     ) {
-        if (onlyIfResumed && isNotResumed) {
+        if (onlyIfResumed && !isResumed) {
             return
         }
 
@@ -44,7 +44,7 @@ internal class ResultBackNavigatorImpl<R>(
     }
 
     override fun navigateBack(onlyIfResumed: Boolean) {
-        if (onlyIfResumed && isNotResumed) {
+        if (onlyIfResumed && !isResumed) {
             return
         }
 
