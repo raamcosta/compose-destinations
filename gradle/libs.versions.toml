@@ -28,6 +28,7 @@ accompanist = "0.26.5-rc"
 ktxSerialization = "1.4.0"
 mockk = "1.13.2"
 
+compileTesting = "1.4.9"
 
 [plugins]
 dependencyCheckPlugin = { id = "com.github.ben-manes.versions", version.ref = "dependencyCheckPluginVersion" }
@@ -66,3 +67,5 @@ ktxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-j
 # Test
 test-junit = { module = "junit:junit", version.ref = "junit" }
 test-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+test-kotlinCompile = { module = "com.github.tschuchortdev:kotlin-compile-testing", version.ref = "compileTesting" }
+test-kotlinCompileKsp = { module = "com.github.tschuchortdev:kotlin-compile-testing-ksp", version.ref = "compileTesting" }
