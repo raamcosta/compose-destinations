@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.ksp.processors
 
+import com.google.devtools.ksp.findActualType
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.isInternal
 import com.google.devtools.ksp.isPrivate
@@ -190,13 +191,7 @@ class KspToCodeGenDestinationsMapper(
 
     private fun KSType.toType(location: Location): TypeInfo? {
         val qualifiedName = declaration.qualifiedName ?: return null
-        val typeAliasType = getTypeAlias()
-
-        val ksClassDeclaration = if (typeAliasType != null) {
-            typeAliasType.declaration as? KSClassDeclaration?
-        } else {
-            declaration as? KSClassDeclaration?
-        }
+        val ksClassDeclaration = getClassDeclaration()
         val classDeclarationType = ksClassDeclaration?.asType(emptyList())
 
         val importable = Importable(
@@ -218,13 +213,28 @@ class KspToCodeGenDestinationsMapper(
         )
     }
 
-    private fun KSType.isKtxSerializable() =
-        declaration.annotations.any {
+    private fun Sequence<KSAnnotation>.isKtxSerializable(): Boolean =
+        any {
             it.annotationType.resolve().declaration.qualifiedName?.asString()
                 ?.let { qualifiedName ->
                     qualifiedName == "kotlinx.serialization.Serializable"
                 } ?: false
         }
+
+    private fun KSType.isKtxSerializable(): Boolean {
+        // Check current type annotations
+        if (declaration.annotations.isKtxSerializable()) {
+            return true
+        }
+
+        if (declaration is KSTypeAlias) {
+            val typeAlias = declaration as KSTypeAlias
+            // For alias check type alias annotations or annotations of reference type
+            return typeAlias.type.annotations.isKtxSerializable() || typeAlias.type.resolve().isKtxSerializable()
+        }
+
+        return false
+    }
 
     private fun KSType.argumentTypes(location: Location): List<TypeArgument> {
         return arguments.mapNotNull { typeArg ->
@@ -264,13 +274,11 @@ class KspToCodeGenDestinationsMapper(
         return File(fileLocation.filePath).readLine(fileLocation.lineNumber)
     }
 
-    private fun KSType.getTypeAlias(): KSType? {
-        val declaration = declaration
-        val typeAliasType = if (declaration is KSTypeAlias) {
-            declaration.type.resolve()
-        } else {
-            null
+    private fun KSType.getClassDeclaration(): KSClassDeclaration? {
+        if (this.declaration is KSTypeAlias) {
+            return (this.declaration as KSTypeAlias).findActualType()
         }
-        return typeAliasType
+
+        return declaration as? KSClassDeclaration?
     }
 }
