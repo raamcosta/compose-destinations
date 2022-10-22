@@ -86,6 +86,10 @@ android {
 //
 //        // To change the package name where the generated files will be placed
         arg("compose-destinations.codeGenPackageName", "com.ramcosta.samples.playground.ui.screens")
+
+        // If set to "true" will use the annotated composable's visibility in the generated Destination
+        // otherwise, Destinations will always be public in this module
+        arg("compose-destinations.useComposableVisibility", "true")
     }
 }
 

@@ -16,7 +16,7 @@ const val NESTED_NAV_GRAPHS = "[NESTED_NAV_GRAPHS]"
 val moduleNavGraphTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName",
     imports = setOfImportable(
-        "$CORE_PACKAGE_NAME.spec.$CORE_NAV_GRAPH_SPEC",
+        "$CORE_PACKAGE_NAME.spec.*",
         "${codeGenBasePackageName}.destinations.*",
     ),
     sourceCode = """
