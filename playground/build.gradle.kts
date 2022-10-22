@@ -111,4 +111,8 @@ dependencies {
 
     testImplementation(libs.test.junit)
     testImplementation(libs.test.mockk)
+
+    testImplementation(project(":compose-destinations-ksp"))
+    testImplementation(libs.test.kotlinCompile)
+    testImplementation(libs.test.kotlinCompileKsp)
 }
