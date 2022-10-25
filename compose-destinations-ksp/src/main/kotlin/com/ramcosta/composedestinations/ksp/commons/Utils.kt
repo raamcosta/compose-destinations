@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.ksp.commons
 
+import com.google.devtools.ksp.findActualType
 import com.google.devtools.ksp.symbol.*
 import com.ramcosta.composedestinations.codegen.model.*
 import java.io.*
@@ -66,4 +67,12 @@ fun KSType.isRequireOptInAnnotation(): Boolean {
             annotation.annotationType.resolve().isRequireOptInAnnotation()
         }
     }
+}
+
+fun KSType.findActualClassDeclaration(): KSClassDeclaration? {
+    if (this.declaration is KSTypeAlias) {
+        return (this.declaration as KSTypeAlias).findActualType()
+    }
+
+    return declaration as? KSClassDeclaration?
 }

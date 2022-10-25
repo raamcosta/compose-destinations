@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.ksp.processors
 
-import com.google.devtools.ksp.findActualType
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.isInternal
 import com.google.devtools.ksp.isPrivate
@@ -194,7 +193,7 @@ class KspToCodeGenDestinationsMapper(
     private fun KSType.toType(location: Location): TypeInfo? {
         val qualifiedName = declaration.qualifiedName ?: return null
 
-        val ksClassDeclaration = getClassDeclaration()
+        val ksClassDeclaration = findActualClassDeclaration()
         val classDeclarationType = ksClassDeclaration?.asType(emptyList())
 
         val importable = Importable(
@@ -275,13 +274,5 @@ class KspToCodeGenDestinationsMapper(
     private fun getErrorLine(location: Location): String {
         val fileLocation = location as FileLocation
         return File(fileLocation.filePath).readLine(fileLocation.lineNumber)
-    }
-
-    private fun KSType.getClassDeclaration(): KSClassDeclaration? {
-        if (this.declaration is KSTypeAlias) {
-            return (this.declaration as KSTypeAlias).findActualType()
-        }
-
-        return declaration as? KSClassDeclaration?
     }
 }
