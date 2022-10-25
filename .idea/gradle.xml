@@ -10,7 +10,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/compose-destinations" />
             <option value="$PROJECT_DIR$/compose-destinations-animations" />
             <option value="$PROJECT_DIR$/compose-destinations-codegen" />
@@ -19,7 +18,6 @@
             <option value="$PROJECT_DIR$/sample" />
           </set>
         </option>
-        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>
