@@ -6,6 +6,7 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 
 class DestinationsWriter(
+    private val codeGenConfig: CodeGenConfig,
     private val codeGenerator: CodeOutputStreamMaker,
     private val core: Core,
     private val customNavTypeByType: Map<Type, CustomNavType>,
@@ -19,6 +20,7 @@ class DestinationsWriter(
         destinations.forEach { destination ->
             val importableHelper = ImportableHelper()
             val generatedDestination = SingleDestinationWriter(
+                codeGenConfig,
                 codeGenerator,
                 core,
                 NavArgResolver(customNavTypeByType, importableHelper),

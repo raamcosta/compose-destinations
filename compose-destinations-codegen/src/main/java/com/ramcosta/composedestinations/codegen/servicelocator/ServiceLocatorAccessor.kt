@@ -30,6 +30,7 @@ internal val ServiceLocatorAccessor.customNavTypeWriter get() = CustomNavTypesWr
 internal fun ServiceLocatorAccessor.destinationsWriter(
     customNavTypeByType: Map<Type, CustomNavType>
 ) = DestinationsWriter(
+    codeGenConfig,
     codeGenerator,
     core,
     customNavTypeByType
