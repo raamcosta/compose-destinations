@@ -12,6 +12,7 @@ import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.model.ClassKind
 import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
+import com.ramcosta.composedestinations.ksp.commons.findActualClassDeclaration
 
 class Processor(
     private val codeGenerator: KSPCodeGenerator,
@@ -82,7 +83,8 @@ class Processor(
                     throw IllegalDestinationsSetup("${serializer.simpleName}: Type serializers must implement DestinationsNavTypeSerializer!")
                 }
 
-                val genericType = superType.arguments.first().type?.resolve()?.declaration as KSClassDeclaration
+                val genericType = superType.arguments.first().type?.resolve()?.findActualClassDeclaration()
+                    ?: throw IllegalDestinationsSetup("${serializer.simpleName} type serializer has an issue with its type argument!")
 
                 NavTypeSerializer(
                     classKind = if (serializer.classKind == KSPClassKind.CLASS) ClassKind.CLASS else ClassKind.OBJECT,
