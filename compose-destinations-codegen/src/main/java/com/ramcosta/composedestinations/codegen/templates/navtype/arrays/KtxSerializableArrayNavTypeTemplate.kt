@@ -13,7 +13,6 @@ val ktxSerializableArrayNavTypeTemplate = FileTemplate(
         "android.os.Parcelable",
         "java.io.Serializable",
         "androidx.lifecycle.SavedStateHandle",
-        "androidx.navigation.NavBackStackEntry",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavType",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavTypeSerializer",
         "$CORE_PACKAGE_NAME.navargs.primitives.DECODED_NULL",
@@ -60,10 +59,6 @@ public class $ARRAY_CUSTOM_NAV_TYPE_NAME(
                 "[" + value.joinToString(encodedComma) { serializer.toRouteString(it) } + "]"
             )
         }
-    }
-
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): Array<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
-        return navBackStackEntry.arguments?.getParcelableArray(key)?.toTypeArray()
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): Array<$TYPE_ARG_CLASS_SIMPLE_NAME>? {

@@ -10,6 +10,7 @@ private const val CLASS_ESCAPED = "\${argsClass}"
 val navArgsGettersTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName",
     imports = setOfImportable(
+        "android.os.Bundle",
         "androidx.lifecycle.SavedStateHandle",
         "androidx.navigation.NavBackStackEntry"
     ),
@@ -19,7 +20,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T> SavedStat
 }
 
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T> NavBackStackEntry.navArgs(): T {
-    return navArgs(T::class.java, this)
+    return navArgs(T::class.java, this.arguments)
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -31,7 +32,7 @@ $NAV_ARGS_METHOD_WHEN_CASES
 }
 
 @Suppress("UNCHECKED_CAST")
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public fun <T> navArgs(argsClass: Class<T>, argsContainer: NavBackStackEntry): T {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public fun <T> navArgs(argsClass: Class<T>, argsContainer: Bundle?): T {
     return when (argsClass) {
 $NAV_ARGS_METHOD_WHEN_CASES
         else -> error("Class $CLASS_ESCAPED is not a navigation arguments class!")

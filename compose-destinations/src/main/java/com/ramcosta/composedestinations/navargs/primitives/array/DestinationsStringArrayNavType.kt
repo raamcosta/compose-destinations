@@ -48,10 +48,6 @@ object DestinationsStringArrayNavType : DestinationsNavType<Array<String>?>() {
         }
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): Array<String>? {
-        return navBackStackEntry.arguments?.getStringArray(key)
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): Array<String>? {
         return savedStateHandle.get<Array<String>?>(key)
     }

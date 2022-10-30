@@ -276,7 +276,7 @@ class SingleDestinationWriter(
         val code = StringBuilder()
         code += """
                 
-           |override fun argsFrom(navBackStackEntry: $NAV_BACK_STACK_ENTRY_SIMPLE_NAME): $argsType {
+           |override fun argsFrom(bundle: ${bundleImportable.getCodePlaceHolder()}?): $argsType {
            |    return ${argsType}(%s2
            |    )
            |}

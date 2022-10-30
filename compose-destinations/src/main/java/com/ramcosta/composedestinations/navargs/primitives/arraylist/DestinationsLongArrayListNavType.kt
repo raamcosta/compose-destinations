@@ -15,7 +15,7 @@ object DestinationsLongArrayListNavType : DestinationsNavType<ArrayList<Long>?>(
     }
 
     override fun get(bundle: Bundle, key: String): ArrayList<Long>? {
-        return bundle.getLongArray(key)?.toList()?.let { ArrayList(it) }
+        return bundle.getLongArray(key).toArrayList()
     }
 
     override fun parseValue(value: String): ArrayList<Long>? {
@@ -37,10 +37,6 @@ object DestinationsLongArrayListNavType : DestinationsNavType<ArrayList<Long>?>(
     override fun serializeValue(value: ArrayList<Long>?): String {
         value ?: return ENCODED_NULL
         return "[${value.joinToString(",") { it.toString() }}]"
-    }
-
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): ArrayList<Long>? {
-        return navBackStackEntry.arguments?.getLongArray(key).toArrayList()
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<Long>? {

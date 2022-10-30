@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.spec
 
+import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 
 /**
  * [DestinationSpec] that does not contain any navigation arguments.
@@ -11,7 +11,7 @@ interface DirectionDestinationSpec: DestinationSpec<Unit>, Direction {
 
     override fun invoke(navArgs: Unit): Direction = this
 
-    override fun argsFrom(navBackStackEntry: NavBackStackEntry) = Unit
+    override fun argsFrom(bundle: Bundle?) = Unit
 
     override fun argsFrom(savedStateHandle: SavedStateHandle) = Unit
 }

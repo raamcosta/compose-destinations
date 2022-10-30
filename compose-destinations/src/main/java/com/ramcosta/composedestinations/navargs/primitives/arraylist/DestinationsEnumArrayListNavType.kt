@@ -40,10 +40,6 @@ class DestinationsEnumArrayListNavType<E : Enum<*>>(
         return value.joinToString(",") { it.name }
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): ArrayList<E>? {
-        return navBackStackEntry.arguments?.getSerializable(key) as ArrayList<E>?
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<E>? {
         return savedStateHandle.get<ArrayList<E>?>(key)
     }

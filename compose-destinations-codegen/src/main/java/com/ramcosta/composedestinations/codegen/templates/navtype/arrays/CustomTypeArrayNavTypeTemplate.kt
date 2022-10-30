@@ -58,10 +58,6 @@ public class $ARRAY_CUSTOM_NAV_TYPE_NAME(
         }
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): Array<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
-        return navBackStackEntry.arguments?.getStringArray(key)?.toTypeArray()
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): Array<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
         return savedStateHandle.get<Array<String>?>(key)?.toTypeArray()
     }

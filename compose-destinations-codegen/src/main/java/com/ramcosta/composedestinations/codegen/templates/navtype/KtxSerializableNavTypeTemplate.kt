@@ -11,7 +11,6 @@ val ktxSerializableNavTypeTemplate = FileTemplate(
         "android.os.Bundle",
         "java.io.Serializable",
         "androidx.lifecycle.SavedStateHandle",
-        "androidx.navigation.NavBackStackEntry",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavType",
         "$CORE_PACKAGE_NAME.navargs.utils.encodeForRoute",
         "$CORE_PACKAGE_NAME.navargs.primitives.DECODED_NULL",
@@ -50,10 +49,6 @@ public class $NAV_TYPE_CLASS_SIMPLE_NAME(
         } else {
             encodeForRoute(serializer.toRouteString(value))
         }
-    }
-
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
-        return navBackStackEntry.arguments?.getByteArray(key)?.let { fromByteArray(it) }
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {

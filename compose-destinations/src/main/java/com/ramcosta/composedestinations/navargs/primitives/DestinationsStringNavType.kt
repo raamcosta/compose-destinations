@@ -50,10 +50,6 @@ object DestinationsStringNavType : DestinationsNavType<String?>() {
         return serializeValue(value)
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): String? {
-        return navBackStackEntry.arguments?.getString(key)
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): String? {
         return savedStateHandle.get<String?>(key)
     }

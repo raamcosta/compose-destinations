@@ -28,6 +28,7 @@ const val DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT = "deepLinks"
 
 const val DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER = "@ramcosta.destinations.fullroute@" // Needs to be the same as the constant in core module
 const val DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER = "@ramcosta.destinations.composable-name-route@" // Needs to be the same as the constant in core module's Destination
+const val ACTIVITY_DESTINATION_ANNOTATION_DEFAULT_NULL = "@ramcosta.destinations.activity-null-default@" // Needs to be the same as the constant in core module's ActivityDestination
 const val NAV_GRAPH_ANNOTATION_DEFAULT_NAME = "@ramcosta.destinations.annotation-navgraph-route@" // Needs to be the same as the constant in core module's NavGraph
 
 const val SINGLE_MODULE_EXTENSIONS = "SingleModuleExtensions"
@@ -74,6 +75,10 @@ const val NAV_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavController"
 const val NAV_HOST_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavHostController"
 const val SAVED_STATE_HANDLE_SIMPLE_NAME = "SavedStateHandle"
 const val SAVED_STATE_HANDLE_QUALIFIED_NAME = "androidx.lifecycle.SavedStateHandle"
+val bundleImportable = Importable(
+    simpleName = "Bundle",
+    qualifiedName = "android.os.Bundle"
+)
 const val NAV_BACK_STACK_ENTRY_SIMPLE_NAME = "NavBackStackEntry"
 const val NAV_BACK_STACK_ENTRY_QUALIFIED_NAME = "androidx.navigation.$NAV_BACK_STACK_ENTRY_SIMPLE_NAME"
 const val ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME = "AnimatedVisibilityScope"

@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.navargs
 
+import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 
 /**
@@ -12,7 +12,9 @@ abstract class DestinationsNavType<T: Any?>: NavType<T>(true) {
 
     abstract fun serializeValue(value: T): String?
 
-    abstract fun get(navBackStackEntry: NavBackStackEntry, key: String): T
-
     abstract fun get(savedStateHandle: SavedStateHandle, key: String): T
+
+    fun safeGet(bundle: Bundle?, key: String): T? {
+        return bundle?.let { get(it, key) }
+    }
 }

@@ -38,10 +38,6 @@ object DestinationsIntArrayListNavType : DestinationsNavType<ArrayList<Int>?>() 
         return "[${value.joinToString(",") { it.toString() }}]"
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): ArrayList<Int>? {
-        return navBackStackEntry.arguments?.getIntegerArrayList(key)
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<Int>? {
         return savedStateHandle.get(key)
     }
