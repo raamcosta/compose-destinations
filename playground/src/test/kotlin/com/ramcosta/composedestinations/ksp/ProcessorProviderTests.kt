@@ -353,6 +353,71 @@ class ProcessorProviderTests {
         )
     }
 
+    @Test
+    fun `@Destination with navArgsDelegate from different module`() {
+        val compilation = prepareCompilation(
+            kotlin(
+                "Screen.kt",
+                """
+          package com.ramcosta.composedestinations.example
+
+          import com.ramcosta.composedestinations.annotation.Destination
+          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.samples.playgroundshared.BlogPostArgs
+
+          @RootNavGraph(start = true)
+          @Destination(route = "test1")
+          fun TestScreen1() {}
+
+          @Destination(route = "test2", navArgsDelegate = BlogPostArgs::class)
+          fun TestScreen2(
+            navArgs: BlogPostArgs
+          ) {}
+          """.trimIndent()
+            )
+        )
+
+        val result = compilation.compile()
+
+        assertEquals(result.exitCode, KotlinCompilation.ExitCode.OK)
+        assertTrue(
+            "Files wasn't generated",
+            compilation.kspSourcesDir.walkTopDown()
+                .filter { it.nameWithoutExtension == "TestScreen1Destination" || it.nameWithoutExtension == "TestScreen2Destination" }
+                .toList().isNotEmpty()
+        )
+    }
+
+    @Test
+    fun `@Destination with navArgsDelegate from different module with default values`() {
+        val compilation = prepareCompilation(
+            kotlin(
+                "Screen.kt",
+                """
+          package com.ramcosta.composedestinations.example
+
+          import com.ramcosta.composedestinations.annotation.Destination
+          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.samples.playgroundshared.WithDefaultValueArgs
+
+          @RootNavGraph(start = true)
+          @Destination(route = "test1")
+          fun TestScreen1() {}
+
+          @Destination(route = "test2", navArgsDelegate = WithDefaultValueArgs::class)
+          fun TestScreen2(
+            navArgs: WithDefaultValueArgs
+          ) {}
+          """.trimIndent()
+            )
+        )
+
+        val result = compilation.compile()
+
+        assertEquals(result.exitCode, KotlinCompilation.ExitCode.COMPILATION_ERROR)
+        assertTrue(result.messages.contains("com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup: Cannot detect default value for navigation argument 'isCreate'"))
+    }
+
     private fun prepareCompilation(vararg sourceFiles: SourceFile): KotlinCompilation {
         return KotlinCompilation().apply {
             workingDir = temporaryFolder.root
