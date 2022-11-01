@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -8,6 +9,7 @@ import androidx.navigation.*
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
+import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.scope.DestinationScopeImpl
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
@@ -63,6 +65,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
         )
     }
 
+    @OptIn(ExperimentalAnimationApi::class, InternalDestinationsApi::class)
     override fun <T> NavGraphBuilder.composable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
@@ -90,7 +93,42 @@ internal class DefaultNavHostEngine : NavHostEngine {
                 )
             }
 
-            else -> throw IllegalStateException("You need to use 'rememberAnimatedNavHostEngine' to get an engine that can use ${destinationStyle.javaClass.simpleName} and pass that into the 'DestinationsNavHost' ")
+            is DestinationStyle.Activity -> {
+                addActivityDestination(destination as ActivityDestinationSpec)
+            }
+
+            is DestinationStyle.Animated,
+            is DestinationStyle.BottomSheet -> {
+                throw IllegalStateException("You need to use 'rememberAnimatedNavHostEngine' to get an engine that can use ${destinationStyle.javaClass.simpleName} and pass that into the 'DestinationsNavHost' ")
+            }
+        }
+    }
+
+    private fun <T> NavGraphBuilder.addActivityDestination(destination: ActivityDestinationSpec<T>) {
+        activity(destination.route) {
+            targetPackage = destination.targetPackage
+            activityClass = destination.activityClass?.kotlin
+            action = destination.action
+            data = destination.data
+            dataPattern = destination.dataPattern
+
+            destination.deepLinks.forEach { deepLink ->
+                deepLink {
+                    action = deepLink.action
+                    uriPattern = deepLink.uriPattern
+                    mimeType = deepLink.mimeType
+                }
+            }
+
+            destination.arguments.forEach { navArg ->
+                argument(navArg.name) {
+                    if (navArg.argument.isDefaultValuePresent) {
+                        defaultValue = navArg.argument.defaultValue
+                    }
+                    type = navArg.argument.type
+                    nullable = navArg.argument.isNullable
+                }
+            }
         }
     }
 

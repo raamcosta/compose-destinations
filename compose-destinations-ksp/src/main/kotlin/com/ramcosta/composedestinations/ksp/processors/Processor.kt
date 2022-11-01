@@ -40,7 +40,8 @@ class Processor(
         )
         val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, functionsToDestinationsMapper)
 
-        val destinations = functionsToDestinationsMapper.map(annotatedDestinations)
+        val annotatedActivityDestinations = resolver.getActivityDestinations()
+        val destinations = functionsToDestinationsMapper.map(annotatedDestinations, annotatedActivityDestinations)
 
         CodeGenerator(
             codeGenerator = kspCodeOutputStreamMaker,
@@ -58,6 +59,11 @@ class Processor(
 
     private fun Resolver.getNavGraphAnnotations(): Sequence<KSClassDeclaration> {
         return getSymbolsWithAnnotation(NAV_GRAPH_ANNOTATION_QUALIFIED)
+            .filterIsInstance<KSClassDeclaration>()
+    }
+
+    private fun Resolver.getActivityDestinations(): Sequence<KSClassDeclaration> {
+        return getSymbolsWithAnnotation(ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED)
             .filterIsInstance<KSClassDeclaration>()
     }
 

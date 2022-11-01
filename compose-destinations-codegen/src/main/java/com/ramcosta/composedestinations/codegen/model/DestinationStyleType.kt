@@ -10,4 +10,6 @@ sealed class DestinationStyleType {
     object Default : DestinationStyleType()
 
     object Runtime: DestinationStyleType()
+
+    object Activity: DestinationStyleType()
 }

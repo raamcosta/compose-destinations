@@ -1,7 +1,9 @@
 package com.ramcosta.composedestinations.codegen.writers
 
+import com.ramcosta.composedestinations.codegen.codeGenActivityDestination
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.codeGenDestination
+import com.ramcosta.composedestinations.codegen.codeGenNoArgsActivityDestination
 import com.ramcosta.composedestinations.codegen.codeGenNoArgsDestination
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
@@ -49,7 +51,6 @@ class SingleDestinationWriter(
                 .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
                 .replace(DESTINATION_VISIBILITY_PLACEHOLDER, getDestinationVisibilityModifier())
                 .replace(BASE_ROUTE, destination.cleanRoute)
-                .replace(NAV_ARGS_CLASS_SIMPLE_NAME, navArgsDataClassName())
                 .replace(COMPOSED_ROUTE, constructRouteFieldCode())
                 .replace(NAV_ARGUMENTS, navArgumentsDeclarationCode())
                 .replace(DEEP_LINKS, deepLinksDeclarationCode())
@@ -57,6 +58,7 @@ class SingleDestinationWriter(
                 .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
                 .replace(ARGS_TO_DIRECTION_METHOD, invokeMethodsCode())
                 .replace(ARGS_FROM_METHODS, argsFromFunctions())
+                .replace(ACTIVITY_DESTINATION_FIELDS, activityDestinationFields())
         )
 
         return GeneratedDestination(
@@ -84,6 +86,16 @@ class SingleDestinationWriter(
     }
 
     private fun String.replaceSuperclassDestination(): String {
+        if (destination.destinationStyleType is DestinationStyleType.Activity) {
+            return replace(
+                SUPERTYPE, if (navArgs.isEmpty()) {
+                    codeGenNoArgsActivityDestination
+                } else {
+                    "$codeGenActivityDestination<${destination.navArgsDelegateType!!.type.getCodePlaceHolder()}>"
+                }
+            )
+        }
+
         if (navArgs.isEmpty()) {
             return replace(SUPERTYPE, codeGenNoArgsDestination)
         }
@@ -170,7 +182,7 @@ class SingleDestinationWriter(
 
             return """
             |     
-            |    public operator fun invoke(): $CORE_DIRECTION  = this
+            |    public operator fun invoke(): $CORE_DIRECTION = this
             |    
             """.trimMargin()
         }
@@ -245,6 +257,44 @@ class SingleDestinationWriter(
         }
 
         return "${name}$ifNullBeforeToString${".toString()"}$ifNullSuffix"
+    }
+
+    private fun activityDestinationFields(): String = with(destination) {
+        if (activityDestinationParams == null) {
+            return ""
+        }
+
+        val uriImportable = Importable(
+            "Uri",
+            "android.net.Uri"
+        )
+
+        val activityImportable = Importable(
+            "Activity",
+            "android.app.Activity"
+        )
+
+        val activityClassImportable = Importable(
+            composableName,
+            composableQualifiedName
+        )
+
+        return """override val targetPackage: String? = @targetPackage@ 
+        |    
+        |    override val action: String? = @action@ 
+        |    
+        |    override val data: ${uriImportable.getCodePlaceHolder()}? = @data@ 
+        |    
+        |    override val dataPattern: String? = @dataPattern@ 
+        |    
+        |    override val activityClass: Class<out ${activityImportable.getCodePlaceHolder()}>? = @activityClass@::class.java
+        |    
+        """.trimMargin()
+            .replace("@targetPackage@", activityDestinationParams.targetPackage?.let { "\"${it}\"" } ?: "null")
+            .replace("@action@", activityDestinationParams.action?.let { "\"${it}\"" } ?: "null")
+            .replace("@data@", activityDestinationParams.dataUri?.let { "${uriImportable.getCodePlaceHolder()}.parse(\"${it}\")" } ?: "null")
+            .replace("@dataPattern@", activityDestinationParams.dataPattern?.let { "\"${it}\"" } ?: "null")
+            .replace("@activityClass@", activityClassImportable.getCodePlaceHolder())
     }
 
     private fun argsFromFunctions(): String = with(destination)  {
@@ -360,11 +410,25 @@ class SingleDestinationWriter(
     }
 
     private fun contentFunctionCode(): String {
-        return DestinationContentFunctionWriter(
-            destination,
-            navArgs,
-            importableHelper
-        ).write()
+        if (destination.destinationStyleType is DestinationStyleType.Activity) {
+            return ""
+        }
+
+        return """
+    @Composable
+    override fun DestinationScope<${navArgsDataClassName()}>.Content(
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<${navArgsDataClassName()}>.() -> Unit
+    ) {
+%s1
+    }
+        """.trimIndent()
+            .replace(
+                "%s1", DestinationContentFunctionWriter(
+                    destination,
+                    navArgs,
+                    importableHelper
+                ).write()
+            )
     }
 
     private fun navArgumentsDeclarationCode(): String {
@@ -463,6 +527,7 @@ class SingleDestinationWriter(
 
     private fun destinationStyle(): String {
         return when (destination.destinationStyleType) {
+            is DestinationStyleType.Activity,
             is DestinationStyleType.Default -> ""
 
             is DestinationStyleType.BottomSheet -> destinationStyleBottomSheet()
