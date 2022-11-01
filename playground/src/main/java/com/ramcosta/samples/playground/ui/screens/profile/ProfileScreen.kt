@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package com.ramcosta.samples.playground.ui.screens.profile
 
 import androidx.compose.animation.AnimatedVisibilityScope
