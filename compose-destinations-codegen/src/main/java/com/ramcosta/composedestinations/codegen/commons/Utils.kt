@@ -26,9 +26,13 @@ fun String.removeInstancesOf(vararg toRemove: String): String {
     return result
 }
 
+private val keywords: Set<String> = setOf(
+    "in", "is"
+)
+
 fun String.sanitizePackageName(): String {
     return split(".")
-        .joinToString(".") { if (it == "in") "`in`" else it }
+        .joinToString(".") { if (keywords.contains(it)) "`$it`" else it }
 }
 
 private val humps = "(?<=.)(?=\\p{Upper})".toRegex()
