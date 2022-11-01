@@ -11,7 +11,6 @@ val serializableNavTypeTemplate = FileTemplate(
         "android.os.Bundle",
         "java.io.Serializable",
         "androidx.lifecycle.SavedStateHandle",
-        "androidx.navigation.NavBackStackEntry",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavType",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavTypeSerializer",
         "$CORE_PACKAGE_NAME.navargs.utils.encodeForRoute",
@@ -47,10 +46,6 @@ public class $NAV_TYPE_CLASS_SIMPLE_NAME(
         } else {
             encodeForRoute(stringSerializer.toRouteString(value))
         }
-    }
-
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
-        return navBackStackEntry.arguments?.getSerializable(key) as? $CLASS_SIMPLE_NAME_CAMEL_CASE?
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {

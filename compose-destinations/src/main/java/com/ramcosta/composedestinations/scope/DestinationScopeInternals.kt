@@ -15,7 +15,7 @@ abstract class DestinationScopeImpl<T>(
 ) : DestinationScope<T> {
 
     override val navArgs: T by lazy(LazyThreadSafetyMode.NONE) {
-        destination.argsFrom(navBackStackEntry)
+        destination.argsFrom(navBackStackEntry.arguments)
     }
 
     override val destinationsNavigator: DestinationsNavigator
@@ -39,7 +39,7 @@ abstract class NavGraphBuilderDestinationScopeImpl<T>(
 ) : NavGraphBuilderDestinationScope<T> {
 
     override val navArgs: T by lazy(LazyThreadSafetyMode.NONE) {
-        destination.argsFrom(navBackStackEntry)
+        destination.argsFrom(navBackStackEntry.arguments)
     }
 
     override fun destinationsNavigator(navController: NavController): DestinationsNavigator {

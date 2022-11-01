@@ -15,7 +15,7 @@ object DestinationsFloatArrayListNavType : DestinationsNavType<ArrayList<Float>?
     }
 
     override fun get(bundle: Bundle, key: String): ArrayList<Float>? {
-        return bundle.getFloatArray(key)?.toList()?.let { ArrayList(it) }
+        return bundle.getFloatArray(key).toArrayList()
     }
 
     override fun parseValue(value: String): ArrayList<Float>? {
@@ -36,10 +36,6 @@ object DestinationsFloatArrayListNavType : DestinationsNavType<ArrayList<Float>?
     override fun serializeValue(value: ArrayList<Float>?): String {
         value ?: return ENCODED_NULL
         return "[${value.joinToString(",") { it.toString() }}]"
-    }
-
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): ArrayList<Float>? {
-        return navBackStackEntry.arguments?.getFloatArray(key).toArrayList()
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<Float>? {

@@ -6,6 +6,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavBackStackEntry
+import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 
 /**
  * Controls how the destination is shown when navigated to and navigated away from.
@@ -109,4 +110,8 @@ sealed interface DestinationStyle {
      * different module than the one which has the annotated Composable.
      */
     object Runtime: DestinationStyle
+
+
+    @InternalDestinationsApi
+    object Activity: DestinationStyle
 }

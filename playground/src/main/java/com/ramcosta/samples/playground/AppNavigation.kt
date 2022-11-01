@@ -144,7 +144,7 @@ fun SampleAppAnimatedNavHostExample(
         }
 
         animatedComposable(FeedDestination) {
-            Feed()
+            Feed(destinationsNavigator(navController))
         }
 
         dialogComposable(GoToProfileConfirmationDestination) {

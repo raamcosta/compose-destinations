@@ -38,10 +38,6 @@ object DestinationsBooleanArrayListNavType : DestinationsNavType<ArrayList<Boole
         return "[${value.joinToString(",") { it.toString() }}]"
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): ArrayList<Boolean>? {
-        return navBackStackEntry.arguments?.getBooleanArray(key).toArrayList()
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<Boolean>? {
         return savedStateHandle.get<BooleanArray?>(key).toArrayList()
     }

@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.spec
 
+import android.os.Bundle
 import androidx.annotation.RestrictTo
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
@@ -25,9 +26,9 @@ interface DestinationSpec<T> : Route {
 
     /**
      * Method that returns the navigation arguments class of this Composable
-     * for the [navBackStackEntry] when the destination gets navigated to.
+     * for the [bundle] when the destination gets navigated to.
      */
-    fun argsFrom(navBackStackEntry: NavBackStackEntry) : T
+    fun argsFrom(bundle: Bundle?) : T
 
     /**
      * Method that returns the navigation arguments class of this Composable

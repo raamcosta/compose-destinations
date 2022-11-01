@@ -6,10 +6,12 @@ import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 const val CORE_PACKAGE_NAME = "com.ramcosta.composedestinations"
 
 const val DESTINATION_ANNOTATION = "Destination"
+const val ACTIVITY_DESTINATION_ANNOTATION = "ActivityDestination"
 const val NAV_GRAPH_ANNOTATION = "NavGraph"
 const val NAV_TYPE_SERIALIZER_ANNOTATION = "NavTypeSerializer"
 const val DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$DESTINATION_ANNOTATION"
 const val NAV_GRAPH_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$NAV_GRAPH_ANNOTATION"
+const val ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$ACTIVITY_DESTINATION_ANNOTATION"
 const val NAV_HOST_PARAM_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.NavHostParam"
 const val NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.navargs.$NAV_TYPE_SERIALIZER_ANNOTATION"
 
@@ -28,11 +30,14 @@ const val DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT = "deepLinks"
 
 const val DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER = "@ramcosta.destinations.fullroute@" // Needs to be the same as the constant in core module
 const val DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER = "@ramcosta.destinations.composable-name-route@" // Needs to be the same as the constant in core module's Destination
+const val ACTIVITY_DESTINATION_ANNOTATION_DEFAULT_NULL = "@ramcosta.destinations.activity-null-default@" // Needs to be the same as the constant in core module's ActivityDestination
 const val NAV_GRAPH_ANNOTATION_DEFAULT_NAME = "@ramcosta.destinations.annotation-navgraph-route@" // Needs to be the same as the constant in core module's NavGraph
 
 const val SINGLE_MODULE_EXTENSIONS = "SingleModuleExtensions"
 const val NO_PREFIX_GENERATED_DESTINATION = "TypedDestination"
 const val NO_PREFIX_GENERATED_NO_ARGS_DESTINATION = "DirectionDestination"
+const val NO_PREFIX_GENERATED_ACTIVITY_DESTINATION = "ActivityDestination"
+const val NO_PREFIX_GENERATED_NO_ARGS_ACTIVITY_DESTINATION = "DirectionActivityDestination"
 const val GENERATED_NAV_GRAPH = "NavGraph"
 const val GENERATED_NAV_GRAPHS_OBJECT = "NavGraphs"
 const val GENERATED_DESTINATION_SUFFIX = "Destination"
@@ -40,6 +45,8 @@ const val GENERATED_DESTINATION_SUFFIX = "Destination"
 const val CORE_DESTINATION_SPEC = "DestinationSpec"
 const val CORE_DIRECTION_DESTINATION_SPEC = "DirectionDestinationSpec"
 const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
+val CORE_ACTIVITY_DESTINATION_SPEC = Importable("ActivityDestinationSpec", "$CORE_PACKAGE_NAME.spec.ActivityDestinationSpec")
+val CORE_DIRECTION_ACTIVITY_DESTINATION_SPEC = Importable("DirectionActivityDestinationSpec", "$CORE_PACKAGE_NAME.spec.DirectionActivityDestinationSpec")
 val CORE_STRING_NAV_TYPE = Importable("DestinationsStringNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsStringNavType")
 val CORE_INT_NAV_TYPE = Importable("DestinationsIntNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsIntNavType")
 val CORE_BOOLEAN_NAV_TYPE = Importable("DestinationsBooleanNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsBooleanNavType")
@@ -74,6 +81,10 @@ const val NAV_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavController"
 const val NAV_HOST_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavHostController"
 const val SAVED_STATE_HANDLE_SIMPLE_NAME = "SavedStateHandle"
 const val SAVED_STATE_HANDLE_QUALIFIED_NAME = "androidx.lifecycle.SavedStateHandle"
+val bundleImportable = Importable(
+    simpleName = "Bundle",
+    qualifiedName = "android.os.Bundle"
+)
 const val NAV_BACK_STACK_ENTRY_SIMPLE_NAME = "NavBackStackEntry"
 const val NAV_BACK_STACK_ENTRY_QUALIFIED_NAME = "androidx.navigation.$NAV_BACK_STACK_ENTRY_SIMPLE_NAME"
 const val ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME = "AnimatedVisibilityScope"

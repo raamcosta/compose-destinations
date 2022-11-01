@@ -40,10 +40,6 @@ object DestinationsFloatArrayNavType : DestinationsNavType<FloatArray?>() {
         return "[${value.joinToString(",") { it.toString() }}]"
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): FloatArray? {
-        return navBackStackEntry.arguments?.getFloatArray(key)
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): FloatArray? {
         return savedStateHandle.get(key)
     }

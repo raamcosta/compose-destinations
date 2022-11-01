@@ -17,6 +17,7 @@ import com.google.accompanist.navigation.material.bottomSheet
 import com.ramcosta.composedestinations.animations.defaults.*
 import com.ramcosta.composedestinations.animations.scope.AnimatedDestinationScopeImpl
 import com.ramcosta.composedestinations.animations.scope.BottomSheetDestinationScopeImpl
+import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.*
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.rememberNavHostEngine
@@ -110,6 +111,7 @@ internal class AnimatedNavHostEngine(
         )
     }
 
+    @OptIn(InternalDestinationsApi::class)
     override fun <T> NavGraphBuilder.composable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
@@ -146,6 +148,7 @@ internal class AnimatedNavHostEngine(
                 )
             }
 
+            is DestinationStyle.Activity,
             is DestinationStyle.Dialog -> {
                 // We delegate this to the default NavHost Engine
                 with(defaultNavHostEngine) {
