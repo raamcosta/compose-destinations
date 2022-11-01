@@ -1,15 +1,11 @@
 plugins {
     id("com.android.library")
     kotlin("android")
-    id("com.vanniktech.maven.publish")
 }
 
+apply(from = "${rootProject.projectDir}/publish.gradle")
+
 android {
-    plugins.withId("com.vanniktech.maven.publish") {
-        mavenPublish {
-            sonatypeHost = com.vanniktech.maven.publish.SonatypeHost.S01
-        }
-    }
 
     compileSdk = libs.versions.compileSdk.get().toIntOrNull()
 
