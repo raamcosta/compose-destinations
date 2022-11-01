@@ -29,11 +29,6 @@ class DestinationsEnumNavType<E : Enum<*>>(
         return value?.name ?: ENCODED_NULL
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): E? {
-        @Suppress("DEPRECATION")
-        return navBackStackEntry.arguments?.getSerializable(key) as E?
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): E? {
         return savedStateHandle.get<E?>(key)
     }

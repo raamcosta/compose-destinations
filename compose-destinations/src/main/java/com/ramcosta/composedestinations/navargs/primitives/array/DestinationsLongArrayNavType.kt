@@ -40,10 +40,6 @@ object DestinationsLongArrayNavType : DestinationsNavType<LongArray?>() {
         return "[${value.joinToString(",") { it.toString() }}]"
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): LongArray? {
-        return navBackStackEntry.arguments?.getLongArray(key)
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): LongArray? {
         return savedStateHandle.get(key)
     }

@@ -41,14 +41,91 @@ class KspToCodeGenDestinationsMapper(
         resolver.getClassDeclarationByName("java.io.Serializable")!!.asType(emptyList())
     }
 
+    private val activityType by lazy {
+        resolver.getClassDeclarationByName("android.app.Activity")!!.asType(emptyList())
+    }
+
     private val sourceFilesById = mutableMapOf<String, KSFile?>()
 
-    fun map(composableDestinations: Sequence<KSFunctionDeclaration>): List<RawDestinationGenParams> {
-        return composableDestinations.map { it.toDestination() }.toList()
+    fun map(
+        composableDestinations: Sequence<KSFunctionDeclaration>,
+        activityDestinations: Sequence<KSClassDeclaration>
+    ): List<RawDestinationGenParams> {
+        return composableDestinations.map { it.toDestination() }.toList() +
+                activityDestinations.map { it.toDestination() }.toList()
     }
 
     override fun mapToKSFile(sourceId: String): KSFile? {
         return sourceFilesById[sourceId]
+    }
+
+    private fun KSClassDeclaration.toDestination(): RawDestinationGenParams {
+        val activityDestinationAnnotation = findAnnotation(ACTIVITY_DESTINATION_ANNOTATION)
+        val deepLinksAnnotations = activityDestinationAnnotation.findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)!!
+        val explicitActivityClass = activityDestinationAnnotation.findArgumentValue<KSType>("activityClass")!!
+            .declaration as KSClassDeclaration
+
+        val isActivityClass = activityType.isAssignableFrom(this.asType(emptyList()))
+
+        val finalActivityClass = getFinalActivityClass(isActivityClass, explicitActivityClass)
+
+        val navArgsDelegateTypeAndFile = activityDestinationAnnotation.getNavArgsDelegateType(finalActivityClass.simpleName)?.also { typeAndFile ->
+            typeAndFile.second?.let {
+                sourceFilesById[it.fileName] = it
+            }
+        }
+        sourceFilesById[containingFile!!.fileName] = containingFile
+
+        return RawDestinationGenParams(
+            sourceIds = listOf(containingFile!!.fileName),
+            name = finalActivityClass.simpleName + GENERATED_DESTINATION_SUFFIX,
+            composableName = finalActivityClass.simpleName,
+            composableQualifiedName = finalActivityClass.qualifiedName,
+            visibility = getDestinationVisibility(),
+            cleanRoute = activityDestinationAnnotation.prepareRoute(finalActivityClass.simpleName),
+            parameters = emptyList(),
+            deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
+            navGraphInfo = getNavGraphInfo(activityDestinationAnnotation, true),
+            destinationStyleType = DestinationStyleType.Activity,
+            composableReceiverSimpleName = null,
+            requireOptInAnnotationTypes = emptyList(),
+            navArgsDelegateType = navArgsDelegateTypeAndFile?.first,
+            activityDestinationParams = ActivityDestinationParams(
+                targetPackage = activityDestinationAnnotation.getNullableString("targetPackage"),
+                action = activityDestinationAnnotation.getNullableString("action"),
+                dataUri = activityDestinationAnnotation.getNullableString("dataUri"),
+                dataPattern = activityDestinationAnnotation.getNullableString("dataPattern")
+            )
+        )
+    }
+
+    private fun KSAnnotation.getNullableString(name: String): String? {
+        return findArgumentValue<String>(name)!!.takeIf {
+            it != ACTIVITY_DESTINATION_ANNOTATION_DEFAULT_NULL
+        }
+    }
+
+    private fun KSClassDeclaration.getFinalActivityClass(
+        isActivityClass: Boolean,
+        explicitActivityClass: KSClassDeclaration
+    ) = if (isActivityClass) {
+        if (!explicitActivityClass.isNothing) {
+            throw IllegalDestinationsSetup("When annotating Activity classes with \"@$ACTIVITY_DESTINATION_ANNOTATION\", you must not specify an \"activityClass\" in the annotation! (check ${this.simpleName.asString()})")
+        }
+
+        Importable(
+            simpleName.asString(),
+            qualifiedName!!.asString()
+        )
+    } else {
+        if (explicitActivityClass.isNothing) {
+            throw IllegalDestinationsSetup("When annotating non-Activity classes with \"@$ACTIVITY_DESTINATION_ANNOTATION\", you need to specify an \"activityClass\" in the annotation!")
+        }
+
+        Importable(
+            explicitActivityClass.simpleName.asString(),
+            explicitActivityClass.qualifiedName!!.asString()
+        )
     }
 
     private fun KSFunctionDeclaration.toDestination(): RawDestinationGenParams {
@@ -83,7 +160,7 @@ class KspToCodeGenDestinationsMapper(
         )
     }
 
-    private fun KSFunctionDeclaration.getDestinationVisibility(): Visibility {
+    private fun KSDeclaration.getDestinationVisibility(): Visibility {
         if (isPrivate()) {
             throw IllegalDestinationsSetup("Composable functions annotated with @Destination cannot be private!")
         }
@@ -91,7 +168,10 @@ class KspToCodeGenDestinationsMapper(
         return if (isInternal()) Visibility.INTERNAL else Visibility.PUBLIC
     }
 
-    private fun KSFunctionDeclaration.getNavGraphInfo(destinationAnnotation: KSAnnotation): NavGraphInfo {
+    private fun KSDeclaration.getNavGraphInfo(
+        destinationAnnotation: KSAnnotation,
+        isActivityDestination: Boolean = false
+    ): NavGraphInfo {
         var resolvedAnnotation: KSType? = null
         val navGraphAnnotation = annotations.find { functionAnnotation ->
             val annotationShortName = functionAnnotation.shortName.asString()
@@ -107,10 +187,14 @@ class KspToCodeGenDestinationsMapper(
                 if (it) resolvedAnnotation = functionAnnotationType
             }
         }
-            ?: return NavGraphInfo.Legacy(
-                start = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
-                navGraphRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!,
-            )
+            ?: if (isActivityDestination) {
+                return NavGraphInfo.AnnotatedSource(false, rootNavGraphType)
+            } else {
+                return NavGraphInfo.Legacy(
+                    start = destinationAnnotation.findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT)!!,
+                    navGraphRoute = destinationAnnotation.findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT)!!,
+                )
+            }
 
         return NavGraphInfo.AnnotatedSource(
             start = navGraphAnnotation.arguments.first().value as Boolean,
@@ -127,8 +211,7 @@ class KspToCodeGenDestinationsMapper(
         val ksType = findArgumentValue<KSType>(DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT)!!
 
         val ksClassDeclaration = ksType.declaration as KSClassDeclaration
-        if (ksClassDeclaration.qualifiedName?.asString() == "java.lang.Void") {
-            //Nothing::class (which is the default) maps to Void java class here
+        if (ksClassDeclaration.isNothing) {
             return null
         }
 
@@ -275,4 +358,7 @@ class KspToCodeGenDestinationsMapper(
         val fileLocation = location as FileLocation
         return File(fileLocation.filePath).readLine(fileLocation.lineNumber)
     }
+
+    //Nothing::class (which is the default) maps to Void java class here
+    private val KSClassDeclaration.isNothing get() = qualifiedName?.asString() == "java.lang.Void"
 }

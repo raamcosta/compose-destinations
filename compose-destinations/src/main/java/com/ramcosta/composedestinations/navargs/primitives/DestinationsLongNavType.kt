@@ -32,11 +32,6 @@ object DestinationsLongNavType : DestinationsNavType<Long?>() {
         return value?.toString() ?: ENCODED_NULL
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): Long? {
-        @Suppress("DEPRECATION")
-        return longValue(navBackStackEntry.arguments?.get(key))
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): Long? {
         return longValue(savedStateHandle.get<Any?>(key))
     }

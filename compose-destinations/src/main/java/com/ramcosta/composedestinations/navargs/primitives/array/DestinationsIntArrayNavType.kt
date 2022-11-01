@@ -40,10 +40,6 @@ object DestinationsIntArrayNavType : DestinationsNavType<IntArray?>() {
         return "[${value.joinToString(",") { it.toString() }}]"
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): IntArray? {
-        return navBackStackEntry.arguments?.getIntArray(key)
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): IntArray? {
         return savedStateHandle.get(key)
     }

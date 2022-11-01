@@ -32,11 +32,6 @@ object DestinationsFloatNavType : DestinationsNavType<Float?>() {
         return value?.toString() ?: ENCODED_NULL
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): Float? {
-        @Suppress("DEPRECATION")
-        return floatValue(navBackStackEntry.arguments?.get(key))
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): Float? {
         return floatValue(savedStateHandle.get<Any?>(key))
     }

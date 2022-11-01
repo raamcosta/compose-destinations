@@ -32,11 +32,6 @@ object DestinationsBooleanNavType : DestinationsNavType<Boolean?>() {
         return value?.toString() ?: ENCODED_NULL
     }
 
-    override fun get(navBackStackEntry: NavBackStackEntry, key: String): Boolean? {
-        @Suppress("DEPRECATION")
-        return booleanValue(navBackStackEntry.arguments?.get(key))
-    }
-
     override fun get(savedStateHandle: SavedStateHandle, key: String): Boolean? {
         return booleanValue(savedStateHandle.get<Any?>(key))
     }

@@ -61,8 +61,8 @@ class NavArgResolver(
         argName: String,
     ): String {
         return when {
-            value in coreTypes.keys -> "${coreTypes[value]!!.simpleName}.get(navBackStackEntry, \"$argName\")"
-            isCustomTypeNavArg() -> "${customNavTypeCode(this)}.get(navBackStackEntry, \"$argName\")"
+            value in coreTypes.keys -> "${coreTypes[value]!!.simpleName}.safeGet(bundle, \"$argName\")"
+            isCustomTypeNavArg() -> "${customNavTypeCode(this)}.safeGet(bundle, \"$argName\")"
             else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${importable.qualifiedName}")
         }
     }
