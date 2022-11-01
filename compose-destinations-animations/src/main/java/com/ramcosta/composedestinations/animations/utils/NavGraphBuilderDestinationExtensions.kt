@@ -9,6 +9,7 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.bottomSheet
 import com.ramcosta.composedestinations.animations.scope.AnimatedNavGraphBuilderDestinationScopeImpl
 import com.ramcosta.composedestinations.animations.scope.BottomSheetNavGraphBuilderDestinationScopeImpl
+import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.scope.AnimatedNavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.scope.BottomSheetNavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
@@ -31,6 +32,7 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
  * }
  * ```
  */
+@OptIn(InternalDestinationsApi::class)
 @ExperimentalAnimationApi
 fun <T> NavGraphBuilder.animatedComposable(
     destination: DestinationSpec<T>,
@@ -79,11 +81,15 @@ fun <T> NavGraphBuilder.animatedComposable(
         }
 
         is DestinationStyle.BottomSheet -> {
-            throw RuntimeException("You need to use `bottomSheetComposable` for Bottom Sheet destinations!")
+            throw IllegalArgumentException("You need to use `bottomSheetComposable` for Bottom Sheet destinations!")
         }
 
         is DestinationStyle.Dialog -> {
-            throw RuntimeException("You need to use `dialogComposable` for Dialog destinations!")
+            throw IllegalArgumentException("You need to use `dialogComposable` for Dialog destinations!")
+        }
+
+        is DestinationStyle.Activity -> {
+            throw IllegalArgumentException("You need to use `activity` for Activity destinations!")
         }
     }
 }
@@ -128,10 +134,10 @@ fun <T> NavGraphBuilder.bottomSheetComposable(
             }
         }
         is DestinationStyle.Dialog -> {
-            throw RuntimeException("You need to use `dialogComposable` for Dialog destinations!")
+            throw IllegalArgumentException("You need to use `dialogComposable` for Dialog destinations!")
         }
         else -> {
-            throw RuntimeException("You need to use `animatedComposable` for Animated or Default styled destinations!")
+            throw IllegalArgumentException("You need to use `animatedComposable` for Animated or Default styled destinations!")
         }
     }
 }
