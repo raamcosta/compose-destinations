@@ -104,34 +104,6 @@ internal class DefaultNavHostEngine : NavHostEngine {
         }
     }
 
-    private fun <T> NavGraphBuilder.addActivityDestination(destination: ActivityDestinationSpec<T>) {
-        activity(destination.route) {
-            targetPackage = destination.targetPackage
-            activityClass = destination.activityClass?.kotlin
-            action = destination.action
-            data = destination.data
-            dataPattern = destination.dataPattern
-
-            destination.deepLinks.forEach { deepLink ->
-                deepLink {
-                    action = deepLink.action
-                    uriPattern = deepLink.uriPattern
-                    mimeType = deepLink.mimeType
-                }
-            }
-
-            destination.arguments.forEach { navArg ->
-                argument(navArg.name) {
-                    if (navArg.argument.isDefaultValuePresent) {
-                        defaultValue = navArg.argument.defaultValue
-                    }
-                    type = navArg.argument.type
-                    nullable = navArg.argument.isNullable
-                }
-            }
-        }
-    }
-
     private fun <T> NavGraphBuilder.addComposable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
@@ -204,6 +176,36 @@ internal class DefaultNavHostEngine : NavHostEngine {
         } else {
             contentLambda as DestinationLambda<T>
             contentLambda(scope)
+        }
+    }
+
+    companion object {
+        internal fun <T> NavGraphBuilder.addActivityDestination(destination: ActivityDestinationSpec<T>) {
+            activity(destination.route) {
+                targetPackage = destination.targetPackage
+                activityClass = destination.activityClass?.kotlin
+                action = destination.action
+                data = destination.data
+                dataPattern = destination.dataPattern
+
+                destination.deepLinks.forEach { deepLink ->
+                    deepLink {
+                        action = deepLink.action
+                        uriPattern = deepLink.uriPattern
+                        mimeType = deepLink.mimeType
+                    }
+                }
+
+                destination.arguments.forEach { navArg ->
+                    argument(navArg.name) {
+                        if (navArg.argument.isDefaultValuePresent) {
+                            defaultValue = navArg.argument.defaultValue
+                        }
+                        type = navArg.argument.type
+                        nullable = navArg.argument.isNullable
+                    }
+                }
+            }
         }
     }
 }
