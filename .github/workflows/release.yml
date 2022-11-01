@@ -1,0 +1,48 @@
+name: release
+run-name: Publishing new version to maven central.
+on:
+  push:
+    branches: [ main, compose-1.1, compose-1.2 ]
+    tags:
+      - '*.*.*'
+
+env:
+  ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_mavenCentralUsername }}
+  ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_mavenCentralPassword }}
+  ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
+  ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyId }}
+  ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
+
+jobs:
+  release:
+    if: github.ref_name != 'main' && github.ref_name != 'compose-1.1' && github.ref_name != 'compose-1.2'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: current
+          arguments: build
+
+      - name: Run unit tests
+        run: ./gradlew test
+
+      - name: Publish to Maven Central
+        run: ./gradlew publishAllPublicationsToMavenCentral
