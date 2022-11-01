@@ -26,6 +26,12 @@ interface DestinationSpec<T> : Route {
 
     /**
      * Method that returns the navigation arguments class of this Composable
+     * for the [navBackStackEntry] when the destination gets navigated to.
+     */
+    fun argsFrom(navBackStackEntry: NavBackStackEntry) : T = argsFrom(navBackStackEntry.arguments)
+
+    /**
+     * Method that returns the navigation arguments class of this Composable
      * for the [bundle] when the destination gets navigated to.
      */
     fun argsFrom(bundle: Bundle?) : T
