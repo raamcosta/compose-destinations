@@ -153,12 +153,12 @@ private fun KClass<*>.asTypeWithArg(that: KClass<*>) = Type(
     isKtxSerializable = false
 )
 
-private fun KClass<*>.asType(): Type {
+internal fun KClass<*>.asType(): Type {
 
     return Type(
         importable = Importable(
             simpleName!!,
-            qualifiedName!!
+            qualifiedName!!.sanitizePackageName()
         ),
         typeArguments = emptyList(),
         requireOptInAnnotations = emptyList(),

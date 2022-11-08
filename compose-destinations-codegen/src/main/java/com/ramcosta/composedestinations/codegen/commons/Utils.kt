@@ -26,7 +26,7 @@ fun String.removeInstancesOf(vararg toRemove: String): String {
     return result
 }
 
-private val keywords: Set<String> = setOf(
+internal val keywords: Set<String> = setOf(
     "in", "is"
 )
 
