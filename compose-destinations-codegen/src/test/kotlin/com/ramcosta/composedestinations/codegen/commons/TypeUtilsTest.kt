@@ -2,13 +2,14 @@ package com.ramcosta.composedestinations.codegen.commons
 
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
+import `is`.`in`.kotlin.keywords.DoubleKeywordPackageArrayList
 import `is`.`in`.kotlin.keywords.DoubleKeywordPackageClass
 import org.junit.Test
 
 class TypeUtilsTest {
 
     @Test
-    fun `escape kotlin keywords in Importable`() {
+    fun `escape kotlin keywords in TypeInfo`() {
         val keywordPackageClassTypeInfo = TypeInfo(
             value = DoubleKeywordPackageClass::class.asType(),
             isNullable = false,
@@ -23,14 +24,14 @@ class TypeUtilsTest {
                 .any { keywords.contains(it) }
                 .not()
         ) {
-            "Generated Importable '${keywordPackageClassTypeInfo.importable}' contains unescaped Kotlin keywords"
+            "Generated qualifiedName '${keywordPackageClassTypeInfo.importable.qualifiedName}' contains unescaped Kotlin keywords"
         }
     }
 
     @Test
-    fun `escape kotlin keywords in Importable2`() {
+    fun `escape kotlin keywords in collection TypeInfo`() {
         val keywordPackageClassTypeInfo = TypeInfo(
-            value = DoubleKeywordPackageClass::class.asType(),
+            value = DoubleKeywordPackageArrayList::class.asTypeWithArg(DoubleKeywordPackageClass::class),
             isNullable = false,
             hasCustomTypeSerializer = false,
         )
@@ -43,7 +44,7 @@ class TypeUtilsTest {
                 .any { keywords.contains(it) }
                 .not()
         ) {
-            "Generated Importable '${keywordPackageClassTypeInfo.importable}' contains unescaped Kotlin keywords"
+            "Generated qualifiedName '${keywordPackageClassTypeInfo.importable.qualifiedName}' contains unescaped Kotlin keywords"
         }
     }
 

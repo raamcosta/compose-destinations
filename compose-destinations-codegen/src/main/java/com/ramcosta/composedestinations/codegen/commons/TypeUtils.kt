@@ -131,10 +131,10 @@ val Type.firstTypeArg get() = firstTypeInfoArg.value
 
 val Type.firstTypeInfoArg get() = (typeArguments.first() as TypeArgument.Typed).type
 
-private fun KClass<*>.asTypeWithArg(that: KClass<*>) = Type(
+internal fun KClass<*>.asTypeWithArg(that: KClass<*>) = Type(
     importable = Importable(
         this.simpleName!!,
-        this.qualifiedName!!
+        this.qualifiedName!!.sanitizePackageName()
     ),
     typeArguments = listOf(
         TypeArgument.Typed(
