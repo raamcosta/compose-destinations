@@ -1,7 +1,0 @@
-package `is`.it.kotlin.keywords
-
-/**
- * This class is solely used for testing type information extraction from TypeInfo
- * see: [com.ramcosta.composedestinations.codegen.commons.TypeUtilsTest]
- */
-class KeywordPackageClass
