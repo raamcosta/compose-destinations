@@ -15,3 +15,12 @@ interface Direction {
 
     val route: String
 }
+
+/**
+ * Creates a [Direction] for given [route].
+ */
+fun Direction(route: String): Direction {
+    return DirectionImpl(route)
+}
+
+private data class DirectionImpl(override val route: String) : Direction

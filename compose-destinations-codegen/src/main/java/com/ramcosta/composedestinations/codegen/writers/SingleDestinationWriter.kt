@@ -196,9 +196,9 @@ class SingleDestinationWriter(
         |    public operator fun invoke(
         |%s3
         |    ): $CORE_DIRECTION {
-        |        return object : $CORE_DIRECTION {
-        |            override val route = %s4
-        |        }
+        |        return $CORE_DIRECTION(
+        |            route = %s4
+        |        )
         |    }
         |    
         """.trimMargin()
@@ -297,7 +297,7 @@ class SingleDestinationWriter(
             .replace("@activityClass@", activityClassImportable.getCodePlaceHolder())
     }
 
-    private fun argsFromFunctions(): String = with(destination)  {
+    private fun argsFromFunctions(): String = with(destination) {
         if (navArgs.isEmpty()) {
             return ""
         }
@@ -629,11 +629,11 @@ class SingleDestinationWriter(
         val isOptedIn: Boolean,
     )
 
-    private fun Importable.getCodePlaceHolder(): String  {
+    private fun Importable.getCodePlaceHolder(): String {
         return importableHelper.addAndGetPlaceholder(this)
     }
 
-    private fun Importable.addImport()  {
+    private fun Importable.addImport() {
         importableHelper.addAndGetPlaceholder(this)
     }
 }
