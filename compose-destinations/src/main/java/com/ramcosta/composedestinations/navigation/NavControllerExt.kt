@@ -18,6 +18,16 @@ fun NavController.navigate(
 }
 
 /**
+ * Like [NavController.navigate], but uses [Route] instead of a String route.
+ */
+fun NavController.navigate(
+    direction: Route,
+    navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
+) {
+    navigate(direction.route, navOptionsBuilder)
+}
+
+/**
  * Like [NavOptionsBuilder.popUpTo] but uses [Route] instead of a String route, making it
  * clear what kind of route we need to use and making it more "Compose Destinations friendly".
  */
