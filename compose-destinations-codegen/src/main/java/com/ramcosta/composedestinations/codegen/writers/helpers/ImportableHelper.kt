@@ -40,7 +40,16 @@ class ImportableHelper(
             imports.groupBy { it.simpleName }
         importableImportsBySimpleName.forEach {
             if (it.value.size > 1) {
-                imports.removeAll(it.value.filterTo(mutableSetOf()) { import -> import !in priorityImports })
+                val importsToRemove =
+                    it.value.filterTo(mutableSetOf()) { import -> import !in priorityImports }
+
+                // removed imports won't be replaced by the simple name
+                // so we also want to sanitize their qualified name
+                importsToRemove.forEach { importable ->
+                    final = final.replace(importable.qualifiedName, importable.qualifiedName.sanitizePackageName())
+                }
+
+                imports.removeAll(importsToRemove)
             }
         }
 
