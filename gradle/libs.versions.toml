@@ -5,7 +5,7 @@ compileSdk = "32"
 targetSdk = "32"
 
 kotlin = "1.7.0"
-dependencyCheckPluginVersion = "0.42.0"
+dependencyCheckPluginVersion = "0.44.0"
 gradlePluginVersion = "7.2.2"
 mavenPublishPluginVersion = "0.22.0"
 
@@ -26,7 +26,7 @@ composeNavigation = "2.5.2"
 accompanist = "0.25.1"
 
 ktxSerialization = "1.4.0"
-mockk = "1.12.7"
+mockk = "1.13.2"
 
 compileTesting = "1.4.9"
 

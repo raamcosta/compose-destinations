@@ -7,6 +7,7 @@ import com.google.devtools.ksp.isPublic
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSValueParameter
+import com.google.devtools.ksp.symbol.NonExistLocation
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.removeFromTo
 import com.ramcosta.composedestinations.codegen.model.DefaultValue
@@ -176,6 +177,12 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
         I haven't found a better way yet, seems like there is no other
         way in KSP :/
     */
+
+    if (location is NonExistLocation) {
+        throw IllegalDestinationsSetup("Cannot detect default value for navigation" +
+                " argument '${name!!.asString()}' because we don't have access to source code. " +
+                "Are you using navArgsDelegate with code from different module?")
+    }
 
     val fileLocation = location as FileLocation
     val (line, imports) = File(fileLocation.filePath).readLineAndImports(fileLocation.lineNumber)

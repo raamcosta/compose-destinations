@@ -75,9 +75,7 @@ fun List<DestinationSpec<*>>.routedIn(navGraphSpec: NavGraphSpec): List<Destinat
  * ```
  */
 infix fun Direction.within(navGraph: NavGraphSpec): Direction {
-    return object : Direction by this@within {
-        override val route = "${navGraph.route}/${this@within.route}"
-    }
+    return Direction(route = "${navGraph.route}/${this@within.route}")
 }
 
 /**

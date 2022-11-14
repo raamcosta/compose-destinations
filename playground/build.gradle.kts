@@ -96,6 +96,7 @@ android {
 dependencies {
 
     implementation(project(mapOf("path" to ":compose-destinations-animations")))
+    implementation(project(mapOf("path" to ":playground-shared")))
     ksp(project(":compose-destinations-ksp"))
 
     implementation(libs.androidMaterial)
