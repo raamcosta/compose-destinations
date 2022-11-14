@@ -6,6 +6,7 @@ import com.ramcosta.destinations.sample.tasks.data.StepsRepository
 import com.ramcosta.destinations.sample.tasks.data.TasksRepository
 import com.ramcosta.destinations.sample.tasks.domain.Step
 import com.ramcosta.destinations.sample.tasks.domain.Task
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -18,6 +19,7 @@ class StepDetailsViewModel(
     val step: StateFlow<Step?> = stepsRepository.stepForId(stepId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
+    @OptIn(FlowPreview::class)
     val task: StateFlow<Task?> = stepsRepository.stepForId(stepId)
         .flatMapConcat {
             tasksRepository.taskById(it.taskId)
