@@ -10,7 +10,7 @@ gradlePluginVersion = "7.3.1"
 mavenPublishPluginVersion = "0.22.0"
 
 composeViewModel = "2.5.1"
-activityCompose = "1.6.0"
+activityCompose = "1.6.1"
 
 material = "1.7.0"
 lifecycleKtx = "2.5.1"
@@ -20,10 +20,10 @@ ksp = "1.7.20-1.0.6"
 
 junit = "4.13.2"
 
-compose = "1.3.0-rc01"
+compose = "1.3.1"
 composeCompiler = "1.3.2"
 composeNavigation = "2.5.3"
-accompanist = "0.26.5-rc"
+accompanist = "0.27.0"
 
 ktxSerialization = "1.4.1"
 mockk = "1.13.2"
