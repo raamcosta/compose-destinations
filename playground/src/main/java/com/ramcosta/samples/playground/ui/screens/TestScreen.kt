@@ -26,6 +26,7 @@ import kotlinx.serialization.Serializable
 @Composable
 fun TestScreen(
     id: Long = 0,
+    asd: String,
     stuff1: ArrayList<String> = arrayListOf(),
     stuff2: Array<Stuff>?,
     stuff3: ArrayList<Color>? = arrayListOf(),
@@ -42,6 +43,7 @@ fun TestScreen(
             textAlign = TextAlign.Center,
             text = """
             id = $id
+            asd = $asd
             stuff1 = $stuff1
             stuff2 = ${stuff2.contentToString()}
             stuff3 = $stuff3
