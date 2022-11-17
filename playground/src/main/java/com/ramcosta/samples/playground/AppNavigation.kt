@@ -156,6 +156,7 @@ fun SampleAppAnimatedNavHostExample(
         animatedComposable(TestScreenDestination) {
             TestScreen(
                 id = navArgs.id,
+                asd = navArgs.asd,
                 stuff1 = navArgs.stuff1,
                 stuff2 = navArgs.stuff2,
                 stuff3 = navArgs.stuff3,
