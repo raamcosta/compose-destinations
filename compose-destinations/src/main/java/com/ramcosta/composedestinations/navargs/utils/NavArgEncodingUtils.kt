@@ -1,13 +1,18 @@
 package com.ramcosta.composedestinations.navargs.utils
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Build
 import android.util.Base64
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 fun encodeForRoute(arg: String): String {
-    return URLEncoder.encode(arg, StandardCharsets.UTF_8.toString())
+    return if (!isRunningOnUnitTests) {
+        Uri.encode(arg)
+    } else {
+        URLEncoder.encode(arg, StandardCharsets.UTF_8.toString())
+    }
 }
 
 @SuppressLint("NewApi")
@@ -35,5 +40,8 @@ internal fun ByteArray.toBase64Str(): String {
 // Also, on unit tests SDK_INT is 0, but we're running on the developer's machine
 // So we can still use java.util in that case
 @SuppressLint("ObsoleteSdkInt")
+private val isRunningOnUnitTests = Build.VERSION.SDK_INT == 0
+
 private val shouldUseJavaUtil =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O || Build.VERSION.SDK_INT == 0
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O || isRunningOnUnitTests
+
