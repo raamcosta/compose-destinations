@@ -14,6 +14,8 @@ interface DirectionDestinationSpec: DestinationSpec<Unit>, Direction {
     override fun argsFrom(bundle: Bundle?) = Unit
 
     override fun argsFrom(savedStateHandle: SavedStateHandle) = Unit
+
+    override fun toBundle(navArgs: Unit): Bundle = Bundle()
 }
 
 /**
@@ -23,4 +25,6 @@ interface DirectionDestinationSpec: DestinationSpec<Unit>, Direction {
 interface DirectionActivityDestinationSpec: ActivityDestinationSpec<Unit>, DirectionDestinationSpec {
 
     override fun argsFrom(savedStateHandle: SavedStateHandle) = Unit
+
+    override fun toBundle(navArgs: Unit): Bundle = Bundle()
 }

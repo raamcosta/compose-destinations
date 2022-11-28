@@ -13,6 +13,7 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFunctionWriter
+import java.io.Serializable
 
 class SingleDestinationWriter(
     private val codeGenConfig: CodeGenConfig,
@@ -33,7 +34,10 @@ class SingleDestinationWriter(
         }
 
         importableHelper.addAll(destinationTemplate.imports)
-        importableHelper.addPriorityQualifiedImport(destination.composableQualifiedName, destination.composableName)
+        importableHelper.addPriorityQualifiedImport(
+            destination.composableQualifiedName,
+            destination.composableName
+        )
     }
 
     fun write(): GeneratedDestination = with(destination) {
@@ -48,7 +52,10 @@ class SingleDestinationWriter(
                 .replace(DESTINATION_NAME, name)
                 .replaceSuperclassDestination()
                 .addNavArgsDataClass()
-                .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
+                .replace(
+                    REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER,
+                    objectWideRequireOptInAnnotationsCode()
+                )
                 .replace(DESTINATION_VISIBILITY_PLACEHOLDER, getDestinationVisibilityModifier())
                 .replace(BASE_ROUTE, destination.cleanRoute)
                 .replace(COMPOSED_ROUTE, constructRouteFieldCode())
@@ -124,7 +131,8 @@ class SingleDestinationWriter(
     }
 
     private fun gatherOptInAnnotations(): List<OptInAnnotation> {
-        val optInByAnnotation = destination.requireOptInAnnotationTypes.associateWithTo(mutableMapOf()) { false }
+        val optInByAnnotation =
+            destination.requireOptInAnnotationTypes.associateWithTo(mutableMapOf()) { false }
 
         destination.parameters.forEach { param ->
             optInByAnnotation.putAll(
@@ -136,7 +144,10 @@ class SingleDestinationWriter(
         }
 
         if (destination.destinationStyleType is DestinationStyleType.Animated) {
-            optInByAnnotation.putAll(destination.destinationStyleType.requireOptInAnnotations.associateWithTo(mutableMapOf()) { false })
+            optInByAnnotation.putAll(
+                destination.destinationStyleType.requireOptInAnnotations.associateWithTo(
+                    mutableMapOf()
+                ) { false })
         }
 
         if (isRequiredReceiverExperimentalOptedIn() || isRequiredAnimationExperimentalOptedIn()) {
@@ -150,7 +161,9 @@ class SingleDestinationWriter(
 
     private fun isRequiredAnimationExperimentalOptedIn(): Boolean {
         return destination.destinationStyleType is DestinationStyleType.Animated
-                && !destination.destinationStyleType.requireOptInAnnotations.contains(experimentalAnimationApiType)
+                && !destination.destinationStyleType.requireOptInAnnotations.contains(
+            experimentalAnimationApiType
+        )
     }
 
     private fun isRequiredReceiverExperimentalOptedIn(): Boolean {
@@ -226,7 +239,11 @@ class SingleDestinationWriter(
         } else ""
 
         navArgs.forEachIndexed { i, it ->
-            args += "\t\t$argPrefix${it.name}: ${it.type.toTypeCode(importableHelper)}${defaultValueForInvokeFunction(it)},"
+            args += "\t\t$argPrefix${it.name}: ${it.type.toTypeCode(importableHelper)}${
+                defaultValueForInvokeFunction(
+                    it
+                )
+            },"
 
             if (i != navArgs.lastIndex) {
                 args += "\n"
@@ -290,10 +307,17 @@ class SingleDestinationWriter(
         |    override val activityClass: Class<out ${activityImportable.getCodePlaceHolder()}>? = @activityClass@::class.java
         |    
         """.trimMargin()
-            .replace("@targetPackage@", activityDestinationParams.targetPackage?.let { "\"${it}\"" } ?: "null")
+            .replace(
+                "@targetPackage@",
+                activityDestinationParams.targetPackage?.let { "\"${it}\"" } ?: "null")
             .replace("@action@", activityDestinationParams.action?.let { "\"${it}\"" } ?: "null")
-            .replace("@data@", activityDestinationParams.dataUri?.let { "${uriImportable.getCodePlaceHolder()}.parse(\"${it}\")" } ?: "null")
-            .replace("@dataPattern@", activityDestinationParams.dataPattern?.let { "\"${it}\"" } ?: "null")
+            .replace(
+                "@data@",
+                activityDestinationParams.dataUri?.let { "${uriImportable.getCodePlaceHolder()}.parse(\"${it}\")" }
+                    ?: "null")
+            .replace(
+                "@dataPattern@",
+                activityDestinationParams.dataPattern?.let { "\"${it}\"" } ?: "null")
             .replace("@activityClass@", activityClassImportable.getCodePlaceHolder())
     }
 
@@ -304,7 +328,9 @@ class SingleDestinationWriter(
 
         val argsType = navArgsDataClassName()
 
-        return argsFromNavBackStackEntry(argsType) + "\n" + argsFromSavedStateHandle(argsType)
+        return argsFromNavBackStackEntry(argsType) + "\n" + argsFromSavedStateHandle(argsType) + "\n" + argsToBundle(
+            argsType
+        )
     }
 
     private fun navArgsDataClassImportable(): Importable? = with(destination) {
@@ -364,6 +390,98 @@ class SingleDestinationWriter(
             arguments += "\n\t\t${it.name} = "
             arguments += navArgResolver.resolveFromSavedStateHandle(destination, it)
             arguments += ","
+        }
+
+        return code.toString()
+            .replace("%s2", arguments.toString())
+            .prependIndent("\t")
+    }
+
+    private fun argsToBundle(argsType: String): String {
+        val bundle = bundleImportable.getCodePlaceHolder()
+        val code = StringBuilder()
+        code += """
+                
+           |override fun toBundle(args: $argsType): $bundle {
+           |    return $bundle().apply{%s2}
+           |}
+            """.trimMargin()
+
+        val arguments = StringBuilder()
+        navArgs.forEach {
+            if (!it.type.isNullable) {
+                arguments += when (it.type.importable.qualifiedName) {
+                    Int::class.qualifiedName -> {
+                        "\n\t\tputInt(\"${it.name}\", args.${it.name})"
+                    }
+                    Float::class.qualifiedName -> {
+                        "\n\t\tputFloat(\"${it.name}\", args.${it.name})"
+                    }
+                    Long::class.qualifiedName -> {
+                        "\n\t\tputLong(\"${it.name}\", args.${it.name})"
+                    }
+                    Boolean::class.qualifiedName -> {
+                        "\n\t\tputBoolean(\"${it.name}\", args.${it.name})"
+                    }
+                    Byte::class.qualifiedName -> {
+                        "\n\t\tputByte(\"${it.name}\", args.${it.name})"
+                    }
+                    String::class.qualifiedName -> {
+                        "\n\t\tputString(\"${it.name}\", args.${it.name})"
+                    }
+
+                    IntArray::class.qualifiedName -> {
+                        "\n\t\tputIntArray(\"${it.name}\", args.${it.name})"
+                    }
+
+                    FloatArray::class.qualifiedName -> {
+                        "\n\t\tputFloatArray(\"${it.name}\", args.${it.name})"
+                    }
+
+                    LongArray::class.qualifiedName -> {
+                        "\n\t\tputLongArray(\"${it.name}\", args.${it.name})"
+                    }
+                    BooleanArray::class.qualifiedName -> {
+                        "\n\t\tputBooleanArray(\"${it.name}\", args.${it.name})"
+                    }
+                    ByteArray::class.qualifiedName -> {
+                        "\n\t\tputByteArray(\"${it.name}\", args.${it.name})"
+                    }
+                    Array::class.qualifiedName -> {
+                        "\n\t\tputArray(\"${it.name}\", args.${it.name})"
+                    }
+                    Serializable::class.qualifiedName -> {
+                        "\n\t\tputSerializable(\"${it.name}\", args.${it.name})"
+                    }
+                    ArrayList::class.qualifiedName -> {
+                        val typeName =
+                            (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type?.importable?.qualifiedName
+                                ?: ""
+                        when {
+                            typeName == String::class.qualifiedName -> {
+                                "\n\t\tputStringArrayList(\"${it.name}\", args.${it.name})"
+                            }
+                            typeName == Int::class.qualifiedName -> {
+                                "\n\t\tputIntegerArrayList(\"${it.name}\", args.${it.name})"
+                            }
+                            typeName == CharSequence::class.qualifiedName -> {
+                                "\n\t\tputCharSequenceArrayList(\"${it.name}\", args.${it.name})"
+                            }
+                            (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type?.isParcelable == true -> {
+                                "\n\t\tputParcelableArrayList(\"${it.name}\", args.${it.name})"
+                            }
+                            else -> ""
+                        }
+                    }
+                    else -> ""
+                }
+
+                arguments += if (it.type.isParcelable) {
+                    "\n\t\tputParcelable(\"${it.name}\", args.${it.name})"
+                } else {
+                    ""
+                }
+            }
         }
 
         return code.toString()
@@ -479,15 +597,19 @@ class SingleDestinationWriter(
                 code += "\tmimeType = \"${it.mimeType}\"\n\t\t"
             }
             if (it.uriPattern.isNotEmpty()) {
-                val uriPattern = if (it.uriPattern.contains(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER)) {
-                    if (it.uriPattern.endsWith(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER)) {
-                        it.uriPattern.replace(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER, constructRouteForDeepLinkPlaceholder())
+                val uriPattern =
+                    if (it.uriPattern.contains(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER)) {
+                        if (it.uriPattern.endsWith(DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER)) {
+                            it.uriPattern.replace(
+                                DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER,
+                                constructRouteForDeepLinkPlaceholder()
+                            )
+                        } else {
+                            throw IllegalDestinationsSetup("Composable '${destination.composableName}': deep link usage of 'FULL_ROUTE_PLACEHOLDER' must be as a suffix")
+                        }
                     } else {
-                        throw IllegalDestinationsSetup("Composable '${destination.composableName}': deep link usage of 'FULL_ROUTE_PLACEHOLDER' must be as a suffix")
+                        it.uriPattern
                     }
-                } else {
-                    it.uriPattern
-                }
                 code += "\turiPattern = \"$uriPattern\"\n\t\t"
             }
             code += "}"
@@ -591,21 +713,22 @@ class SingleDestinationWriter(
         return "\n\toverride val style: DestinationStyle = $CORE_BOTTOM_SHEET_DESTINATION_STYLE\n"
     }
 
-    private fun navArgDefaultCode(param: Parameter): String = param.defaultValue.let { defaultValue ->
-        if (defaultValue == null) {
-            return ""
+    private fun navArgDefaultCode(param: Parameter): String =
+        param.defaultValue.let { defaultValue ->
+            if (defaultValue == null) {
+                return ""
+            }
+
+            defaultValue.imports.forEach { importableHelper.addPriorityQualifiedImport(it) }
+
+            if (defaultValue.code == "null") {
+                return "\tdefaultValue = null\n\t\t"
+            }
+
+            // we always have a val with the type of the param to avoid wrong types to be inferred by kotlin
+            return "\tval defValue: ${param.type.toTypeCode(importableHelper)} = ${defaultValue.code}\n\t\t" +
+                    "\tdefaultValue = defValue\n\t\t"
         }
-
-        defaultValue.imports.forEach { importableHelper.addPriorityQualifiedImport(it) }
-
-        if (defaultValue.code == "null") {
-            return "\tdefaultValue = null\n\t\t"
-        }
-
-        // we always have a val with the type of the param to avoid wrong types to be inferred by kotlin
-        return "\tval defValue: ${param.type.toTypeCode(importableHelper)} = ${defaultValue.code}\n\t\t" +
-                "\tdefaultValue = defValue\n\t\t"
-    }
 
     private fun Parameter.toNavTypeCode(): String {
         val coreNavTypeCode = type.toCoreNavTypeImportableOrNull()
