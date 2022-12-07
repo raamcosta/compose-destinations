@@ -58,7 +58,7 @@ interface ActivityDestinationSpec<T> : DestinationSpec<T> {
     override fun argsFrom(savedStateHandle: SavedStateHandle): T =
         error("unexpected error: calling SavedStateHandle based argsFrom method on ActivityDestination!")
 
-    override fun toBundle(navArgs: T): Bundle {
+    override fun T.toBundle(): Bundle {
         error("unexpected error: calling navArgs based toBundle method on ActivityDestination!")
     }
 

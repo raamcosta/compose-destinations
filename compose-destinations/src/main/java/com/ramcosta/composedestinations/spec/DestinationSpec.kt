@@ -53,7 +53,7 @@ interface DestinationSpec<T> : Route {
      * for the [navArgs] when the destination pass argument.
      */
 
-    fun toBundle(navArgs: T): Bundle
+    fun T.toBundle(): Bundle
 
     /**
      * Full route that will be added to the navigation graph
