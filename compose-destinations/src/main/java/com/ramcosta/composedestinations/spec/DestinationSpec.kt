@@ -49,13 +49,6 @@ interface DestinationSpec<T> : Route {
     fun argsFrom(savedStateHandle: SavedStateHandle) : T
 
     /**
-     * Method that returns the navigation arguments to Bundle
-     * for the [navArgs] when the destination pass argument.
-     */
-
-    fun T.toBundle(): Bundle
-
-    /**
      * Full route that will be added to the navigation graph
      */
     override val route: String

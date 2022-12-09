@@ -3,7 +3,6 @@ package com.ramcosta.composedestinations.spec
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavBackStackEntry
@@ -57,10 +56,6 @@ interface ActivityDestinationSpec<T> : DestinationSpec<T> {
 
     override fun argsFrom(savedStateHandle: SavedStateHandle): T =
         error("unexpected error: calling SavedStateHandle based argsFrom method on ActivityDestination!")
-
-    override fun T.toBundle(): Bundle {
-        error("unexpected error: calling navArgs based toBundle method on ActivityDestination!")
-    }
 
     @Composable
     override fun DestinationScope<T>.Content(dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<T>.() -> Unit) {

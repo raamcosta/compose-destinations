@@ -13,7 +13,6 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFunctionWriter
-import java.io.Serializable
 
 class SingleDestinationWriter(
     private val codeGenConfig: CodeGenConfig,
@@ -305,99 +304,7 @@ class SingleDestinationWriter(
 
         val argsType = navArgsDataClassName()
 
-        return argsFromNavBackStackEntry(argsType) + "\n" + argsFromSavedStateHandle(argsType)  + "\n" + argsToBundle(argsType)
-    }
-
-    private fun argsToBundle(argsType: String): String {
-        val bundle = bundleImportable.getCodePlaceHolder()
-        val code = StringBuilder()
-        code += """
-                
-           |override fun ${argsType}.toBundle(): $bundle {
-           |    return $bundle().apply{%s2}
-           |}
-            """.trimMargin()
-
-        val arguments = StringBuilder()
-        navArgs.forEach {
-            if (!it.type.isNullable) {
-                arguments += when (it.type.importable.qualifiedName) {
-                    Int::class.qualifiedName -> {
-                        "\n\t\tputInt(\"${it.name}\", ${it.name})"
-                    }
-                    Float::class.qualifiedName -> {
-                        "\n\t\tputFloat(\"${it.name}\", ${it.name})"
-                    }
-                    Long::class.qualifiedName -> {
-                        "\n\t\tputLong(\"${it.name}\", ${it.name})"
-                    }
-                    Boolean::class.qualifiedName -> {
-                        "\n\t\tputBoolean(\"${it.name}\", ${it.name})"
-                    }
-                    Byte::class.qualifiedName -> {
-                        "\n\t\tputByte(\"${it.name}\", ${it.name})"
-                    }
-                    String::class.qualifiedName -> {
-                        "\n\t\tputString(\"${it.name}\", ${it.name})"
-                    }
-
-                    IntArray::class.qualifiedName -> {
-                        "\n\t\tputIntArray(\"${it.name}\", ${it.name})"
-                    }
-
-                    FloatArray::class.qualifiedName -> {
-                        "\n\t\tputFloatArray(\"${it.name}\", ${it.name})"
-                    }
-
-                    LongArray::class.qualifiedName -> {
-                        "\n\t\tputLongArray(\"${it.name}\", ${it.name})"
-                    }
-                    BooleanArray::class.qualifiedName -> {
-                        "\n\t\tputBooleanArray(\"${it.name}\", ${it.name})"
-                    }
-                    ByteArray::class.qualifiedName -> {
-                        "\n\t\tputByteArray(\"${it.name}\", ${it.name})"
-                    }
-                    Array::class.qualifiedName -> {
-                        "\n\t\tputArray(\"${it.name}\", ${it.name})"
-                    }
-                    Serializable::class.qualifiedName -> {
-                        "\n\t\tputSerializable(\"${it.name}\", ${it.name})"
-                    }
-                    ArrayList::class.qualifiedName -> {
-                        val typeName =
-                            (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type?.importable?.qualifiedName
-                                ?: ""
-                        when {
-                            typeName == String::class.qualifiedName -> {
-                                "\n\t\tputStringArrayList(\"${it.name}\", ${it.name})"
-                            }
-                            typeName == Int::class.qualifiedName -> {
-                                "\n\t\tputIntegerArrayList(\"${it.name}\", ${it.name})"
-                            }
-                            typeName == CharSequence::class.qualifiedName -> {
-                                "\n\t\tputCharSequenceArrayList(\"${it.name}\", ${it.name})"
-                            }
-                            (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type?.isParcelable == true -> {
-                                "\n\t\tputParcelableArrayList(\"${it.name}\", ${it.name})"
-                            }
-                            else -> ""
-                        }
-                    }
-                    else -> ""
-                }
-
-                arguments += if (it.type.isParcelable) {
-                    "\n\t\tputParcelable(\"${it.name}\", ${it.name})"
-                } else {
-                    ""
-                }
-            }
-        }
-
-        return code.toString()
-            .replace("%s2", arguments.toString())
-            .prependIndent("\t")
+        return argsFromNavBackStackEntry(argsType) + "\n" + argsFromSavedStateHandle(argsType)
     }
 
     private fun navArgsDataClassImportable(): Importable? = with(destination) {
@@ -637,6 +544,7 @@ class SingleDestinationWriter(
         return """
                             
             private var _style: DestinationStyle? = null
+
             override var style: DestinationStyle
                 set(value) {
                     if (value is DestinationStyle.Runtime) {
