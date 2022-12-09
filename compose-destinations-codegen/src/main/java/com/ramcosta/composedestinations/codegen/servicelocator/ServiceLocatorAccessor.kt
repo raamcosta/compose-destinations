@@ -85,3 +85,8 @@ internal val ServiceLocatorAccessor.navArgsGetters get() =
     NavArgsGettersWriter(
         codeGenerator,
     )
+
+internal val ServiceLocatorAccessor.navArgsToBundles get() =
+    NavArgsToBundleWriter(
+        codeGenerator
+    )

@@ -54,6 +54,7 @@ class CodeGenerator(
         }
 
         navArgsGetters.write(generatedDestinations)
+        navArgsToBundles.write(generatedDestinations, destinationsWithNavArgs)
     }
 
     private fun initConfigurationValues(
