@@ -52,5 +52,5 @@ dependencies {
     api(libs.accompanist.material)
     api(libs.accompanist.animation)
 
-    implementation("androidx.wear.compose:compose-navigation:1.1.0")
+    implementation(libs.wear.compose.navigation)
 }
