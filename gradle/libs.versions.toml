@@ -69,3 +69,10 @@ test-junit = { module = "junit:junit", version.ref = "junit" }
 test-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 test-kotlinCompile = { module = "com.github.tschuchortdev:kotlin-compile-testing", version.ref = "compileTesting" }
 test-kotlinCompileKsp = { module = "com.github.tschuchortdev:kotlin-compile-testing-ksp", version.ref = "compileTesting" }
+
+# Wear
+
+wear-compose-navigation = "androidx.wear.compose:compose-navigation:1.1.0"
+wear-compose-foundation = "androidx.wear.compose:compose-foundation:1.1.0"
+wear-compose-material = "androidx.wear.compose:compose-material:1.1.0"
+wear-input = "androidx.wear:wear-input:1.1.0"
