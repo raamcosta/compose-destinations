@@ -363,7 +363,7 @@ class ProcessorProviderTests {
 
           import com.ramcosta.composedestinations.annotation.Destination
           import com.ramcosta.composedestinations.annotation.RootNavGraph
-          import com.ramcosta.samples.playgroundshared.BlogPostArgs
+          import com.ramcosta.playground.core.BlogPostArgs
 
           @RootNavGraph(start = true)
           @Destination(route = "test1")
@@ -398,7 +398,7 @@ class ProcessorProviderTests {
 
           import com.ramcosta.composedestinations.annotation.Destination
           import com.ramcosta.composedestinations.annotation.RootNavGraph
-          import com.ramcosta.samples.playgroundshared.WithDefaultValueArgs
+          import com.ramcosta.playground.core.WithDefaultValueArgs
 
           @RootNavGraph(start = true)
           @Destination(route = "test1")

@@ -4,18 +4,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.destinations.sample.wear.core.viewmodel.viewModel
 import com.ramcosta.destinations.sample.wear.ui.composables.TitleConfirmDialog
 
-@Destination(style = DestinationStyle.Dialog::class)
+data class AddStepDialogNavArgs(
+    val taskId: Int
+)
+
+@Destination(navArgsDelegate = AddStepDialogNavArgs::class)
 @Composable
-fun AddTaskDialog(
+fun AddStepScreen(
     navigator: DestinationsNavigator,
-    viewModel: AddTaskViewModel = viewModel()
+    viewModel: AddStepViewModel = viewModel()
 ) {
     TitleConfirmDialog(
-        type = "task", //use string resources in a real app ofc :)
+        type = "step", //use string resources in a real app ofc :)
         title = viewModel.title.collectAsState().value,
         onTitleChange = viewModel::onTitleChange,
         onConfirm = {

@@ -19,7 +19,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.destinations.sample.wear.core.viewmodel.viewModel
 import com.ramcosta.destinations.sample.wear.destinations.AccountScreenDestination
-import com.ramcosta.destinations.sample.wear.destinations.AddTaskDialogDestination
+import com.ramcosta.destinations.sample.wear.destinations.AddTaskScreenDestination
 import com.ramcosta.destinations.sample.wear.destinations.SettingsScreenDestination
 import com.ramcosta.destinations.sample.wear.destinations.TaskScreenDestination
 
@@ -36,13 +36,19 @@ fun TaskListScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         item {
-            Button(
-                onClick = { navigator.navigate(AddTaskDialogDestination) }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "add task button",
-                    tint = Color.White
-                )
+            Row {
+                Button(
+                    onClick = { navigator.navigate(AddTaskScreenDestination) }) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "add task button")
+                }
+
+                Button(onClick = { navigator.navigate(AccountScreenDestination) }) {
+                    Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Account")
+                }
+
+                Button(onClick = { navigator.navigate(SettingsScreenDestination) }) {
+                    Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings")
+                }
             }
         }
         items(tasks) { item ->
@@ -55,16 +61,6 @@ fun TaskListScreen(
                     navigator.navigate(TaskScreenDestination(item.task.id))
                 }
             )
-        }
-        item {
-            Button(onClick = { navigator.navigate(AccountScreenDestination) }) {
-                Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Account")
-            }
-        }
-        item {
-            Button(onClick = { navigator.navigate(SettingsScreenDestination) }) {
-                Icon(imageVector = Icons.Default.Settings, contentDescription = "Account")
-            }
         }
     }
 }

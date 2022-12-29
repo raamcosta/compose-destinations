@@ -15,11 +15,13 @@
             <option value="$PROJECT_DIR$/compose-destinations-animations" />
             <option value="$PROJECT_DIR$/compose-destinations-codegen" />
             <option value="$PROJECT_DIR$/compose-destinations-ksp" />
+            <option value="$PROJECT_DIR$/compose-destinations-wear" />
             <option value="$PROJECT_DIR$/playground" />
+            <option value="$PROJECT_DIR$/playground-core" />
             <option value="$PROJECT_DIR$/sample" />
+            <option value="$PROJECT_DIR$/sample-wear" />
           </set>
         </option>
-        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

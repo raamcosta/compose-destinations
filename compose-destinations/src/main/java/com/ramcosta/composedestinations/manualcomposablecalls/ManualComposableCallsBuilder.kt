@@ -113,7 +113,7 @@ class ManualComposableCallsBuilder internal constructor(
 private fun ManualComposableCallsBuilder.validateAnimated(
     destination: DestinationSpec<*>
 ) {
-    if (engineType == NavHostEngine.Type.DEFAULT) {
+    if (engineType != NavHostEngine.Type.ANIMATED) {
         error("'animatedComposable' can only be called with a 'AnimatedNavHostEngine'")
     }
 
@@ -125,7 +125,7 @@ private fun ManualComposableCallsBuilder.validateAnimated(
 private fun ManualComposableCallsBuilder.validateBottomSheet(
     destination: DestinationSpec<*>
 ) {
-    if (engineType == NavHostEngine.Type.DEFAULT) {
+    if (engineType != NavHostEngine.Type.ANIMATED) {
         error("'bottomSheetComposable' can only be called with a 'AnimatedNavHostEngine'")
     }
 
