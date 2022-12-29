@@ -9,12 +9,12 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 android {
-    compileSdk = libs.versions.compileSdk.get().toIntOrNull()
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "com.ramcosta.destinations.sample.wear"
         minSdk = 25
-        targetSdk = 30
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
