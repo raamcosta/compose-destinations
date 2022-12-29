@@ -4,9 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
+import androidx.wear.compose.material.rememberSwipeToDismissBoxState
+import androidx.wear.compose.navigation.rememberSwipeDismissableNavHostState
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.navigate
-import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.wear.rememberWearNavHostEngine
 import com.ramcosta.destinations.sample.wear.core.viewmodel.activityViewModel
 import com.ramcosta.destinations.sample.wear.destinations.Destination

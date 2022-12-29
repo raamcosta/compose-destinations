@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Text
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.destinations.sample.wear.core.viewmodel.viewModel
@@ -24,23 +25,25 @@ fun StepScreen(
         return
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Completed")
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Completed")
 
-            Checkbox(
-                checked = step.completed,
-                onCheckedChange = viewModel::onStepCheckedChange
-            )
+                Checkbox(
+                    checked = step.completed,
+                    onCheckedChange = viewModel::onStepCheckedChange
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
         }
-
-        Spacer(Modifier.height(16.dp))
     }
 }

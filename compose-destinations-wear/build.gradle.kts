@@ -49,8 +49,5 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 dependencies {
     api(project(mapOf("path" to ":compose-destinations")))
 
-    api(libs.accompanist.material)
-    api(libs.accompanist.animation)
-
-    implementation(libs.wear.compose.navigation)
+    api(libs.wear.compose.navigation)
 }

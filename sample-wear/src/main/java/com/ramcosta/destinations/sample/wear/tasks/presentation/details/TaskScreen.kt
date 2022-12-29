@@ -11,7 +11,7 @@ import androidx.wear.compose.material.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.destinations.sample.wear.core.viewmodel.viewModel
-import com.ramcosta.destinations.sample.wear.destinations.AddStepDialogDestination
+import com.ramcosta.destinations.sample.wear.destinations.AddStepScreenDestination
 import com.ramcosta.destinations.sample.wear.destinations.StepScreenDestination
 import com.ramcosta.destinations.sample.wear.tasks.domain.Step
 
@@ -36,11 +36,10 @@ fun TaskScreen(
     ) {
         item {
             Button(
-                onClick = { navigator.navigate(AddStepDialogDestination(navArgs.taskId)) }) {
+                onClick = { navigator.navigate(AddStepScreenDestination(navArgs.taskId)) }) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "add step button",
-                    tint = Color.White
+                    contentDescription = "add step button"
                 )
             }
         }

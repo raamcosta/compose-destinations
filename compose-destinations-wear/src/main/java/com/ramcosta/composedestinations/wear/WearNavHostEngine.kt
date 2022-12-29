@@ -6,34 +6,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
-import androidx.navigation.compose.navigation
-import androidx.wear.compose.navigation.SwipeDismissableNavHost
-import androidx.wear.compose.navigation.WearNavigator
-import androidx.wear.compose.navigation.composable
+import androidx.wear.compose.navigation.*
 import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
-import com.ramcosta.composedestinations.scope.DestinationScopeImpl
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.rememberNavHostEngine
+import com.ramcosta.composedestinations.scope.DestinationScopeImpl
 import com.ramcosta.composedestinations.spec.*
 
 /**
- * Returns the default [SwipeDismissableNavHost] to be used with normal Wear OS apps.
+ * Returns the [WearNavHostEngine] to be used with Wear OS apps.
  */
 @Composable
-fun rememberWearNavHostEngine(): NavHostEngine = remember {
-    DefaultWearNavHostEngine()
+fun rememberWearNavHostEngine(
+    state: SwipeDismissableNavHostState = rememberSwipeDismissableNavHostState(),
+): NavHostEngine {
+    val defaultNavHostEngine = rememberNavHostEngine()
+
+    return remember {
+        WearNavHostEngine(defaultNavHostEngine, state)
+    }
 }
 
-internal class DefaultWearNavHostEngine : NavHostEngine {
+internal class WearNavHostEngine(
+    private val defaultNavHostEngine: NavHostEngine,
+    private val state: SwipeDismissableNavHostState,
+) : NavHostEngine {
 
-    override val type = NavHostEngine.Type.DEFAULT
+    override val type = NavHostEngine.Type.WEAR
 
     @Composable
     override fun rememberNavController(
         vararg navigators: Navigator<out NavDestination>
     ) =
-        androidx.navigation.compose.rememberNavController(WearNavigator(), *navigators)
+        androidx.navigation.compose.rememberNavController(remember { WearNavigator() }, *navigators)
 
     @Composable
     override fun NavHost(
@@ -48,6 +55,7 @@ internal class DefaultWearNavHostEngine : NavHostEngine {
             startDestination = startRoute.route,
             modifier = modifier,
             route = route,
+            state = state,
             builder = builder
         )
     }
@@ -56,11 +64,7 @@ internal class DefaultWearNavHostEngine : NavHostEngine {
         navGraph: NavGraphSpec,
         builder: NavGraphBuilder.() -> Unit
     ) {
-        navigation(
-            startDestination = navGraph.startRoute.route,
-            route = navGraph.route,
-            builder = builder
-        )
+        with(defaultNavHostEngine) { navigation(navGraph, builder) }
     }
 
     @OptIn(ExperimentalAnimationApi::class, InternalDestinationsApi::class)
@@ -70,7 +74,7 @@ internal class DefaultWearNavHostEngine : NavHostEngine {
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     ) {
-        when (val destinationStyle = destination.style) {
+        when (destination.style) {
             is DestinationStyle.Runtime,
             is DestinationStyle.Default -> {
                 addComposable(
@@ -81,22 +85,16 @@ internal class DefaultWearNavHostEngine : NavHostEngine {
                 )
             }
 
-            is DestinationStyle.Dialog -> {
-                addDialogComposable(
-                    destination,
-                    navController,
-                    dependenciesContainerBuilder,
-                    manualComposableCalls
-                )
-            }
-
             is DestinationStyle.Activity -> {
-                addActivityDestination(destination as ActivityDestinationSpec)
+                with(defaultNavHostEngine) {
+                    composable(destination, navController, dependenciesContainerBuilder, manualComposableCalls)
+                }
             }
 
+            is DestinationStyle.Dialog,
             is DestinationStyle.Animated,
             is DestinationStyle.BottomSheet -> {
-                throw IllegalStateException("You need to use 'rememberAnimatedNavHostEngine' to get an engine that can use ${destinationStyle.javaClass.simpleName} and pass that into the 'DestinationsNavHost' ")
+                throw IllegalStateException("${destination.style.javaClass.name} cannot be used on Wear OS version of the core library!")
             }
         }
     }
@@ -125,34 +123,7 @@ internal class DefaultWearNavHostEngine : NavHostEngine {
         }
     }
 
-    private fun <T> NavGraphBuilder.addDialogComposable(
-        destination: DestinationSpec<T>,
-        navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-        manualComposableCalls: ManualComposableCalls
-    ) {
-        @SuppressLint("RestrictedApi")
-        val contentLambda = manualComposableCalls[destination.baseRoute]
-
-        // TODO look if we should wrap this with
-        // androidx.wear.compose.material.dialog.Dialog
-        // Note: no wear navigation dialog dsl exists
-        composable(
-            destination.route,
-            destination.arguments,
-            destination.deepLinks,
-        ) { navBackStackEntry ->
-            CallComposable(
-                destination,
-                navController,
-                navBackStackEntry,
-                dependenciesContainerBuilder,
-                contentLambda
-            )
-        }
-    }
-
-    internal class Default<T>(
+    internal class WearDestinationScope<T>(
         destination: DestinationSpec<T>,
         navBackStackEntry: NavBackStackEntry,
         navController: NavController,
@@ -172,7 +143,7 @@ internal class DefaultWearNavHostEngine : NavHostEngine {
         contentLambda: DestinationLambda<*>?
     ) {
         val scope = remember {
-            Default(
+            WearDestinationScope(
                 destination,
                 navBackStackEntry,
                 navController
@@ -184,36 +155,6 @@ internal class DefaultWearNavHostEngine : NavHostEngine {
         } else {
             contentLambda as DestinationLambda<T>
             contentLambda(scope)
-        }
-    }
-
-    companion object {
-        internal fun <T> NavGraphBuilder.addActivityDestination(destination: ActivityDestinationSpec<T>) {
-            activity(destination.route) {
-                targetPackage = destination.targetPackage
-                activityClass = destination.activityClass?.kotlin
-                action = destination.action
-                data = destination.data
-                dataPattern = destination.dataPattern
-
-                destination.deepLinks.forEach { deepLink ->
-                    deepLink {
-                        action = deepLink.action
-                        uriPattern = deepLink.uriPattern
-                        mimeType = deepLink.mimeType
-                    }
-                }
-
-                destination.arguments.forEach { navArg ->
-                    argument(navArg.name) {
-                        if (navArg.argument.isDefaultValuePresent) {
-                            defaultValue = navArg.argument.defaultValue
-                        }
-                        type = navArg.argument.type
-                        nullable = navArg.argument.isNullable
-                    }
-                }
-            }
         }
     }
 }

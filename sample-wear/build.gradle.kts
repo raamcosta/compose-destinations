@@ -1,5 +1,3 @@
-// TODO: Remove this after https://youtrack.jetbrains.com/issue/KTIJ-19369 is resolved.
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -14,7 +12,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toIntOrNull()
 
     defaultConfig {
-        applicationId = "com.ramcosta.destinations.sample"
+        applicationId = "com.ramcosta.destinations.sample.wear"
         minSdk = 25
         targetSdk = 30
         versionCode = 1
@@ -76,7 +74,6 @@ dependencies {
     implementation(libs.androidx.lifecycleRuntimeKtx)
     implementation(libs.androidx.activityCompose)
 
-    implementation(libs.wear.compose.navigation)
     implementation(libs.wear.compose.foundation)
     implementation(libs.wear.compose.material)
     implementation(libs.wear.input)

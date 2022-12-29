@@ -30,6 +30,7 @@ ktxSerialization = "1.4.1"
 mockk = "1.13.3"
 
 compileTesting = "1.4.9"
+composeWear = "1.1.0"
 
 [plugins]
 dependencyCheckPlugin = { id = "com.github.ben-manes.versions", version.ref = "dependencyCheckPluginVersion" }
@@ -73,7 +74,7 @@ test-kotlinCompileKsp = { module = "com.github.tschuchortdev:kotlin-compile-test
 
 # Wear
 
-wear-compose-navigation = "androidx.wear.compose:compose-navigation:1.1.0"
-wear-compose-foundation = "androidx.wear.compose:compose-foundation:1.1.0"
-wear-compose-material = "androidx.wear.compose:compose-material:1.1.0"
-wear-input = "androidx.wear:wear-input:1.1.0"
+wear-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "composeWear" }
+wear-compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "composeWear" }
+wear-compose-material = { module = "androidx.wear.compose:compose-material", version.ref = "composeWear" }
+wear-input = { module = "androidx.wear:wear-input", version.ref = "composeWear" }
