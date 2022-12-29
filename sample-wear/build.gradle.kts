@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId = "com.ramcosta.destinations.sample.wear"
         minSdk = 25
-        targetSdk = 30
+        compileSdk = libs.versions.targetSdk.get().toIntOrNull()
         versionCode = 1
         versionName = "1.0"
 
