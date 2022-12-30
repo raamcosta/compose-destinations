@@ -22,6 +22,7 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
 - Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
 - Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
 - Easy deep linking to screens
+- Wear OS support (NEW since versions 1.x.30!)
 - All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
 
 For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
@@ -170,6 +171,11 @@ ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
 `implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
 > this will use [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation) and [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/styles-and-animations)
+   
+> **Note**: If you want to use Compose Destinations in a **Wear OS** app, replace above core dependency with: </br>
+`implementation 'io.github.raamcosta.compose-destinations:wear-core:<version>'` </br>
+> this will use [Wear Compose Navigation](https://developer.android.com/training/wearables/compose/navigation) internally. </br>
+> Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/wear-os)
 
 
 #### 3. And finally, you need to make sure the IDE looks at the generated folder.
