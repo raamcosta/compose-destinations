@@ -22,14 +22,25 @@ class DestinationWithNavArgsMapper {
         return if (navArgsDelegateTypeLocal == null) {
             parameters.filter { it.isNavArg() }
         } else {
-            if (navArgsDelegateTypeLocal.navArgs.any { !it.isNavArg() }) {
+            val nonNavArg = navArgsDelegateTypeLocal.navArgs.firstOrNull { !it.isNavArg() }
+            if (nonNavArg != null) {
+                if (!nonNavArg.type.isCoreOrCustomNavArgType() &&
+                    nonNavArg.type.valueClassInnerInfo != null && // is value class
+                    !nonNavArg.type.isValueClassOfValidInnerType()) {
+
+                    throw IllegalDestinationsSetup("Composable '${composableName}': " +
+                            "'$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types. (check argument '${nonNavArg.name}')\n" +
+                            "HINT: value classes are only valid navigation arguments if they have a public constructor with a public non nullable field which is itself of a navigation type.")
+                }
+
                 throw IllegalDestinationsSetup("Composable '${composableName}': " +
-                        "'$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types.")
+                        "'$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types. (check argument '${nonNavArg.name}')")
             }
 
-            if (parameters.any { it.isNavArg() }) {
+            val navArgInFuncParams = parameters.firstOrNull { it.isNavArg() }
+            if (navArgInFuncParams != null) {
                 throw IllegalDestinationsSetup("Composable '${composableName}': annotated " +
-                        "function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class.")
+                        "function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class. (check argument '${navArgInFuncParams.name}'")
             }
 
             navArgsDelegateTypeLocal.navArgs
@@ -49,10 +60,33 @@ class DestinationWithNavArgsMapper {
     }
 
     private fun TypeInfo.isNavArgType(): Boolean {
+        if (isCoreOrCustomNavArgType()) {
+            return true
+        }
+
+        return isValueClassOfValidInnerType()
+    }
+
+    private fun TypeInfo.isValueClassOfValidInnerType(): Boolean {
+        if (valueClassInnerInfo != null &&
+            valueClassInnerInfo.isConstructorPublic &&
+            valueClassInnerInfo.publicNonNullableField != null
+        ) {
+            return valueClassInnerInfo.typeInfo.isCoreOrCustomNavArgType()
+        }
+
+        return false
+    }
+
+    private fun TypeInfo.isCoreOrCustomNavArgType(): Boolean {
+        if (isCoreType()) {
+            return true
+        }
+
         if (isCustomTypeNavArg()) {
             return true
         }
 
-        return isCoreType()
+        return false
     }
 }

@@ -237,26 +237,41 @@ class SingleDestinationWriter(
     }
 
     private fun Parameter.stringifyForNavigation(): String {
+        return type.stringifyForNavigation(name)
+    }
+
+    private fun TypeInfo.stringifyForNavigation(
+        argumentName: String,
+        argumentReference: String = argumentName,
+    ): String {
         if (isCustomTypeNavArg()) {
-            val codePlaceHolder = navArgResolver.customNavTypeCode(type)
+            val codePlaceHolder = navArgResolver.customNavTypeCode(this)
 
-            return "$codePlaceHolder.serializeValue($name)"
+            return "$codePlaceHolder.serializeValue($argumentReference)"
         }
 
-        if (type.importable.qualifiedName == String::class.qualifiedName) {
-            return "${CORE_STRING_NAV_TYPE.getCodePlaceHolder()}.serializeValue(\"$name\", $name)"
-        } else if (type.value in coreTypes.keys) {
-            return "${coreTypes[type.value]!!.getCodePlaceHolder()}.serializeValue($name)"
+        if (importable.qualifiedName == String::class.qualifiedName) {
+            return "${CORE_STRING_NAV_TYPE.getCodePlaceHolder()}.serializeValue(\"$argumentName\", $argumentReference)"
+        } else if (value in coreTypes.keys) {
+            return "${coreTypes[value]!!.getCodePlaceHolder()}.serializeValue($argumentReference)"
         }
 
-        val ifNullBeforeToString = if (type.isNullable) "?" else ""
-        val ifNullSuffix = if (type.isNullable) {
-            " ?: \"{${name}}\""
+        if (valueClassInnerInfo != null) {
+            return valueClassInnerInfo.typeInfo.stringifyForNavigation(
+                argumentName = argumentName,
+                argumentReference = "$argumentName${if (isNullable) "?." else "."}${valueClassInnerInfo.publicNonNullableField}"
+            )
+        }
+
+        val isNullable = isNullable || argumentReference.contains("?.")
+        val ifNullBeforeToString = if (isNullable) "?" else ""
+        val ifNullSuffix = if (isNullable) {
+            " ?: \"{${argumentName}}\""
         } else {
             ""
         }
 
-        return "${name}$ifNullBeforeToString${".toString()"}$ifNullSuffix"
+        return "${argumentReference}$ifNullBeforeToString${".toString()"}$ifNullSuffix"
     }
 
     private fun activityDestinationFields(): String = with(destination) {
@@ -439,7 +454,7 @@ class SingleDestinationWriter(
                 code += "\n\toverride val arguments: List<NamedNavArgument> get() = listOf(\n\t\t"
             }
 
-            val toNavTypeCode = it.toNavTypeCode()
+            val toNavTypeCode = it.type.toNavTypeCode()
             code += "navArgument(\"${it.name}\") {\n\t\t\t"
             code += "type = $toNavTypeCode\n\t\t"
             if (it.type.isNullable) {
@@ -607,21 +622,25 @@ class SingleDestinationWriter(
                 "\tdefaultValue = defValue\n\t\t"
     }
 
-    private fun Parameter.toNavTypeCode(): String {
-        val coreNavTypeCode = type.toCoreNavTypeImportableOrNull()
+    private fun TypeInfo.toNavTypeCode(): String {
+        val coreNavTypeCode = toCoreNavTypeImportableOrNull()
         if (coreNavTypeCode != null) {
             return coreNavTypeCode.getCodePlaceHolder()
         }
 
         if (isCustomTypeNavArg()) {
-            type.importable.addImport()
-            type.typeArguments.forEach {
+            importable.addImport()
+            typeArguments.forEach {
                 if (it is TypeArgument.Typed) it.type.importable.addImport()
             }
-            return navArgResolver.customNavTypeCode(type)
+            return navArgResolver.customNavTypeCode(this)
         }
 
-        throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${type.importable.qualifiedName}")
+        if (valueClassInnerInfo != null) {
+            return valueClassInnerInfo.typeInfo.toNavTypeCode()
+        }
+
+        throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${importable.qualifiedName}")
     }
 
     private class OptInAnnotation(

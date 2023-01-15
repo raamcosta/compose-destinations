@@ -1,11 +1,10 @@
 package com.ramcosta.composedestinations.ksp.processors
 
-import com.google.devtools.ksp.getClassDeclarationByName
-import com.google.devtools.ksp.isInternal
-import com.google.devtools.ksp.isPrivate
+import com.google.devtools.ksp.*
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.*
 import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.model.Visibility
 import com.ramcosta.composedestinations.ksp.commons.*
@@ -283,6 +282,7 @@ class KspToCodeGenDestinationsMapper(
             ksClassDeclaration?.simpleName?.asString() ?: declaration.simpleName.asString(),
             ksClassDeclaration?.qualifiedName?.asString() ?: qualifiedName.asString()
         )
+
         return TypeInfo(
             value = Type(
                 importable = importable,
@@ -292,10 +292,30 @@ class KspToCodeGenDestinationsMapper(
                 isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
                 isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false,
                 isKtxSerializable = isKtxSerializable(),
+                valueClassInnerInfo = ksClassDeclaration?.valueClassInnerInfo(),
             ),
             isNullable = isMarkedNullable,
             hasCustomTypeSerializer = navTypeSerializersByType[importable] != null,
         )
+    }
+
+    private fun KSClassDeclaration.valueClassInnerInfo(): ValueClassInnerInfo? {
+        return if (modifiers.contains(Modifier.VALUE)) {
+            // This is a value class, get the inner type's type only once (not recursively)
+            val firstArg: KSValueParameter = primaryConstructor!!.parameters.first()
+            val valueClassArgType = firstArg.type.resolve()
+
+            val firstArgType = valueClassArgType.toType(valueClassArgType.declaration.location)
+            val firstPublicNonNullableArgName = this.getDeclaredProperties().firstOrNull {
+                it.isPublic() && it.simpleName.asString() == firstArg.name?.asString() && !it.type.resolve().isMarkedNullable
+            }?.simpleName?.asString()
+
+            firstArgType?.let {
+                ValueClassInnerInfo(it, primaryConstructor!!.isPublic(), firstPublicNonNullableArgName)
+            }
+        } else {
+            null
+        }
     }
 
     private fun Sequence<KSAnnotation>.isKtxSerializable(): Boolean =
