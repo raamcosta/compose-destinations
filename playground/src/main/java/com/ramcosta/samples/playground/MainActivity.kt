@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.ramcosta.samples.playground.di.DependencyContainer
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
+import com.ramcosta.samples.playground.ui.screens.profile.ValueClassArg
 
 val LocalDependencyContainer = staticCompositionLocalOf<DependencyContainer> {
     error("No dependency container provided!")
@@ -47,7 +48,7 @@ class MainActivity : ComponentActivity() {
     private fun getPendingIntent(): PendingIntent {
         val deepLinkPrefix = "https://destinationssample.com/"
         val profileDeepLink =
-            "$deepLinkPrefix${ProfileScreenDestination(id = 1337L, color = Color.Cyan).route}"
+            "$deepLinkPrefix${ProfileScreenDestination(id = 1337L, color = Color.Cyan, valueClass = ValueClassArg("qweqwe")).route}"
 
         return TaskStackBuilder.create(applicationContext).run {
             addNextIntentWithParentStack(

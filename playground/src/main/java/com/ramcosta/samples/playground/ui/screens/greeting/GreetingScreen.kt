@@ -27,6 +27,7 @@ import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDest
 import com.ramcosta.samples.playground.ui.screens.destinations.TestScreenDestination
 import com.ramcosta.samples.playground.ui.screens.profile.Stuff
 import com.ramcosta.samples.playground.ui.screens.profile.Things
+import com.ramcosta.samples.playground.ui.screens.profile.ValueClassArg
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -56,7 +57,8 @@ fun GreetingScreen(
                         groupName = "{groupName}",
                         stuff = Stuff.STUFF2,
                         things = Things(),
-                        color = Color.Black
+                        color = Color.Black,
+                        valueClass = ValueClassArg("asd")
                     )
                 )
             }

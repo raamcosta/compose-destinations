@@ -141,7 +141,7 @@ private fun KClass<*>.asTypeWithArg(that: KClass<*>) = Type(
             type = TypeInfo(
                 that.asType(),
                 isNullable = false,
-                hasCustomTypeSerializer = false
+                hasCustomTypeSerializer = false,
             ),
             varianceLabel = ""
         )
@@ -150,7 +150,8 @@ private fun KClass<*>.asTypeWithArg(that: KClass<*>) = Type(
     isEnum = false,
     isParcelable = false,
     isSerializable = Serializable::class.java.isAssignableFrom(this.javaObjectType),
-    isKtxSerializable = false
+    isKtxSerializable = false,
+    valueClassInnerInfo = null,
 )
 
 private fun KClass<*>.asType(): Type {
@@ -165,6 +166,7 @@ private fun KClass<*>.asType(): Type {
         isEnum = java.isEnum,
         isParcelable = false,
         isSerializable = Serializable::class.java.isAssignableFrom(this.javaObjectType),
-        isKtxSerializable = false
+        isKtxSerializable = false,
+        valueClassInnerInfo = null,
     )
 }
