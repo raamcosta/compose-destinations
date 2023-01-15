@@ -7,7 +7,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -19,7 +19,7 @@ import com.ramcosta.composedestinations.utils.route
 import com.ramcosta.samples.playground.ui.screens.*
 import com.ramcosta.samples.playground.ui.screens.destinations.Destination
 
-@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun PlaygroundScaffold(
     navController: NavHostController,
@@ -33,7 +33,7 @@ fun PlaygroundScaffold(
         ?: NavGraphs.root.startAppDestination
 
     //Just for me to debug, ignore this line
-    navController.backQueue.print()
+    navController.currentBackStack.collectAsState().value.print()
 
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
@@ -52,7 +52,7 @@ fun PlaygroundScaffold(
     }
 }
 
-fun ArrayDeque<NavBackStackEntry>.print(prefix: String = "stack") {
+fun List<NavBackStackEntry>.print(prefix: String = "stack") {
     val stack = toMutableList()
         .map { it.route() }
         .filterIsInstance<Destination>()
