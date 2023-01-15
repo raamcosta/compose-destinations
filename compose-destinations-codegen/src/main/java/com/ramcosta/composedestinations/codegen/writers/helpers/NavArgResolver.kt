@@ -52,6 +52,10 @@ class NavArgResolver(
         return when {
             value in coreTypes.keys -> "${coreTypes[value]!!.simpleName}.get(savedStateHandle, \"$argName\")"
             isCustomTypeNavArg() -> "${customNavTypeCode(this)}.get(savedStateHandle, \"$argName\")"
+            valueClassInnerInfo != null -> {
+                valueClassInnerInfo.typeInfo.toSavedStateHandleArgGetter(destination, argName) +
+                        "?.let { ${importableHelper.addAndGetPlaceholder(importable)}(it) }"
+            }
             else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $importable.qualifiedName")
         }
     }
@@ -63,6 +67,10 @@ class NavArgResolver(
         return when {
             value in coreTypes.keys -> "${coreTypes[value]!!.simpleName}.safeGet(bundle, \"$argName\")"
             isCustomTypeNavArg() -> "${customNavTypeCode(this)}.safeGet(bundle, \"$argName\")"
+            valueClassInnerInfo != null -> {
+                valueClassInnerInfo.typeInfo.toNavBackStackEntryArgGetter(destination, argName) +
+                        "?.let { ${importableHelper.addAndGetPlaceholder(importable)}(it) }"
+            }
             else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${importable.qualifiedName}")
         }
     }

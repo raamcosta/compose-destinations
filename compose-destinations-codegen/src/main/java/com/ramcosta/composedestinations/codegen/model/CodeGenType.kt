@@ -8,6 +8,7 @@ interface CodeGenType {
     val isParcelable: Boolean
     val isSerializable: Boolean
     val isKtxSerializable: Boolean
+    val valueClassInnerInfo: ValueClassInnerInfo?
 }
 
 data class TypeInfo(
@@ -24,4 +25,11 @@ data class Type(
     override val isParcelable: Boolean,
     override val isSerializable: Boolean,
     override val isKtxSerializable: Boolean,
+    override val valueClassInnerInfo: ValueClassInnerInfo?,
 ): CodeGenType
+
+data class ValueClassInnerInfo(
+    val typeInfo: TypeInfo,
+    val isConstructorPublic: Boolean,
+    val publicNonNullableField: String?
+)

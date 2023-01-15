@@ -15,11 +15,15 @@ data class ProfileScreenNavArgs(
     val groupName: String? = DEFAULT_GROUP,
     val whatever: Int? = 12333,
     val things: ArgumentThings? = null,
+    val valueClass: ValueClassArg,
     val thingsWithNavTypeSerializer: Things? = null,
     val serializableExample: SerializableExample? = SerializableExample(),
     val serializableExampleWithNavTypeSerializer: SerializableExampleWithNavTypeSerializer? = null,
     val color: Color
 )
+
+@JvmInline
+value class ValueClassArg(val value: String)
 
 enum class Stuff {
     STUFF1,
