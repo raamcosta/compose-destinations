@@ -1,9 +1,9 @@
 package com.ramcosta.samples.playground.commons.composables
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
@@ -20,6 +20,7 @@ import com.ramcosta.samples.playground.ui.screens.*
 import com.ramcosta.samples.playground.ui.screens.destinations.Destination
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
+@SuppressLint("RestrictedApi")
 @Composable
 fun PlaygroundScaffold(
     navController: NavHostController,

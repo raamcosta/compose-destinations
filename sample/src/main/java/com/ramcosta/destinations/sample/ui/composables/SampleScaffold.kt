@@ -1,9 +1,11 @@
 package com.ramcosta.destinations.sample.ui.composables
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -17,6 +19,7 @@ import com.ramcosta.destinations.sample.destinations.Destination
 import com.ramcosta.destinations.sample.startAppDestination
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
+@SuppressLint("RestrictedApi")
 @Composable
 fun SampleScaffold(
     startRoute: Route,
@@ -29,8 +32,8 @@ fun SampleScaffold(
         ?: startRoute.startAppDestination
     val navBackStackEntry = navController.currentBackStackEntry
 
-    // 👇 only for debugging, you shouldn't use backQueue API as it is restricted by annotation
-    navController.backQueue.print()
+    // 👇 only for debugging, you shouldn't use currentBackStack API as it is restricted by annotation
+    navController.currentBackStack.collectAsState().value.print()
 
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
@@ -48,7 +51,7 @@ fun SampleScaffold(
     }
 }
 
-private fun ArrayDeque<NavBackStackEntry>.print(prefix: String = "stack") {
+private fun List<NavBackStackEntry>.print(prefix: String = "stack") {
     val stack = map { it.destination.route }.toTypedArray().contentToString()
     println("$prefix = $stack")
 }
