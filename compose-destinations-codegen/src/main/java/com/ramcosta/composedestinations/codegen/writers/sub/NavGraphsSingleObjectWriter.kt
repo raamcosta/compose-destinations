@@ -4,6 +4,7 @@ import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.*
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_LIST_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
@@ -65,7 +66,7 @@ class NavGraphsSingleObjectWriter(
                             nestedNavGraphs.forEach {
                                 addAll(destinationsByNavGraphParams[it].orEmpty().requireOptInAnnotationClassTypes())
                             }
-                        },
+                        }
                 )
             }
 
@@ -89,6 +90,7 @@ class NavGraphsSingleObjectWriter(
             importableHelper = importableHelper,
             sourceCode = navGraphsObjectTemplate.sourceCode
                 .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(orderedNavGraphGenParams))
+                .replace(NAV_GRAPHS_LIST_PLACEHOLDER, navGraphsListDeclaration(orderedNavGraphGenParams))
 
         )
     }
@@ -161,6 +163,19 @@ class NavGraphsSingleObjectWriter(
                 requireOptInAnnotations(requireOptInAnnotationTypes)
             )
 
+    }
+
+    private fun navGraphsListDeclaration(navGraphsParams: List<NavGraphGeneratingParams>): String {
+        val navGraphsAnchor = "[NAV_GRAPHS]"
+        val navGraphFieldNames = navGraphsParams.joinToString(",\n\t\t") {
+            navGraphFieldName(it.route)
+        }
+        return """
+       |    val all: List<$GENERATED_NAV_GRAPH> = listOf(
+       |        $navGraphsAnchor
+       |    )
+        """.trimMargin()
+            .replace(navGraphsAnchor, navGraphFieldNames)
     }
 
     private fun destinationsInsideList(destinations: List<GeneratedDestination>): String {

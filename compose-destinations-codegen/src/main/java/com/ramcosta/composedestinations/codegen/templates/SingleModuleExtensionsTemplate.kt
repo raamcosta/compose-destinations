@@ -46,6 +46,35 @@ public data class $GENERATED_NAV_GRAPH(
 }
 
 /**
+ * Return the parent of this [Destination][DestinationSpec] by searching through the [NavGraph]s in
+ * the [NavGraphs] object.
+ *
+ * This variable should **NEVER** be null. If `first { ... }` throws a [NoSuchElementException], it
+ * means this [Destination][DestinationSpec] somehow isn't part of a [NavGraph].
+ */
+val $CORE_DESTINATION_SPEC<*>.parent: $GENERATED_NAV_GRAPH
+    get() = $GENERATED_NAV_GRAPHS_OBJECT.all.first {
+        it.destinations.contains(this)
+    }
+
+/**
+ * Return the parent of this [NavGraphSpec] by searching through the [NavGraph]s'
+ * [NavGraph.nestedNavGraphs] in the [NavGraphs] object.
+ */
+val $CORE_NAV_GRAPH_SPEC.parent: $GENERATED_NAV_GRAPH?
+    get() = $GENERATED_NAV_GRAPHS_OBJECT.all.find {
+        it.nestedNavGraphs.contains(this)
+    }
+   
+/**
+ * Provides a sequence of the [DestinationSpec]'s hierarchy. The hierarchy starts with this
+ * [DestinationSpec]'s [parent][DestinationSpec.parent] [NavGraph], then that graph's parent, and up 
+ * the hierarchy until you've reached the root navigation graph.
+ */
+val $CORE_DESTINATION_SPEC<*>.hierarchy: Sequence<$GENERATED_NAV_GRAPH>
+    get() = generateSequence(this.parent) { it.parent }
+
+/**
  * If this [Route] is a [$typeAliasDestination], returns it
  *
  * If this [Route] is a [$GENERATED_NAV_GRAPH], returns its
