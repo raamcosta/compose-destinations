@@ -14,6 +14,20 @@ import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
 import com.ramcosta.composedestinations.ksp.commons.findActualClassDeclaration
 
+/**
+ * Custom implementation of the [SymbolProcessor] interface.
+ *
+ * This implementation extracts all the annotated [Destinations][com.ramcosta.composedestinations.annotation.Destination],
+ * [NavGraphs][com.ramcosta.composedestinations.annotation.NavGraph] and [NavTypeSerializers][com.ramcosta.composedestinations.navargs.NavTypeSerializer]
+ * to create a [CodeGenerator] instance and generate the required files.
+ *
+ * @property codeGenerator [KSPCodeGenerator][com.google.devtools.ksp.processing.CodeGenerator]
+ * instance provided by the caller of this class.
+ * @property logger [KSPLogger] instance provided by the caller of this class.
+ * @property options Command line options passed in addition to the command
+ *
+ * @see [SymbolProcessor]
+ */
 class Processor(
     private val codeGenerator: KSPCodeGenerator,
     private val logger: KSPLogger,
