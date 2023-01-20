@@ -17,14 +17,7 @@ class DestinationContentFunctionWriter(
 
         val (args, needsDependencyContainer) = prepareArguments()
         if (needsDependencyContainer) {
-            val rememberPlaceholder = importableHelper.addAndGetPlaceholder(
-                Importable(
-                    "remember",
-                    "androidx.compose.runtime.remember"
-                )
-            )
-            functionCallCode += "\t\tval dependencyContainer = $rememberPlaceholder { DestinationDependenciesContainer(this) }\n"
-            functionCallCode += "\t\tdependencyContainer.apply { dependenciesContainerBuilder() }\n\n"
+            functionCallCode += "\t\tval dependencyContainer = dependencies\n"
         }
 
         if (navArgs.isNotEmpty() && destination.navArgsDelegateType == null) {
@@ -132,10 +125,18 @@ class DestinationContentFunctionWriter(
 
                     !parameter.hasDefault -> {
                         needsDependencyContainer = true
+
+                        val requirePlaceholder = importableHelper.addAndGetPlaceholder(
+                            Importable(
+                                "require",
+                                "com.ramcosta.composedestinations.navigation.require"
+                            )
+                        )
+
                         if (parameter.isMarkedNavHostParam) {
-                            "dependencyContainer.require(true)"
+                            "dependencyContainer.$requirePlaceholder(true)"
                         } else {
-                            "dependencyContainer.require()"
+                            "dependencyContainer.$requirePlaceholder()"
                         }
                     }
 

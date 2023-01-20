@@ -18,11 +18,19 @@ import kotlin.reflect.KClass
  */
 sealed interface DependenciesContainerBuilder<T> : DestinationScope<T>
 
+sealed interface DestinationDependenciesContainer
+
+inline fun <reified D : Any> DestinationDependenciesContainer.require(
+    isMarkedNavHostParam: Boolean = false,
+): D {
+    return (this as DestinationDependenciesContainerImpl<*>).require(isMarkedNavHostParam)
+}
+
 /**
  * Adds [dependency] to this container builder.
  */
 inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(dependency: D) {
-    (this as DestinationDependenciesContainer<*>).dependency(dependency, asType = D::class)
+    (this as DestinationDependenciesContainerImpl<*>).dependency(dependency, asType = D::class)
 }
 
 /**
@@ -37,7 +45,7 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
     val route = requireNotNull(navBackStackEntry.destination.route)
 
     if (navGraph.findDestination(route) != null) {
-        (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(),
+        (this as DestinationDependenciesContainerImpl<*>).dependency(dependencyProvider(),
             asType = D::class)
     }
 }
@@ -52,7 +60,7 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
     dependencyProvider: () -> D,
 ) {
     if (this.destination.originalDestination.route == destination.originalDestination.route) {
-        (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(),
+        (this as DestinationDependenciesContainerImpl<*>).dependency(dependencyProvider(),
             asType = D::class)
     }
 }
@@ -62,9 +70,12 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
  * You can use `DestinationsNavHost` to add dependencies to it via
  * [DependenciesContainerBuilder.dependency]
  */
-class DestinationDependenciesContainer<T>(
+@PublishedApi
+internal class DestinationDependenciesContainerImpl<T>(
     destinationScope: DestinationScope<T>,
-) : DependenciesContainerBuilder<T>, DestinationScope<T> by destinationScope {
+) : DestinationDependenciesContainer,
+    DependenciesContainerBuilder<T>,
+    DestinationScope<T> by destinationScope {
 
     private val map: MutableMap<Class<*>, Any> = mutableMapOf()
 
@@ -79,8 +90,7 @@ class DestinationDependenciesContainer<T>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    @PublishedApi
-    internal fun <D : Any> require(type: KClass<in D>, isMarkedNavHostParam: Boolean): D {
+    fun <D : Any> require(type: KClass<in D>, isMarkedNavHostParam: Boolean): D {
         var depForType: D? = map[type.java] as? D
 
         if (depForType == null) {

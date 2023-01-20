@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun GreetingScreen(
     navigator: DestinationsNavigator,
-    testProfileDeepLink: () -> Unit,
+//    testProfileDeepLink: () -> Unit,
     drawerController: DrawerController,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     uiEvents: GreetingUiEvents,
@@ -131,7 +131,7 @@ fun GreetingScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = testProfileDeepLink
+                onClick = {}//testProfileDeepLink
             ) {
                 Text(text = stringResource(R.string.test_deep_link))
             }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
@@ -39,6 +40,9 @@ interface DestinationScope<T> {
      * [DestinationsNavigator] useful to navigate from this destination
      */
     val destinationsNavigator: DestinationsNavigator
+
+    @get:Composable
+    val dependencies: DestinationDependenciesContainer
 
     /**
      * Class holding the navigation arguments passed to this destination

@@ -431,9 +431,7 @@ class SingleDestinationWriter(
 
         return """
     @Composable
-    override fun DestinationScope<${navArgsDataClassName()}>.Content(
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<${navArgsDataClassName()}>.() -> Unit
-    ) {
+    override fun DestinationScope<${navArgsDataClassName()}>.Content() {
 %s1
     }
         """.trimIndent()

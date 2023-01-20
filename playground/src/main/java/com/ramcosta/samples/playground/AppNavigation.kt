@@ -64,6 +64,7 @@ fun AppNavigation(
         modifier = modifier,
         dependenciesContainerBuilder = {
             dependency(drawerController)
+            dependency(GreetingScreenDestination) { viewModel<GreetingViewModel>() }
 
             dependency(NavGraphs.settings) {
                 val parentEntry = remember(navBackStackEntry) {
@@ -74,7 +75,7 @@ fun AppNavigation(
         }
     ) {
         profileScreen()
-        greetingScreen(testProfileDeepLink, drawerController)
+//        greetingScreen(testProfileDeepLink, drawerController)
     }
 }
 
@@ -103,7 +104,7 @@ private fun ManualComposableCallsBuilder.greetingScreen(
 
         GreetingScreen(
             navigator = destinationsNavigator,
-            testProfileDeepLink = testProfileDeepLink,
+//            testProfileDeepLink = testProfileDeepLink,
             drawerController = drawerController,
             uiEvents = vm as GreetingUiEvents,
             uiState = vm as GreetingUiState,
@@ -139,7 +140,7 @@ fun SampleAppAnimatedNavHostExample(
                 uiEvents = vm as GreetingUiEvents,
                 uiState = vm as GreetingUiState,
                 resultRecipient = resultRecipient(),
-                testProfileDeepLink = testProfileDeepLink
+//                testProfileDeepLink = testProfileDeepLink
             )
         }
 
