@@ -19,27 +19,27 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  * Scope where a destination screen will be called in.
  */
 @Immutable
-interface DestinationScope<T> {
+interface DestinationScope<T>: DestinationScopeWithNoDependencies<T> {
 
     /**
      * [DestinationSpec] related to this scope
      */
-    val destination: DestinationSpec<T>
+    override val destination: DestinationSpec<T>
 
     /**
      * [NavBackStackEntry] of the current destination
      */
-    val navBackStackEntry: NavBackStackEntry
+    override val navBackStackEntry: NavBackStackEntry
 
     /**
      * [NavController] related to the NavHost
      */
-    val navController: NavController
+    override val navController: NavController
 
     /**
      * [DestinationsNavigator] useful to navigate from this destination
      */
-    val destinationsNavigator: DestinationsNavigator
+    override val destinationsNavigator: DestinationsNavigator
 
     @get:Composable
     val dependencies: DestinationDependenciesContainer
@@ -48,7 +48,7 @@ interface DestinationScope<T> {
      * Class holding the navigation arguments passed to this destination
      * or [Unit] if the destination has no arguments
      */
-    val navArgs: T
+    override val navArgs: T
 }
 
 /**

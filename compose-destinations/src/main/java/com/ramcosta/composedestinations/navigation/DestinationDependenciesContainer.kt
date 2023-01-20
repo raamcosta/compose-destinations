@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.navigation
 
 import com.ramcosta.composedestinations.dynamic.originalDestination
-import com.ramcosta.composedestinations.scope.DestinationScope
+import com.ramcosta.composedestinations.scope.DestinationScopeWithNoDependencies
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.utils.findDestination
@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
  * Each dependency added is associated with a given class (reified in [dependency]). The calling
  * `Destination` can then declare arguments of those class types or super types.
  */
-sealed interface DependenciesContainerBuilder<T> : DestinationScope<T>
+sealed interface DependenciesContainerBuilder<T> : DestinationScopeWithNoDependencies<T>
 
 sealed interface DestinationDependenciesContainer
 
@@ -72,10 +72,10 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
  */
 @PublishedApi
 internal class DestinationDependenciesContainerImpl<T>(
-    destinationScope: DestinationScope<T>,
+    destinationScope: DestinationScopeWithNoDependencies<T>,
 ) : DestinationDependenciesContainer,
     DependenciesContainerBuilder<T>,
-    DestinationScope<T> by destinationScope {
+    DestinationScopeWithNoDependencies<T> by destinationScope {
 
     private val map: MutableMap<Class<*>, Any> = mutableMapOf()
 
