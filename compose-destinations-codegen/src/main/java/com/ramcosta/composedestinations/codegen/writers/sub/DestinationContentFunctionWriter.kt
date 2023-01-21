@@ -24,8 +24,33 @@ class DestinationContentFunctionWriter(
             functionCallCode += "\t\tval (${argNamesInLine()}) = navArgs\n"
         }
 
+        val wrappingPrefix = when {
+            composableWrappers.size == 1 -> {
+                val wrapPlaceholder = importableHelper.addAndGetPlaceholder(
+                    Importable("Wrap", "com.ramcosta.composedestinations.wrapper.Wrap")
+                )
+                "\t\t$wrapPlaceholder(${importableHelper.addAndGetPlaceholder(composableWrappers.first())}) {\n"
+            }
+            composableWrappers.isNotEmpty() -> {
+                val wrapPlaceholder = importableHelper.addAndGetPlaceholder(
+                    Importable("WrapRecursively", "com.ramcosta.composedestinations.wrapper.WrapRecursively")
+                )
+                "\t\t$wrapPlaceholder(arrayOf(${composableWrappers.joinToString(", ") { importableHelper.addAndGetPlaceholder(it) }})) {\n"
+            }
+            else -> ""
+        }
+
+        functionCallCode += wrappingPrefix
+
         val receiver = prepareReceiver()
-        functionCallCode += "\t\t$receiver${composableName}($args)"
+        val composableCall = "\t\t$receiver${composableName}($args)"
+
+        functionCallCode += if (composableWrappers.isEmpty()) composableCall
+        else "\t" + composableCall.replace("\n", "\n\t")
+
+        if (composableWrappers.isNotEmpty()) {
+            functionCallCode += "\n\t\t}"
+        }
 
         return functionCallCode.toString()
     }

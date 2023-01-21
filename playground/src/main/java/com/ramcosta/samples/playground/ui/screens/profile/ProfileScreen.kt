@@ -17,20 +17,20 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
-import com.ramcosta.composedestinations.annotation.NavHostParam
+import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
 
 @Destination(
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
+    wrappers = [HidingScreenWrapper::class],
     style = ProfileTransitions::class,
     navArgsDelegate = ProfileScreenNavArgs::class
 )
 @Composable
 fun AnimatedVisibilityScope.ProfileScreen(
     uiState: ProfileUiState,
-    uiEvents: ProfileUiEvents,
-    @NavHostParam test: String
+    uiEvents: ProfileUiEvents
 ) {
     Box(
         modifier = Modifier

@@ -13,7 +13,6 @@ import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.animations.utils.animatedComposable
 import com.ramcosta.composedestinations.animations.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
-import com.ramcosta.composedestinations.manualcomposablecalls.animatedComposable
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.scope.resultBackNavigator
@@ -64,7 +63,7 @@ fun AppNavigation(
         modifier = modifier,
         dependenciesContainerBuilder = {
             dependency(drawerController)
-            dependency(GreetingScreenDestination) { viewModel<GreetingViewModel>() }
+            dependency(ProfileScreenDestination) { viewModel<ProfileViewModel>() }
 
             dependency(NavGraphs.settings) {
                 val parentEntry = remember(navBackStackEntry) {
@@ -74,24 +73,7 @@ fun AppNavigation(
             }
         }
     ) {
-        profileScreen()
-//        greetingScreen(testProfileDeepLink, drawerController)
-    }
-}
-
-@ExperimentalAnimationApi
-private fun ManualComposableCallsBuilder.profileScreen() {
-
-    // animatedComposable is needed to get an AnimatedVisibilityScope to use as the receiver for our
-    // ProfileScreen
-    animatedComposable(ProfileScreenDestination) {
-        val vm = viewModel<ProfileViewModel>()
-
-        ProfileScreen(
-            vm as ProfileUiState,
-            vm as ProfileUiEvents,
-            test = "testing param from NavHost"
-        )
+        greetingScreen(testProfileDeepLink, drawerController)
     }
 }
 
@@ -104,10 +86,11 @@ private fun ManualComposableCallsBuilder.greetingScreen(
 
         GreetingScreen(
             navigator = destinationsNavigator,
-//            testProfileDeepLink = testProfileDeepLink,
+            testProfileDeepLink = testProfileDeepLink,
             drawerController = drawerController,
             uiEvents = vm as GreetingUiEvents,
             uiState = vm as GreetingUiState,
+            test = "testing param from NavHost",
             resultRecipient = resultRecipient(),
         )
     }
@@ -140,7 +123,8 @@ fun SampleAppAnimatedNavHostExample(
                 uiEvents = vm as GreetingUiEvents,
                 uiState = vm as GreetingUiState,
                 resultRecipient = resultRecipient(),
-//                testProfileDeepLink = testProfileDeepLink
+                testProfileDeepLink = testProfileDeepLink,
+                test = "testing param from NavHost",
             )
         }
 
@@ -172,7 +156,6 @@ fun SampleAppAnimatedNavHostExample(
             ProfileScreen(
                 vm as ProfileUiState,
                 vm as ProfileUiEvents,
-                test = "testing param from NavHost"
             )
         }
 

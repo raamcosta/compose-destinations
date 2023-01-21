@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.NavHostParam
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
@@ -36,11 +37,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun GreetingScreen(
     navigator: DestinationsNavigator,
-//    testProfileDeepLink: () -> Unit,
+    testProfileDeepLink: () -> Unit,
     drawerController: DrawerController,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     uiEvents: GreetingUiEvents,
     uiState: GreetingUiState,
+    @NavHostParam test: String,
     resultRecipient: ResultRecipient<GoToProfileConfirmationDestination, Boolean>,
 ) {
     val context = LocalContext.current
@@ -131,7 +133,7 @@ fun GreetingScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = {}//testProfileDeepLink
+                onClick = testProfileDeepLink
             ) {
                 Text(text = stringResource(R.string.test_deep_link))
             }
