@@ -17,7 +17,9 @@ internal class AnimatedDestinationScopeImpl<T>(
     override val navController: NavController,
     animatedVisibilityScope: AnimatedVisibilityScope,
     override val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-) : DestinationScopeImpl<T>(), AnimatedDestinationScope<T>, AnimatedVisibilityScope by animatedVisibilityScope
+) : DestinationScopeImpl<T>(),
+    AnimatedDestinationScope<T>,
+    AnimatedVisibilityScope by animatedVisibilityScope
 
 internal class BottomSheetDestinationScopeImpl<T>(
     override val destination: DestinationSpec<T>,
@@ -25,7 +27,9 @@ internal class BottomSheetDestinationScopeImpl<T>(
     override val navController: NavController,
     columnScope: ColumnScope,
     override val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-) : DestinationScopeImpl<T>(), BottomSheetDestinationScope<T>, ColumnScope by columnScope
+) : DestinationScopeImpl<T>(),
+    BottomSheetDestinationScope<T>,
+    ColumnScope by columnScope
 
 @ExperimentalAnimationApi
 internal class AnimatedNavGraphBuilderDestinationScopeImpl<T>(

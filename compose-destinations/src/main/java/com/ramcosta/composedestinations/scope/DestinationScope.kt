@@ -41,8 +41,16 @@ interface DestinationScope<T>: DestinationScopeWithNoDependencies<T> {
      */
     override val destinationsNavigator: DestinationsNavigator
 
-    @get:Composable
-    val dependencies: DestinationDependenciesContainer
+    /**
+     * Builds the [DestinationDependenciesContainer] which contains
+     * all dependencies by calling `DestinationsNavHost`'s `dependencyContainerBuilder` lambda parameter.
+     *
+     * When used, it will run the `dependencyContainerBuilder` so even though that lambda
+     * is not expected to do any heavy calculations, use it only once per composition. So if you
+     * need multiple dependencies, store the result of this in a val first, then use the val each time.
+     */
+    @Composable
+    fun buildDependencies(): DestinationDependenciesContainer
 
     /**
      * Class holding the navigation arguments passed to this destination

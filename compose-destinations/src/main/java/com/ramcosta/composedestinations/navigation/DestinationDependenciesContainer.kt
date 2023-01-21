@@ -18,14 +18,6 @@ import kotlin.reflect.KClass
  */
 sealed interface DependenciesContainerBuilder<T> : DestinationScopeWithNoDependencies<T>
 
-sealed interface DestinationDependenciesContainer
-
-inline fun <reified D : Any> DestinationDependenciesContainer.require(
-    isMarkedNavHostParam: Boolean = false,
-): D {
-    return (this as DestinationDependenciesContainerImpl<*>).require(isMarkedNavHostParam)
-}
-
 /**
  * Adds [dependency] to this container builder.
  */
@@ -66,10 +58,34 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
 }
 
 /**
+ *
  * Container of all dependencies that can be used in a certain `Destination` Composable.
  * You can use `DestinationsNavHost` to add dependencies to it via
  * [DependenciesContainerBuilder.dependency]
+ *
+ * Helpful:
+ * - Internally by generated code to get dependencies your annotated Composables
+ * require.
+ * - When using [com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder]
+ * you can get a hold of it by calling [com.ramcosta.composedestinations.scope.DestinationScope.buildDependencies].
+ * - When using [com.ramcosta.composedestinations.wrapper.DestinationWrapper] feature you'll also be given
+ * a [com.ramcosta.composedestinations.scope.DestinationScope] where you can get this by its `dependencies`
+ * method.
  */
+sealed interface DestinationDependenciesContainer
+
+/**
+ * Function through which you can get a hold of the dependencies inside [DestinationDependenciesContainer].
+ *
+ * @param isMarkedNavHostParam is used internally by generated code only to give a helping error in case
+ * the dependency is missing. You can always use the default value here.
+ */
+inline fun <reified D : Any> DestinationDependenciesContainer.require(
+    isMarkedNavHostParam: Boolean = false,
+): D {
+    return (this as DestinationDependenciesContainerImpl<*>).require(isMarkedNavHostParam)
+}
+
 @PublishedApi
 internal class DestinationDependenciesContainerImpl<T>(
     destinationScope: DestinationScopeWithNoDependencies<T>,

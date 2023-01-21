@@ -17,7 +17,7 @@ class DestinationContentFunctionWriter(
 
         val (args, needsDependencyContainer) = prepareArguments()
         if (needsDependencyContainer) {
-            functionCallCode += "\t\tval dependencyContainer = dependencies\n"
+            functionCallCode += "\t\tval dependencyContainer = buildDependencies()\n"
         }
 
         if (navArgs.isNotEmpty() && destination.navArgsDelegateType == null) {

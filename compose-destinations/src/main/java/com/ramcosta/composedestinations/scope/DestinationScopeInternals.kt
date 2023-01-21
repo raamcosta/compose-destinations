@@ -23,12 +23,11 @@ abstract class DestinationScopeImpl<T> : DestinationScope<T> {
     override val destinationsNavigator: DestinationsNavigator
         get() = DestinationsNavController(navController, navBackStackEntry)
 
-    override val dependencies: DestinationDependenciesContainer
-        @Composable
-        get() {
-            return remember { DestinationDependenciesContainerImpl(this) }
-                .apply { dependenciesContainerBuilder() }
-        }
+    @Composable
+    override fun buildDependencies(): DestinationDependenciesContainer {
+        return remember { DestinationDependenciesContainerImpl(this) }
+            .apply { dependenciesContainerBuilder() }
+    }
 
     internal class Default<T>(
         override val destination: DestinationSpec<T>,
