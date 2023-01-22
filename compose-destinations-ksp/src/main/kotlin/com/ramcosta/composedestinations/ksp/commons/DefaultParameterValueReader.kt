@@ -71,7 +71,7 @@ object DefaultParameterValueReader {
     ): DefaultValue {
 
         var result = auxText
-        if (result.contains("(")) {
+        if (!result.firstParenthesisIsClosing() && result.contains("(")) {
             result = result.defaultValueCodeWithFunctionCalls()
         } else {
             val index = result.indexOfFirst { it == ' ' || it == ',' || it == '\n' || it == ')' }
@@ -128,6 +128,13 @@ object DefaultParameterValueReader {
 
         return DefaultValue(result, wholePackageImports)
     }
+}
+
+private fun String.firstParenthesisIsClosing(): Boolean {
+    val indexOfFirstOpening = this.indexOfFirst { it == '(' }
+    val indexOfFirstClosing = this.indexOfFirst { it == ')' }
+
+    return indexOfFirstClosing < indexOfFirstOpening
 }
 
 private fun String.defaultValueCodeWithFunctionCalls(): String {
