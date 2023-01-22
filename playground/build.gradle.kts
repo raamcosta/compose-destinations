@@ -57,12 +57,21 @@ android {
     }
 
     applicationVariants.all {
-        kotlin.sourceSets {
-            getByName(name) {
-                kotlin.srcDir("build/generated/ksp/$name/kotlin")
-            }
-        }
+
+        addJavaSourceFoldersToModel(
+            File(buildDir, "generated/ksp/$name/kotlin")
+        )
+        // There is currently an issue with the below solution:
+        // https://issuetracker.google.com/issues/255915317
+        // So for now at least, use the above one instead ☝️
+
+//        kotlin.sourceSets {
+//            getByName(name) {
+//                kotlin.srcDir("build/generated/ksp/$name/kotlin")
+//            }
+//        }
     }
+
 
     // Possible Compose Destinations configs:
     ksp {
