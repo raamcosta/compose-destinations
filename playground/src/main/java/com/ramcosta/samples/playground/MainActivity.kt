@@ -16,20 +16,20 @@ import com.ramcosta.samples.playground.di.DependencyContainer
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.playground.ui.screens.profile.ValueClassArg
 
-val LocalDependencyContainer = staticCompositionLocalOf<DependencyContainer> {
+val LocalDIContainer = staticCompositionLocalOf<DependencyContainer> {
     error("No dependency container provided!")
 }
 
 @SuppressLint("InlinedApi")
 class MainActivity : ComponentActivity() {
 
-    private val dependencyContainer = DependencyContainer()
+    private val diContainer = DependencyContainer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CompositionLocalProvider(LocalDependencyContainer provides dependencyContainer) {
+            CompositionLocalProvider(LocalDIContainer provides diContainer) {
                 PlaygroundApp(
                     testProfileDeepLink = {
                         displayNotification(

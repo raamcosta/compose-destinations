@@ -3,8 +3,8 @@ package com.ramcosta.composedestinations.ksp.processors
 import com.google.devtools.ksp.*
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.*
+import com.google.devtools.ksp.symbol.ClassKind
 import com.ramcosta.composedestinations.codegen.commons.*
-import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.model.Visibility
 import com.ramcosta.composedestinations.ksp.commons.*
@@ -94,7 +94,8 @@ class KspToCodeGenDestinationsMapper(
                 action = activityDestinationAnnotation.getNullableString("action"),
                 dataUri = activityDestinationAnnotation.getNullableString("dataUri"),
                 dataPattern = activityDestinationAnnotation.getNullableString("dataPattern")
-            )
+            ),
+            composableWrappers = emptyList()
         )
     }
 
@@ -151,6 +152,7 @@ class KspToCodeGenDestinationsMapper(
             cleanRoute = cleanRoute,
             destinationStyleType = destinationAnnotation.getDestinationStyleType(composableName),
             parameters = parameters.map { it.toParameter(composableName) },
+            composableWrappers = destinationAnnotation.getDestinationWrappers(),
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             navGraphInfo = getNavGraphInfo(destinationAnnotation),
             composableReceiverSimpleName = extensionReceiver?.toString(),
@@ -257,6 +259,21 @@ class KspToCodeGenDestinationsMapper(
 
         //then it must be animated (since animated ones implement a generated interface, it would require multi step processing which can be avoided like this)
         return DestinationStyleType.Animated(type, ksStyleType.declaration.findAllRequireOptInAnnotations())
+    }
+
+    private fun KSAnnotation.getDestinationWrappers(): List<Importable> {
+        val ksTypes = findArgumentValue<ArrayList<KSType>>(DESTINATION_ANNOTATION_WRAPPERS_ARGUMENT)!!
+
+        return ksTypes.map {
+            if ((it.declaration as? KSClassDeclaration)?.classKind != ClassKind.OBJECT) {
+                throw IllegalDestinationsSetup("DestinationWrappers need to be objects! (check ${it.declaration.simpleName.asString()})")
+            }
+
+            Importable(
+                it.declaration.simpleName.asString(),
+                it.declaration.qualifiedName!!.asString()
+            )
+        }
     }
 
     private fun KSAnnotation.prepareRoute(composableName: String): String {

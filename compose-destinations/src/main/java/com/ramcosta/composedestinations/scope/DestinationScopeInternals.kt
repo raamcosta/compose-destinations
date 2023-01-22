@@ -1,18 +1,20 @@
 package com.ramcosta.composedestinations.scope
 
 import androidx.annotation.RestrictTo
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
+import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainerImpl
 import com.ramcosta.composedestinations.navigation.DestinationsNavController
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-abstract class DestinationScopeImpl<T>(
-    override val destination: DestinationSpec<T>,
-    override val navBackStackEntry: NavBackStackEntry,
-    override val navController: NavController,
-) : DestinationScope<T> {
+abstract class DestinationScopeImpl<T> : DestinationScope<T> {
+    abstract val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit
 
     override val navArgs: T by lazy(LazyThreadSafetyMode.NONE) {
         destination.argsFrom(navBackStackEntry.arguments)
@@ -21,22 +23,22 @@ abstract class DestinationScopeImpl<T>(
     override val destinationsNavigator: DestinationsNavigator
         get() = DestinationsNavController(navController, navBackStackEntry)
 
+    @Composable
+    override fun buildDependencies(): DestinationDependenciesContainer {
+        return remember { DestinationDependenciesContainerImpl(this) }
+            .apply { dependenciesContainerBuilder() }
+    }
+
     internal class Default<T>(
-        destination: DestinationSpec<T>,
-        navBackStackEntry: NavBackStackEntry,
-        navController: NavController,
-    ) : DestinationScopeImpl<T>(
-        destination,
-        navBackStackEntry,
-        navController,
-    )
+        override val destination: DestinationSpec<T>,
+        override val navBackStackEntry: NavBackStackEntry,
+        override val navController: NavController,
+        override val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+    ) : DestinationScopeImpl<T>()
 }
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-abstract class NavGraphBuilderDestinationScopeImpl<T>(
-    override val destination: DestinationSpec<T>,
-    override val navBackStackEntry: NavBackStackEntry,
-) : NavGraphBuilderDestinationScope<T> {
+abstract class NavGraphBuilderDestinationScopeImpl<T> : NavGraphBuilderDestinationScope<T> {
 
     override val navArgs: T by lazy(LazyThreadSafetyMode.NONE) {
         destination.argsFrom(navBackStackEntry.arguments)
@@ -47,10 +49,7 @@ abstract class NavGraphBuilderDestinationScopeImpl<T>(
     }
 
     internal class Default<T>(
-        destination: DestinationSpec<T>,
-        navBackStackEntry: NavBackStackEntry,
-    ) : NavGraphBuilderDestinationScopeImpl<T>(
-        destination,
-        navBackStackEntry,
-    )
+        override val destination: DestinationSpec<T>,
+        override val navBackStackEntry: NavBackStackEntry
+    ) : NavGraphBuilderDestinationScopeImpl<T>()
 }

@@ -17,24 +17,52 @@ class DestinationContentFunctionWriter(
 
         val (args, needsDependencyContainer) = prepareArguments()
         if (needsDependencyContainer) {
-            val rememberPlaceholder = importableHelper.addAndGetPlaceholder(
-                Importable(
-                    "remember",
-                    "androidx.compose.runtime.remember"
-                )
-            )
-            functionCallCode += "\t\tval dependencyContainer = $rememberPlaceholder { DestinationDependenciesContainer(this) }\n"
-            functionCallCode += "\t\tdependencyContainer.apply { dependenciesContainerBuilder() }\n\n"
+            functionCallCode += "\t\tval dependencyContainer = buildDependencies()\n"
         }
 
         if (navArgs.isNotEmpty() && destination.navArgsDelegateType == null) {
             functionCallCode += "\t\tval (${argNamesInLine()}) = navArgs\n"
         }
 
-        val receiver = prepareReceiver()
-        functionCallCode += "\t\t$receiver${composableName}($args)"
+        functionCallCode += wrappingPrefix()
+
+        val composableCall = "\t\t${prepareReceiver()}${composableName}($args)"
+
+        functionCallCode += if (composableWrappers.isEmpty()) composableCall
+        else "\t" + composableCall.replace("\n", "\n\t")
+
+        functionCallCode += wrappingSuffix()
 
         return functionCallCode.toString()
+    }
+
+    private fun DestinationGeneratingParams.wrappingPrefix(): String {
+        val wrappingPrefix = when {
+            composableWrappers.size == 1 -> {
+                val wrapPlaceholder = importableHelper.addAndGetPlaceholder(
+                    Importable("Wrap", "com.ramcosta.composedestinations.wrapper.Wrap")
+                )
+                "\t\t$wrapPlaceholder(${importableHelper.addAndGetPlaceholder(composableWrappers.first())}) {\n"
+            }
+
+            composableWrappers.isNotEmpty() -> {
+                val wrapPlaceholder = importableHelper.addAndGetPlaceholder(
+                    Importable("Wrap", "com.ramcosta.composedestinations.wrapper.Wrap")
+                )
+                "\t\t$wrapPlaceholder(${composableWrappers.joinToString(", ") { importableHelper.addAndGetPlaceholder(it) }}) {\n"
+            }
+
+            else -> ""
+        }
+        return wrappingPrefix
+    }
+
+    private fun DestinationGeneratingParams.wrappingSuffix(): String {
+        return if (composableWrappers.isNotEmpty()) {
+            "\n\t\t}"
+        } else {
+            ""
+        }
     }
 
     private fun argNamesInLine(): String {
@@ -132,10 +160,18 @@ class DestinationContentFunctionWriter(
 
                     !parameter.hasDefault -> {
                         needsDependencyContainer = true
+
+                        val requirePlaceholder = importableHelper.addAndGetPlaceholder(
+                            Importable(
+                                "require",
+                                "com.ramcosta.composedestinations.navigation.require"
+                            )
+                        )
+
                         if (parameter.isMarkedNavHostParam) {
-                            "dependencyContainer.require(true)"
+                            "dependencyContainer.$requirePlaceholder(true)"
                         } else {
-                            "dependencyContainer.require()"
+                            "dependencyContainer.$requirePlaceholder()"
                         }
                     }
 

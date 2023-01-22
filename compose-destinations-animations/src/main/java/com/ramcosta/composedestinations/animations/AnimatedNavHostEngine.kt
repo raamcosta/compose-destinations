@@ -254,12 +254,13 @@ internal class AnimatedNavHostEngine(
                 destination,
                 navBackStackEntry,
                 navController,
-                this
+                this,
+                dependenciesContainerBuilder
             )
         }
 
         if (contentWrapper == null) {
-            with(destination) { scope.Content(dependenciesContainerBuilder) }
+            with(destination) { scope.Content() }
         } else {
             contentWrapper as DestinationLambda<T>
             contentWrapper(scope)
@@ -281,12 +282,13 @@ internal class AnimatedNavHostEngine(
                 destination,
                 navBackStackEntry,
                 navController,
-                this
+                this,
+                dependenciesContainerBuilder
             )
         }
 
         if (contentWrapper == null) {
-            with(destination) { scope.Content(dependenciesContainerBuilder) }
+            with(destination) { scope.Content() }
         } else {
             contentWrapper as DestinationLambda<T>
             contentWrapper(scope)
