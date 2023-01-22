@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.navigation
 
 import com.ramcosta.composedestinations.dynamic.originalDestination
-import com.ramcosta.composedestinations.scope.DestinationScope
+import com.ramcosta.composedestinations.scope.DestinationScopeWithNoDependencies
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.utils.findDestination
@@ -16,13 +16,13 @@ import kotlin.reflect.KClass
  * Each dependency added is associated with a given class (reified in [dependency]). The calling
  * `Destination` can then declare arguments of those class types or super types.
  */
-sealed interface DependenciesContainerBuilder<T> : DestinationScope<T>
+sealed interface DependenciesContainerBuilder<T> : DestinationScopeWithNoDependencies<T>
 
 /**
  * Adds [dependency] to this container builder.
  */
 inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(dependency: D) {
-    (this as DestinationDependenciesContainer<*>).dependency(dependency, asType = D::class)
+    (this as DestinationDependenciesContainerImpl<*>).dependency(dependency, asType = D::class)
 }
 
 /**
@@ -37,7 +37,7 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
     val route = requireNotNull(navBackStackEntry.destination.route)
 
     if (navGraph.findDestination(route) != null) {
-        (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(),
+        (this as DestinationDependenciesContainerImpl<*>).dependency(dependencyProvider(),
             asType = D::class)
     }
 }
@@ -52,19 +52,46 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
     dependencyProvider: () -> D,
 ) {
     if (this.destination.originalDestination.route == destination.originalDestination.route) {
-        (this as DestinationDependenciesContainer<*>).dependency(dependencyProvider(),
+        (this as DestinationDependenciesContainerImpl<*>).dependency(dependencyProvider(),
             asType = D::class)
     }
 }
 
 /**
+ *
  * Container of all dependencies that can be used in a certain `Destination` Composable.
  * You can use `DestinationsNavHost` to add dependencies to it via
  * [DependenciesContainerBuilder.dependency]
+ *
+ * Helpful:
+ * - Internally by generated code to get dependencies your annotated Composables
+ * require.
+ * - When using [com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder]
+ * you can get a hold of it by calling [com.ramcosta.composedestinations.scope.DestinationScope.buildDependencies].
+ * - When using [com.ramcosta.composedestinations.wrapper.DestinationWrapper] feature you'll also be given
+ * a [com.ramcosta.composedestinations.scope.DestinationScope] where you can get this by its `dependencies`
+ * method.
  */
-class DestinationDependenciesContainer<T>(
-    destinationScope: DestinationScope<T>,
-) : DependenciesContainerBuilder<T>, DestinationScope<T> by destinationScope {
+sealed interface DestinationDependenciesContainer
+
+/**
+ * Function through which you can get a hold of the dependencies inside [DestinationDependenciesContainer].
+ *
+ * @param isMarkedNavHostParam is used internally by generated code only to give a helping error in case
+ * the dependency is missing. You can always use the default value here.
+ */
+inline fun <reified D : Any> DestinationDependenciesContainer.require(
+    isMarkedNavHostParam: Boolean = false,
+): D {
+    return (this as DestinationDependenciesContainerImpl<*>).require(isMarkedNavHostParam)
+}
+
+@PublishedApi
+internal class DestinationDependenciesContainerImpl<T>(
+    destinationScope: DestinationScopeWithNoDependencies<T>,
+) : DestinationDependenciesContainer,
+    DependenciesContainerBuilder<T>,
+    DestinationScopeWithNoDependencies<T> by destinationScope {
 
     private val map: MutableMap<Class<*>, Any> = mutableMapOf()
 
@@ -79,8 +106,7 @@ class DestinationDependenciesContainer<T>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    @PublishedApi
-    internal fun <D : Any> require(type: KClass<in D>, isMarkedNavHostParam: Boolean): D {
+    fun <D : Any> require(type: KClass<in D>, isMarkedNavHostParam: Boolean): D {
         var depForType: D? = map[type.java] as? D
 
         if (depForType == null) {

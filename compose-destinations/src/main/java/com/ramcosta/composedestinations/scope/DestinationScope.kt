@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
@@ -18,33 +19,44 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  * Scope where a destination screen will be called in.
  */
 @Immutable
-interface DestinationScope<T> {
+interface DestinationScope<T>: DestinationScopeWithNoDependencies<T> {
 
     /**
      * [DestinationSpec] related to this scope
      */
-    val destination: DestinationSpec<T>
+    override val destination: DestinationSpec<T>
 
     /**
      * [NavBackStackEntry] of the current destination
      */
-    val navBackStackEntry: NavBackStackEntry
+    override val navBackStackEntry: NavBackStackEntry
 
     /**
      * [NavController] related to the NavHost
      */
-    val navController: NavController
+    override val navController: NavController
 
     /**
      * [DestinationsNavigator] useful to navigate from this destination
      */
-    val destinationsNavigator: DestinationsNavigator
+    override val destinationsNavigator: DestinationsNavigator
+
+    /**
+     * Builds the [DestinationDependenciesContainer] which contains
+     * all dependencies by calling `DestinationsNavHost`'s `dependencyContainerBuilder` lambda parameter.
+     *
+     * When used, it will run the `dependencyContainerBuilder` so even though that lambda
+     * is not expected to do any heavy calculations, use it only once per composition. So if you
+     * need multiple dependencies, store the result of this in a val first, then use the val each time.
+     */
+    @Composable
+    fun buildDependencies(): DestinationDependenciesContainer
 
     /**
      * Class holding the navigation arguments passed to this destination
      * or [Unit] if the destination has no arguments
      */
-    val navArgs: T
+    override val navArgs: T
 }
 
 /**

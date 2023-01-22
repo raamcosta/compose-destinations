@@ -167,12 +167,13 @@ internal class DefaultNavHostEngine : NavHostEngine {
             DestinationScopeImpl.Default(
                 destination,
                 navBackStackEntry,
-                navController
+                navController,
+                dependenciesContainerBuilder,
             )
         }
 
         if (contentLambda == null) {
-            with(destination) { scope.Content(dependenciesContainerBuilder) }
+            with(destination) { scope.Content() }
         } else {
             contentLambda as DestinationLambda<T>
             contentLambda(scope)

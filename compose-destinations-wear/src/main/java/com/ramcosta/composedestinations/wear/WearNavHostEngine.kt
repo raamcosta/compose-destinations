@@ -124,14 +124,11 @@ internal class WearNavHostEngine(
     }
 
     internal class WearDestinationScope<T>(
-        destination: DestinationSpec<T>,
-        navBackStackEntry: NavBackStackEntry,
-        navController: NavController,
-    ) : DestinationScopeImpl<T>(
-        destination,
-        navBackStackEntry,
-        navController,
-    )
+        override val destination: DestinationSpec<T>,
+        override val navBackStackEntry: NavBackStackEntry,
+        override val navController: NavController,
+        override val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+    ) : DestinationScopeImpl<T>()
 
     @Suppress("UNCHECKED_CAST")
     @Composable
@@ -146,12 +143,13 @@ internal class WearNavHostEngine(
             WearDestinationScope(
                 destination,
                 navBackStackEntry,
-                navController
+                navController,
+                dependenciesContainerBuilder
             )
         }
 
         if (contentLambda == null) {
-            with(destination) { scope.Content(dependenciesContainerBuilder) }
+            with(destination) { scope.Content() }
         } else {
             contentLambda as DestinationLambda<T>
             contentLambda(scope)

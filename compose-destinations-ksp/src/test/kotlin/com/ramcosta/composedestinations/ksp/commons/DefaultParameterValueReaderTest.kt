@@ -21,6 +21,19 @@ class DefaultParameterValueReaderTest {
             expected = DefaultValue("\"defaultArg\"")
         ),
         TestCase(
+            lineText = "    arg1: String? = null,",
+            argName = "arg1",
+            argType = "String",
+            expected = DefaultValue("null")
+        ),
+        TestCase(
+            lineText = "internal fun EditRitual(nav: RespawnNavigator, ritualId: Uuid? = null) = AnalyticsScreen(\"EditRitual\") {",
+            argName = "ritualId",
+            argType = "Uuid",
+            imports = listOf("com.ramcosta.package.Uuid"),
+            expected = DefaultValue("null", listOf())
+        ),
+        TestCase(
             lineText = "    arg1: String? = \"defaultArg\"",
             argName = "arg1",
             argType = "String",

@@ -19,10 +19,14 @@ import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
 import com.ramcosta.composedestinations.navargs.NavTypeSerializer
 import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.playground.ui.screens.profile.Stuff
+import com.ramcosta.samples.playground.ui.screens.wrappers.DrawerOpeningWrapper
+import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-@Destination
+@Destination(
+    wrappers = [DrawerOpeningWrapper::class, HidingScreenWrapper::class]
+)
 @Composable
 fun TestScreen(
     id: Long = 0,
@@ -58,7 +62,7 @@ fun TestScreen(
             stuff3?.forEach {
                 Text(
                     modifier = Modifier.weight(1f).background(it),
-                    text= "$it"
+                    text = "$it"
                 )
             }
         }
@@ -102,7 +106,8 @@ fun TestScreen2(
     stuff4: SerializableExampleWithNavTypeSerializer? = SerializableExampleWithNavTypeSerializer(),
     stuff5: Color,
     stuff6: OtherThings,
-) { }
+) {
+}
 
 @Destination(
     deepLinks = [DeepLink(uriPattern = "something://$FULL_ROUTE_PLACEHOLDER")]
@@ -110,4 +115,5 @@ fun TestScreen2(
 @Composable
 fun TestScreen3(
 
-) { }
+) {
+}
