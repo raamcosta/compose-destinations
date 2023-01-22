@@ -24,6 +24,19 @@ class DestinationContentFunctionWriter(
             functionCallCode += "\t\tval (${argNamesInLine()}) = navArgs\n"
         }
 
+        functionCallCode += wrappingPrefix()
+
+        val composableCall = "\t\t${prepareReceiver()}${composableName}($args)"
+
+        functionCallCode += if (composableWrappers.isEmpty()) composableCall
+        else "\t" + composableCall.replace("\n", "\n\t")
+
+        functionCallCode += wrappingSuffix()
+
+        return functionCallCode.toString()
+    }
+
+    private fun DestinationGeneratingParams.wrappingPrefix(): String {
         val wrappingPrefix = when {
             composableWrappers.size == 1 -> {
                 val wrapPlaceholder = importableHelper.addAndGetPlaceholder(
@@ -31,28 +44,25 @@ class DestinationContentFunctionWriter(
                 )
                 "\t\t$wrapPlaceholder(${importableHelper.addAndGetPlaceholder(composableWrappers.first())}) {\n"
             }
+
             composableWrappers.isNotEmpty() -> {
                 val wrapPlaceholder = importableHelper.addAndGetPlaceholder(
-                    Importable("WrapRecursively", "com.ramcosta.composedestinations.wrapper.WrapRecursively")
+                    Importable("Wrap", "com.ramcosta.composedestinations.wrapper.Wrap")
                 )
-                "\t\t$wrapPlaceholder(arrayOf(${composableWrappers.joinToString(", ") { importableHelper.addAndGetPlaceholder(it) }})) {\n"
+                "\t\t$wrapPlaceholder(${composableWrappers.joinToString(", ") { importableHelper.addAndGetPlaceholder(it) }}) {\n"
             }
+
             else -> ""
         }
+        return wrappingPrefix
+    }
 
-        functionCallCode += wrappingPrefix
-
-        val receiver = prepareReceiver()
-        val composableCall = "\t\t$receiver${composableName}($args)"
-
-        functionCallCode += if (composableWrappers.isEmpty()) composableCall
-        else "\t" + composableCall.replace("\n", "\n\t")
-
-        if (composableWrappers.isNotEmpty()) {
-            functionCallCode += "\n\t\t}"
+    private fun DestinationGeneratingParams.wrappingSuffix(): String {
+        return if (composableWrappers.isNotEmpty()) {
+            "\n\t\t}"
+        } else {
+            ""
         }
-
-        return functionCallCode.toString()
     }
 
     private fun argNamesInLine(): String {

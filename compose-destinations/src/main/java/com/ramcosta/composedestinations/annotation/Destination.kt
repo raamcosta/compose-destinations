@@ -25,7 +25,8 @@ import kotlin.reflect.KClass
  * its transitions animations OR if it is dialog destination OR a bottom sheet destination. For animations
  * and bottom sheet, you need to use the "io.github.raamcosta.compose-destinations:animations-core"
  * dependency instead of the normal "io.github.raamcosta.compose-destinations:core".
- * @param wrappers TODO RACOSTA
+ * @param wrappers array of [DestinationWrapper]s with which to wrap the destination screen with.
+ * Note that the order is relevant, as it is the same order the wrappers will be called in.
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)
