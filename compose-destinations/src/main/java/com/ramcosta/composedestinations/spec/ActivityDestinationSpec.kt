@@ -58,8 +58,8 @@ interface ActivityDestinationSpec<T> : DestinationSpec<T> {
         error("unexpected error: calling SavedStateHandle based argsFrom method on ActivityDestination!")
 
     @Composable
-    override fun DestinationScope<T>.Content(dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<T>.() -> Unit) {
-        error("unexpected error: calling Content method ActivityDestination!")
+    override fun DestinationScope<T>.Content() {
+        error("unexpected error: calling Content method on ActivityDestination!")
     }
     // endregion
 }

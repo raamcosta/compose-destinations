@@ -88,7 +88,5 @@ interface DestinationSpec<T> : Route {
      * navigates to it.
      */
     @Composable
-    fun DestinationScope<T>.Content(
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<T>.() -> Unit
-    )
+    fun DestinationScope<T>.Content()
 }

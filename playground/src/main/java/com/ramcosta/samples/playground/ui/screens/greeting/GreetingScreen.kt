@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.NavHostParam
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
@@ -41,6 +42,7 @@ fun GreetingScreen(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     uiEvents: GreetingUiEvents,
     uiState: GreetingUiState,
+    @NavHostParam test: String,
     resultRecipient: ResultRecipient<GoToProfileConfirmationDestination, Boolean>,
 ) {
     val context = LocalContext.current
