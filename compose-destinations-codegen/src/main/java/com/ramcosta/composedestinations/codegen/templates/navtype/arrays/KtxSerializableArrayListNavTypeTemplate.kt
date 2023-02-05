@@ -11,7 +11,6 @@ val ktxSerializableArrayListNavTypeTemplate = FileTemplate(
         "android.os.Bundle",
         "android.os.Parcel",
         "android.os.Parcelable",
-        "java.io.Serializable",
         "androidx.lifecycle.SavedStateHandle",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavType",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavTypeSerializer",
