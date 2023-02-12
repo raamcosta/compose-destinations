@@ -14,30 +14,7 @@
 A KSP library that processes annotations and generates code that uses Official Jetpack Compose Navigation under the hood. It hides the complex, non-type-safe and boilerplate code you would have to write otherwise. </br>
 No need to learn a whole new framework to navigate - most APIs are either the same as with the Jetpack Components or inspired by them.
 
-### Main features
-- Typesafe navigation arguments
-- Simple but configurable navigation graphs setup
-- Navigating back with a result in a simple and type-safe way
-- Getting the navigation arguments from the `SavedStateHandle` (useful in ViewModels) and `NavBackStackEntry` in a type-safe way.
-- Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
-- Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
-- Easy deep linking to screens
-- Wear OS support (NEW since versions 1.x.30!)
-- All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
-
-For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
-
-### Materials
-
-- Alex Styl's quick introduction videos [_Navigate using the Compose Destinations library_](https://www.composables.co/courses/destination-compose)
-- Philipp Lackner's Youtube video [_Compose Navigation Just Got SO MUCH EASIER_ 😱](https://www.youtube.com/watch?v=Q3iZyW2etm4)
-- Rafael Costa's blog post [_Compose Destinations: simpler and safer navigation in Compose with no compromises_](https://proandroiddev.com/compose-destinations-simpler-and-safer-navigation-in-compose-with-no-compromises-74a59c6b727d)
-- Yanneck Reiß's blog post [_Type Safe Navigation With Jetpack Compose Destinations_](https://medium.com/codex/type-save-navigation-with-jetpack-compose-destinations-610514e85370)
-- Google Dev Expert Kenji Abe's blog post [_Navigation Composeを便利にしてくれるライブラリ_](https://star-zero.medium.com/navigation-compose%E3%82%92%E4%BE%BF%E5%88%A9%E3%81%AB%E3%81%97%E3%81%A6%E3%81%8F%E3%82%8C%E3%82%8B%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA-c2d0133b3e84)
-- aseem wangoo's blog post (and Youtube video inside): [_Using compose destinations_](https://flatteredwithflutter.com/using-compose-destinations%ef%bf%bc/)
-- Vincent Tsen post in Android Kotlin Weekly [_How to convert your Jetpack Compose navigation app to use Compose Destinations Library to get rid of boilerplate code?_](https://vtsen.hashnode.dev/compose-destinations-navigation-library#heading-build-navigation-graph)
-
-## ⚠️ If you're having trouble with the IDE not generating or not recognizing the generated files read this!
+## ⚠️ If the IDE cannot find the generated files ⚠️
 
 ### If you cannot use Kotling 1.8.0+
 Since AGP (Android Gradle Plugin) 7.4.0, then you need to tell the IDE about the generated files like so:
@@ -72,6 +49,29 @@ applicationVariants.all {
 ### If you can update to or are already using Kotling 1.8.0+
 Then use KSP version 1.8.0-1.0.9+ which fixes this issue, so the IDE will automatically see the generated files! 🙌 
 You can, if that's the case, ignore the last step of the **Setup** section.
+
+## Main features
+- Typesafe navigation arguments
+- Simple but configurable navigation graphs setup
+- Navigating back with a result in a simple and type-safe way
+- Getting the navigation arguments from the `SavedStateHandle` (useful in ViewModels) and `NavBackStackEntry` in a type-safe way.
+- Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
+- Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
+- Easy deep linking to screens
+- Wear OS support (NEW since versions 1.x.30!)
+- All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
+
+For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
+
+## Materials
+
+- Alex Styl's quick introduction videos [_Navigate using the Compose Destinations library_](https://www.composables.co/courses/destination-compose)
+- Philipp Lackner's Youtube video [_Compose Navigation Just Got SO MUCH EASIER_ 😱](https://www.youtube.com/watch?v=Q3iZyW2etm4)
+- Rafael Costa's blog post [_Compose Destinations: simpler and safer navigation in Compose with no compromises_](https://proandroiddev.com/compose-destinations-simpler-and-safer-navigation-in-compose-with-no-compromises-74a59c6b727d)
+- Yanneck Reiß's blog post [_Type Safe Navigation With Jetpack Compose Destinations_](https://medium.com/codex/type-save-navigation-with-jetpack-compose-destinations-610514e85370)
+- Google Dev Expert Kenji Abe's blog post [_Navigation Composeを便利にしてくれるライブラリ_](https://star-zero.medium.com/navigation-compose%E3%82%92%E4%BE%BF%E5%88%A9%E3%81%AB%E3%81%97%E3%81%A6%E3%81%8F%E3%82%8C%E3%82%8B%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA-c2d0133b3e84)
+- aseem wangoo's blog post (and Youtube video inside): [_Using compose destinations_](https://flatteredwithflutter.com/using-compose-destinations%ef%bf%bc/)
+- Vincent Tsen post in Android Kotlin Weekly [_How to convert your Jetpack Compose navigation app to use Compose Destinations Library to get rid of boilerplate code?_](https://vtsen.hashnode.dev/compose-destinations-navigation-library#heading-build-navigation-graph)
 
 ## Basic Usage
 
