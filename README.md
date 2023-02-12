@@ -37,6 +37,42 @@ For a deeper look into all the features, check our [documentation website](https
 - aseem wangoo's blog post (and Youtube video inside): [_Using compose destinations_](https://flatteredwithflutter.com/using-compose-destinations%ef%bf%bc/)
 - Vincent Tsen post in Android Kotlin Weekly [_How to convert your Jetpack Compose navigation app to use Compose Destinations Library to get rid of boilerplate code?_](https://vtsen.hashnode.dev/compose-destinations-navigation-library#heading-build-navigation-graph)
 
+## ⚠️ If you're having trouble with the IDE not generating or not recognizing the generated files read this!
+
+### If you can update to or are already using Kotling 1.8.0+
+Since AGP (Android Gradle Plugin) 7.4.0, then you need to tell the IDE about the generated files like so:
+
+
+<details open>
+  <summary>groovy - build.gradle(:module-name)</summary>
+
+```gradle
+applicationVariants.all { variant ->
+    variant.addJavaSourceFoldersToModel(
+            new File(buildDir, "generated/ksp/${variant.name}/kotlin")
+    )
+}
+```
+</details>
+
+<details>
+  <summary>kotlin - build.gradle.kts(:module-name)</summary>  
+
+```gradle
+applicationVariants.all {
+    addJavaSourceFoldersToModel(
+        File(buildDir, "generated/ksp/$name/kotlin")
+    )
+}
+```
+</details>
+
+> **Note**: ☝️ inside `android` block and replacing `applicationVariants` with `libraryVariants` if the module is not an application one (i.e, it uses `'com.android.library'` plugin).
+
+### If you can use Kotlin 1.8.0+
+Then use KSP version 1.8.0-1.0.9+ which fixes this issue, so the IDE will automatically see the generated files! 🙌 
+You can, if that's the case, ignore the last step of the **Setup** section.
+
 ## Basic Usage
 
 1. Annotate your screen Composables with `@Destination`:
@@ -181,7 +217,7 @@ ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/wear-os)
 
 
-#### 3. And finally, you need to make sure the IDE looks at the generated folder.
+#### 3. And finally, you need to make sure the IDE looks at the generated folder. (NOT NEEDED if you're using Kotlin 1.8.0+, check Readme's first section)
 See KSP related [issue](https://github.com/google/ksp/issues/37).  
 Here is an example of how to do that for all your build variants (inside `android` block):
 
