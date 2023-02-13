@@ -16,7 +16,7 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
 
 ## ⚠️ If the IDE cannot find the generated files ⚠️
 
-### If you cannot use Kotling 1.8.0+
+### If you cannot use Kotlin 1.8.0+
 Since AGP (Android Gradle Plugin) 7.4.0, then you need to tell the IDE about the generated files like so:
 
 
@@ -46,7 +46,7 @@ applicationVariants.all {
 
 > **Note**: ☝️ inside `android` block and replacing `applicationVariants` with `libraryVariants` if the module is not an application one (i.e, it uses `'com.android.library'` plugin).
 
-### If you can update to or are already using Kotling 1.8.0+
+### If you can update to or are already using Kotlin 1.8.0+
 Then use KSP version 1.8.0-1.0.9+ which fixes this issue, so the IDE will automatically see the generated files! 🙌 
 You can, if that's the case, ignore the last step of the **Setup** section.
 
