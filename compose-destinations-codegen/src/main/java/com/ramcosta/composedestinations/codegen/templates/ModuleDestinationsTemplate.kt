@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.codeGenDestination
 import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 
@@ -13,7 +14,7 @@ val moduleDestinationTemplate = FileTemplate(
         "${codeGenBasePackageName}.destinations.*"
     ),
     sourceCode = """
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public val $MODULE_DESTINATIONS_LIST_NAME_PLACEHOLDER = listOf(
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public val $MODULE_DESTINATIONS_LIST_NAME_PLACEHOLDER: List<$codeGenDestination<out Any>> = listOf(
 $MODULE_DESTINATIONS_PLACEHOLDER
 )
 
