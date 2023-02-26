@@ -4,7 +4,9 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.Navigator
 
 /**
  * Implementation of [DestinationsNavigator] that uses
@@ -25,6 +27,19 @@ internal class DestinationsNavController(
         }
 
         navController.navigate(route, builder)
+    }
+
+    override fun navigate(
+        route: String,
+        onlyIfResumed: Boolean,
+        navOptions: NavOptions?,
+        navigatorExtras: Navigator.Extras?
+    ) {
+        if (onlyIfResumed && navBackStackEntry.lifecycle.currentState != Lifecycle.State.RESUMED) {
+            return
+        }
+
+        navController.navigate(route, navOptions, navigatorExtras)
     }
 
     @MainThread
