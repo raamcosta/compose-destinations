@@ -36,7 +36,7 @@ jobs:
       - name: Build
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: current
+          gradle-version: 7.6
           arguments: build
 
       - name: Run unit tests
