@@ -25,7 +25,7 @@ abstract class DestinationScopeImpl<T> : DestinationScope<T> {
 
     @Composable
     override fun buildDependencies(): DestinationDependenciesContainer {
-        return remember { DestinationDependenciesContainerImpl(this) }
+        return remember(navBackStackEntry) { DestinationDependenciesContainerImpl(this) }
             .apply { dependenciesContainerBuilder() }
     }
 

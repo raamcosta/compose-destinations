@@ -163,7 +163,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         contentLambda: DestinationLambda<*>?
     ) {
-        val scope = remember {
+        val scope = remember(navBackStackEntry) {
             DestinationScopeImpl.Default(
                 destination,
                 navBackStackEntry,

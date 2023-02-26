@@ -249,7 +249,7 @@ internal class AnimatedNavHostEngine(
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         contentWrapper: DestinationLambda<*>?
     ) {
-        val scope = remember {
+        val scope = remember(navBackStackEntry) {
             BottomSheetDestinationScopeImpl(
                 destination,
                 navBackStackEntry,
@@ -277,7 +277,7 @@ internal class AnimatedNavHostEngine(
         contentWrapper: DestinationLambda<*>?,
     ) {
 
-        val scope = remember {
+        val scope = remember(navBackStackEntry) {
             AnimatedDestinationScopeImpl(
                 destination,
                 navBackStackEntry,

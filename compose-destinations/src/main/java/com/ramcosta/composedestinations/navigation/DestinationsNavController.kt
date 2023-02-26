@@ -17,12 +17,15 @@ internal class DestinationsNavController(
     private val navBackStackEntry: NavBackStackEntry,
 ) : DestinationsNavigator {
 
+    private val isResumed: Boolean
+        get() = navBackStackEntry.lifecycle.currentState == Lifecycle.State.RESUMED
+
     override fun navigate(
         route: String,
         onlyIfResumed: Boolean,
         builder: NavOptionsBuilder.() -> Unit,
     ) {
-        if (onlyIfResumed && navBackStackEntry.lifecycle.currentState != Lifecycle.State.RESUMED) {
+        if (onlyIfResumed && isResumed) {
             return
         }
 
@@ -35,7 +38,7 @@ internal class DestinationsNavController(
         navOptions: NavOptions?,
         navigatorExtras: Navigator.Extras?
     ) {
-        if (onlyIfResumed && navBackStackEntry.lifecycle.currentState != Lifecycle.State.RESUMED) {
+        if (onlyIfResumed && isResumed) {
             return
         }
 
