@@ -9,12 +9,11 @@ dependencyCheckPluginVersion = "0.46.0"
 gradlePluginVersion = "7.4.1"
 mavenPublishPluginVersion = "0.24.0"
 
-composeViewModel = "2.5.1"
+composeViewModel = "2.6.0-rc01"
 activityCompose = "1.6.1"
 
 material = "1.8.0"
-lifecycleKtx = "2.5.1"
-lifecycleRuntimeKtx = "2.5.1"
+lifecycleRuntimeKtx = "2.6.0-rc01"
 
 ksp = "1.8.10-1.0.9"
 
