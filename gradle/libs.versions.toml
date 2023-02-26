@@ -4,33 +4,33 @@ minSdk = "21"
 compileSdk = "33"
 targetSdk = "33"
 
-kotlin = "1.8.0"
-dependencyCheckPluginVersion = "0.44.0"
-gradlePluginVersion = "7.4.0"
-mavenPublishPluginVersion = "0.22.0"
+kotlin = "1.8.10"
+dependencyCheckPluginVersion = "0.46.0"
+gradlePluginVersion = "7.4.1"
+mavenPublishPluginVersion = "0.24.0"
 
 composeViewModel = "2.5.1"
 activityCompose = "1.6.1"
 
-material = "1.7.0"
+material = "1.8.0"
 lifecycleKtx = "2.5.1"
 lifecycleRuntimeKtx = "2.5.1"
 
-ksp = "1.8.0-1.0.8"
+ksp = "1.8.10-1.0.9"
 
 junit = "4.13.2"
 
-compose = "1.4.0-alpha04"
-composeMaterial = "1.4.0-alpha04"
-composeCompiler = "1.4.0"
-composeNavigation = "2.6.0-alpha04"
-accompanist = "0.29.0-alpha"
+compose = "1.4.0-beta02"
+composeMaterial = "1.4.0-beta02"
+composeCompiler = "1.4.3"
+composeNavigation = "2.6.0-alpha06"
+accompanist = "0.29.1-alpha"
 
-ktxSerialization = "1.4.1"
-mockk = "1.13.3"
+ktxSerialization = "1.5.0"
+mockk = "1.13.4"
 
 compileTesting = "1.4.9"
-composeWear = "1.1.0"
+composeWear = "1.1.2"
 
 [plugins]
 dependencyCheckPlugin = { id = "com.github.ben-manes.versions", version.ref = "dependencyCheckPluginVersion" }
@@ -77,4 +77,4 @@ test-kotlinCompileKsp = { module = "com.github.tschuchortdev:kotlin-compile-test
 wear-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "composeWear" }
 wear-compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "composeWear" }
 wear-compose-material = { module = "androidx.wear.compose:compose-material", version.ref = "composeWear" }
-wear-input = { module = "androidx.wear:wear-input", version.ref = "composeWear" }
+wear-input = { module = "androidx.wear:wear-input", version = "1.1.0" }
