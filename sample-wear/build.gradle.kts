@@ -1,3 +1,5 @@
+// TODO: Remove this after https://youtrack.jetbrains.com/issue/KTIJ-19369 is resolved.
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -50,14 +52,6 @@ android {
 
     packagingOptions {
         resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
-    }
-
-    applicationVariants.all {
-        kotlin.sourceSets {
-            getByName(name) {
-                kotlin.srcDir("build/generated/ksp/$name/kotlin")
-            }
-        }
     }
 }
 
