@@ -37,7 +37,7 @@ internal fun <D : DestinationSpec<*>, R> resultRecipient(
     navBackStackEntry: NavBackStackEntry,
     originType: Class<D>,
     resultType: Class<R>
-): ResultRecipient<D, R> = remember {
+): ResultRecipient<D, R> = remember(navBackStackEntry) {
     ResultRecipientImpl(
         navBackStackEntry = navBackStackEntry,
         resultOriginType = originType,
