@@ -16,7 +16,7 @@ fun encodeForRoute(arg: String): String {
 }
 
 @SuppressLint("NewApi")
-internal fun String.base64ToByteArray(): ByteArray {
+fun String.base64ToByteArray(): ByteArray {
     return if (shouldUseJavaUtil) {
         java.util.Base64.getUrlDecoder().decode(toByteArray(StandardCharsets.UTF_8))
     } else {
@@ -25,7 +25,7 @@ internal fun String.base64ToByteArray(): ByteArray {
 }
 
 @SuppressLint("NewApi")
-internal fun ByteArray.toBase64Str(): String {
+fun ByteArray.toBase64Str(): String {
     return if (shouldUseJavaUtil) {
         java.util.Base64.getUrlEncoder().encodeToString(this)
     } else {

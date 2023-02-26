@@ -1,6 +1,8 @@
 package com.ramcosta.composedestinations.navigation
 
+import androidx.navigation.NavOptions
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.Navigator
 
 /**
  * Empty implementation of [DestinationsNavigator]
@@ -12,6 +14,13 @@ object EmptyDestinationsNavigator : DestinationsNavigator {
         route: String,
         onlyIfResumed: Boolean,
         builder: NavOptionsBuilder.() -> Unit,
+    ) = Unit
+
+    override fun navigate(
+        route: String,
+        onlyIfResumed: Boolean,
+        navOptions: NavOptions?,
+        navigatorExtras: Navigator.Extras?
     ) = Unit
 
     override fun navigateUp() = false
