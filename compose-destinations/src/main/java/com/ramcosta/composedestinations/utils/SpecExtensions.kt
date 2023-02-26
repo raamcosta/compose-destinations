@@ -94,6 +94,17 @@ fun NavController.isRouteOnBackStack(route: Route): Boolean {
 }
 
 /**
+ * Same as [isRouteOnBackStack] but provides a [State] which you can use to make sure
+ * your Composables get recomposed when this changes.
+ */
+@Composable
+fun NavController.isRouteOnBackStackAsState(route: Route): State<Boolean> {
+    return currentBackStackEntryFlow.map {
+        isRouteOnBackStack(route)
+    }.collectAsState(initial = isRouteOnBackStack(route))
+}
+
+/**
  * If this [Route] is a [DestinationSpec], returns it
  *
  * If this [Route] is a [NavGraphSpec], returns its
