@@ -9,7 +9,6 @@ val ktxSerializableNavTypeTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName.navtype",
     imports = setOfImportable(
         "android.os.Bundle",
-        "java.io.Serializable",
         "androidx.lifecycle.SavedStateHandle",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavType",
         "$CORE_PACKAGE_NAME.navargs.utils.encodeForRoute",

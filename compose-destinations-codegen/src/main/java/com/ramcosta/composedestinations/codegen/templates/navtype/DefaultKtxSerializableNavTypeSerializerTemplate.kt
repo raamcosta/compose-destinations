@@ -13,8 +13,9 @@ const val DEFAULT_KTX_SERIALIZABLE_NAV_TYPE_SERIALIZER_TEMPLATE_NAME =
 val defaultKtxSerializableNavTypeSerializerTemplate = FileTemplate(
     packageStatement = "package $defaultKtxSerializableNavTypeSerializerTemplatePkg",
     imports = setOfImportable(
-        "android.util.Base64",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavTypeSerializer",
+        "com.ramcosta.composedestinations.navargs.utils.base64ToByteArray",
+        "com.ramcosta.composedestinations.navargs.utils.toBase64Str",
         "kotlinx.serialization.ExperimentalSerializationApi",
         "kotlinx.serialization.KSerializer",
         "kotlinx.serialization.Serializable",
@@ -58,18 +59,6 @@ public class $DEFAULT_KTX_SERIALIZABLE_NAV_TYPE_SERIALIZER_TEMPLATE_NAME<T : @Se
         ByteArrayInputStream(bytes).use {
             Json.decodeFromStream(serializer, it)
         }
-
-    private fun String.base64ToByteArray(): ByteArray {
-        return Base64.decode(
-            toByteArray(Charset.defaultCharset()),
-            Base64.URL_SAFE or Base64.NO_WRAP
-        )
-    }
-
-    private fun ByteArray.toBase64Str(): String {
-        return Base64.encodeToString(this, Base64.URL_SAFE or Base64.NO_WRAP)
-    }
-
 }
 
 """.trimIndent()

@@ -7,6 +7,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
@@ -27,9 +28,9 @@ object HidingScreenWrapper : DestinationWrapper {
         screenContent: @Composable () -> Unit
     ) {
         val vm = activityViewModel<HidingScreenWrapperViewModel>()
-        val state = vm.showingScreen.collectAsState()
+        val showingScreen by vm.showingScreen.collectAsState()
 
-        if (state.value) {
+        if (showingScreen) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("Hiding the screen in ${vm.timeLeft.collectAsState().value}")
                 screenContent()

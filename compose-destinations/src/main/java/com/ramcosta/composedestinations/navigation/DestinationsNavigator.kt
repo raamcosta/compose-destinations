@@ -3,10 +3,12 @@ package com.ramcosta.composedestinations.navigation
 import androidx.annotation.MainThread
 import androidx.compose.runtime.Stable
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.Navigator
 import com.ramcosta.composedestinations.spec.DestinationSpec
-import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Direction
+import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Route
 
 /**
@@ -57,6 +59,49 @@ interface DestinationsNavigator {
         route: String,
         onlyIfResumed: Boolean = false,
         builder: NavOptionsBuilder.() -> Unit = {}
+    )
+
+    /**
+     * Navigates to the given [Direction].
+     * [NavGraphSpec] are [Direction]. Generated `Destinations` are Direction if they don't have
+     * any navigation arguments or you can call their `invoke` method passing the arguments
+     * to get a [Direction] instance.
+     *
+     * @param onlyIfResumed if true, will ignore the navigation action if the current `NavBackStackEntry`
+     * is not in the RESUMED state. This avoids duplicate navigation actions.
+     * By default is false to have the same behaviour as [NavController].
+     *
+     * @param navOptions [NavOptions]
+     * @param navigatorExtras [Navigator.Extras]
+     *
+     * @see [NavController.navigate]
+     */
+    fun navigate(
+        direction: Direction,
+        onlyIfResumed: Boolean = false,
+        navOptions: NavOptions? = null,
+        navigatorExtras: Navigator.Extras? = null
+    ) {
+        navigate(direction.route, onlyIfResumed, navOptions, navigatorExtras)
+    }
+
+    /**
+     * Navigates to the given [route]
+     *
+     * @param onlyIfResumed if true, will ignore the navigation action if the current `NavBackStackEntry`
+     * is not in the RESUMED state. This avoids duplicate navigation actions.
+     * By default is false to have the same behaviour as [NavController].
+     *
+     * @param navOptions [NavOptions]
+     * @param navigatorExtras [Navigator.Extras]
+     *
+     * @see [NavController.navigate]
+     */
+    fun navigate(
+        route: String,
+        onlyIfResumed: Boolean = false,
+        navOptions: NavOptions? = null,
+        navigatorExtras: Navigator.Extras? = null
     )
 
     /**
