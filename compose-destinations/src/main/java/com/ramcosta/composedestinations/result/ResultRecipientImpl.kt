@@ -27,7 +27,7 @@ internal class ResultRecipientImpl<D : DestinationSpec<*>, R>(
     override fun onNavResult(listener: (NavResult<R>) -> Unit) {
         val currentListener by rememberUpdatedState(listener)
 
-        DisposableEffect(key1 = Unit) {
+        DisposableEffect(navBackStackEntry) {
             val observer = object : LifecycleEventObserver {
                 override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                     when (event) {

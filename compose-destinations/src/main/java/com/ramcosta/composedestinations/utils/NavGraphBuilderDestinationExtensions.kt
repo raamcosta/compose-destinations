@@ -38,7 +38,7 @@ fun <T> NavGraphBuilder.composable(
         arguments,
         deepLinks
     ) {
-        val scope = remember {
+        val scope = remember(it) {
             NavGraphBuilderDestinationScopeImpl.Default(
                 destination,
                 it,
@@ -81,7 +81,7 @@ fun <T> NavGraphBuilder.dialogComposable(
         deepLinks,
         style.properties
     ) {
-        val scope = remember {
+        val scope = remember(it) {
             NavGraphBuilderDestinationScopeImpl.Default(
                 destination,
                 it,
