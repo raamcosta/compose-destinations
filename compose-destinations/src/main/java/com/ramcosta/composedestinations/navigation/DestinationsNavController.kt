@@ -25,7 +25,7 @@ internal class DestinationsNavController(
         onlyIfResumed: Boolean,
         builder: NavOptionsBuilder.() -> Unit,
     ) {
-        if (onlyIfResumed && isResumed) {
+        if (onlyIfResumed && !isResumed) {
             return
         }
 
@@ -38,7 +38,7 @@ internal class DestinationsNavController(
         navOptions: NavOptions?,
         navigatorExtras: Navigator.Extras?
     ) {
-        if (onlyIfResumed && isResumed) {
+        if (onlyIfResumed && !isResumed) {
             return
         }
 
