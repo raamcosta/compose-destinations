@@ -45,7 +45,7 @@ fun NavBackStackEntry.destination(): DestinationSpec<*> {
  */
 fun NavBackStackEntry.route(): Route {
     val registry = NavGraphRegistry[this]
-        ?: error("Cannot call NavBackStackEntry.destination() before DestinationsNavHost!")
+        ?: error("Cannot call NavBackStackEntry.route() before DestinationsNavHost!")
 
     val navGraph = registry.navGraph(this)
     if (navGraph != null) {
