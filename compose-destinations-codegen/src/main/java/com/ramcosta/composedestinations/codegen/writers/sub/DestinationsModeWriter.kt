@@ -21,7 +21,7 @@ class DestinationsModeWriter(
     private val importableHelper = ImportableHelper(moduleDestinationTemplate.imports)
 
     fun write(generatedDestinations: List<GeneratedDestination>) {
-        if (generatedDestinations.isEmpty() || generatedDestinations.size == 1) {
+        if (generatedDestinations.isEmpty()) {
             return
         }
 
