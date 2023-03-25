@@ -34,7 +34,7 @@ fun PlaygroundScaffold(
         ?: NavGraphs.root.startAppDestination
 
     //Just for me to debug, ignore this line
-    navController.currentBackStack.collectAsState().value.print()
+    navController.backQueue.print()
 
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator

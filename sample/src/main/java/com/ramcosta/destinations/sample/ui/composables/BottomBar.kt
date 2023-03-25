@@ -19,7 +19,10 @@ import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 import com.ramcosta.destinations.sample.NavGraphs
 import com.ramcosta.destinations.sample.R
-import com.ramcosta.destinations.sample.destinations.*
+import com.ramcosta.destinations.sample.destinations.AccountScreenDestination
+import com.ramcosta.destinations.sample.destinations.DirectionDestination
+import com.ramcosta.destinations.sample.destinations.SettingsScreenDestination
+import com.ramcosta.destinations.sample.destinations.TaskListScreenDestination
 
 @Composable
 fun BottomBar(
