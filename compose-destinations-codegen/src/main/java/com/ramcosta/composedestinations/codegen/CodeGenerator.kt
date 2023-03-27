@@ -33,7 +33,7 @@ class CodeGenerator(
     ) {
         initialValidator.validate(navGraphs, destinations)
 
-        val shouldWriteSealedDestinations = codeGenConfig.mode is CodeGenMode.SingleModule || destinations.size > 1
+        val shouldWriteSealedDestinations = codeGenConfig.mode.shouldCreateSealedDestination(destinations.size)
         initConfigurationValues(destinations, shouldWriteSealedDestinations)
 
         val destinationsWithNavArgs = destinationWithNavArgsMapper.map(destinations)
