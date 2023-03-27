@@ -26,6 +26,7 @@ val singleModuleExtensionsTemplate = FileTemplate(
         "$CORE_PACKAGE_NAME.utils.startDestination",
         "$CORE_PACKAGE_NAME.utils.destination",
         "$CORE_PACKAGE_NAME.utils.navGraph",
+        "$CORE_PACKAGE_NAME.utils.currentDestinationFlow",
         "kotlinx.coroutines.flow.Flow",
         "kotlinx.coroutines.flow.map",
     ),
@@ -72,7 +73,7 @@ public fun NavBackStackEntry.appDestination(): $typeAliasDestination {
  * there is no active [$typeAliasDestination], no item will be emitted.
  */
 public val NavController.appCurrentDestinationFlow: Flow<$typeAliasDestination>
-    get() = currentBackStackEntryFlow.map { it.appDestination() }
+    get() = currentDestinationFlow.map { it as $typeAliasDestination }
 
 /**
  * Gets the current [$typeAliasDestination] as a [State].

@@ -8,7 +8,26 @@ data class CodeGenConfig(
 )
 
 sealed class CodeGenMode {
-    object NavGraphs: CodeGenMode()
-    object Destinations: CodeGenMode()
-    class SingleModule(val generateNavGraphs: Boolean): CodeGenMode()
+
+    abstract fun shouldCreateSealedDestination(destinationSize: Int): Boolean
+
+    object NavGraphs : CodeGenMode() {
+        override fun shouldCreateSealedDestination(destinationSize: Int): Boolean {
+            return destinationSize > 1
+        }
+    }
+
+    object Destinations : CodeGenMode() {
+        override fun shouldCreateSealedDestination(destinationSize: Int): Boolean {
+            return destinationSize > 0
+        }
+    }
+
+    class SingleModule(
+        val generateNavGraphs: Boolean,
+    ) : CodeGenMode() {
+        override fun shouldCreateSealedDestination(destinationSize: Int): Boolean {
+            return true
+        }
+    }
 }

@@ -10,6 +10,7 @@ import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Route
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 
 /**
  * The top level navigation graph associated with this [NavController].
@@ -75,7 +76,13 @@ fun NavBackStackEntry.navGraph(): NavGraphSpec {
  * there is no active [DestinationSpec], no item will be emitted.
  */
 val NavController.currentDestinationFlow: Flow<DestinationSpec<*>>
-    get() = currentBackStackEntryFlow.map { it.destination() }
+    get() = currentBackStackEntryFlow.transform { navStackEntry ->
+        kotlin.runCatching {
+            navStackEntry.destination()
+        }.onSuccess { destination ->
+            emit(destination)
+        }
+    }
 
 /**
  * Gets the current [DestinationSpec] as a [State].
