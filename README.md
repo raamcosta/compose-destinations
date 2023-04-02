@@ -14,41 +14,6 @@
 A KSP library that processes annotations and generates code that uses Official Jetpack Compose Navigation under the hood. It hides the complex, non-type-safe and boilerplate code you would have to write otherwise. </br>
 No need to learn a whole new framework to navigate - most APIs are either the same as with the Jetpack Components or inspired by them.
 
-## ⚠️ If the IDE cannot find the generated files ⚠️
-
-### If you cannot use Kotlin 1.8.0+
-Since AGP (Android Gradle Plugin) 7.4.0, then you need to tell the IDE about the generated files like so:
-
-
-<details open>
-  <summary>groovy - build.gradle(:module-name)</summary>
-
-```gradle
-applicationVariants.all { variant ->
-    variant.addJavaSourceFoldersToModel(
-            new File(buildDir, "generated/ksp/${variant.name}/kotlin")
-    )
-}
-```
-</details>
-
-<details>
-  <summary>kotlin - build.gradle.kts(:module-name)</summary>  
-
-```gradle
-applicationVariants.all {
-    addJavaSourceFoldersToModel(
-        File(buildDir, "generated/ksp/$name/kotlin")
-    )
-}
-```
-</details>
-
-> **Note**: ☝️ inside `android` block and replacing `applicationVariants` with `libraryVariants` if the module is not an application one (i.e, it uses `'com.android.library'` plugin).
-
-### If you can update to or are already using Kotlin 1.8.0+
-Then use KSP version 1.8.0-1.0.9+ which fixes this issue, so the IDE will automatically see the generated files! 🙌 
-You can, if that's the case, ignore the last step of the **Setup** section.
 
 ## Main features
 - Typesafe navigation arguments
@@ -217,14 +182,44 @@ ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/wear-os)
 
 
-#### 3. And finally, you need to make sure the IDE looks at the generated folder. (NOT NEEDED if you're using Kotlin 1.8.0+, check Readme's first section)
-See KSP related [issue](https://github.com/google/ksp/issues/37).  
-Here is an example of how to do that for all your build variants (inside `android` block):
+#### 3. Important for Kotlin < 1.8.0
 
-> **Warning**: Replace `applicationVariants` with `libraryVariants` if the module uses `'com.android.library'` plugin!
+When using Kotlin version older than 1.8.0, you need to make sure the IDE looks at the generated folder.
+See KSP related [issue](https://github.com/google/ksp/issues/37).
 
-<details open>
-  <summary>groovy - build.gradle(:module-name)</summary>
+How to do it depends on the AGP version you are using in this case:
+
+> **Warning**: In both cases, add this inside `android` block and replacing `applicationVariants` with `libraryVariants` if the module is not an application one (i.e, it uses `'com.android.library'` plugin).
+
+<details><summary>Since AGP (Android Gradle Plugin) version 7.4.0</summary>  
+
+
+* groovy - build.gradle(:module-name)
+
+```gradle
+applicationVariants.all { variant ->
+    variant.addJavaSourceFoldersToModel(
+            new File(buildDir, "generated/ksp/${variant.name}/kotlin")
+    )
+}
+```
+
+
+* kotlin - build.gradle.kts(:module-name)
+
+```gradle
+applicationVariants.all {
+    addJavaSourceFoldersToModel(
+        File(buildDir, "generated/ksp/$name/kotlin")
+    )
+}
+```
+</details>
+
+
+<details><summary>For AGP (Android Gradle Plugin) version older than 7.4.0</summary>  
+
+* groovy - build.gradle(:module-name)
 
 ```gradle
 applicationVariants.all { variant ->
@@ -235,10 +230,8 @@ applicationVariants.all { variant ->
     }
 }
 ```
-</details>
 
-<details>
-  <summary>kotlin - build.gradle.kts(:module-name)</summary>  
+* kotlin - build.gradle.kts(:module-name) 
 
 ```gradle
 applicationVariants.all {
@@ -249,6 +242,7 @@ applicationVariants.all {
     }
 }
 ```
+
 </details>
 
 ## About
