@@ -33,7 +33,7 @@ fun SampleScaffold(
     val navBackStackEntry = navController.currentBackStackEntry
 
     // 👇 only for debugging, you shouldn't use currentBackStack API as it is restricted by annotation
-    navController.backQueue.print()
+    navController.currentBackStack.collectAsState().value.print()
 
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
@@ -51,7 +51,7 @@ fun SampleScaffold(
     }
 }
 
-private fun ArrayDeque<NavBackStackEntry>.print(prefix: String = "stack") {
+private fun Collection<NavBackStackEntry>.print(prefix: String = "stack") {
     val stack = map { it.destination.route }.toTypedArray().contentToString()
     println("$prefix = $stack")
 }

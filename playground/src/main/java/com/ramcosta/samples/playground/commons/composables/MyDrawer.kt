@@ -28,7 +28,7 @@ fun MyDrawer(
             it.DrawerContent(
                 isSelected = it == destination,
                 onDestinationClick = { clickedDestination ->
-                    if (navController.currentBackStackEntry?.getLifecycle()?.currentState == Lifecycle.State.RESUMED
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
                         && navController.currentBackStackEntry?.appDestination() != clickedDestination
                     ) {
                         navController.navigate(clickedDestination)

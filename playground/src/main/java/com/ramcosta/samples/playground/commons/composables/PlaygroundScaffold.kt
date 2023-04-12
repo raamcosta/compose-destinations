@@ -34,7 +34,7 @@ fun PlaygroundScaffold(
         ?: NavGraphs.root.startAppDestination
 
     //Just for me to debug, ignore this line
-    navController.backQueue.print()
+    navController.currentBackStack.collectAsState().value.print()
 
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
@@ -53,7 +53,7 @@ fun PlaygroundScaffold(
     }
 }
 
-fun List<NavBackStackEntry>.print(prefix: String = "stack") {
+fun Collection<NavBackStackEntry>.print(prefix: String = "stack") {
     val stack = toMutableList()
         .map { it.route() }
         .filterIsInstance<Destination>()
