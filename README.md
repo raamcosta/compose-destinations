@@ -106,7 +106,7 @@ Compose destinations is available via maven central.
 > **Note**: The version you chose for the KSP plugin depends on the Kotlin version your project uses. </br>
 You can check https://github.com/google/ksp/releases for the list of KSP versions, then pick the last release that matches your Kotlin version.
 Example:
-If you're using `1.6.21` Kotlin version, then the last KSP version is `1.6.21-1.0.6`.
+If you're using `1.8.20` Kotlin version, then the last KSP version is `1.8.20-1.0.10`.
 
 <details open>
   <summary>groovy - build.gradle(:module-name)</summary>
@@ -114,7 +114,7 @@ If you're using `1.6.21` Kotlin version, then the last KSP version is `1.6.21-1.
 ```gradle
 plugins {
     //...
-    id 'com.google.devtools.ksp' version '1.6.21-1.0.6' // Depends on your kotlin version
+    id 'com.google.devtools.ksp' version '1.8.20-1.0.10' // Depends on your kotlin version
 }
 ```
 </details>
@@ -125,7 +125,7 @@ plugins {
 ```gradle
 plugins {
     //...
-    id("com.google.devtools.ksp") version "1.6.21-1.0.6" // Depends on your kotlin version
+    id("com.google.devtools.ksp") version "1.8.20-1.0.10" // Depends on your kotlin version
 }
 ```
 </details>
