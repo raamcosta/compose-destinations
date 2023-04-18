@@ -601,7 +601,12 @@ class SingleDestinationWriter(
             throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
         }
 
-        return "\n\toverride val style: DestinationStyle = $CORE_BOTTOM_SHEET_DESTINATION_STYLE\n"
+        val bottomSheetImportable = Importable(
+            CORE_BOTTOM_SHEET_DESTINATION_STYLE,
+            "$CORE_PACKAGE_NAME.spec.$CORE_BOTTOM_SHEET_DESTINATION_STYLE",
+        )
+
+        return "\n\toverride val style: DestinationStyle = ${bottomSheetImportable.getCodePlaceHolder()}\n"
     }
 
     private fun navArgDefaultCode(param: Parameter): String = param.defaultValue.let { defaultValue ->

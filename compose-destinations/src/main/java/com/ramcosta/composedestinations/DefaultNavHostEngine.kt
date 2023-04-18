@@ -96,11 +96,6 @@ internal class DefaultNavHostEngine : NavHostEngine {
             is DestinationStyle.Activity -> {
                 addActivityDestination(destination as ActivityDestinationSpec)
             }
-
-            is DestinationStyle.Animated,
-            is DestinationStyle.BottomSheet -> {
-                throw IllegalStateException("You need to use 'rememberAnimatedNavHostEngine' to get an engine that can use ${destinationStyle.javaClass.simpleName} and pass that into the 'DestinationsNavHost' ")
-            }
         }
     }
 

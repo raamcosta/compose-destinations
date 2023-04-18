@@ -14,6 +14,8 @@ import com.ramcosta.composedestinations.scope.AnimatedNavGraphBuilderDestination
 import com.ramcosta.composedestinations.scope.BottomSheetNavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.DestinationStyleAnimated
+import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 
 /**
  * Like [com.google.accompanist.navigation.animation.composable] but accepts
@@ -58,7 +60,7 @@ fun <T> NavGraphBuilder.animatedComposable(
             }
         }
 
-        is DestinationStyle.Animated -> with(style) {
+        is DestinationStyleAnimated -> with(style) {
             composable(
                 route = destination.route,
                 arguments = destination.arguments,
@@ -80,7 +82,7 @@ fun <T> NavGraphBuilder.animatedComposable(
             }
         }
 
-        is DestinationStyle.BottomSheet -> {
+        is DestinationStyleBottomSheet -> {
             throw IllegalArgumentException("You need to use `bottomSheetComposable` for Bottom Sheet destinations!")
         }
 
@@ -117,7 +119,7 @@ fun <T> NavGraphBuilder.bottomSheetComposable(
     content: @Composable BottomSheetNavGraphBuilderDestinationScope<T>.() -> Unit
 ) {
     when (destination.style) {
-        is DestinationStyle.BottomSheet -> {
+        is DestinationStyleBottomSheet -> {
             bottomSheet(
                 destination.route,
                 destination.arguments,

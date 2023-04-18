@@ -75,10 +75,11 @@ interface DestinationSpec<T> : Route {
     /**
      * Style of this destination. It can be one of:
      * - [DestinationStyle.Default]
-     * - [DestinationStyle.Animated]
-     * - [DestinationStyle.BottomSheet]
      * - [DestinationStyle.Dialog]
      * - [DestinationStyle.Runtime]
+     * And when using animations core, it can also be:
+     * - `DestinationStyleAnimated`
+     * - `DestinationStyleBottomSheet`
      */
     val style: DestinationStyle get() = DestinationStyle.Default
 

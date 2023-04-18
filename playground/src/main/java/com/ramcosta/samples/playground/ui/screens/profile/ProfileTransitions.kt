@@ -3,14 +3,14 @@ package com.ramcosta.samples.playground.ui.screens.profile
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.navigation.NavBackStackEntry
-import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
-import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.DestinationStyleAnimated
 import com.ramcosta.samples.playground.ui.screens.appDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
 
 @OptIn(ExperimentalAnimationApi::class)
-object ProfileTransitions : DestinationStyle.Animated {
+object ProfileTransitions : DestinationStyleAnimated {
 
-    override fun AnimatedContentScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
+    override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
 
         return when (initialState.appDestination()) {
             GreetingScreenDestination ->
@@ -22,7 +22,7 @@ object ProfileTransitions : DestinationStyle.Animated {
         }
     }
 
-    override fun AnimatedContentScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
+    override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
 
         return when (targetState.appDestination()) {
             GreetingScreenDestination ->
@@ -34,7 +34,7 @@ object ProfileTransitions : DestinationStyle.Animated {
         }
     }
 
-    override fun AnimatedContentScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
+    override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
 
         return when (initialState.appDestination()) {
             GreetingScreenDestination ->
@@ -46,7 +46,7 @@ object ProfileTransitions : DestinationStyle.Animated {
         }
     }
 
-    override fun AnimatedContentScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
+    override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
 
         return when (targetState.appDestination()) {
             GreetingScreenDestination ->

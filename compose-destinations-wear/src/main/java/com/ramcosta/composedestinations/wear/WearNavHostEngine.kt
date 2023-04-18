@@ -91,9 +91,7 @@ internal class WearNavHostEngine(
                 }
             }
 
-            is DestinationStyle.Dialog,
-            is DestinationStyle.Animated,
-            is DestinationStyle.BottomSheet -> {
+            is DestinationStyle.Dialog -> {
                 throw IllegalStateException("${destination.style.javaClass.name} cannot be used on Wear OS version of the core library!")
             }
         }

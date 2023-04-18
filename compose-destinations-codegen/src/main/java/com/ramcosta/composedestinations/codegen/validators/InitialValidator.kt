@@ -114,7 +114,7 @@ class InitialValidator(
             if (destinationStyleType is DestinationStyleType.Dialog || destinationStyleType is DestinationStyleType.BottomSheet) {
                 throw IllegalDestinationsSetup(
                     "'${composableName}' composable: " +
-                            "Only destinations with a DestinationStyle.Animated or DestinationStyle.Default style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!"
+                            "Only destinations with a DestinationStyleAnimated or DestinationStyle.Default style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!"
                 )
             }
         }
@@ -132,7 +132,7 @@ class InitialValidator(
             if (destinationStyleType !is DestinationStyleType.BottomSheet) {
                 throw IllegalDestinationsSetup(
                     "'${composableName}' composable: " +
-                            "Only destinations with a DestinationStyle.BottomSheet style may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
+                            "Only destinations with a DestinationStyleBottomSheet style may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
                 )
             }
         }

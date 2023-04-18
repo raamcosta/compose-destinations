@@ -21,7 +21,7 @@ class KspToCodeGenDestinationsMapper(
     }
 
     private val bottomSheetStyle by lazy {
-        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.BottomSheet")!!.asType(emptyList())
+        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyleBottomSheet")!!.asType(emptyList())
     }
 
     private val dialogStyle by lazy {

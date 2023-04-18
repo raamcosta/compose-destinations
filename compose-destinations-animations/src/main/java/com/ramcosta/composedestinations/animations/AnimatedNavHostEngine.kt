@@ -119,17 +119,7 @@ internal class AnimatedNavHostEngine(
         manualComposableCalls: ManualComposableCalls
     ) {
         when (val destinationStyle = destination.style) {
-            is DestinationStyle.Runtime,
-            is DestinationStyle.Default -> {
-                addComposable(
-                    destination,
-                    navController,
-                    dependenciesContainerBuilder,
-                    manualComposableCalls
-                )
-            }
-
-            is DestinationStyle.Animated -> {
+            is DestinationStyleAnimated -> {
                 addAnimatedComposable(
                     destinationStyle,
                     destination,
@@ -139,8 +129,18 @@ internal class AnimatedNavHostEngine(
                 )
             }
 
-            is DestinationStyle.BottomSheet -> {
+            is DestinationStyleBottomSheet -> {
                 addBottomSheetComposable(
+                    destination,
+                    navController,
+                    dependenciesContainerBuilder,
+                    manualComposableCalls
+                )
+            }
+
+            is DestinationStyle.Runtime,
+            is DestinationStyle.Default -> {
+                addComposable(
                     destination,
                     navController,
                     dependenciesContainerBuilder,
@@ -188,7 +188,7 @@ internal class AnimatedNavHostEngine(
     }
 
     private fun <T> NavGraphBuilder.addAnimatedComposable(
-        animatedStyle: DestinationStyle.Animated,
+        animatedStyle: DestinationStyleAnimated,
         destination: DestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
