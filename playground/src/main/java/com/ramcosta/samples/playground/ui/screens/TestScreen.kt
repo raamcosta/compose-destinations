@@ -17,16 +17,43 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
 import com.ramcosta.composedestinations.navargs.NavTypeSerializer
+import com.ramcosta.composedestinations.wrapper.DestinationWrapper
+import com.ramcosta.samples.playground.commons.SettingsNavGraph
+import com.ramcosta.samples.playground.ui.screens.profile.ProfileScreenNavArgs
 import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.playground.ui.screens.profile.Stuff
 import com.ramcosta.samples.playground.ui.screens.wrappers.DrawerOpeningWrapper
 import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
-@Destination(
-    wrappers = [DrawerOpeningWrapper::class, HidingScreenWrapper::class]
+@SettingsNavGraph
+@Destination
+annotation class HidingScreenDestination(
+    val wrappers: Array<KClass<out DestinationWrapper>> = [DrawerOpeningWrapper::class],
+    val navArgsDelegate: KClass<*> = Nothing::class,
 )
+
+@HidingScreenDestination
+annotation class HidingScreenDestination2(
+    val wrappers: Array<KClass<out DestinationWrapper>> = [HidingScreenWrapper::class],
+    val navArgsDelegate: KClass<*> = ProfileScreenNavArgs::class,
+)
+
+data class AnotherTestNavArgs(
+    val asd: String
+)
+
+@HidingScreenDestination2(
+    navArgsDelegate = AnotherTestNavArgs::class
+)
+@Composable
+fun AnotherTestScreen() {
+    Text("ANOTHER TEST")
+}
+
+@Destination
 @Composable
 fun TestScreen(
     id: Long = 0,

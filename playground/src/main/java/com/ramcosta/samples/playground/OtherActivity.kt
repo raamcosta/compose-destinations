@@ -21,6 +21,9 @@ data class OtherActivityNavArgs(
 @ActivityDestination(
     navArgsDelegate = OtherActivityNavArgs::class,
 )
+annotation class OtherActivityDestiantion
+
+@OtherActivityDestiantion
 class OtherActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
