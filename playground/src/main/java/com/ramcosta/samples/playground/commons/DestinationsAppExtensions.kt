@@ -59,5 +59,6 @@ val Destination.title
             TestScreen3Destination -> null
             ProfileSettingsScreenDestination -> null
             OtherActivityDestination -> null
+            AnotherTestScreenDestination -> null
         }
     }
