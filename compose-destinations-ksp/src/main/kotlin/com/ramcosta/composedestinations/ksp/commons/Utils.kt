@@ -5,8 +5,35 @@ import com.google.devtools.ksp.symbol.*
 import com.ramcosta.composedestinations.codegen.model.*
 import java.io.*
 
+
+val ignoreAnnotations = listOf(
+    "Composable",
+    "Target",
+    "Retention",
+    "MustBeDocumented",
+    "OptIn",
+    "RequiresOptIn"
+)
+
 fun KSAnnotated.findAnnotation(name: String): KSAnnotation {
     return annotations.find { it.shortName.asString() == name }!!
+}
+
+fun KSAnnotated.findAnnotationPathRecursively(name: String, path: List<KSAnnotation> = emptyList()): List<KSAnnotation>? {
+    val relevantAnnotations = annotations.filter { it.shortName.asString() !in ignoreAnnotations}
+    val foundAnnotation = relevantAnnotations.find { it.shortName.asString() == name }
+    if (foundAnnotation != null) {
+        return path + foundAnnotation
+    }
+
+    relevantAnnotations.forEach { annotation ->
+        val found = annotation.annotationType.resolve().declaration.findAnnotationPathRecursively(name, path + annotation)
+        if (found != null) {
+            return found
+        }
+    }
+
+    return null
 }
 
 inline fun <reified T> KSAnnotation.findArgumentValue(name: String): T? {
