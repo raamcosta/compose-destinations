@@ -271,8 +271,12 @@ class KspToCodeGenDestinationsMapper(
             return DestinationStyleType.Default
         }
 
-        if (bottomSheetStyle.isAssignableFrom(ksStyleType)) {
+        if (bottomSheetStyle != null && bottomSheetStyle!!.isAssignableFrom(ksStyleType)) {
             return DestinationStyleType.BottomSheet
+        }
+
+        if (runtimeStyle.isAssignableFrom(ksStyleType)) {
+            return DestinationStyleType.Runtime
         }
 
         val type = ksStyleType.toType(location) ?: throw IllegalDestinationsSetup("Parameter $DESTINATION_ANNOTATION_STYLE_ARGUMENT of Destination annotation in composable $composableName was not resolvable: please review it.")
@@ -281,12 +285,11 @@ class KspToCodeGenDestinationsMapper(
             return DestinationStyleType.Dialog(type)
         }
 
-        if (runtimeStyle.isAssignableFrom(ksStyleType)) {
-            return DestinationStyleType.Runtime
+        if (animatedStyle != null && animatedStyle!!.isAssignableFrom(ksStyleType)) {
+            return DestinationStyleType.Animated(type, ksStyleType.declaration.findAllRequireOptInAnnotations())
         }
 
-        //then it must be animated (since animated ones implement a generated interface, it would require multi step processing which can be avoided like this)
-        return DestinationStyleType.Animated(type, ksStyleType.declaration.findAllRequireOptInAnnotations())
+        throw IllegalDestinationsSetup("Unknown style used on $composableName. Please recheck it.")
     }
 
     private fun KSAnnotation.getDestinationWrappers(): List<Importable>? {
@@ -435,7 +438,11 @@ class KspToCodeGenDestinationsMapper(
     }
 
     private val bottomSheetStyle by lazy {
-        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyleBottomSheet")!!.asType(emptyList())
+        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyleBottomSheet")?.asType(emptyList())
+    }
+
+    private val animatedStyle by lazy {
+        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyleAnimated")?.asType(emptyList())
     }
 
     private val dialogStyle by lazy {
