@@ -170,7 +170,8 @@ internal class AnimatedNavHostEngine(
         manualComposableCalls: ManualComposableCalls
     ) {
         @SuppressLint("RestrictedApi")
-        val contentWrapper = manualComposableCalls[destination.baseRoute]
+        @Suppress("UNCHECKED_CAST")
+        val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
 
         composable(
             route = destination.route,
@@ -204,14 +205,15 @@ internal class AnimatedNavHostEngine(
             popExitTransition = { popExitTransition() }
         ) { navBackStackEntry ->
             @SuppressLint("RestrictedApi")
-            val contentWrapper = manualComposableCalls[destination.baseRoute]
+            @Suppress("UNCHECKED_CAST")
+            val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
 
             CallComposable(
                 destination,
                 navController,
                 navBackStackEntry,
                 dependenciesContainerBuilder,
-                contentWrapper
+                contentWrapper,
             )
         }
     }
@@ -230,24 +232,24 @@ internal class AnimatedNavHostEngine(
             destination.arguments,
             destination.deepLinks
         ) { navBackStackEntry ->
+            @Suppress("UNCHECKED_CAST")
             CallComposable(
                 destination,
                 navController,
                 navBackStackEntry,
                 dependenciesContainerBuilder,
-                contentWrapper
+                contentWrapper as? DestinationLambda<T>?
             )
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     @Composable
     private fun <T> ColumnScope.CallComposable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-        contentWrapper: DestinationLambda<*>?
+        contentWrapper: DestinationLambda<T>?
     ) {
         val scope = remember(navBackStackEntry) {
             BottomSheetDestinationScopeImpl(
@@ -262,19 +264,17 @@ internal class AnimatedNavHostEngine(
         if (contentWrapper == null) {
             with(destination) { scope.Content() }
         } else {
-            contentWrapper as DestinationLambda<T>
             contentWrapper(scope)
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     @Composable
     private fun <T> AnimatedVisibilityScope.CallComposable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-        contentWrapper: DestinationLambda<*>?,
+        contentWrapper: DestinationLambda<T>?,
     ) {
 
         val scope = remember(navBackStackEntry) {
@@ -290,7 +290,6 @@ internal class AnimatedNavHostEngine(
         if (contentWrapper == null) {
             with(destination) { scope.Content() }
         } else {
-            contentWrapper as DestinationLambda<T>
             contentWrapper(scope)
         }
     }
