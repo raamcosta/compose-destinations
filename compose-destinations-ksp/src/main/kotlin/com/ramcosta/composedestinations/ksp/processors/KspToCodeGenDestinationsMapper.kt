@@ -180,6 +180,13 @@ class KspToCodeGenDestinationsMapper(
     }
 
     private fun KSDeclaration.getNavGraphInfo(): NavGraphInfo? {
+        if (modifiers.contains(Modifier.ANNOTATION) &&
+            annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == qualifiedName?.asString() }) {
+            // If we're checking an annotation which is annotated with itself (like @Target)
+            // then this won't contain any nav graph info - avoids stackoverflow
+            return null
+        }
+
         val relevantAnnotations = annotations.filter { functionAnnotation ->
             val annotationShortName = functionAnnotation.shortName.asString()
             annotationShortName !in (ignoreAnnotations + DESTINATION_ANNOTATION + ACTIVITY_DESTINATION_ANNOTATION)
