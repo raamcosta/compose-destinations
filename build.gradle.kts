@@ -1,8 +1,6 @@
 // Top-level build file where you can add configuration options common to all subprojects/modules.
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
-// TODO: Remove this after https://youtrack.jetbrains.com/issue/KTIJ-19369 is resolved.
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.dependencyCheckPlugin)
 }
@@ -43,7 +41,7 @@ tasks.withType<DependencyUpdatesTask> {
  * Decides if this version is stable or not.
  */
 fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
     val regex = "^[0-9,.v-]+(-r)?$".toRegex()
     val isStable = stableKeyword || regex.matches(version)
     return !isStable

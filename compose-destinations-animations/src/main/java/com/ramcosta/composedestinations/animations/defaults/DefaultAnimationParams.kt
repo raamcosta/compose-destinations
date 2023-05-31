@@ -3,7 +3,6 @@ package com.ramcosta.composedestinations.animations.defaults
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 
-@ExperimentalAnimationApi
 interface NavGraphDefaultAnimationParams {
     val enterTransition: DestinationEnterTransition?
     val exitTransition: DestinationExitTransition?
@@ -19,7 +18,6 @@ interface NavGraphDefaultAnimationParams {
  *
  * @see [com.google.accompanist.navigation.animation.AnimatedNavHost] for a parameters explanation
  */
-@ExperimentalAnimationApi
 class RootNavGraphDefaultAnimations(
     override val enterTransition: DestinationEnterTransition = DestinationEnterTransition { EnterTransition.None },
     override val exitTransition: DestinationExitTransition = DestinationExitTransition { ExitTransition.None },
@@ -43,7 +41,6 @@ class RootNavGraphDefaultAnimations(
  *
  * @see [com.google.accompanist.navigation.animation.navigation] for a parameters explanation
  */
-@ExperimentalAnimationApi
 class NestedNavGraphDefaultAnimations(
     override val enterTransition: DestinationEnterTransition? = null,
     override val exitTransition: DestinationExitTransition? = null,

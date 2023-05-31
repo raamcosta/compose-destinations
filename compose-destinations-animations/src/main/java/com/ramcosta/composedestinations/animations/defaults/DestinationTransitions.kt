@@ -4,11 +4,9 @@ import androidx.compose.animation.*
 import androidx.navigation.NavBackStackEntry
 
 fun interface DestinationEnterTransition {
-    @ExperimentalAnimationApi
-    fun AnimatedContentScope<NavBackStackEntry>.enter() : EnterTransition
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.enter() : EnterTransition
 }
 
 fun interface DestinationExitTransition {
-    @ExperimentalAnimationApi
-    fun AnimatedContentScope<NavBackStackEntry>.exit() : ExitTransition
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.exit() : ExitTransition
 }

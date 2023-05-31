@@ -294,11 +294,11 @@ internal class AnimatedNavHostEngine(
         }
     }
 
-    private fun DestinationEnterTransition.toAccompanist(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition) {
+    private fun DestinationEnterTransition.toAccompanist(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition) {
         return { enter() }
     }
 
-    private fun DestinationExitTransition.toAccompanist(): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition) {
+    private fun DestinationExitTransition.toAccompanist(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition) {
         return { exit() }
     }
 }

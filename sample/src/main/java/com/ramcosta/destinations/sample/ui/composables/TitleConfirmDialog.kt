@@ -12,13 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalTextInputService
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TitleConfirmDialog(
     type: String,
@@ -27,7 +29,7 @@ fun TitleConfirmDialog(
     onConfirm: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
-    val inputService = LocalTextInputService.current
+    val inputService = LocalSoftwareKeyboardController.current
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
@@ -53,7 +55,7 @@ fun TitleConfirmDialog(
 
     LaunchedEffect(Unit) {
         delay(300)
-        inputService?.showSoftwareKeyboard()
+        inputService?.show()
         focusRequester.requestFocus()
     }
 }

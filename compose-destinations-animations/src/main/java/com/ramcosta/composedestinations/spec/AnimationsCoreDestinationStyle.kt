@@ -35,7 +35,6 @@ object DestinationStyleBottomSheet : DestinationStyle
  * You will need to create an object which implements this interface
  * and use its KClass in [com.ramcosta.composedestinations.annotation.Destination.style]
  */
-@ExperimentalAnimationApi
 interface DestinationStyleAnimated : DestinationStyle {
 
     fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {

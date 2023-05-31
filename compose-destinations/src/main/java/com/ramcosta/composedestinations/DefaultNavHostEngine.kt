@@ -65,7 +65,7 @@ internal class DefaultNavHostEngine : NavHostEngine {
         )
     }
 
-    @OptIn(ExperimentalAnimationApi::class, InternalDestinationsApi::class)
+    @OptIn(InternalDestinationsApi::class)
     override fun <T> NavGraphBuilder.composable(
         destination: DestinationSpec<T>,
         navController: NavHostController,

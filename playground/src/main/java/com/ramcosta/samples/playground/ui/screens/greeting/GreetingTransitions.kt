@@ -8,7 +8,6 @@ import com.ramcosta.samples.playground.ui.screens.appDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
 
-@OptIn(ExperimentalAnimationApi::class)
 object GreetingTransitions : DestinationStyleAnimated {
 
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {

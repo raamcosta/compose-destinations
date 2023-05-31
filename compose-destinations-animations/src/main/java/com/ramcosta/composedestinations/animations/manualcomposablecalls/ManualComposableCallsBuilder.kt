@@ -70,7 +70,6 @@ fun <T> ManualComposableCallsBuilder.bottomSheetComposable(
     )
 }
 
-@ExperimentalAnimationApi
 private fun ManualComposableCallsBuilder.validateAnimated(
     destination: DestinationSpec<*>
 ) {
