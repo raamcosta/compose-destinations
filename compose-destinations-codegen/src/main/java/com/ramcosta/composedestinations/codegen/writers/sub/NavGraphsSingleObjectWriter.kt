@@ -60,6 +60,8 @@ class NavGraphsSingleObjectWriter(
                     destinations = destinations,
                     startRouteFieldName = startingRoute(codeGenConfig, rawGraph.name, destinations, nestedNavGraphs),
                     nestedNavGraphRoutes = nestedNavGraphs.map { it.route },
+                    defaultTransitions = rawGraph.defaultTransitions,
+                    isNavHostGraph = rawGraph.isNavHostGraph,
                     requireOptInAnnotationTypes = destinations.requireOptInAnnotationClassTypes()
                         .apply {
                             nestedNavGraphs.forEach {
@@ -145,22 +147,41 @@ class NavGraphsSingleObjectWriter(
         val nestedGraphsAnchor = "[NESTED_GRAPHS]"
         val requireOptInAnnotationsAnchor = "[REQUIRE_OPT_IN_ANNOTATIONS_ANCHOR]"
 
-        return """
-       |    ${requireOptInAnnotationsAnchor}public val ${navGraphFieldName(route)}: NavGraph = $GENERATED_NAV_GRAPH(
+        if (isNavHostGraph) {
+            return """
+       |    ${requireOptInAnnotationsAnchor}public val ${navGraphFieldName(route)}: $GENERATED_NAV_HOST_GRAPH = $GENERATED_NAV_HOST_GRAPH(
        |        route = "$route",
        |        startRoute = ${startRouteFieldName},
+       |        defaultTransitions = ${importableHelper.addAndGetPlaceholder(defaultTransitions!!)},
        |        destinations = listOf(
        |            $destinationsAnchor
        |        )${if (nestedNavGraphRoutes.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"}
        |    )
         """.trimMargin()
-            .replace(destinationsAnchor, destinationsInsideList(destinations))
-            .replace(nestedGraphsAnchor, nestedGraphsList(nestedNavGraphRoutes))
-            .replace(
-                requireOptInAnnotationsAnchor,
-                requireOptInAnnotations(requireOptInAnnotationTypes)
-            )
-
+                .replace(destinationsAnchor, destinationsInsideList(destinations))
+                .replace(nestedGraphsAnchor, nestedGraphsList(nestedNavGraphRoutes))
+                .replace(
+                    requireOptInAnnotationsAnchor,
+                    requireOptInAnnotations(requireOptInAnnotationTypes)
+                )
+        } else {
+            return """
+       |    ${requireOptInAnnotationsAnchor}public val ${navGraphFieldName(route)}: $GENERATED_NAV_GRAPH = $GENERATED_NAV_GRAPH(
+       |        route = "$route",
+       |        startRoute = ${startRouteFieldName},
+       |        defaultTransitions = ${defaultTransitions?.let { importableHelper.addAndGetPlaceholder(it) } ?: "null"},
+       |        destinations = listOf(
+       |            $destinationsAnchor
+       |        )${if (nestedNavGraphRoutes.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"}
+       |    )
+        """.trimMargin()
+                .replace(destinationsAnchor, destinationsInsideList(destinations))
+                .replace(nestedGraphsAnchor, nestedGraphsList(nestedNavGraphRoutes))
+                .replace(
+                    requireOptInAnnotationsAnchor,
+                    requireOptInAnnotations(requireOptInAnnotationTypes)
+                )
+        }
     }
 
     private fun destinationsInsideList(destinations: List<GeneratedDestination>): String {

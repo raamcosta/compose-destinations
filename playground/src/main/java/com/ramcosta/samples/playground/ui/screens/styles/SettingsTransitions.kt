@@ -1,17 +1,13 @@
 package com.ramcosta.samples.playground.ui.screens.styles
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationStyle
-import com.ramcosta.samples.playground.ui.screens.appDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
+import com.ramcosta.samples.playground.ui.screens.appDestination
 
-object SettingsTransitions : DestinationStyle.Animated {
+object SettingsTransitions : DestinationStyle.Animated() {
 
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
 

@@ -43,9 +43,10 @@ class Processor(
 
         val navTypeSerializers = resolver.getNavTypeSerializers()
         val navGraphAnnotations = resolver.getNavGraphAnnotations()
+        val navHostGraphAnnotations = resolver.getNavHostGraphAnnotations()
 
         val classesToNavGraphsMapper = KspToCodeGenNavGraphsMapper()
-        val navGraphs = classesToNavGraphsMapper.map(navGraphAnnotations)
+        val navGraphs = classesToNavGraphsMapper.map(navGraphAnnotations, navHostGraphAnnotations)
 
         val functionsToDestinationsMapper = KspToCodeGenDestinationsMapper(
             resolver,
@@ -95,6 +96,11 @@ class Processor(
 
     private fun Resolver.getNavGraphAnnotations(): Sequence<KSClassDeclaration> {
         return getSymbolsWithAnnotation(NAV_GRAPH_ANNOTATION_QUALIFIED)
+            .filterIsInstance<KSClassDeclaration>()
+    }
+
+    private fun Resolver.getNavHostGraphAnnotations(): Sequence<KSClassDeclaration> {
+        return getSymbolsWithAnnotation(NAV_HOST_GRAPH_ANNOTATION_QUALIFIED)
             .filterIsInstance<KSClassDeclaration>()
     }
 

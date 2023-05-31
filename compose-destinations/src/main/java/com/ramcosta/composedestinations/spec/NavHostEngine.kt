@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.spec
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
+import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 
@@ -53,8 +54,9 @@ interface NavHostEngine {
         modifier: Modifier,
         route: String,
         startRoute: Route,
+        defaultTransitions: NavHostAnimatedDestinationStyle,
         navController: NavHostController,
-        builder: NavGraphBuilder.() -> Unit
+        builder: NavGraphBuilder.() -> Unit,
     )
 
     /**

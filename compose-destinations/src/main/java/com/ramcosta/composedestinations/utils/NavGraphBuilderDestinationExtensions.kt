@@ -13,7 +13,6 @@ import com.ramcosta.composedestinations.scope.NavGraphBuilderDestinationScopeImp
 import com.ramcosta.composedestinations.spec.ActivityDestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
-import com.ramcosta.composedestinations.spec.addActivityDestination
 
 /**
  * Like [androidx.navigation.compose.composable] but accepts
@@ -147,8 +146,9 @@ fun <T> NavGraphBuilder.dialogComposable(
  * }
  * ```
  */
+@OptIn(InternalDestinationsApi::class)
 fun <T> NavGraphBuilder.activity(
     destination: ActivityDestinationSpec<T>,
-) {
-    addActivityDestination(destination)
+) = with(destination.style as DestinationStyle.Activity) {
+    addComposable(destination)
 }

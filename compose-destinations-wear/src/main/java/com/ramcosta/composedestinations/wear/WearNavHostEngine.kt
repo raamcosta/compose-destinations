@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.wear.compose.navigation.*
+import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
@@ -46,8 +47,9 @@ internal class WearNavHostEngine(
         modifier: Modifier,
         route: String,
         startRoute: Route,
+        defaultTransitions: NavHostAnimatedDestinationStyle,
         navController: NavHostController,
-        builder: NavGraphBuilder.() -> Unit
+        builder: NavGraphBuilder.() -> Unit,
     ) {
         SwipeDismissableNavHost(
             navController = navController,
