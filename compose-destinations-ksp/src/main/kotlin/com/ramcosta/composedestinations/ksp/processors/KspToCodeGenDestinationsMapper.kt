@@ -255,17 +255,32 @@ class KspToCodeGenDestinationsMapper(
         }
 
         var resolvedAnnotation: KSType? = null
+        var isNavHostGraph = false
         val navGraphAnnotation = relevantAnnotations.find { functionAnnotation ->
             val functionAnnotationType = functionAnnotation.annotationType.resolve()
 
             val didWeFindNavGraph = functionAnnotationType.declaration.annotations.any { annotationOfAnnotation ->
-                annotationOfAnnotation.shortName.asString() == "NavGraph"
+                annotationOfAnnotation.shortName.asString() == NAV_GRAPH_ANNOTATION
                         && annotationOfAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_GRAPH_ANNOTATION_QUALIFIED
             }
 
-            if (didWeFindNavGraph) resolvedAnnotation = functionAnnotationType
+            if (didWeFindNavGraph) {
+                resolvedAnnotation = functionAnnotationType
+                return@find true
+            }
 
-            didWeFindNavGraph
+            val didWeFindNavHostGraph = functionAnnotationType.declaration.annotations.any { annotationOfAnnotation ->
+                annotationOfAnnotation.shortName.asString() == NAV_HOST_GRAPH_ANNOTATION
+                        && annotationOfAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
+            }
+
+            if (didWeFindNavHostGraph) {
+                isNavHostGraph = true
+                resolvedAnnotation = functionAnnotationType
+                return@find true
+            }
+
+            false
         }
 
         return if (navGraphAnnotation == null) {
@@ -275,6 +290,7 @@ class KspToCodeGenDestinationsMapper(
         } else {
             NavGraphInfo.AnnotatedSource(
                 start = navGraphAnnotation.arguments.first().value as Boolean,
+                isNavHostGraph = isNavHostGraph,
                 graphType = Importable(
                     resolvedAnnotation!!.declaration.simpleName.asString(),
                     resolvedAnnotation!!.declaration.qualifiedName!!.asString()
@@ -288,7 +304,11 @@ class KspToCodeGenDestinationsMapper(
         isActivityDestination: Boolean = false
     ): NavGraphInfo {
         return if (isActivityDestination) {
-            NavGraphInfo.AnnotatedSource(false, rootNavGraphType)
+            NavGraphInfo.AnnotatedSource(
+                start = false,
+                isNavHostGraph = true,
+                graphType = rootNavGraphType
+            )
         } else {
             NavGraphInfo.Legacy(
                 start = destinationAnnotations.findOverridingArgumentValue { findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT) }!!,

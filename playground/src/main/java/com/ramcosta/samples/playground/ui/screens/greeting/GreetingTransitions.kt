@@ -12,7 +12,7 @@ import com.ramcosta.samples.playground.ui.screens.appDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
 
-object GreetingTransitions : DestinationStyle.Animated {
+object GreetingTransitions : DestinationStyle.Animated() {
 
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
 

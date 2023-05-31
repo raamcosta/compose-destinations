@@ -5,6 +5,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
@@ -12,6 +13,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 import com.ramcosta.composedestinations.utils.NavGraphRegistry
 
 /**
@@ -58,9 +60,10 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
  */
 @Composable
 fun DestinationsNavHost(
-    navGraph: NavGraphSpec,
+    navGraph: NavHostGraphSpec,
     modifier: Modifier = Modifier,
     startRoute: Route = navGraph.startRoute,
+    defaultTransitions: NavHostAnimatedDestinationStyle = navGraph.defaultTransitions,
     engine: NavHostEngine = rememberNavHostEngine(),
     navController: NavHostController = engine.rememberNavController(),
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit = {},
@@ -71,6 +74,7 @@ fun DestinationsNavHost(
     engine.NavHost(
         modifier = modifier,
         route = navGraph.route,
+        defaultTransitions = defaultTransitions,
         startRoute = startRoute,
         navController = navController,
     ) {

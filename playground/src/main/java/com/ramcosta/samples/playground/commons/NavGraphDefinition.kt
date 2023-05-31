@@ -1,6 +1,7 @@
 package com.ramcosta.samples.playground.commons
 
 import androidx.compose.runtime.Composable
+import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransitions
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -8,7 +9,9 @@ import com.ramcosta.samples.playground.ui.screens.settings.SettingsViewModel
 import kotlinx.serialization.Serializable
 
 @RootNavGraph
-@NavGraph
+@NavGraph(
+    defaultTransitions = DefaultFadingTransitions::class
+)
 annotation class SettingsNavGraph(
     val start: Boolean = false
 )

@@ -29,38 +29,36 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
  * ModalBottomSheetLayout(
  *     bottomSheetNavigator = bottomSheetNavigator
  * ) {
- *     //...
- *     DestinationsNavHost(
- *         engine = rememberAnimatedNavHostEngine(),
- *         navController = navController
- *     )
+ *     //YOUR TOP LEVEL COMPOSABLE LIKE `DestinationsNavHost` or `Scaffold`
+ * }
  * ```
  */
-object DestinationStyleBottomSheet : DestinationStyle
+object DestinationStyleBottomSheet : DestinationStyle() {
 
-@ExperimentalMaterialNavigationApi
-internal fun <T> NavGraphBuilder.addComposable(
-    destination: DestinationSpec<T>,
-    navController: NavHostController,
-    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-    manualComposableCalls: ManualComposableCalls
-) {
-    @SuppressLint("RestrictedApi")
-    @Suppress("UNCHECKED_CAST")
-    val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
+    @ExperimentalMaterialNavigationApi
+    override fun <T> NavGraphBuilder.addComposable(
+        destination: DestinationSpec<T>,
+        navController: NavHostController,
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+        manualComposableCalls: ManualComposableCalls
+    ) {
+        @SuppressLint("RestrictedApi")
+        @Suppress("UNCHECKED_CAST")
+        val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
 
-    bottomSheet(
-        destination.route,
-        destination.arguments,
-        destination.deepLinks
-    ) { navBackStackEntry ->
-        CallComposable(
-            destination,
-            navController,
-            navBackStackEntry,
-            dependenciesContainerBuilder,
-            contentWrapper
-        )
+        bottomSheet(
+            destination.route,
+            destination.arguments,
+            destination.deepLinks
+        ) { navBackStackEntry ->
+            CallComposable(
+                destination,
+                navController,
+                navBackStackEntry,
+                dependenciesContainerBuilder,
+                contentWrapper
+            )
+        }
     }
 }
 

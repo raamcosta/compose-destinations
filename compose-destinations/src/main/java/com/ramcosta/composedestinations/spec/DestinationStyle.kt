@@ -1,9 +1,6 @@
-@file:OptIn(InternalDestinationsApi::class)
-
 package com.ramcosta.composedestinations.spec
 
 import android.annotation.SuppressLint
-import androidx.annotation.RestrictTo
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
@@ -29,7 +26,14 @@ import com.ramcosta.composedestinations.scope.DestinationScopeImpl
  * You can pass the KClass of an implementation to the
  * [com.ramcosta.composedestinations.annotation.Destination.style].
  */
-interface DestinationStyle {
+abstract class DestinationStyle {
+
+    abstract fun <T> NavGraphBuilder.addComposable(
+        destination: DestinationSpec<T>,
+        navController: NavHostController,
+        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+        manualComposableCalls: ManualComposableCalls
+    )
 
     /**
      * No special animation or style.
@@ -40,7 +44,32 @@ interface DestinationStyle {
      * some nested graph) or the [com.ramcosta.composedestinations.DestinationsNavHost]'s
      * `defaultTransitions` parameter for the top level "NavHost Graph".
      */
-    object Default : DestinationStyle
+    object Default : DestinationStyle() {
+        override fun <T> NavGraphBuilder.addComposable(
+            destination: DestinationSpec<T>,
+            navController: NavHostController,
+            dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+            manualComposableCalls: ManualComposableCalls
+        ) {
+            @SuppressLint("RestrictedApi")
+            @Suppress("UNCHECKED_CAST")
+            val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
+
+            composable(
+                route = destination.route,
+                arguments = destination.arguments,
+                deepLinks = destination.deepLinks,
+            ) { navBackStackEntry ->
+                CallComposable(
+                    destination,
+                    navController,
+                    navBackStackEntry,
+                    dependenciesContainerBuilder,
+                    contentWrapper,
+                )
+            }
+        }
+    }
 
     /**
      * Marks the destination to be shown as a dialog.
@@ -48,11 +77,37 @@ interface DestinationStyle {
      * You can create implementations that define specific [DialogProperties]
      * or you can use the default values with `style = DestinationStyle.Dialog::class`
      */
-    interface Dialog : DestinationStyle {
-        val properties: DialogProperties
+    abstract class Dialog : DestinationStyle() {
+        abstract val properties: DialogProperties
 
-        companion object Default : Dialog {
+        companion object Default : Dialog() {
             override val properties = DialogProperties()
+        }
+
+        final override fun <T> NavGraphBuilder.addComposable(
+            destination: DestinationSpec<T>,
+            navController: NavHostController,
+            dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+            manualComposableCalls: ManualComposableCalls
+        ) {
+            @SuppressLint("RestrictedApi")
+            @Suppress("UNCHECKED_CAST")
+            val contentLambda = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
+
+            dialog(
+                destination.route,
+                destination.arguments,
+                destination.deepLinks,
+                properties
+            ) { navBackStackEntry ->
+                CallDialogComposable(
+                    destination,
+                    navController,
+                    navBackStackEntry,
+                    dependenciesContainerBuilder,
+                    contentLambda
+                )
+            }
         }
     }
 
@@ -63,21 +118,21 @@ interface DestinationStyle {
      * You will need to create an object which implements this interface
      * and use its KClass in [com.ramcosta.composedestinations.annotation.Destination.style]
      */
-    interface Animated : DestinationStyle {
+    abstract class Animated : DestinationStyle() {
 
-        fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
+        open fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
             return null
         }
 
-        fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
+        open fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
             return null
         }
 
-        fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
+        open fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
             return enterTransition()
         }
 
-        fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
+        open fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
             return exitTransition()
         }
 
@@ -85,12 +140,41 @@ interface DestinationStyle {
          * Can be used to force no animations for certain destinations, if you've overridden
          * the default animation with `defaultAnimationParams`.
          */
-        object None : Animated {
+        object None : Animated() {
             override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
                 EnterTransition.None
 
             override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
                 ExitTransition.None
+        }
+
+        final override fun <T> NavGraphBuilder.addComposable(
+            destination: DestinationSpec<T>,
+            navController: NavHostController,
+            dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+            manualComposableCalls: ManualComposableCalls
+        ) {
+            composable(
+                route = destination.route,
+                arguments = destination.arguments,
+                deepLinks = destination.deepLinks,
+                enterTransition = { enterTransition() },
+                exitTransition = { exitTransition() },
+                popEnterTransition = { popEnterTransition() },
+                popExitTransition = { popExitTransition() }
+            ) { navBackStackEntry ->
+                @SuppressLint("RestrictedApi")
+                @Suppress("UNCHECKED_CAST")
+                val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
+
+                CallComposable(
+                    destination,
+                    navController,
+                    navBackStackEntry,
+                    dependenciesContainerBuilder,
+                    contentWrapper,
+                )
+            }
         }
     }
 
@@ -103,13 +187,61 @@ interface DestinationStyle {
      * This is useful if you want to define the style for a Destination in a
      * different module than the one which has the annotated Composable.
      */
-    object Runtime: DestinationStyle
+    object Runtime: DestinationStyle() {
+        override fun <T> NavGraphBuilder.addComposable(
+            destination: DestinationSpec<T>,
+            navController: NavHostController,
+            dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+            manualComposableCalls: ManualComposableCalls
+        ) = with(Default) {
+            addComposable(destination, navController, dependenciesContainerBuilder, manualComposableCalls)
+        }
+    }
+
 
     @InternalDestinationsApi
-    object Activity: DestinationStyle
+    object Activity: DestinationStyle() {
+        override fun <T> NavGraphBuilder.addComposable(
+            destination: DestinationSpec<T>,
+            navController: NavHostController,
+            dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+            manualComposableCalls: ManualComposableCalls
+        ) {
+            destination as ActivityDestinationSpec<T>
+
+            addComposable(destination)
+        }
+
+        internal fun <T> NavGraphBuilder.addComposable(destination: ActivityDestinationSpec<T>) {
+            activity(destination.route) {
+                targetPackage = destination.targetPackage
+                activityClass = destination.activityClass?.kotlin
+                action = destination.action
+                data = destination.data
+                dataPattern = destination.dataPattern
+
+                destination.deepLinks.forEach { deepLink ->
+                    deepLink {
+                        action = deepLink.action
+                        uriPattern = deepLink.uriPattern
+                        mimeType = deepLink.mimeType
+                    }
+                }
+
+                destination.arguments.forEach { navArg ->
+                    argument(navArg.name) {
+                        if (navArg.argument.isDefaultValuePresent) {
+                            defaultValue = navArg.argument.defaultValue
+                        }
+                        type = navArg.argument.type
+                        nullable = navArg.argument.isNullable
+                    }
+                }
+            }
+        }
+
+    }
 }
-
-
 
 @Composable
 private fun <T> CallDialogComposable(
@@ -132,122 +264,6 @@ private fun <T> CallDialogComposable(
         with(destination) { scope.Content() }
     } else {
         contentWrapper(scope)
-    }
-}
-
-internal typealias AddComposable<T> = (NavGraphBuilder, DestinationSpec<T>, NavHostController, @Composable DependenciesContainerBuilder<*>.() -> Unit, ManualComposableCalls) -> Unit
-
-@InternalDestinationsApi
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-var additionalAddComposable : AddComposable<*>? = null
-
-internal fun <T> DestinationStyle.addActivityDestination(
-    navGraphBuilder: NavGraphBuilder,
-    destination: DestinationSpec<T>,
-    navController: NavHostController,
-    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-    manualComposableCalls: ManualComposableCalls
-) {
-    when (this) {
-        DestinationStyle.Runtime,
-        DestinationStyle.Default -> {
-            @SuppressLint("RestrictedApi")
-            @Suppress("UNCHECKED_CAST")
-            val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
-
-            navGraphBuilder.composable(
-                route = destination.route,
-                arguments = destination.arguments,
-                deepLinks = destination.deepLinks,
-            ) { navBackStackEntry ->
-                CallComposable(
-                    destination,
-                    navController,
-                    navBackStackEntry,
-                    dependenciesContainerBuilder,
-                    contentWrapper,
-                )
-            }
-        }
-        is DestinationStyle.Dialog -> {
-            @SuppressLint("RestrictedApi")
-            @Suppress("UNCHECKED_CAST")
-            val contentLambda = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
-
-            navGraphBuilder.dialog(
-                destination.route,
-                destination.arguments,
-                destination.deepLinks,
-                properties
-            ) { navBackStackEntry ->
-                CallDialogComposable(
-                    destination,
-                    navController,
-                    navBackStackEntry,
-                    dependenciesContainerBuilder,
-                    contentLambda
-                )
-            }
-        }
-        is DestinationStyle.Animated -> {
-             navGraphBuilder.composable(
-                route = destination.route,
-                arguments = destination.arguments,
-                deepLinks = destination.deepLinks,
-                enterTransition = { enterTransition() },
-                exitTransition = { exitTransition() },
-                popEnterTransition = { popEnterTransition() },
-                popExitTransition = { popExitTransition() }
-            ) { navBackStackEntry ->
-                @SuppressLint("RestrictedApi")
-                @Suppress("UNCHECKED_CAST")
-                val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
-
-                CallComposable(
-                    destination,
-                    navController,
-                    navBackStackEntry,
-                    dependenciesContainerBuilder,
-                    contentWrapper,
-                )
-            }
-        }
-        DestinationStyle.Activity -> {
-            navGraphBuilder.addActivityDestination(destination as ActivityDestinationSpec<T>)
-        }
-        else -> {
-            additionalAddComposable
-                ?.invoke(navGraphBuilder, destination, navController, dependenciesContainerBuilder, manualComposableCalls)
-                ?: error("Unknown DestinationStyle $this. If you're trying to use a destination with BottomSheet style, use rememberAnimatedNavHostEngine and pass that engine to DestinationsNavHost!")
-        }
-    }
-}
-
-internal fun <T> NavGraphBuilder.addActivityDestination(destination: ActivityDestinationSpec<T>) {
-    activity(destination.route) {
-        targetPackage = destination.targetPackage
-        activityClass = destination.activityClass?.kotlin
-        action = destination.action
-        data = destination.data
-        dataPattern = destination.dataPattern
-
-        destination.deepLinks.forEach { deepLink ->
-            deepLink {
-                action = deepLink.action
-                uriPattern = deepLink.uriPattern
-                mimeType = deepLink.mimeType
-            }
-        }
-
-        destination.arguments.forEach { navArg ->
-            argument(navArg.name) {
-                if (navArg.argument.isDefaultValuePresent) {
-                    defaultValue = navArg.argument.defaultValue
-                }
-                type = navArg.argument.type
-                nullable = navArg.argument.isNullable
-            }
-        }
     }
 }
 

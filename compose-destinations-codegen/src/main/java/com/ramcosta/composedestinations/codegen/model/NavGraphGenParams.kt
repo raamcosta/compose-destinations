@@ -6,6 +6,8 @@ import java.util.*
 data class RawNavGraphGenParams(
     val type: Importable,
     val default: Boolean,
+    val isNavHostGraph: Boolean,
+    val defaultTransitions: Importable?,
     private val routeOverride: String? = null,
     val parent: Importable? = null,
     val isParentStart: Boolean? = null,

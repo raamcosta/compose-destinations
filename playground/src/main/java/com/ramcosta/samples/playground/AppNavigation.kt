@@ -9,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.animations.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
@@ -34,7 +33,6 @@ import com.ramcosta.samples.playground.ui.screens.settings.SettingsScreen
 import com.ramcosta.samples.playground.ui.screens.settings.SettingsViewModel
 import com.ramcosta.samples.playground.ui.screens.settings.ThemeSettings
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialNavigationApi::class)
 @Composable
 fun AppNavigation(
     modifier: Modifier = Modifier,
@@ -42,23 +40,9 @@ fun AppNavigation(
     navController: NavHostController,
     testProfileDeepLink: () -> Unit,
 ) {
-    // ------- Defining default animations for root and nested nav graphs example -------
-//    val navHostEngine = rememberAnimatedNavHostEngine(
-//        rootDefaultAnimations = RootNavGraphDefaultAnimations.ACCOMPANIST_FADING,
-//        defaultAnimationsForNestedNavGraph = mapOf(
-//            NavGraphs.settings to NestedNavGraphDefaultAnimations(
-//                enterTransition = { fadeIn(animationSpec = tween(2000)) },
-//                exitTransition = { fadeOut(animationSpec = tween(2000)) }
-//            )
-//        )
-//    )
-
-    val navHostEngine = rememberAnimatedNavHostEngine()
-
     DestinationsNavHost(
         navGraph = NavGraphs.root,
         startRoute = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startRoute,
-        engine = navHostEngine,
         navController = navController,
         modifier = modifier,
         dependenciesContainerBuilder = {
