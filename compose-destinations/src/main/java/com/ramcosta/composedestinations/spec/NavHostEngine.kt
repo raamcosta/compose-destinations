@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.spec
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
+import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 
@@ -24,12 +25,6 @@ interface NavHostEngine {
          * The engine you get by default by using the library
          */
         DEFAULT,
-
-        /**
-         * The engine you get if using "io.github.raamcosta.compose-destinations:animations-core"
-         * and calling `rememberAnimatedNavHostEngine`
-         */
-        ANIMATED,
 
         /**
          * The engine you get if using "io.github.raamcosta.compose-destinations:wear-core"
@@ -59,8 +54,9 @@ interface NavHostEngine {
         modifier: Modifier,
         route: String,
         startRoute: Route,
+        defaultTransitions: NavHostAnimatedDestinationStyle,
         navController: NavHostController,
-        builder: NavGraphBuilder.() -> Unit
+        builder: NavGraphBuilder.() -> Unit,
     )
 
     /**

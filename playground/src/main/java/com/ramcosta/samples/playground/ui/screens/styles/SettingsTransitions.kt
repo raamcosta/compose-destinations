@@ -3,11 +3,11 @@ package com.ramcosta.samples.playground.ui.screens.styles
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.navigation.NavBackStackEntry
+import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
-import com.ramcosta.composedestinations.spec.DestinationStyleAnimated
 import com.ramcosta.samples.playground.ui.screens.appDestination
 
-object SettingsTransitions : DestinationStyleAnimated {
+object SettingsTransitions : DestinationStyle.Animated() {
 
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
 

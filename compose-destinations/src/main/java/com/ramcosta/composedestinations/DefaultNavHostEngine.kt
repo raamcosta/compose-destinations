@@ -1,34 +1,41 @@
 package com.ramcosta.composedestinations
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.*
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
+import androidx.navigation.NavDestination
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.Navigator
 import androidx.navigation.compose.navigation
-import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
-import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
-import com.ramcosta.composedestinations.scope.DestinationScopeImpl
+import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
-import com.ramcosta.composedestinations.spec.*
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.Route
 
 /**
- * Returns the default [NavHostEngine] to be used with normal (non-animated)
- * core ("io.github.raamcosta.compose-destinations:core").
+ * Returns the default [NavHostEngine] to be used with [DestinationsNavHost]
  *
  * The [NavHostEngine] is used by default in [com.ramcosta.composedestinations.DestinationsNavHost]
  * call.
  */
 @Composable
-fun rememberNavHostEngine(): NavHostEngine = remember {
-    DefaultNavHostEngine()
+fun rememberNavHostEngine(
+    navHostContentAlignment: Alignment = Alignment.Center,
+): NavHostEngine = remember {
+    DefaultNavHostEngine(
+        navHostContentAlignment = navHostContentAlignment,
+    )
 }
 
-internal class DefaultNavHostEngine : NavHostEngine {
+internal class DefaultNavHostEngine(
+    private val navHostContentAlignment: Alignment,
+) : NavHostEngine {
 
     override val type = NavHostEngine.Type.DEFAULT
 
@@ -42,14 +49,20 @@ internal class DefaultNavHostEngine : NavHostEngine {
         modifier: Modifier,
         route: String,
         startRoute: Route,
+        defaultTransitions: NavHostAnimatedDestinationStyle,
         navController: NavHostController,
-        builder: NavGraphBuilder.() -> Unit
-    ) {
+        builder: NavGraphBuilder.() -> Unit,
+    ) = with(defaultTransitions) {
         androidx.navigation.compose.NavHost(
             navController = navController,
             startDestination = startRoute.route,
             modifier = modifier,
             route = route,
+            contentAlignment = navHostContentAlignment,
+            enterTransition = { enterTransition() },
+            exitTransition = { exitTransition() },
+            popEnterTransition = { popEnterTransition() },
+            popExitTransition = { popExitTransition() },
             builder = builder
         )
     }
@@ -58,150 +71,32 @@ internal class DefaultNavHostEngine : NavHostEngine {
         navGraph: NavGraphSpec,
         builder: NavGraphBuilder.() -> Unit
     ) {
-        navigation(
-            startDestination = navGraph.startRoute.route,
-            route = navGraph.route,
-            builder = builder
-        )
+        val transitions: DestinationStyle.Animated? = navGraph.defaultTransitions
+        if (transitions != null) {
+            navigation(
+                startDestination = navGraph.startRoute.route,
+                route = navGraph.route,
+                enterTransition = { with(transitions) { enterTransition() } },
+                exitTransition = { with(transitions) { exitTransition() } },
+                popEnterTransition = { with(transitions) { popEnterTransition() } },
+                popExitTransition = { with(transitions) { popExitTransition() } },
+                builder = builder
+            )
+        } else {
+            navigation(
+                startDestination = navGraph.startRoute.route,
+                route = navGraph.route,
+                builder = builder
+            )
+        }
     }
 
-    @OptIn(InternalDestinationsApi::class)
     override fun <T> NavGraphBuilder.composable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
-    ) {
-        when (val destinationStyle = destination.style) {
-            is DestinationStyle.Runtime,
-            is DestinationStyle.Default -> {
-                addComposable(
-                    destination,
-                    navController,
-                    dependenciesContainerBuilder,
-                    manualComposableCalls
-                )
-            }
-
-            is DestinationStyle.Dialog -> {
-                addDialogComposable(
-                    destinationStyle,
-                    destination,
-                    navController,
-                    dependenciesContainerBuilder,
-                    manualComposableCalls
-                )
-            }
-
-            is DestinationStyle.Activity -> {
-                addActivityDestination(destination as ActivityDestinationSpec)
-            }
-        }
-    }
-
-    private fun <T> NavGraphBuilder.addComposable(
-        destination: DestinationSpec<T>,
-        navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-        manualComposableCalls: ManualComposableCalls,
-    ) {
-        @SuppressLint("RestrictedApi")
-        val contentLambda = manualComposableCalls[destination.baseRoute]
-
-        composable(
-            route = destination.route,
-            arguments = destination.arguments,
-            deepLinks = destination.deepLinks
-        ) { navBackStackEntry ->
-            CallComposable(
-                destination,
-                navController,
-                navBackStackEntry,
-                dependenciesContainerBuilder,
-                contentLambda
-            )
-        }
-    }
-
-    private fun <T> NavGraphBuilder.addDialogComposable(
-        dialogStyle: DestinationStyle.Dialog,
-        destination: DestinationSpec<T>,
-        navController: NavHostController,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-        manualComposableCalls: ManualComposableCalls
-    ) {
-        @SuppressLint("RestrictedApi")
-        val contentLambda = manualComposableCalls[destination.baseRoute]
-
-        dialog(
-            destination.route,
-            destination.arguments,
-            destination.deepLinks,
-            dialogStyle.properties
-        ) { navBackStackEntry ->
-            CallComposable(
-                destination,
-                navController,
-                navBackStackEntry,
-                dependenciesContainerBuilder,
-                contentLambda
-            )
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    @Composable
-    private fun <T> CallComposable(
-        destination: DestinationSpec<T>,
-        navController: NavHostController,
-        navBackStackEntry: NavBackStackEntry,
-        dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-        contentLambda: DestinationLambda<*>?
-    ) {
-        val scope = remember(navBackStackEntry) {
-            DestinationScopeImpl.Default(
-                destination,
-                navBackStackEntry,
-                navController,
-                dependenciesContainerBuilder,
-            )
-        }
-
-        if (contentLambda == null) {
-            with(destination) { scope.Content() }
-        } else {
-            contentLambda as DestinationLambda<T>
-            contentLambda(scope)
-        }
-    }
-
-    companion object {
-        internal fun <T> NavGraphBuilder.addActivityDestination(destination: ActivityDestinationSpec<T>) {
-            activity(destination.route) {
-                targetPackage = destination.targetPackage
-                activityClass = destination.activityClass?.kotlin
-                action = destination.action
-                data = destination.data
-                dataPattern = destination.dataPattern
-
-                destination.deepLinks.forEach { deepLink ->
-                    deepLink {
-                        action = deepLink.action
-                        uriPattern = deepLink.uriPattern
-                        mimeType = deepLink.mimeType
-                    }
-                }
-
-                destination.arguments.forEach { navArg ->
-                    argument(navArg.name) {
-                        if (navArg.argument.isDefaultValuePresent) {
-                            defaultValue = navArg.argument.defaultValue
-                        }
-                        type = navArg.argument.type
-                        nullable = navArg.argument.isNullable
-                    }
-                }
-            }
-        }
+    ) = with(destination.style) {
+        addComposable(destination, navController, dependenciesContainerBuilder, manualComposableCalls)
     }
 }

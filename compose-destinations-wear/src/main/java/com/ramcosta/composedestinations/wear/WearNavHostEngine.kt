@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.wear.compose.navigation.*
+import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
@@ -47,8 +48,9 @@ internal class WearNavHostEngine(
         modifier: Modifier,
         route: String,
         startRoute: Route,
+        defaultTransitions: NavHostAnimatedDestinationStyle,
         navController: NavHostController,
-        builder: NavGraphBuilder.() -> Unit
+        builder: NavGraphBuilder.() -> Unit,
     ) {
         SwipeDismissableNavHost(
             navController = navController,
@@ -104,7 +106,8 @@ internal class WearNavHostEngine(
         manualComposableCalls: ManualComposableCalls,
     ) {
         @SuppressLint("RestrictedApi")
-        val contentLambda = manualComposableCalls[destination.baseRoute]
+        @Suppress("UNCHECKED_CAST")
+        val contentLambda = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
 
         composable(
             route = destination.route,
@@ -128,14 +131,13 @@ internal class WearNavHostEngine(
         override val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
     ) : DestinationScopeImpl<T>()
 
-    @Suppress("UNCHECKED_CAST")
     @Composable
     private fun <T> CallComposable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-        contentLambda: DestinationLambda<*>?
+        contentWrapper: DestinationLambda<T>?
     ) {
         val scope = remember(navBackStackEntry) {
             WearDestinationScope(
@@ -146,11 +148,10 @@ internal class WearNavHostEngine(
             )
         }
 
-        if (contentLambda == null) {
+        if (contentWrapper == null) {
             with(destination) { scope.Content() }
         } else {
-            contentLambda as DestinationLambda<T>
-            contentLambda(scope)
+            contentWrapper(scope)
         }
     }
 }

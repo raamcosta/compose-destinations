@@ -52,5 +52,4 @@ dependencies {
     api(project(mapOf("path" to ":compose-destinations")))
 
     api(libs.accompanist.material)
-    api(libs.accompanist.animation)
 }

@@ -31,9 +31,10 @@ class Processor(
 
         val navTypeSerializers = resolver.getNavTypeSerializers()
         val navGraphAnnotations = resolver.getNavGraphAnnotations()
+        val navHostGraphAnnotations = resolver.getNavHostGraphAnnotations()
 
         val classesToNavGraphsMapper = KspToCodeGenNavGraphsMapper()
-        val navGraphs = classesToNavGraphsMapper.map(navGraphAnnotations)
+        val navGraphs = classesToNavGraphsMapper.map(navGraphAnnotations, navHostGraphAnnotations)
 
         val functionsToDestinationsMapper = KspToCodeGenDestinationsMapper(
             resolver,
@@ -86,6 +87,11 @@ class Processor(
             .filterIsInstance<KSClassDeclaration>()
     }
 
+    private fun Resolver.getNavHostGraphAnnotations(): Sequence<KSClassDeclaration> {
+        return getSymbolsWithAnnotation(NAV_HOST_GRAPH_ANNOTATION_QUALIFIED)
+            .filterIsInstance<KSClassDeclaration>()
+    }
+
     private fun Resolver.getNavTypeSerializers(): List<NavTypeSerializer> {
         return getSymbolsWithAnnotation(NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED)
             .filterIsInstance<KSClassDeclaration>().map { serializer ->
@@ -120,7 +126,7 @@ class Processor(
     }
 
     private fun Resolver.getCoreType(): Core {
-        val isUsingAnimationsCore = getClassDeclarationByName("$CORE_PACKAGE_NAME.animations.AnimatedNavHostEngine") != null
+        val isUsingAnimationsCore = getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.$CORE_BOTTOM_SHEET_DESTINATION_STYLE") != null
 
         return if (isUsingAnimationsCore) {
             Core.ANIMATIONS

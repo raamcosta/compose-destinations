@@ -103,3 +103,13 @@ fun KSType.findActualClassDeclaration(): KSClassDeclaration? {
 
     return declaration as? KSClassDeclaration?
 }
+
+fun KSClassDeclaration.toImportable(): Importable {
+    return Importable(
+        simpleName.asString(),
+        qualifiedName!!.asString()
+    )
+}
+
+val KSClassDeclaration.isNothing get() =
+    qualifiedName?.asString() == "java.lang.Void" || qualifiedName?.asString() == "kotlin.Nothing"

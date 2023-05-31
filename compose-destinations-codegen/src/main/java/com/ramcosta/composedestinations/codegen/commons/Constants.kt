@@ -8,9 +8,11 @@ const val CORE_PACKAGE_NAME = "com.ramcosta.composedestinations"
 const val DESTINATION_ANNOTATION = "Destination"
 const val ACTIVITY_DESTINATION_ANNOTATION = "ActivityDestination"
 const val NAV_GRAPH_ANNOTATION = "NavGraph"
+const val NAV_HOST_GRAPH_ANNOTATION = "NavHostGraph"
 const val NAV_TYPE_SERIALIZER_ANNOTATION = "NavTypeSerializer"
 const val DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$DESTINATION_ANNOTATION"
 const val NAV_GRAPH_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$NAV_GRAPH_ANNOTATION"
+const val NAV_HOST_GRAPH_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$NAV_HOST_GRAPH_ANNOTATION"
 const val ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$ACTIVITY_DESTINATION_ANNOTATION"
 const val NAV_HOST_PARAM_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.NavHostParam"
 const val NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.navargs.$NAV_TYPE_SERIALIZER_ANNOTATION"
@@ -19,7 +21,15 @@ val rootNavGraphType = Importable(
     "RootNavGraph",
     "$CORE_PACKAGE_NAME.annotation.RootNavGraph"
 )
-val rootNavGraphGenParams = RawNavGraphGenParams(rootNavGraphType, true)
+val rootNavGraphGenParams = RawNavGraphGenParams(
+    type = rootNavGraphType,
+    default = true,
+    isNavHostGraph = true,
+    defaultTransitions = Importable(
+        "NoTransitions",
+        "com.ramcosta.composedestinations.animations.defaults.NoTransitions"
+    )
+)
 
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"
 const val DESTINATION_ANNOTATION_START_ARGUMENT = "start"
@@ -40,12 +50,14 @@ const val NO_PREFIX_GENERATED_NO_ARGS_DESTINATION = "DirectionDestination"
 const val NO_PREFIX_GENERATED_ACTIVITY_DESTINATION = "ActivityDestination"
 const val NO_PREFIX_GENERATED_NO_ARGS_ACTIVITY_DESTINATION = "DirectionActivityDestination"
 const val GENERATED_NAV_GRAPH = "NavGraph"
+const val GENERATED_NAV_HOST_GRAPH = "NavHostGraph"
 const val GENERATED_NAV_GRAPHS_OBJECT = "NavGraphs"
 const val GENERATED_DESTINATION_SUFFIX = "Destination"
 
 const val CORE_DESTINATION_SPEC = "DestinationSpec"
 const val CORE_DIRECTION_DESTINATION_SPEC = "DirectionDestinationSpec"
 const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
+const val CORE_NAV_HOST_GRAPH_SPEC = "NavHostGraphSpec"
 val CORE_ACTIVITY_DESTINATION_SPEC = Importable("ActivityDestinationSpec", "$CORE_PACKAGE_NAME.spec.ActivityDestinationSpec")
 val CORE_DIRECTION_ACTIVITY_DESTINATION_SPEC = Importable("DirectionActivityDestinationSpec", "$CORE_PACKAGE_NAME.spec.DirectionActivityDestinationSpec")
 val CORE_STRING_NAV_TYPE = Importable("DestinationsStringNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsStringNavType")
@@ -64,7 +76,7 @@ val CORE_INT_ARRAY_LIST_NAV_TYPE = Importable("DestinationsIntArrayListNavType",
 val CORE_LONG_ARRAY_LIST_NAV_TYPE = Importable("DestinationsLongArrayListNavType", "$CORE_PACKAGE_NAME.navargs.primitives.arraylist.DestinationsLongArrayListNavType")
 val CORE_STRING_ARRAY_LIST_NAV_TYPE = Importable("DestinationsStringArrayListNavType", "$CORE_PACKAGE_NAME.navargs.primitives.arraylist.DestinationsStringArrayListNavType")
 const val CORE_DIRECTION = "Direction"
-const val CORE_DESTINATION_ANIMATION_STYLE = "DestinationStyleAnimated"
+const val CORE_DESTINATION_ANIMATION_STYLE = "DestinationStyle.Animated"
 const val CORE_BOTTOM_SHEET_DESTINATION_STYLE = "DestinationStyleBottomSheet"
 
 private const val EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME = "ExperimentalAnimationApi"

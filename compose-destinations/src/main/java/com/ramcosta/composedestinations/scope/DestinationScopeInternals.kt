@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.scope
 
 import androidx.annotation.RestrictTo
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
@@ -53,3 +54,21 @@ abstract class NavGraphBuilderDestinationScopeImpl<T> : NavGraphBuilderDestinati
         override val navBackStackEntry: NavBackStackEntry
     ) : NavGraphBuilderDestinationScopeImpl<T>()
 }
+
+internal class AnimatedDestinationScopeImpl<T>(
+    override val destination: DestinationSpec<T>,
+    override val navBackStackEntry: NavBackStackEntry,
+    override val navController: NavController,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    override val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+) : DestinationScopeImpl<T>(),
+    AnimatedDestinationScope<T>,
+    AnimatedVisibilityScope by animatedVisibilityScope
+
+internal class AnimatedNavGraphBuilderDestinationScopeImpl<T>(
+    override val destination: DestinationSpec<T>,
+    override val navBackStackEntry: NavBackStackEntry,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+) : NavGraphBuilderDestinationScopeImpl<T>(),
+    AnimatedNavGraphBuilderDestinationScope<T>,
+    AnimatedVisibilityScope by animatedVisibilityScope

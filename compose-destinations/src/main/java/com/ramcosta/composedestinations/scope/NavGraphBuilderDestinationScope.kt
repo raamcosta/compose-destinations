@@ -61,7 +61,6 @@ inline fun <reified D : DestinationSpec<*>, reified R> NavGraphBuilderDestinatio
  * if you're using the "animations-core" you can use this Scope as a receiver
  * of your Bottom Sheet styled Composable
  */
-@ExperimentalAnimationApi
 @Immutable
 interface AnimatedNavGraphBuilderDestinationScope<T> : NavGraphBuilderDestinationScope<T>,
     AnimatedVisibilityScope

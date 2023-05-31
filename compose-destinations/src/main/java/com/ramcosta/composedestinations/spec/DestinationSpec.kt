@@ -77,8 +77,8 @@ interface DestinationSpec<T> : Route {
      * - [DestinationStyle.Default]
      * - [DestinationStyle.Dialog]
      * - [DestinationStyle.Runtime]
+     * - [DestinationStyle.Animated]
      * And when using animations core, it can also be:
-     * - `DestinationStyleAnimated`
      * - `DestinationStyleBottomSheet`
      */
     val style: DestinationStyle get() = DestinationStyle.Default

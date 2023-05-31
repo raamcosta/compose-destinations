@@ -104,17 +104,10 @@ class InitialValidator(
 
     private fun DestinationGeneratingParams.validateReceiverAnimatedVisibilityScope() {
         if (composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
-            if (core != Core.ANIMATIONS) {
+            if (destinationStyleType !is DestinationStyleType.Animated && destinationStyleType !is DestinationStyleType.Default) {
                 throw IllegalDestinationsSetup(
                     "'${composableName}' composable: " +
-                            "You need to include $CORE_ANIMATIONS_DEPENDENCY dependency to use a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!"
-                )
-            }
-
-            if (destinationStyleType is DestinationStyleType.Dialog || destinationStyleType is DestinationStyleType.BottomSheet) {
-                throw IllegalDestinationsSetup(
-                    "'${composableName}' composable: " +
-                            "Only destinations with a DestinationStyleAnimated or DestinationStyle.Default style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!"
+                            "Only destinations with a DestinationStyle.Animated or DestinationStyle.Default style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!"
                 )
             }
         }

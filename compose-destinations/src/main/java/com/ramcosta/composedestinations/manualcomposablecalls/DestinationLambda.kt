@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.manualcomposablecalls
 
 import android.annotation.SuppressLint
 import androidx.annotation.RestrictTo
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
 import com.ramcosta.composedestinations.scope.BottomSheetDestinationScope
@@ -18,19 +17,6 @@ sealed class DestinationLambda<T> {
     )
 
     class Normal<T>(
-        val content: @Composable DestinationScope<T>.() -> Unit
-    ) : DestinationLambda<T>() {
-
-        @Composable
-        override operator fun invoke(
-            destinationScope: DestinationScope<T>
-        ) {
-            destinationScope.content()
-        }
-    }
-
-    @ExperimentalAnimationApi
-    class Animated<T>(
         val content: @Composable AnimatedDestinationScope<T>.() -> Unit
     ) : DestinationLambda<T>() {
 
@@ -39,6 +25,18 @@ sealed class DestinationLambda<T> {
             destinationScope: DestinationScope<T>
         ) {
             (destinationScope as AnimatedDestinationScope<T>).content()
+        }
+    }
+
+    class Dialog<T>(
+        val content: @Composable DestinationScope<T>.() -> Unit
+    ) : DestinationLambda<T>() {
+
+        @Composable
+        override operator fun invoke(
+            destinationScope: DestinationScope<T>
+        ) {
+            destinationScope.content()
         }
     }
 

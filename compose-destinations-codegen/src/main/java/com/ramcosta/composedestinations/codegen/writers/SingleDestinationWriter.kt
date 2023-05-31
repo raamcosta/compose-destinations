@@ -576,14 +576,10 @@ class SingleDestinationWriter(
     }
 
     private fun destinationStyleDialog(destinationStyleType: DestinationStyleType.Dialog): String {
-        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.type.importable.getCodePlaceHolder()}\n"
+        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.importable.getCodePlaceHolder()}\n"
     }
 
     private fun destinationStyleAnimated(destinationStyleType: DestinationStyleType.Animated): String {
-        if (core != Core.ANIMATIONS) {
-            throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_DESTINATION_ANIMATION_STYLE!")
-        }
-
         experimentalAnimationApiType.addImport()
 
         if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
@@ -593,7 +589,7 @@ class SingleDestinationWriter(
             ).addImport()
         }
 
-        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.type.importable.getCodePlaceHolder()}\n"
+        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.importable.getCodePlaceHolder()}\n"
     }
 
     private fun destinationStyleBottomSheet(): String {
