@@ -73,15 +73,17 @@ internal class DefaultNavHostEngine(
     ) {
         val transitions: DestinationStyle.Animated? = navGraph.defaultTransitions
         if (transitions != null) {
-            navigation(
-                startDestination = navGraph.startRoute.route,
-                route = navGraph.route,
-                enterTransition = { with(transitions) { enterTransition() } },
-                exitTransition = { with(transitions) { exitTransition() } },
-                popEnterTransition = { with(transitions) { popEnterTransition() } },
-                popExitTransition = { with(transitions) { popExitTransition() } },
-                builder = builder
-            )
+            with(transitions) {
+                navigation(
+                    startDestination = navGraph.startRoute.route,
+                    route = navGraph.route,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                    builder = builder
+                )
+            }
         } else {
             navigation(
                 startDestination = navGraph.startRoute.route,

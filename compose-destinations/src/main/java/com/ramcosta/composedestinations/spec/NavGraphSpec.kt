@@ -32,7 +32,7 @@ interface NavGraphSpec : Direction, Route {
     /**
      * Default enter/exit transition animations for destinations that belong
      * to this navigation graph.
-     * If this is a nested graph, then if not specified (null) then the parent ones
+     * If this is a nested graph, then if not specified (null) the parent ones
      * will apply.
      *
      * If the [DestinationSpec.style] itself defines another set of animations, then

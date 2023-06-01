@@ -56,9 +56,8 @@ inline fun <reified D : DestinationSpec<*>, reified R> NavGraphBuilderDestinatio
     resultRecipient(navBackStackEntry, D::class.java, R::class.java)
 
 /**
- * Like [NavGraphBuilderDestinationScope] but also [ColumnScope] so that
- * if you're using the "animations-core" you can use this Scope as a receiver
- * of your Bottom Sheet styled Composable
+ * Like [NavGraphBuilderDestinationScope] but also [AnimatedVisibilityScope] so that
+ * you can use this Scope as a receiver of your Animated and Default styled Composable
  */
 @Immutable
 interface AnimatedNavGraphBuilderDestinationScope<T> : NavGraphBuilderDestinationScope<T>,
