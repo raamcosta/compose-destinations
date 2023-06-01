@@ -1,3 +1,4 @@
+@file:OptIn(InternalDestinationsApi::class)
 package com.ramcosta.composedestinations.utils
 
 import androidx.compose.runtime.Composable
@@ -31,7 +32,6 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
  * }
  * ```
  */
-@OptIn(InternalDestinationsApi::class)
 fun <T> NavGraphBuilder.composable(
     destination: DestinationSpec<T>,
     content: @Composable AnimatedNavGraphBuilderDestinationScope<T>.() -> Unit
@@ -146,7 +146,6 @@ fun <T> NavGraphBuilder.dialogComposable(
  * }
  * ```
  */
-@OptIn(InternalDestinationsApi::class)
 fun <T> NavGraphBuilder.activity(
     destination: ActivityDestinationSpec<T>,
 ) = with(destination.style as DestinationStyle.Activity) {

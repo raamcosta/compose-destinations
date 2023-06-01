@@ -36,11 +36,9 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
  * @param startRoute the start destination of the NavHost. By default, we'll use the `startDestination`
  * of the [navGraph]. This makes it possible to override that default on runtime.
  *
- * @param engine [NavHostEngine] to use. If you are not using animation features
- * (which need "io.github.raamcosta.compose-destinations:animations-core" dependency), you don't
+ * @param engine [NavHostEngine] to use. If you are not targeting wear
+ * (which need "io.github.raamcosta.compose-destinations:wear" dependency), you don't
  * need to explicitly pass in anything, since the default engine will be used.
- * If using animation features, then you should pass the [NavHostEngine] returned by
- * `rememberAnimatedNavHostEngine` function.
  *
  * @param navController [NavHostController] that can be used to navigate between this NavHost's destinations.
  * If you need this outside the scope of this function, you should get it from [androidx.navigation.compose.rememberNavController]

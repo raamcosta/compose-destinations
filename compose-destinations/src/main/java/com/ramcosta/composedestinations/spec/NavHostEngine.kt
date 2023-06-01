@@ -13,9 +13,6 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
  * Also has a way to get the best suited [NavHostController].
  *
  * This is passed in to the [com.ramcosta.composedestinations.DestinationsNavHost] call.
- * By default the engine of the main core will be used, however, if you are using
- * "io.github.raamcosta.compose-destinations:animations-core" you must pass in the animated
- * version of the engine which can be obtained by calling `rememberAnimatedNavHostEngine`.
  */
 interface NavHostEngine {
 
