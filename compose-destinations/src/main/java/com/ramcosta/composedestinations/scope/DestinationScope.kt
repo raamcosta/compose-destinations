@@ -75,8 +75,7 @@ inline fun <reified D : DestinationSpec<*>, reified R> DestinationScopeWithNoDep
 
 /**
  * Like [DestinationScope] but also [AnimatedVisibilityScope] so that
- * if you're using animations you can use this Scope as a receiver
- * of your Animated Composable
+ * you can use this Scope as a receiver of your Animated or Default styled Composable
  */
 @Immutable
 interface AnimatedDestinationScope<T> : DestinationScope<T>, AnimatedVisibilityScope
