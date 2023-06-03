@@ -9,7 +9,7 @@ import com.ramcosta.composedestinations.codegen.writers.sub.*
 
 internal interface ServiceLocatorAccessor {
     val codeGenerator: CodeOutputStreamMaker
-    val core: Core
+    val isBottomSheetDependencyPresent: Boolean
     val codeGenConfig: CodeGenConfig
 }
 
@@ -32,7 +32,7 @@ internal fun ServiceLocatorAccessor.destinationsWriter(
 ) = DestinationsWriter(
     codeGenConfig,
     codeGenerator,
-    core,
+    isBottomSheetDependencyPresent,
     customNavTypeByType
 )
 
@@ -73,7 +73,7 @@ internal val ServiceLocatorAccessor.destinationWithNavArgsMapper get() = Destina
 
 internal val ServiceLocatorAccessor.initialValidator get() = InitialValidator(
     codeGenConfig,
-    core
+    isBottomSheetDependencyPresent
 )
 
 internal val ServiceLocatorAccessor.defaultKtxSerializableNavTypeSerializerWriter get() =

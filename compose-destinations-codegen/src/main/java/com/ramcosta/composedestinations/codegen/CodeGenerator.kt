@@ -22,7 +22,7 @@ internal val codeGenNoArgsActivityDestination get() = _generatedNoArgsActivityDe
 
 class CodeGenerator(
     override val codeGenerator: CodeOutputStreamMaker,
-    override val core: Core,
+    override val isBottomSheetDependencyPresent: Boolean,
     override val codeGenConfig: CodeGenConfig
 ) : ServiceLocatorAccessor {
 

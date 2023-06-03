@@ -7,7 +7,7 @@ apply(from = "${rootProject.projectDir}/publish.gradle")
 
 android {
 
-    namespace = "com.ramcosta.composedestinations.animations"
+    namespace = "com.ramcosta.composedestinations.bottomsheet"
     compileSdk = libs.versions.compileSdk.get().toIntOrNull()
 
     defaultConfig {
@@ -49,7 +49,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
 
-    api(project(mapOf("path" to ":compose-destinations")))
+    implementation(project(mapOf("path" to ":compose-destinations")))
 
     api(libs.accompanist.material)
 }

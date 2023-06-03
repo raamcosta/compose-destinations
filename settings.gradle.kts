@@ -11,7 +11,7 @@ rootProject.name = "ComposeDestinations"
 include(":compose-destinations")
 include(":compose-destinations-ksp")
 include(":compose-destinations-codegen")
-include(":compose-destinations-animations")
+include(":compose-destinations-bottom-sheet")
 include(":compose-destinations-wear")
 include(":sample")
 include(":sample-wear")
