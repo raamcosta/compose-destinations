@@ -19,7 +19,7 @@ data class OtherActivityNavArgs(
 
 @SettingsNavGraph
 @ActivityDestination(
-    navArgsDelegate = OtherActivityNavArgs::class,
+    navArgs = OtherActivityNavArgs::class,
 )
 annotation class OtherActivityDestiantion
 

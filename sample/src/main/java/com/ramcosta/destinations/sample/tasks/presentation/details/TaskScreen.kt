@@ -20,7 +20,7 @@ import com.ramcosta.destinations.sample.destinations.AddStepDialogDestination
 import com.ramcosta.destinations.sample.destinations.StepScreenDestination
 import com.ramcosta.destinations.sample.tasks.domain.Step
 
-@Destination(navArgsDelegate = TaskScreenNavArgs::class)
+@Destination(navArgs = TaskScreenNavArgs::class)
 @Composable
 fun TaskScreen(
     navArgs: TaskScreenNavArgs,

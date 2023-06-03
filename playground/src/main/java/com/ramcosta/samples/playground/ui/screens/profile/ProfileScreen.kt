@@ -27,7 +27,7 @@ import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
     ],
     wrappers = [HidingScreenWrapper::class],
     style = ProfileTransitions::class,
-    navArgsDelegate = ProfileScreenNavArgs::class
+    navArgs = ProfileScreenNavArgs::class
 )
 @Composable
 fun AnimatedVisibilityScope.ProfileScreen(
