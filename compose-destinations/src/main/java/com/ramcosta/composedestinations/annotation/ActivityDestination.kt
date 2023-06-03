@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
  * Like [Destination] but adds an [Activity] as a destination.
  *
  * @param route main route of this destination (by default, the name of the activity class)
- * @param navArgsDelegate class with a primary constructor where all navigation arguments are
+ * @param navArgs class with a primary constructor where all navigation arguments are
  * to be defined.
  * The generated `Destination` class has `argsFrom` methods that accept an `Intent` and return an
  * instance of this class.
@@ -24,7 +24,7 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.SOURCE)
 annotation class ActivityDestination(
     val route: String = Destination.COMPOSABLE_NAME,
-    val navArgsDelegate: KClass<*> = Nothing::class,
+    val navArgs: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
     val activityClass: KClass<out Activity> = Nothing::class,
     val targetPackage: String = DEFAULT_NULL,

@@ -32,13 +32,13 @@ import kotlin.reflect.KClass
 @Destination
 annotation class HidingScreenDestination(
     val wrappers: Array<KClass<out DestinationWrapper>> = [DrawerOpeningWrapper::class],
-    val navArgsDelegate: KClass<*> = Nothing::class,
+    val navArgs: KClass<*> = Nothing::class,
 )
 
 @HidingScreenDestination
 annotation class HidingScreenDestination2(
     val wrappers: Array<KClass<out DestinationWrapper>> = [HidingScreenWrapper::class],
-    val navArgsDelegate: KClass<*> = ProfileScreenNavArgs::class,
+    val navArgs: KClass<*> = ProfileScreenNavArgs::class,
 )
 
 data class AnotherTestNavArgs(
@@ -46,7 +46,7 @@ data class AnotherTestNavArgs(
 )
 
 @HidingScreenDestination2(
-    navArgsDelegate = AnotherTestNavArgs::class
+    navArgs = AnotherTestNavArgs::class
 )
 @Composable
 fun AnotherTestScreen() {

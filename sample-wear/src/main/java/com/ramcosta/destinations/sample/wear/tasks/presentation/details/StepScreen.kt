@@ -8,12 +8,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Text
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.destinations.sample.wear.core.viewmodel.viewModel
 
-@Destination(navArgsDelegate = StepScreenNavArgs::class)
+@Destination(navArgs = StepScreenNavArgs::class)
 @Composable
 fun StepScreen(
     viewModel: StepDetailsViewModel = viewModel()

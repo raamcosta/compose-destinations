@@ -6,7 +6,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.wear.compose.material.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -15,7 +14,7 @@ import com.ramcosta.destinations.sample.wear.destinations.AddStepScreenDestinati
 import com.ramcosta.destinations.sample.wear.destinations.StepScreenDestination
 import com.ramcosta.destinations.sample.wear.tasks.domain.Step
 
-@Destination(navArgsDelegate = TaskScreenNavArgs::class)
+@Destination(navArgs = TaskScreenNavArgs::class)
 @Composable
 fun TaskScreen(
     navArgs: TaskScreenNavArgs,

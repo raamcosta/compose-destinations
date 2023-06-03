@@ -34,7 +34,7 @@ val rootNavGraphGenParams = RawNavGraphGenParams(
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"
 const val DESTINATION_ANNOTATION_STYLE_ARGUMENT = "style"
 const val DESTINATION_ANNOTATION_WRAPPERS_ARGUMENT = "wrappers"
-const val DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT = "navArgsDelegate"
+const val DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT = "navArgs"
 const val DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT = "deepLinks"
 
 const val DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER = "@ramcosta.destinations.fullroute@" // Needs to be the same as the constant in core module
