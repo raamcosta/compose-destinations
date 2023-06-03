@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
 
-@Destination(navArgsDelegate = StepScreenNavArgs::class)
+@Destination(navArgs = StepScreenNavArgs::class)
 @Composable
 fun StepScreen(
     viewModel: StepDetailsViewModel = viewModel()

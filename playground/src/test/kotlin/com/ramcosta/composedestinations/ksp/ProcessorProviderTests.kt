@@ -71,7 +71,7 @@ class ProcessorProviderTests {
     }
 
     @Test
-    fun `@Destination with navArgsDelegate no serializable`() {
+    fun `@Destination with navArgs no serializable`() {
         val result = compile(
             kotlin(
                 "Screen.kt",
@@ -93,7 +93,7 @@ class ProcessorProviderTests {
           @Destination(route = "test1")
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgsDelegate = TestArgs::class)
+          @Destination(route = "test2", navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -102,11 +102,11 @@ class ProcessorProviderTests {
         )
 
         assertEquals(result.exitCode, KotlinCompilation.ExitCode.COMPILATION_ERROR)
-        assertTrue(result.messages.contains("com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup: Composable 'TestScreen2': 'navArgsDelegate' cannot have arguments that are not navigation types."))
+        assertTrue(result.messages.contains("com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup: Composable 'TestScreen2': 'navArgs' cannot have arguments that are not navigation types."))
     }
 
     @Test
-    fun `@Destination with navArgsDelegate serializable`() {
+    fun `@Destination with navArgs serializable`() {
         val compilation = prepareCompilation(
             kotlin(
                 "Screen.kt",
@@ -130,7 +130,7 @@ class ProcessorProviderTests {
           @Destination(route = "test1")
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgsDelegate = TestArgs::class)
+          @Destination(route = "test2", navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -149,7 +149,7 @@ class ProcessorProviderTests {
     }
 
     @Test
-    fun `@Destination with navArgsDelegate non serializable typealias`() {
+    fun `@Destination with navArgs non serializable typealias`() {
         val result = compile(
             kotlin(
                 "Screen.kt",
@@ -173,7 +173,7 @@ class ProcessorProviderTests {
           @Destination(route = "test1")
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgsDelegate = TestArgs::class)
+          @Destination(route = "test2", navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -182,11 +182,11 @@ class ProcessorProviderTests {
         )
 
         assertEquals(result.exitCode, KotlinCompilation.ExitCode.COMPILATION_ERROR)
-        assertTrue(result.messages.contains("com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup: Composable 'TestScreen2': 'navArgsDelegate' cannot have arguments that are not navigation types."))
+        assertTrue(result.messages.contains("com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup: Composable 'TestScreen2': 'navArgs' cannot have arguments that are not navigation types."))
     }
 
     @Test
-    fun `@Destination with navArgsDelegate serializable typealias`() {
+    fun `@Destination with navArgs serializable typealias`() {
         val compilation = prepareCompilation(
             kotlin(
                 "Screen.kt",
@@ -212,7 +212,7 @@ class ProcessorProviderTests {
           @Destination(route = "test1")
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgsDelegate = TestArgs::class)
+          @Destination(route = "test2", navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -231,7 +231,7 @@ class ProcessorProviderTests {
     }
 
     @Test
-    fun `@Destination with navArgsDelegate annotated serializable typealias`() {
+    fun `@Destination with navArgs annotated serializable typealias`() {
         val compilation = prepareCompilation(
             kotlin(
                 "Screen.kt",
@@ -256,7 +256,7 @@ class ProcessorProviderTests {
           @Destination(route = "test1")
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgsDelegate = TestArgs::class)
+          @Destination(route = "test2", navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -275,7 +275,7 @@ class ProcessorProviderTests {
     }
 
     @Test
-    fun `@Destination with navArgsDelegate simple typealias`() {
+    fun `@Destination with navArgs simple typealias`() {
         val compilation = prepareCompilation(
             kotlin(
                 "Screen.kt",
@@ -295,7 +295,7 @@ class ProcessorProviderTests {
           @Destination(route = "test1")
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgsDelegate = TestArgs::class)
+          @Destination(route = "test2", navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -314,7 +314,7 @@ class ProcessorProviderTests {
     }
 
     @Test
-    fun `@Destination with navArgsDelegate double typealias`() {
+    fun `@Destination with navArgs double typealias`() {
         val compilation = prepareCompilation(
             kotlin(
                 "Screen.kt",
@@ -335,7 +335,7 @@ class ProcessorProviderTests {
           @Destination(route = "test1")
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgsDelegate = TestArgs::class)
+          @Destination(route = "test2", navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -354,7 +354,7 @@ class ProcessorProviderTests {
     }
 
     @Test
-    fun `@Destination with navArgsDelegate from different module`() {
+    fun `@Destination with navArgs from different module`() {
         val compilation = prepareCompilation(
             kotlin(
                 "Screen.kt",
@@ -369,7 +369,7 @@ class ProcessorProviderTests {
           @Destination(route = "test1")
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgsDelegate = BlogPostArgs::class)
+          @Destination(route = "test2", navArgs = BlogPostArgs::class)
           fun TestScreen2(
             navArgs: BlogPostArgs
           ) {}
@@ -389,7 +389,7 @@ class ProcessorProviderTests {
     }
 
     @Test
-    fun `@Destination with navArgsDelegate from different module with default values`() {
+    fun `@Destination with navArgs from different module with default values`() {
         val compilation = prepareCompilation(
             kotlin(
                 "Screen.kt",
@@ -404,7 +404,7 @@ class ProcessorProviderTests {
           @Destination(route = "test1")
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgsDelegate = WithDefaultValueArgs::class)
+          @Destination(route = "test2", navArgs = WithDefaultValueArgs::class)
           fun TestScreen2(
             navArgs: WithDefaultValueArgs
           ) {}

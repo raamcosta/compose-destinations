@@ -11,7 +11,7 @@ data class AddStepDialogNavArgs(
     val taskId: Int
 )
 
-@Destination(navArgsDelegate = AddStepDialogNavArgs::class)
+@Destination(navArgs = AddStepDialogNavArgs::class)
 @Composable
 fun AddStepScreen(
     navigator: DestinationsNavigator,

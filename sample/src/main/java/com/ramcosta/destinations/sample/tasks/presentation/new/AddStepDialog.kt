@@ -14,7 +14,7 @@ data class AddStepDialogNavArgs(
 
 @Destination(
     style = DestinationStyle.Dialog::class,
-    navArgsDelegate = AddStepDialogNavArgs::class
+    navArgs = AddStepDialogNavArgs::class
 )
 @Composable
 fun AddStepDialog(
