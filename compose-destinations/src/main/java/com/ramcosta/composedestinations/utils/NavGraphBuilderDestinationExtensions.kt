@@ -14,6 +14,7 @@ import com.ramcosta.composedestinations.scope.NavGraphBuilderDestinationScopeImp
 import com.ramcosta.composedestinations.spec.ActivityDestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Like [androidx.navigation.compose.composable] but accepts
@@ -33,7 +34,7 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
  * ```
  */
 fun <T> NavGraphBuilder.composable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable AnimatedNavGraphBuilderDestinationScope<T>.() -> Unit
 ) {
     when (val style = destination.style) {
@@ -106,7 +107,7 @@ fun <T> NavGraphBuilder.composable(
  * ```
  */
 fun <T> NavGraphBuilder.dialogComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable NavGraphBuilderDestinationScope<T>.() -> Unit
 ) = with(destination) {
     val style = destination.style

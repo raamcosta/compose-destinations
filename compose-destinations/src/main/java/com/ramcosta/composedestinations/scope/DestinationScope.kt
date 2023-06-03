@@ -13,6 +13,7 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.resultBackNavigator
 import com.ramcosta.composedestinations.result.resultRecipient
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Scope where a destination screen will be called in.
@@ -23,7 +24,7 @@ interface DestinationScope<T>: DestinationScopeWithNoDependencies<T> {
     /**
      * [DestinationSpec] related to this scope
      */
-    override val destination: DestinationSpec<T>
+    override val destination: TypedDestinationSpec<T>
 
     /**
      * [NavBackStackEntry] of the current destination
@@ -69,7 +70,7 @@ inline fun <reified R> DestinationScopeWithNoDependencies<*>.resultBackNavigator
  * Returns a well typed [ResultRecipient] for this [DestinationScope]
  */
 @Composable
-inline fun <reified D : DestinationSpec<*>, reified R> DestinationScopeWithNoDependencies<*>.resultRecipient(): ResultRecipient<D, R> =
+inline fun <reified D : DestinationSpec, reified R> DestinationScopeWithNoDependencies<*>.resultRecipient(): ResultRecipient<D, R> =
     resultRecipient(navBackStackEntry, D::class.java, R::class.java)
 
 /**

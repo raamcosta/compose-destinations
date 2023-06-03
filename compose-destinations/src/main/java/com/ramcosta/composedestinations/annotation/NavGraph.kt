@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.annotation
 
-import com.ramcosta.composedestinations.animations.defaults.NoTransitions
 import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
+import com.ramcosta.composedestinations.animations.defaults.NoTransitions
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import kotlin.reflect.KClass
 
@@ -55,12 +55,22 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 annotation class NavGraph(
     val defaultTransitions: KClass<out DestinationStyle.Animated> = Nothing::class,
+    val graphArgs: KClass<out StartRouteArgs<*>> = Nothing::class,
+    val deepLinks: Array<DeepLink> = [],
     val route: String = ANNOTATION_NAME,
     val default: Boolean = false
 ) {
     companion object {
         private const val ANNOTATION_NAME = "@ramcosta.destinations.annotation-navgraph-route@"
     }
+}
+
+interface StartRouteArgs<T> {
+    val startRouteArgs: T
+}
+
+interface StartRouteNoArgs: StartRouteArgs<Unit>  {
+    override val startRouteArgs: Unit get() = Unit
 }
 
 /**

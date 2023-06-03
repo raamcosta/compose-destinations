@@ -48,7 +48,7 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
  * destination being navigated to.
  */
 inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
-    destination: DestinationSpec<*>,
+    destination: DestinationSpec,
     dependencyProvider: () -> D,
 ) {
     if (this.destination.originalDestination.route == destination.originalDestination.route) {

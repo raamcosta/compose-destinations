@@ -6,10 +6,11 @@ import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import com.ramcosta.composedestinations.bottomsheet.scope.BottomSheetNavGraphBuilderDestinationScopeImpl
+import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.scope.BottomSheetNavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
-import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Like [com.google.accompanist.navigation.material.bottomSheet] but accepts
@@ -30,7 +31,7 @@ import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomS
  */
 @ExperimentalMaterialNavigationApi
 fun <T> NavGraphBuilder.bottomSheetComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable BottomSheetNavGraphBuilderDestinationScope<T>.() -> Unit
 ) {
     when (destination.style) {

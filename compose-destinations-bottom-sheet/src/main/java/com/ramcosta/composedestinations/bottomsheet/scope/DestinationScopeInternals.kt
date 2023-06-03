@@ -9,10 +9,10 @@ import com.ramcosta.composedestinations.scope.BottomSheetDestinationScope
 import com.ramcosta.composedestinations.scope.BottomSheetNavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScopeImpl
 import com.ramcosta.composedestinations.scope.NavGraphBuilderDestinationScopeImpl
-import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 internal class BottomSheetDestinationScopeImpl<T>(
-    override val destination: DestinationSpec<T>,
+    override val destination: TypedDestinationSpec<T>,
     override val navBackStackEntry: NavBackStackEntry,
     override val navController: NavController,
     columnScope: ColumnScope,
@@ -22,7 +22,7 @@ internal class BottomSheetDestinationScopeImpl<T>(
     ColumnScope by columnScope
 
 internal class BottomSheetNavGraphBuilderDestinationScopeImpl<T>(
-    override val destination: DestinationSpec<T>,
+    override val destination: TypedDestinationSpec<T>,
     override val navBackStackEntry: NavBackStackEntry,
     columnScope: ColumnScope,
 ) : NavGraphBuilderDestinationScopeImpl<T>(),

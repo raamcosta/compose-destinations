@@ -7,10 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
-import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.scope.DestinationScope
 
-interface ActivityDestinationSpec<T> : DestinationSpec<T> {
+interface ActivityDestinationSpec<T> : TypedDestinationSpec<T> {
 
     /**
      * See [androidx.navigation.ActivityNavigator.Destination.targetPackage]

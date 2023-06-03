@@ -11,7 +11,7 @@ import com.ramcosta.composedestinations.navigation.DestinationDependenciesContai
 import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainerImpl
 import com.ramcosta.composedestinations.navigation.DestinationsNavController
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 abstract class DestinationScopeImpl<T> : DestinationScope<T> {
@@ -31,7 +31,7 @@ abstract class DestinationScopeImpl<T> : DestinationScope<T> {
     }
 
     internal class Default<T>(
-        override val destination: DestinationSpec<T>,
+        override val destination: TypedDestinationSpec<T>,
         override val navBackStackEntry: NavBackStackEntry,
         override val navController: NavController,
         override val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
@@ -50,13 +50,13 @@ abstract class NavGraphBuilderDestinationScopeImpl<T> : NavGraphBuilderDestinati
     }
 
     internal class Default<T>(
-        override val destination: DestinationSpec<T>,
+        override val destination: TypedDestinationSpec<T>,
         override val navBackStackEntry: NavBackStackEntry
     ) : NavGraphBuilderDestinationScopeImpl<T>()
 }
 
 internal class AnimatedDestinationScopeImpl<T>(
-    override val destination: DestinationSpec<T>,
+    override val destination: TypedDestinationSpec<T>,
     override val navBackStackEntry: NavBackStackEntry,
     override val navController: NavController,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -66,7 +66,7 @@ internal class AnimatedDestinationScopeImpl<T>(
     AnimatedVisibilityScope by animatedVisibilityScope
 
 internal class AnimatedNavGraphBuilderDestinationScopeImpl<T>(
-    override val destination: DestinationSpec<T>,
+    override val destination: TypedDestinationSpec<T>,
     override val navBackStackEntry: NavBackStackEntry,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) : NavGraphBuilderDestinationScopeImpl<T>(),

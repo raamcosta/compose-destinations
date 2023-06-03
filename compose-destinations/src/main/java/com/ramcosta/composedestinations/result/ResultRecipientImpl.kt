@@ -14,7 +14,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
-internal class ResultRecipientImpl<D : DestinationSpec<*>, R>(
+internal class ResultRecipientImpl<D : DestinationSpec, R>(
     private val navBackStackEntry: NavBackStackEntry,
     resultOriginType: Class<D>,
     resultType: Class<R>,
