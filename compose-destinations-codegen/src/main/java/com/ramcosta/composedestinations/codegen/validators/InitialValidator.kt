@@ -22,8 +22,6 @@ class InitialValidator(
         destinations.forEach { destination ->
             destination.checkNavArgTypes()
 
-            destination.checkLegacyNavGraphInfo()
-
             destination.validateRoute(currentKnownRoutes = cleanRoutes)
 
             destination.validateComposableName(currentKnownComposableNames = composableNames)
@@ -40,13 +38,6 @@ class InitialValidator(
 
             cleanRoutes.add(destination.cleanRoute)
             composableNames.add(destination.composableName)
-        }
-
-        if (destinations.any { it.navGraphInfo is NavGraphInfo.AnnotatedSource } &&
-                destinations.any { it.navGraphInfo is NavGraphInfo.Legacy && !it.navGraphInfo.isDefault  }) {
-            // User is using both ways to set navgraphs, fail the build
-            throw IllegalDestinationsSetup("Cannot use both the deprecated way to set navgraphs and the new one.\n" +
-                    "Please migrate all your Destinations to use the new @NavGraph annotations instead!")
         }
     }
 
@@ -75,30 +66,10 @@ class InitialValidator(
         if (codeGenConfig.mode == CodeGenMode.Destinations
             || (codeGenConfig.mode is CodeGenMode.SingleModule && !codeGenConfig.mode.generateNavGraphs)) {
 
-            when (val info = navGraphInfo) {
-                is NavGraphInfo.Legacy -> {
-                    if (info.navGraphRoute != "root") {
-                        Logger.instance.warn(
-                            "'${composableName}' composable: a navGraph was set but it will be ignored. " +
-                                    "Reason: nav graphs generation was disabled by ksp gradle configuration."
-                        )
-                    }
-
-                    if (info.start) {
-                        Logger.instance.warn(
-                            "'${composableName}' composable: destination was set as the start destination but that will be ignored. " +
-                                    "Reason: nav graphs generation was disabled by ksp gradle configuration."
-                        )
-                    }
-                }
-
-                is NavGraphInfo.AnnotatedSource -> {
-                    Logger.instance.warn(
-                        "'${composableName}' composable: is annotated with a `NavGraph` annotation, but it will be ignored." +
-                                "Reason: nav graphs generation was disabled by ksp gradle configuration."
-                    )
-                }
-            }
+            Logger.instance.warn(
+                "'${composableName}' composable: is annotated with a `NavGraph` annotation, but it will be ignored." +
+                        "Reason: nav graphs generation was disabled by ksp gradle configuration."
+            )
         }
     }
 
@@ -245,23 +216,6 @@ class InitialValidator(
         if (resultType.importable.qualifiedName !in primitives && !resultType.isSerializable && !resultType.isParcelable) {
             throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: " +
                     "Result types must be one of: ${listOf("String", "Long", "Boolean", "Float", "Int", "Parcelable", "Serializable").joinToString(", ")}")
-        }
-    }
-
-    private fun DestinationGeneratingParams.checkLegacyNavGraphInfo() {
-        if (navGraphInfo !is NavGraphInfo.Legacy || navGraphInfo.isDefault) return
-
-        val navGraphRoute = (navGraphInfo as NavGraphInfo.Legacy).navGraphRoute
-        val isStart = (navGraphInfo as NavGraphInfo.Legacy).start
-
-        if (navGraphRoute == "root") {
-            // user didn't change navGraph, so he changed start to true, so:
-            Logger.instance.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.\n" +
-                    "Use '@RootNavGraph(start = true)' instead.")
-        } else {
-            Logger.instance.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.\n" +
-                "Use '@MyNavGraph${if (isStart) "(start = true)" else ""}' instead, replacing \"My\" with the nav graph name " +
-                    "(Read about nav graph annotations in documentation website under the nav graph definition section).")
         }
     }
 }

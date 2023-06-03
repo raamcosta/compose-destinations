@@ -5,22 +5,6 @@ import com.ramcosta.composedestinations.codegen.model.CodeGenMode
 import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 
-internal fun legacyStartingDestination(
-    navGraphRoute: String,
-    generatedDestinations: List<GeneratedDestination>
-): String {
-    val startingDestinations = generatedDestinations.filter { it.navGraphInfo.start }
-    if (startingDestinations.isEmpty()) {
-        throw IllegalDestinationsSetup("Use argument `start = true` in the @Destination annotation of the '$navGraphRoute' nav graph's start destination!")
-    }
-
-    if (startingDestinations.size > 1) {
-        throw IllegalDestinationsSetup("Found ${startingDestinations.size} start destinations in '$navGraphRoute' nav graph, only one is allowed!")
-    }
-
-    return startingDestinations[0].simpleName
-}
-
 internal fun startingRoute(
     codeGenConfig: CodeGenConfig,
     navGraphName: String,

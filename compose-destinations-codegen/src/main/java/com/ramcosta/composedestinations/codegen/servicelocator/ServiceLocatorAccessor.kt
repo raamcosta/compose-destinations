@@ -16,10 +16,8 @@ internal interface ServiceLocatorAccessor {
 internal val ServiceLocatorAccessor.moduleOutputWriter get() = ModuleOutputWriter(
     codeGenConfig,
     navGraphsModeWriter,
-    legacyNavGraphsModeWriter,
     destinationsListModeWriter,
     navGraphsSingleObjectWriter,
-    legacyNavGraphsSingleObjectWriter,
     singleModuleExtensionsWriter
 )
 
@@ -49,17 +47,6 @@ internal val ServiceLocatorAccessor.navGraphsSingleObjectWriter get() = NavGraph
     codeGenerator,
     codeGenConfig
 )
-
-//region legacy navgraphs setup
-internal val ServiceLocatorAccessor.legacyNavGraphsModeWriter get() = LegacyNavGraphsModeWriter(
-    codeGenerator,
-    codeGenConfig,
-)
-
-internal val ServiceLocatorAccessor.legacyNavGraphsSingleObjectWriter get() = LegacyNavGraphsSingleObjectWriter(
-    codeGenerator,
-)
-//endregion
 
 internal val ServiceLocatorAccessor.singleModuleExtensionsWriter get() = SingleModuleExtensionsWriter(
     codeGenerator,

@@ -25,8 +25,7 @@ class NavGraphsModeWriter(
             if (it.navGraphInfo.isDefault) {
                 defaultNavGraph ?: rootNavGraphGenParams
             } else {
-                val info = it.navGraphInfo as NavGraphInfo.AnnotatedSource
-                navGraphsByType[info.graphType] ?: rootNavGraphGenParams
+                navGraphsByType[it.navGraphInfo.graphType] ?: rootNavGraphGenParams
             }
         }
 

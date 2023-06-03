@@ -6,10 +6,8 @@ import com.ramcosta.composedestinations.codegen.writers.sub.*
 class ModuleOutputWriter(
     private val codeGenConfig: CodeGenConfig,
     private val navGraphsModeWriter: NavGraphsModeWriter,
-    private val legacyNavGraphsModeWriter: LegacyNavGraphsModeWriter,
     private val destinationsListModeWriter: DestinationsModeWriter,
     private val navGraphsSingleObjectWriter: NavGraphsSingleObjectWriter,
-    private val legacyNavGraphsSingleObjectWriter: LegacyNavGraphsSingleObjectWriter,
     private val singleModuleExtensionsWriter: SingleModuleExtensionsWriter
 ) {
 
@@ -17,16 +15,9 @@ class ModuleOutputWriter(
         navGraphs: List<RawNavGraphGenParams>,
         generatedDestinations: List<GeneratedDestination>
     ) {
-        val usingNavGraphAnnotations =
-            generatedDestinations.any { it.navGraphInfo is NavGraphInfo.AnnotatedSource }
-
         return when (codeGenConfig.mode) {
             is CodeGenMode.NavGraphs -> {
-                if (usingNavGraphAnnotations) {
-                    navGraphsModeWriter.write(navGraphs, generatedDestinations)
-                } else {
-                    legacyNavGraphsModeWriter.write(generatedDestinations)
-                }
+                navGraphsModeWriter.write(navGraphs, generatedDestinations)
             }
 
             is CodeGenMode.Destinations -> {
@@ -35,11 +26,7 @@ class ModuleOutputWriter(
 
             is CodeGenMode.SingleModule -> {
                 val generatedNavGraphs = if (codeGenConfig.mode.generateNavGraphs) {
-                    if (usingNavGraphAnnotations) {
-                        navGraphsSingleObjectWriter.write(navGraphs, generatedDestinations)
-                    } else {
-                        legacyNavGraphsSingleObjectWriter.write(generatedDestinations)
-                    }
+                    navGraphsSingleObjectWriter.write(navGraphs, generatedDestinations)
                 } else {
                     // We fallback to just generate a list of all destinations
                     destinationsListModeWriter.write(generatedDestinations)
