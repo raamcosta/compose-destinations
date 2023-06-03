@@ -14,7 +14,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 internal class ResultBackNavigatorImpl<R>(
     private val navController: NavController,
     private val navBackStackEntry: NavBackStackEntry,
-    resultOriginType: Class<out DestinationSpec<*>>,
+    resultOriginType: Class<out DestinationSpec>,
     resultType: Class<R>
 ) : ResultBackNavigator<R> {
 

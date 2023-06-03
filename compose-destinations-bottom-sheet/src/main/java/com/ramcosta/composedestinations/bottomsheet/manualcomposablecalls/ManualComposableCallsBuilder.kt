@@ -4,14 +4,15 @@ package com.ramcosta.composedestinations.bottomsheet.manualcomposablecalls
 
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
+import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.scope.BottomSheetDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
-import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Registers [content] lambda as the responsible for calling
@@ -28,7 +29,7 @@ import com.ramcosta.composedestinations.spec.NavHostEngine
  * [com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet]
  */
 fun <T> ManualComposableCallsBuilder.bottomSheetComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable BottomSheetDestinationScope<T>.() -> Unit
 ) {
     validateBottomSheet(destination)
@@ -40,7 +41,7 @@ fun <T> ManualComposableCallsBuilder.bottomSheetComposable(
 }
 
 private fun ManualComposableCallsBuilder.validateBottomSheet(
-    destination: DestinationSpec<*>
+    destination: DestinationSpec
 ) {
     if (engineType != NavHostEngine.Type.DEFAULT) {
         error("'bottomSheetComposable' can only be called with a 'NavHostEngine'")

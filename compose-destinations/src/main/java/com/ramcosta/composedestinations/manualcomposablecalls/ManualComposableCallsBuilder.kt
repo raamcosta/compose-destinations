@@ -12,6 +12,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.allDestinations
 
 /**
@@ -23,7 +24,7 @@ import com.ramcosta.composedestinations.utils.allDestinations
  * arguments, the back stack entry and navigators.
  */
 fun <T> ManualComposableCallsBuilder.composable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable AnimatedDestinationScope<T>.() -> Unit
 ) {
     if (engineType != NavHostEngine.Type.DEFAULT) {
@@ -49,7 +50,7 @@ fun <T> ManualComposableCallsBuilder.composable(
  * arguments, the back stack entry and navigators.
  */
 fun <T> ManualComposableCallsBuilder.dialogComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable DestinationScope<T>.() -> Unit
 ) {
     if (engineType != NavHostEngine.Type.DEFAULT) {
@@ -73,7 +74,7 @@ class ManualComposableCallsBuilder internal constructor(
 ) {
 
     private val map: MutableMap<String, DestinationLambda<*>> = mutableMapOf()
-    private val dynamicDestinationsBySingletonDestination: Map<DestinationSpec<*>, List<DynamicDestinationSpec<*>>> =
+    private val dynamicDestinationsBySingletonDestination: Map<DestinationSpec, List<DynamicDestinationSpec<*>>> =
         navGraph.allDestinations
             .filterIsInstance<DynamicDestinationSpec<*>>()
             .groupBy { it.originalDestination }
@@ -84,7 +85,7 @@ class ManualComposableCallsBuilder internal constructor(
     @SuppressLint("RestrictedApi")
     fun add(
         lambda: DestinationLambda<*>,
-        destination: DestinationSpec<*>,
+        destination: DestinationSpec,
     ) {
         map[destination.baseRoute] = lambda
         dynamicDestinationsBySingletonDestination[destination]?.forEach {

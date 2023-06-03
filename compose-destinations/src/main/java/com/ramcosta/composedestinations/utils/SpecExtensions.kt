@@ -31,9 +31,9 @@ val NavController.navGraph: NavGraphSpec
  * for example when converting from "current NavBackStackEntry", since a [NavGraphSpec] is never
  * the "current destination" shown on screen.
  */
-fun NavBackStackEntry.destination(): DestinationSpec<*> {
+fun NavBackStackEntry.destination(): DestinationSpec {
     return when (val route = route()) {
-        is DestinationSpec<*> -> route
+        is DestinationSpec -> route
         is NavGraphSpec -> error(
             "Cannot call `destination()` for a NavBackStackEntry which corresponds to a nav graph, use `route()` instead!"
         )
@@ -75,7 +75,7 @@ fun NavBackStackEntry.navGraph(): NavGraphSpec {
  * Emits the currently active [DestinationSpec] whenever it changes. If
  * there is no active [DestinationSpec], no item will be emitted.
  */
-val NavController.currentDestinationFlow: Flow<DestinationSpec<*>>
+val NavController.currentDestinationFlow: Flow<DestinationSpec>
     get() = currentBackStackEntryFlow.transform { navStackEntry ->
         kotlin.runCatching {
             navStackEntry.destination()
@@ -88,7 +88,7 @@ val NavController.currentDestinationFlow: Flow<DestinationSpec<*>>
  * Gets the current [DestinationSpec] as a [State].
  */
 @Composable
-fun NavController.currentDestinationAsState(): State<DestinationSpec<*>?> {
+fun NavController.currentDestinationAsState(): State<DestinationSpec?> {
     return currentDestinationFlow.collectAsState(initial = null)
 }
 
@@ -117,9 +117,9 @@ fun NavController.isRouteOnBackStackAsState(route: Route): State<Boolean> {
  * If this [Route] is a [NavGraphSpec], returns its
  * start [DestinationSpec].
  */
-val Route.startDestination get(): DestinationSpec<*> {
+val Route.startDestination get(): DestinationSpec {
     return when (this) {
-        is DestinationSpec<*> -> this
+        is DestinationSpec -> this
         is NavGraphSpec -> startRoute.startDestination
     }
 }
@@ -127,28 +127,28 @@ val Route.startDestination get(): DestinationSpec<*> {
 /**
  * Filters all destinations of this [NavGraphSpec] and its nested nav graphs with given [predicate]
  */
-inline fun NavGraphSpec.filterDestinations(predicate: (DestinationSpec<*>) -> Boolean): List<DestinationSpec<*>> {
+inline fun NavGraphSpec.filterDestinations(predicate: (DestinationSpec) -> Boolean): List<DestinationSpec> {
     return allDestinations.filter { predicate(it) }
 }
 
 /**
  * Checks if any destination of this [NavGraphSpec] matches with given [predicate]
  */
-inline fun NavGraphSpec.anyDestination(predicate: (DestinationSpec<*>) -> Boolean): Boolean {
+inline fun NavGraphSpec.anyDestination(predicate: (DestinationSpec) -> Boolean): Boolean {
     return allDestinations.any { predicate(it) }
 }
 
 /**
  * Checks if this [NavGraphSpec] contains given [destination]
  */
-fun NavGraphSpec.contains(destination: DestinationSpec<*>): Boolean {
+fun NavGraphSpec.contains(destination: DestinationSpec): Boolean {
     return allDestinations.contains(destination)
 }
 
 /**
  * Returns all [DestinationSpec]s including those of nested graphs
  */
-val NavGraphSpec.allDestinations get(): List<DestinationSpec<*>> {
+val NavGraphSpec.allDestinations get(): List<DestinationSpec> {
     val destinations = destinationsByRoute
         .values
         .toMutableList()
@@ -164,7 +164,7 @@ val NavGraphSpec.allDestinations get(): List<DestinationSpec<*>> {
  * or its nested graphs.
  * Returns `null` if there is no such destination.
  */
-fun NavGraphSpec.findDestination(route: String): DestinationSpec<*>? {
+fun NavGraphSpec.findDestination(route: String): DestinationSpec? {
     val destination = destinationsByRoute[route]
 
     if (destination != null) {
@@ -192,7 +192,7 @@ fun NavGraphSpec.findDestination(route: String): DestinationSpec<*>? {
     message = "Api will be removed! Use `destination` instead.",
     replaceWith = ReplaceWith("destination()")
 )
-fun NavBackStackEntry.destination(navGraph: NavGraphSpec): DestinationSpec<*>? {
+fun NavBackStackEntry.destination(navGraph: NavGraphSpec): DestinationSpec? {
     return destination.route?.let { navGraph.findDestination(it) }
 }
 
@@ -204,7 +204,7 @@ fun NavBackStackEntry.destination(navGraph: NavGraphSpec): DestinationSpec<*>? {
     message = "Api will be removed! Use `destination(NavGraphSpec)` instead.",
     replaceWith = ReplaceWith("destination()")
 )
-fun NavBackStackEntry.destinationSpec(navGraph: NavGraphSpec): DestinationSpec<*>? {
+fun NavBackStackEntry.destinationSpec(navGraph: NavGraphSpec): DestinationSpec? {
     return destination.route?.let { navGraph.findDestination(it) }
 }
 
@@ -218,9 +218,9 @@ fun NavBackStackEntry.destinationSpec(navGraph: NavGraphSpec): DestinationSpec<*
     message = "Api will be removed! Use `startDestination` instead.",
     replaceWith = ReplaceWith("startDestination")
 )
-val Route.startDestinationSpec get(): DestinationSpec<*> {
+val Route.startDestinationSpec get(): DestinationSpec {
     return when (this) {
-        is DestinationSpec<*> -> this
+        is DestinationSpec -> this
         is NavGraphSpec -> startRoute.startDestination
     }
 }

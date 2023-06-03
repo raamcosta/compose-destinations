@@ -6,12 +6,11 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.dynamic.originalDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
-import com.ramcosta.composedestinations.spec.DestinationStyle
 
 @Composable
 @PublishedApi
 internal fun <R> resultBackNavigator(
-    destination: DestinationSpec<*>,
+    destination: DestinationSpec,
     resultType: Class<R>,
     navController: NavController,
     navBackStackEntry: NavBackStackEntry
@@ -33,7 +32,7 @@ internal fun <R> resultBackNavigator(
 
 @Composable
 @PublishedApi
-internal fun <D : DestinationSpec<*>, R> resultRecipient(
+internal fun <D : DestinationSpec, R> resultRecipient(
     navBackStackEntry: NavBackStackEntry,
     originType: Class<D>,
     resultType: Class<R>
@@ -45,12 +44,12 @@ internal fun <D : DestinationSpec<*>, R> resultRecipient(
     )
 }
 
-internal fun <D : DestinationSpec<*>, R> resultKey(
+internal fun <D : DestinationSpec, R> resultKey(
     resultOriginType: Class<D>,
     resultType: Class<R>
 ) = "compose-destinations@${resultOriginType.name}@${resultType.name}@result"
 
-internal fun <D : DestinationSpec<*>, R> canceledKey(
+internal fun <D : DestinationSpec, R> canceledKey(
     resultOriginType: Class<D>,
     resultType: Class<R>
 ) = "compose-destinations@${resultOriginType.name}@${resultType.name}@canceled"

@@ -12,11 +12,11 @@ import androidx.navigation.compose.navigation
 import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
-import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Returns the default [NavHostEngine] to be used with [DestinationsNavHost]
@@ -94,7 +94,7 @@ internal class DefaultNavHostEngine(
     }
 
     override fun <T> NavGraphBuilder.composable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,

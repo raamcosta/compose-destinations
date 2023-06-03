@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.wear
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -71,7 +70,7 @@ internal class WearNavHostEngine(
 
     @OptIn(InternalDestinationsApi::class)
     override fun <T> NavGraphBuilder.composable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
@@ -100,7 +99,7 @@ internal class WearNavHostEngine(
     }
 
     private fun <T> NavGraphBuilder.addComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
@@ -125,7 +124,7 @@ internal class WearNavHostEngine(
     }
 
     internal class WearDestinationScope<T>(
-        override val destination: DestinationSpec<T>,
+        override val destination: TypedDestinationSpec<T>,
         override val navBackStackEntry: NavBackStackEntry,
         override val navController: NavController,
         override val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
@@ -133,7 +132,7 @@ internal class WearNavHostEngine(
 
     @Composable
     private fun <T> CallComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,

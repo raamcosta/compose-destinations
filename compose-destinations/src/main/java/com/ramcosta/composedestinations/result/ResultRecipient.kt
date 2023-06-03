@@ -27,7 +27,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  *
  * @see [com.ramcosta.composedestinations.result.ResultBackNavigator]
  */
-interface ResultRecipient<D : DestinationSpec<*>, R> : OpenResultRecipient<R> {
+interface ResultRecipient<D : DestinationSpec, R> : OpenResultRecipient<R> {
 
     /**
      * Install a [listener] that will be called when the [D] destination
