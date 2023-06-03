@@ -29,7 +29,7 @@ import com.ramcosta.composedestinations.scope.DestinationScopeImpl
 abstract class DestinationStyle {
 
     abstract fun <T> NavGraphBuilder.addComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
@@ -46,7 +46,7 @@ abstract class DestinationStyle {
      */
     object Default : DestinationStyle() {
         override fun <T> NavGraphBuilder.addComposable(
-            destination: DestinationSpec<T>,
+            destination: TypedDestinationSpec<T>,
             navController: NavHostController,
             dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
             manualComposableCalls: ManualComposableCalls
@@ -85,7 +85,7 @@ abstract class DestinationStyle {
         }
 
         final override fun <T> NavGraphBuilder.addComposable(
-            destination: DestinationSpec<T>,
+            destination: TypedDestinationSpec<T>,
             navController: NavHostController,
             dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
             manualComposableCalls: ManualComposableCalls
@@ -149,7 +149,7 @@ abstract class DestinationStyle {
         }
 
         final override fun <T> NavGraphBuilder.addComposable(
-            destination: DestinationSpec<T>,
+            destination: TypedDestinationSpec<T>,
             navController: NavHostController,
             dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
             manualComposableCalls: ManualComposableCalls
@@ -189,7 +189,7 @@ abstract class DestinationStyle {
      */
     object Runtime: DestinationStyle() {
         override fun <T> NavGraphBuilder.addComposable(
-            destination: DestinationSpec<T>,
+            destination: TypedDestinationSpec<T>,
             navController: NavHostController,
             dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
             manualComposableCalls: ManualComposableCalls
@@ -202,7 +202,7 @@ abstract class DestinationStyle {
     @InternalDestinationsApi
     object Activity: DestinationStyle() {
         override fun <T> NavGraphBuilder.addComposable(
-            destination: DestinationSpec<T>,
+            destination: TypedDestinationSpec<T>,
             navController: NavHostController,
             dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
             manualComposableCalls: ManualComposableCalls
@@ -245,7 +245,7 @@ abstract class DestinationStyle {
 
 @Composable
 private fun <T> CallDialogComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     navController: NavHostController,
     navBackStackEntry: NavBackStackEntry,
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
@@ -269,7 +269,7 @@ private fun <T> CallDialogComposable(
 
 @Composable
 private fun <T> AnimatedVisibilityScope.CallComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     navController: NavHostController,
     navBackStackEntry: NavBackStackEntry,
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,

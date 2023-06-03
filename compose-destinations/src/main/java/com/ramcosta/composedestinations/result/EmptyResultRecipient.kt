@@ -9,7 +9,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  * Empty implementation of [ResultRecipient] to
  * use in previews and possibly testing.
  */
-class EmptyResultRecipient<D : DestinationSpec<*>, R> : ResultRecipient<D, R> {
+class EmptyResultRecipient<D : DestinationSpec, R> : ResultRecipient<D, R> {
 
     @Suppress("OverridingDeprecatedMember", "OVERRIDE_DEPRECATION")
     @Composable

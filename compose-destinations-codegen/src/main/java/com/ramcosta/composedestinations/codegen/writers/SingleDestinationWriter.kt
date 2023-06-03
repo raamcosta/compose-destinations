@@ -7,7 +7,7 @@ import com.ramcosta.composedestinations.codegen.codeGenNoArgsActivityDestination
 import com.ramcosta.composedestinations.codegen.codeGenNoArgsDestination
 import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
-import com.ramcosta.composedestinations.codegen.commons.CORE_ANIMATIONS_DEPENDENCY
+import com.ramcosta.composedestinations.codegen.commons.BOTTOM_SHEET_DEPENDENCY
 import com.ramcosta.composedestinations.codegen.commons.CORE_BOTTOM_SHEET_DESTINATION_STYLE
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
@@ -29,7 +29,6 @@ import com.ramcosta.composedestinations.codegen.commons.toCoreNavTypeImportableO
 import com.ramcosta.composedestinations.codegen.commons.toTypeCode
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
-import com.ramcosta.composedestinations.codegen.model.Core
 import com.ramcosta.composedestinations.codegen.model.CustomNavType
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
@@ -74,8 +73,8 @@ class SingleDestinationWriter(
     private val navArgs get() = destination.navArgs
 
     init {
-        if (destination.navGraphInfo.start && destination.navArgs.any { it.isMandatory }) {
-            throw IllegalDestinationsSetup("\"'${destination.composableName}' composable: Start destinations cannot have mandatory navigation arguments!")
+        if (destination.navGraphInfo.start && destination.navGraphInfo.isNavHostGraph && destination.navArgs.any { it.isMandatory }) {
+            throw IllegalDestinationsSetup("\"'${destination.composableName}' composable: Start destinations of NavHostGraphs cannot have mandatory navigation arguments!")
         }
 
         importableHelper.addAll(destinationTemplate.imports)

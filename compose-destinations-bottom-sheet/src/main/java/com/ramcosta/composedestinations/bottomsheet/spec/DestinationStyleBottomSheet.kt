@@ -13,8 +13,8 @@ import com.ramcosta.composedestinations.bottomsheet.scope.BottomSheetDestination
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
-import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Marks the destination to be shown with a bottom sheet style.
@@ -39,7 +39,7 @@ object DestinationStyleBottomSheet : DestinationStyle() {
 
     @ExperimentalMaterialNavigationApi
     override fun <T> NavGraphBuilder.addComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
@@ -66,7 +66,7 @@ object DestinationStyleBottomSheet : DestinationStyle() {
 
 @Composable
 private fun <T> ColumnScope.CallComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     navController: NavHostController,
     navBackStackEntry: NavBackStackEntry,
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
