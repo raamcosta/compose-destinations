@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.spec
+package com.ramcosta.composedestinations.bottomsheet.spec
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.ColumnScope
@@ -9,14 +9,16 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import com.ramcosta.composedestinations.animations.scope.BottomSheetDestinationScopeImpl
+import com.ramcosta.composedestinations.bottomsheet.scope.BottomSheetDestinationScopeImpl
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.DestinationStyle
 
 /**
  * Marks the destination to be shown with a bottom sheet style.
- * It requires "io.github.raamcosta.compose-destinations:animations-core" dependency.
+ * It requires "io.github.raamcosta.compose-destinations:bottom-sheet" dependency.
  *
  * You will need to use a `ModalBottomSheetLayout` wrapping your
  * top level Composable.

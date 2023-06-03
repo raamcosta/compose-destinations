@@ -65,7 +65,7 @@ interface AnimatedNavGraphBuilderDestinationScope<T> : NavGraphBuilderDestinatio
 
 /**
  * Like [NavGraphBuilderDestinationScope] but also [ColumnScope] so that
- * if you're using the "animations-core" you can use this Scope as a receiver
+ * if you're using the "bottom-sheet" dependency you can use this Scope as a receiver
  * of your Bottom Sheet styled Composable
  */
 @Immutable

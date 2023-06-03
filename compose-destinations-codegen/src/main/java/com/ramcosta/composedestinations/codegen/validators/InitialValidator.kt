@@ -25,7 +25,7 @@ import com.ramcosta.composedestinations.codegen.model.TypeInfo
 
 class InitialValidator(
     private val codeGenConfig: CodeGenConfig,
-    private val core: Core
+    private val isBottomSheetDependencyPresent: Boolean
 ) {
 
     fun validate(
@@ -134,10 +134,10 @@ class InitialValidator(
 
     private fun DestinationGeneratingParams.validateReceiverColumnScope() {
         if (composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME) {
-            if (core != Core.ANIMATIONS) {
+            if (!isBottomSheetDependencyPresent) {
                 throw IllegalDestinationsSetup(
                     "'${composableName}' composable: " +
-                            "You need to include $CORE_ANIMATIONS_DEPENDENCY dependency to use a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
+                            "You need to include $BOTTOM_SHEET_DEPENDENCY dependency to use a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
                 )
             }
 

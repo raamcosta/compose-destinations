@@ -8,7 +8,7 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 class DestinationsWriter(
     private val codeGenConfig: CodeGenConfig,
     private val codeGenerator: CodeOutputStreamMaker,
-    private val core: Core,
+    private val isBottomSheetDependencyPresent: Boolean,
     private val customNavTypeByType: Map<Type, CustomNavType>,
 ) {
 
@@ -22,7 +22,7 @@ class DestinationsWriter(
             val generatedDestination = SingleDestinationWriter(
                 codeGenConfig,
                 codeGenerator,
-                core,
+                isBottomSheetDependencyPresent,
                 NavArgResolver(customNavTypeByType, importableHelper),
                 destination,
                 customNavTypeByType,
