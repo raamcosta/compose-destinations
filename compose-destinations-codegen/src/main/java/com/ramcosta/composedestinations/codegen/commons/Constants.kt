@@ -105,4 +105,4 @@ const val ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME = "androidx.compose.animation
 const val COLUMN_SCOPE_SIMPLE_NAME = "ColumnScope"
 const val COLUMN_SCOPE_QUALIFIED_NAME = "androidx.compose.foundation.layout.$COLUMN_SCOPE_SIMPLE_NAME"
 
-const val CORE_ANIMATIONS_DEPENDENCY = "io.github.raamcosta.compose-destinations:animations-core"
+const val BOTTOM_SHEET_DEPENDENCY = "io.github.raamcosta.compose-destinations:bottom-sheet"

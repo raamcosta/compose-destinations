@@ -20,7 +20,8 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
 - Simple but configurable navigation graphs setup
 - Navigating back with a result in a simple and type-safe way
 - Getting the navigation arguments from the `SavedStateHandle` (useful in ViewModels) and `NavBackStackEntry` in a type-safe way.
-- Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
+- Navigation animations
+- Destination wrappers to allow reusing Compose logic on multiple screens
 - Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
 - Easy deep linking to screens
 - Wear OS support (NEW since versions 1.x.30!)
@@ -40,7 +41,7 @@ For a deeper look into all the features, check our [documentation website](https
 
 ## Basic Usage
 
-1. Annotate your screen Composables with `@Destination`:
+### 1. Annotate your screen Composables with `@Destination`:
 
 ```kotlin
 @Destination
@@ -48,7 +49,7 @@ For a deeper look into all the features, check our [documentation website](https
 fun ProfileScreen() { /*...*/ }
 ```
 
-2. Add navigation arguments to the function declaration:
+### 2. Add navigation arguments to the function declaration:
 
 ```kotlin
 @Destination
@@ -66,11 +67,11 @@ You can also make any other type a navigation argument type. Read about it [here
 > There is an alternative way to define the destination arguments in case you don't need to use them
 inside the Composable (as is likely the case when using ViewModel). Read more [here](https://composedestinations.rafaelcosta.xyz/destination-arguments/navigation-arguments#navigation-arguments-class-delegate).
 
-3. Build the project (or `./gradlew kspDebugKotlin`, which should be faster) to generate
-   all the Destinations. With the above annotated composable, a `ProfileScreenDestination` file (that we'll use in step 4) would be generated.
+### 3. Build the project
+   Or run ksp task (example: `./gradlew kspDebugKotlin`), to generate all the Destinations. With the above annotated composable, a `ProfileScreenDestination` file would be generated (that we'll use in step 4).
 
-4. Use the generated `[ComposableName]Destination` invoke method to navigate to it. It will
-   have the correct typed arguments.
+### 4. Use the generated `[ComposableName]Destination`'s invoke method to navigate to it.
+   It will have the correct typed arguments.
 
 ```kotlin
 @RootNavGraph(start = true) // sets this as the start destination of the default nav graph
@@ -78,6 +79,7 @@ inside the Composable (as is likely the case when using ViewModel). Read more [h
 @Composable
 fun HomeScreen(
    navigator: DestinationsNavigator
+   // OR navigator: NavController if you prefer, in which case there's a navigate extension function
 ) {
    /*...*/
    navigator.navigate(ProfileScreenDestination(id = 7, groupName = "Kotlin programmers"))
@@ -85,7 +87,7 @@ fun HomeScreen(
 ```
 > DestinationsNavigator is a wrapper interface to NavController that if declared as a parameter, will be provided for free by the library. NavController can also be provided in the exact same way, but it ties your composables to a specific implementation which will make it harder to test and preview. Read more [here](https://composedestinations.rafaelcosta.xyz/navigation/basics#destinationsnavigator-vs-navcontroller)
 
-5. Finally, add the NavHost call:
+### 5. Finally, add the NavHost call:
 
 ```kotlin
 DestinationsNavHost(navGraph = NavGraphs.root)
@@ -160,8 +162,11 @@ Choose the one that matches your Compose version, considering this table:
   <summary>groovy - build.gradle(:module-name)</summary>
 
 ```gradle
-implementation 'io.github.raamcosta.compose-destinations:core:<version>'
 ksp 'io.github.raamcosta.compose-destinations:ksp:<version>'
+implementation 'io.github.raamcosta.compose-destinations:core:<version>'
+
+// if you want to use bottom sheet destinations:
+implementation 'io.github.raamcosta.compose-destinations:bottom-sheet:<version>'
 ```
 </details>
 
@@ -169,92 +174,20 @@ ksp 'io.github.raamcosta.compose-destinations:ksp:<version>'
   <summary>kotlin - build.gradle.kts(:module-name)</summary>  
 
 ```gradle
-implementation("io.github.raamcosta.compose-destinations:core:<version>")
 ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
+implementation("io.github.raamcosta.compose-destinations:core:<version>")
+
+// if you want to use bottom sheet destinations:
+implementation("io.github.raamcosta.compose-destinations:bottom-sheet:<version>")
 ```
 </details>
 
-> **Note**: If you want to use animations between screens and/or bottom sheet screens, replace above core dependency with: </br>
-`implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
-> this will use [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation) and [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
+> **Note**: `bottom-sheet` dependency uses [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/styles-and-animations)
-   
+
 > **Note**: If you want to use Compose Destinations in a **Wear OS** app, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:wear-core:<version>'` </br>
 > this will use [Wear Compose Navigation](https://developer.android.com/training/wearables/compose/navigation) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/wear-os)
-
-
-#### 3. Important for Kotlin < 1.8.0
-
-When using Kotlin version older than 1.8.0, you need to make sure the IDE looks at the generated folder.
-See KSP related [issue](https://github.com/google/ksp/issues/37).
-
-How to do it depends on the AGP version you are using in this case:
-
-> **Warning**: In both cases, add this inside `android` block and replacing `applicationVariants` with `libraryVariants` if the module is not an application one (i.e, it uses `'com.android.library'` plugin).
-
-<details><summary>Since AGP (Android Gradle Plugin) version 7.4.0</summary>  
-
-
-* groovy - build.gradle(:module-name)
-
-```gradle
-applicationVariants.all { variant ->
-    variant.addJavaSourceFoldersToModel(
-            new File(buildDir, "generated/ksp/${variant.name}/kotlin")
-    )
-}
-```
-
-
-* kotlin - build.gradle.kts(:module-name)
-
-```gradle
-applicationVariants.all {
-    addJavaSourceFoldersToModel(
-        File(buildDir, "generated/ksp/$name/kotlin")
-    )
-}
-```
-</details>
-
-
-<details><summary>For AGP (Android Gradle Plugin) version older than 7.4.0</summary>  
-
-* groovy - build.gradle(:module-name)
-
-```gradle
-applicationVariants.all { variant ->
-    kotlin.sourceSets {
-        getByName(variant.name) {
-            kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
-        }
-    }
-}
-```
-
-* kotlin - build.gradle.kts(:module-name) 
-
-```gradle
-applicationVariants.all {
-    kotlin.sourceSets {
-        getByName(name) {
-            kotlin.srcDir("build/generated/ksp/$name/kotlin")
-        }
-    }
-}
-```
-
-</details>
-
-## About
-
-The library is now in its beta stage, which means that I am happy
-with the core feature set. If the APIs change, I will provide a migration path.
-Please do try it and open issues if you find any.
-If you're interested in contributing, reach out via [twitter DM](https://twitter.com/raamcosta).
-
-Any feedback and contributions are highly appreciated!
 
 **If you like the library, consider starring and sharing it with your colleagues.**

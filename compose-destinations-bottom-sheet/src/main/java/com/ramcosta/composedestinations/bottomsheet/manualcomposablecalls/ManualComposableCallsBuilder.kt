@@ -1,6 +1,6 @@
 @file:OptIn(InternalDestinationsApi::class)
 
-package com.ramcosta.composedestinations.animations.manualcomposablecalls
+package com.ramcosta.composedestinations.bottomsheet.manualcomposablecalls
 
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
@@ -10,7 +10,7 @@ import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.scope.BottomSheetDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
-import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
+import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.spec.NavHostEngine
 
 /**
@@ -23,9 +23,9 @@ import com.ramcosta.composedestinations.spec.NavHostEngine
  *
  * Like [composable] but the [content] is scoped in a [BottomSheetDestinationScope].
  *
- * Can only be called if you're using "io.github.raamcosta.compose-destinations:animations-core"
+ * Can only be called if you're using "io.github.raamcosta.compose-destinations:bottom-sheet"
  * and the [destination] has a [DestinationSpec.style] of
- * [com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet]
+ * [com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet]
  */
 fun <T> ManualComposableCallsBuilder.bottomSheetComposable(
     destination: DestinationSpec<T>,

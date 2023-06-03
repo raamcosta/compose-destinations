@@ -462,7 +462,7 @@ class KspToCodeGenDestinationsMapper(
     }
 
     private val bottomSheetStyle by lazy {
-        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyleBottomSheet")?.asType(emptyList())
+        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.bottomsheet.spec.DestinationStyleBottomSheet")?.asType(emptyList())
     }
 
     private val animatedStyle by lazy {

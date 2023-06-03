@@ -36,6 +36,9 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
  * @param startRoute the start destination of the NavHost. By default, we'll use the `startDestination`
  * of the [navGraph]. This makes it possible to override that default on runtime.
  *
+ * @param defaultTransitions default enter/exit transition animations for all destinations.
+ * By default it's [navGraph]'s [NavGraphSpec.defaultTransitions].
+ *
  * @param engine [NavHostEngine] to use. If you are not targeting wear
  * (which need "io.github.raamcosta.compose-destinations:wear" dependency), you don't
  * need to explicitly pass in anything, since the default engine will be used.

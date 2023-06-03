@@ -17,7 +17,7 @@ import com.ramcosta.composedestinations.codegen.writers.sub.DestinationContentFu
 class SingleDestinationWriter(
     private val codeGenConfig: CodeGenConfig,
     private val codeGenerator: CodeOutputStreamMaker,
-    private val core: Core,
+    private val isBottomSheetDependencyPresent: Boolean,
     private val navArgResolver: NavArgResolver,
     private val destination: DestinationGeneratingParamsWithNavArgs,
     private val customNavTypeByType: Map<Type, CustomNavType>,
@@ -593,13 +593,13 @@ class SingleDestinationWriter(
     }
 
     private fun destinationStyleBottomSheet(): String {
-        if (core != Core.ANIMATIONS) {
-            throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
+        if (!isBottomSheetDependencyPresent) {
+            throw MissingRequiredDependency("You need to include '$BOTTOM_SHEET_DEPENDENCY' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
         }
 
         val bottomSheetImportable = Importable(
             CORE_BOTTOM_SHEET_DESTINATION_STYLE,
-            "$CORE_PACKAGE_NAME.spec.$CORE_BOTTOM_SHEET_DESTINATION_STYLE",
+            "$CORE_PACKAGE_NAME.bottomsheet.spec.$CORE_BOTTOM_SHEET_DESTINATION_STYLE",
         )
 
         return "\n\toverride val style: DestinationStyle = ${bottomSheetImportable.getCodePlaceHolder()}\n"

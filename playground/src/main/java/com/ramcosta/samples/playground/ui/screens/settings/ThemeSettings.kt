@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
-import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
+import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.samples.playground.commons.SettingsNavGraph
 import com.ramcosta.samples.playground.commons.requireTitle
 import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination

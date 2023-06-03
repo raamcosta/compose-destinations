@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.animations.scope
+package com.ramcosta.composedestinations.bottomsheet.scope
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable

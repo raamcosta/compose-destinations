@@ -45,7 +45,7 @@ class Processor(
 
         CodeGenerator(
             codeGenerator = kspCodeOutputStreamMaker,
-            core = resolver.getCoreType(),
+            isBottomSheetDependencyPresent = resolver.isBottomSheetDepPresent(),
             codeGenConfig = ConfigParser(logger, options).parse()
         ).generate(destinations, navGraphs, navTypeSerializers)
 
@@ -125,14 +125,8 @@ class Processor(
             }.toList()
     }
 
-    private fun Resolver.getCoreType(): Core {
-        val isUsingAnimationsCore = getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.$CORE_BOTTOM_SHEET_DESTINATION_STYLE") != null
-
-        return if (isUsingAnimationsCore) {
-            Core.ANIMATIONS
-        } else {
-            Core.MAIN
-        }
+    private fun Resolver.isBottomSheetDepPresent(): Boolean {
+        return getClassDeclarationByName("$CORE_PACKAGE_NAME.bottomsheet.spec.$CORE_BOTTOM_SHEET_DESTINATION_STYLE") != null
     }
 }
 

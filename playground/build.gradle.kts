@@ -86,7 +86,8 @@ android {
 
 dependencies {
 
-    implementation(project(mapOf("path" to ":compose-destinations-animations")))
+    implementation(project(mapOf("path" to ":compose-destinations")))
+    implementation(project(mapOf("path" to ":compose-destinations-bottom-sheet")))
     implementation(project(mapOf("path" to ":playground-core")))
     ksp(project(":compose-destinations-ksp"))
 
