@@ -113,7 +113,7 @@ class KspToCodeGenDestinationsMapper(
             parameters = parameters.map { it.toParameter(composableName) },
             composableWrappers = destinationAnnotations.findCumulativeArgumentValue { getDestinationWrappers() },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
-            navGraphInfo = getNavGraphInfo() ?: getDefaultNavGraphInfo(destinationAnnotations),
+            navGraphInfo = getNavGraphInfo() ?: getDefaultNavGraphInfo(),
             composableReceiverSimpleName = extensionReceiver?.toString(),
             requireOptInAnnotationTypes = findAllRequireOptInAnnotations(),
             navArgsDelegateType = navArgsDelegateTypeAndFile?.type
@@ -150,7 +150,7 @@ class KspToCodeGenDestinationsMapper(
             cleanRoute = activityDestinationAnnotations.findOverridingArgumentValue { prepareRoute(finalActivityClass.simpleName) }!!,
             parameters = emptyList(),
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
-            navGraphInfo = getNavGraphInfo() ?: getDefaultNavGraphInfo(activityDestinationAnnotations, true),
+            navGraphInfo = getNavGraphInfo() ?: getDefaultNavGraphInfo(),
             destinationStyleType = DestinationStyleType.Activity,
             composableReceiverSimpleName = null,
             requireOptInAnnotationTypes = emptyList(),
@@ -288,7 +288,7 @@ class KspToCodeGenDestinationsMapper(
                 it.annotationType.resolve().declaration.getNavGraphInfo()
             }.firstOrNull()
         } else {
-            NavGraphInfo.AnnotatedSource(
+            NavGraphInfo(
                 start = navGraphAnnotation.arguments.first().value as Boolean,
                 isNavHostGraph = isNavHostGraph,
                 graphType = Importable(
@@ -299,22 +299,12 @@ class KspToCodeGenDestinationsMapper(
         }
     }
 
-    private fun getDefaultNavGraphInfo(
-        destinationAnnotations: List<KSAnnotation>,
-        isActivityDestination: Boolean = false
-    ): NavGraphInfo {
-        return if (isActivityDestination) {
-            NavGraphInfo.AnnotatedSource(
-                start = false,
-                isNavHostGraph = true,
-                graphType = rootNavGraphType
-            )
-        } else {
-            NavGraphInfo.Legacy(
-                start = destinationAnnotations.findOverridingArgumentValue { findArgumentValue<Boolean>(DESTINATION_ANNOTATION_START_ARGUMENT) }!!,
-                navGraphRoute = destinationAnnotations.findOverridingArgumentValue { findArgumentValue<String>(DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT) }!!,
-            )
-        }
+    private fun getDefaultNavGraphInfo(): NavGraphInfo {
+        return NavGraphInfo(
+            start = false,
+            isNavHostGraph = true,
+            graphType = rootNavGraphType
+        )
     }
 
     sealed interface ReadNavArgsDelegateType {

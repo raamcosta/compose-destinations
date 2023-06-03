@@ -28,8 +28,7 @@ class NavGraphsSingleObjectWriter(
                 if (it.navGraphInfo.isDefault) {
                     defaultNavGraph ?: rootNavGraphGenParams
                 } else {
-                    val info = it.navGraphInfo as NavGraphInfo.AnnotatedSource
-                    navGraphsByType[info.graphType] ?: rootNavGraphGenParams
+                    navGraphsByType[it.navGraphInfo.graphType] ?: rootNavGraphGenParams
                 }
             }
 
@@ -54,7 +53,7 @@ class NavGraphsSingleObjectWriter(
                 val destinations = destinationsByNavGraphParams[rawGraph].orEmpty()
                 val nestedNavGraphs = relevantNavGraphsByParentType[rawGraph.type].orEmpty()
 
-                NavGraphGeneratingParamsImpl(
+                NavGraphGeneratingParams(
                     rawParams = rawGraph,
                     route = rawGraph.route,
                     destinations = destinations,
@@ -121,7 +120,7 @@ class NavGraphsSingleObjectWriter(
         return navGraphsDeclaration.toString()
     }
 
-    private fun checkUniquenessOnNavGraphFieldNames(navGraphsParams: List<NavGraphGeneratingParamsImpl>) {
+    private fun checkUniquenessOnNavGraphFieldNames(navGraphsParams: List<NavGraphGeneratingParams>) {
         val nonUniqueFieldNames = navGraphsParams.groupBy { navGraphFieldName(it.route) }
             .filter {
                 it.value.size > 1
