@@ -1,16 +1,16 @@
 package com.ramcosta.composedestinations.spec
 
-typealias NavGraphSpec = TypedNavGraphSpec<*>
+typealias NavGraphSpec = TypedNavGraphSpec<*, *>
 
 /**
  * Defines a navigation graph.
  */
-interface TypedNavGraphSpec<T>: TypedRoute<T> {
+interface TypedNavGraphSpec<NAV_ARGS, START_ROUTE_NAV_ARGS>: TypedRoute<NAV_ARGS> {
 
     /**
      * Start [Route] of this navigation graph.
      */
-    val startRoute: TypedRoute<T>
+    val startRoute: TypedRoute<START_ROUTE_NAV_ARGS>
 
     /**
      * All destinations which belong to this navigation graph

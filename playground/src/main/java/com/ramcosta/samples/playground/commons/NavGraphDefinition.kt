@@ -1,13 +1,18 @@
 package com.ramcosta.samples.playground.commons
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransitions
+import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.annotation.StartRouteArgs
-import com.ramcosta.samples.playground.ui.screens.profile.ProfileScreenNavArgs
-import com.ramcosta.samples.playground.ui.screens.settings.SettingsViewModel
+import com.ramcosta.playground.core.WithDefaultValueArgs
+import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileGraph
+import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraph
 
 @RootNavGraph
 @NavGraph(
@@ -20,34 +25,51 @@ annotation class SettingsNavGraph(
 /**
  * TODO RACOSTA:
  *
- * - Type of startRouteArgs matches with nav args from start route destination
- * - There are no collisions in names of nav args (graph vs destination)
- * -
+ * - Validate NavHostGraph vs normal graph with no parent (navgraphs mode) and their start arguments
+ *  - NavHostGraph cannot have navargs (given by annotation not having navargs)
+ *  - Normal graphs with no parent in navgraphs mode can have navargs or not
+ * - Allow internal NavHostGraphs gen on navgraphs mode + use visibility of the NavGraph annotation
  */
 @RootNavGraph
 @NavGraph(
-    graphArgs = ProfileNavGraph.NavArgs::class
+    navArgs = ProfileNavGraph.NavArgs::class,
+    deepLinks = [
+        DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
+    ]
 )
 annotation class ProfileNavGraph(
     val start: Boolean = false
 ) {
     data class NavArgs(
-        override val startRouteArgs: ProfileScreenNavArgs,
-        val graphArg: String
-    ): StartRouteArgs<ProfileScreenNavArgs>
+        val graphArg: String,
+    )
 }
 
-@SettingsNavGraph
-@NavGraph
+@ProfileNavGraph(start = true)
+@NavGraph(
+    navArgs = ProfileSettingsNavGraph.NavArgs::class
+)
 annotation class ProfileSettingsNavGraph(
     val start: Boolean = false
-)
+) {
+    data class NavArgs(
+        val anotherGraphArg: String
+    )
+}
 
 @ProfileSettingsNavGraph(start = true)
-@Destination
+@Destination(
+    navArgs = WithDefaultValueArgs::class
+)
 @Composable
 internal fun ProfileSettingsScreen(
-    vm: SettingsViewModel
-) {
-    println("VM toggle ON? ${vm.isToggleOn}")
+//    vm: SettingsViewModel,
+    args: WithDefaultValueArgs,
+    navBackStackEntry: NavBackStackEntry
+) = Column {
+//    Text("VM toggle ON? ${vm.isToggleOn}")
+    Text("$args")
+//    Text("${navBackStackEntry.navArgs<ProfileNavGraph.NavArgs>()}")
+    Text("${kotlin.runCatching { ProfileGraph.argsFrom(navBackStackEntry) }}")
+    Text("${kotlin.runCatching { ProfileSettingsGraph.argsFrom(navBackStackEntry) } }")
 }

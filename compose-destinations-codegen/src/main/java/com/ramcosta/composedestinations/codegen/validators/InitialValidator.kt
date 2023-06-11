@@ -1,8 +1,26 @@
 package com.ramcosta.composedestinations.codegen.validators
 
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.BOTTOM_SHEET_DEPENDENCY
+import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.DOCS_WEBSITE_MULTI_MODULE_CONFIGS
+import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.OPEN_RESULT_RECIPIENT_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.RESULT_RECIPIENT_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.firstTypeArg
+import com.ramcosta.composedestinations.codegen.commons.firstTypeInfoArg
+import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayListTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.toTypeCode
 import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
+import com.ramcosta.composedestinations.codegen.model.CodeGenMode
+import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
+import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
+import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
+import com.ramcosta.composedestinations.codegen.model.TypeInfo
 
 class InitialValidator(
     private val codeGenConfig: CodeGenConfig,
@@ -16,15 +34,16 @@ class InitialValidator(
         validateNavGraphs(navGraphs)
 
         val destinationsByName = lazy { destinations.associateBy { it.name } }
+        val navGraphRoutes = navGraphs.map { it.baseRoute }
         val cleanRoutes = mutableListOf<String>()
         val composableNames = mutableListOf<String>()
 
         destinations.forEach { destination ->
             destination.checkNavArgTypes()
 
-            destination.validateRoute(currentKnownRoutes = cleanRoutes)
+            destination.validateRoute(cleanRoutes, navGraphRoutes)
 
-            destination.validateComposableName(currentKnownComposableNames = composableNames)
+            destination.validateComposableName(composableNames)
 
             destination.validateReceiverColumnScope()
 
@@ -36,13 +55,13 @@ class InitialValidator(
 
             destination.validateClosedResultRecipients(destinationsByName)
 
-            cleanRoutes.add(destination.cleanRoute)
+            cleanRoutes.add(destination.baseRoute)
             composableNames.add(destination.composableName)
         }
     }
 
     private fun validateNavGraphs(navGraphs: List<RawNavGraphGenParams>) {
-        val navGraphsByRoute: Map<String, List<RawNavGraphGenParams>> = navGraphs.groupBy { it.route }
+        val navGraphsByRoute: Map<String, List<RawNavGraphGenParams>> = navGraphs.groupBy { it.baseRoute }
         navGraphsByRoute.forEach {
             if (it.value.size > 1) {
                 throw IllegalDestinationsSetup(
@@ -58,6 +77,16 @@ class InitialValidator(
             throw IllegalDestinationsSetup(
                 "${defaultNavGraphs.joinToString(",")} are" +
                         " marked as the default nav graph. Only one nav graph can be the default one!"
+            )
+        }
+
+        val nestedGraphsWithoutParent = navGraphs.filter { !it.isNavHostGraph && it.parent == null }
+        if (nestedGraphsWithoutParent.isNotEmpty() && codeGenConfig.mode is CodeGenMode.SingleModule) {
+            throw IllegalDestinationsSetup(
+                "[${nestedGraphsWithoutParent.joinToString(",") { "'${it.name}'" }}] are " +
+                        "not @NavHostGraph but do not define a parent graph. " +
+                        "If this graph is meant to be used on another module, use a different multi module mode: " +
+                        DOCS_WEBSITE_MULTI_MODULE_CONFIGS
             )
         }
     }
@@ -112,9 +141,14 @@ class InitialValidator(
 
     private fun DestinationGeneratingParams.validateRoute(
         currentKnownRoutes: List<String>,
+        navGraphRoutes: List<String>
     ) {
-        if (currentKnownRoutes.contains(cleanRoute)) {
-            throw IllegalDestinationsSetup("Multiple Destinations with '${cleanRoute}' as their route name")
+        if (currentKnownRoutes.contains(baseRoute)) {
+            throw IllegalDestinationsSetup("Multiple Destinations with '${baseRoute}' as their route name")
+        }
+
+        if (navGraphRoutes.contains(baseRoute)) {
+            throw IllegalDestinationsSetup("There is a NavGraph with same base route as destination '$composableName'")
         }
     }
 
@@ -221,9 +255,9 @@ class InitialValidator(
 }
 
 private fun DestinationGeneratingParams.checkNavArgTypes() {
-    val navArgsDelegate = navArgsDelegateType
+    val navArgsDelegate = destinationNavArgsClass
     if (navArgsDelegate != null) {
-        navArgsDelegate.navArgs.validateArrayTypeArgs()
+        navArgsDelegate.parameters.validateArrayTypeArgs()
     } else {
         parameters.validateArrayTypeArgs()
     }

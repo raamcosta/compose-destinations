@@ -1,7 +1,5 @@
 package com.ramcosta.composedestinations.annotation
 
-import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
-import com.ramcosta.composedestinations.animations.defaults.NoTransitions
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import kotlin.reflect.KClass
 
@@ -39,6 +37,12 @@ import kotlin.reflect.KClass
  * Annotation classes annotated with this *MUST* have a single parameter named "start"
  * with a default value of "false". This is enforced at compile time by the KSP task.
  *
+ * @param navArgs class with a primary constructor where all navigation arguments specific
+ * to this navigation graph are to be defined. Note that these nav arguments will be available on
+ * the start destination by using `argsFrom` function of the generated Navigation graph.
+ * To navigate to this navigation graph, you'll need both this and the start destination's navigation
+ * arguments.
+ * @param deepLinks array of [DeepLink] which can be used to navigate to this navigation graph
  * @param defaultTransitions defines the navigation animations that destinations of this navigation graph
  * use when entering/leaving the screen. These animations will only be used on destinations
  * that do not set any specific style with [com.ramcosta.composedestinations.annotation.Destination.style]
@@ -54,53 +58,13 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 annotation class NavGraph(
-    val defaultTransitions: KClass<out DestinationStyle.Animated> = Nothing::class,
-    val graphArgs: KClass<out StartRouteArgs<*>> = Nothing::class,
+    val route: String = ANNOTATION_NAME,
+    val navArgs: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
-    val route: String = ANNOTATION_NAME,
+    val defaultTransitions: KClass<out DestinationStyle.Animated> = Nothing::class,
     val default: Boolean = false
 ) {
     companion object {
-        private const val ANNOTATION_NAME = "@ramcosta.destinations.annotation-navgraph-route@"
+        internal const val ANNOTATION_NAME = "@ramcosta.destinations.annotation-navgraph-route@"
     }
 }
-
-interface StartRouteArgs<T> {
-    val startRouteArgs: T
-}
-
-interface StartRouteNoArgs: StartRouteArgs<Unit>  {
-    override val startRouteArgs: Unit get() = Unit
-}
-
-/**
- * Like [NavGraph] but denotes a top level nav graph, i.e one that is not nested in any other
- * nav graph (aka it doesn't have a parent).
- * These are used to pass to [com.ramcosta.composedestinations.DestinationsNavHost] call.
- *
- * [RootNavGraph] is one such graph that can be used out of the box.
- */
-@Target(AnnotationTarget.ANNOTATION_CLASS)
-annotation class NavHostGraph(
-    val defaultTransitions: KClass<out NavHostAnimatedDestinationStyle>,
-    val route: String = ANNOTATION_NAME,
-    val default: Boolean = false
-) {
-    companion object {
-        private const val ANNOTATION_NAME = "@ramcosta.destinations.annotation-navgraph-route@"
-    }
-}
-
-/**
- * Navigation graph annotation that will, by default, correspond to all Destinations that
- * don't specify a navigation graph.
- * If you're using it (i.e, you're not defining your own "NavGraph" annotation with `default = true`),
- * then you must annotate the start destination (or nav graph) with `@RootNavGraph(start = true)`.
- */
-@NavHostGraph(
-    defaultTransitions = NoTransitions::class,
-    default = true
-)
-annotation class RootNavGraph(
-    val start: Boolean = false
-)

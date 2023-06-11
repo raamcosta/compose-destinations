@@ -7,27 +7,13 @@ data class CodeGenConfig(
     val useComposableVisibility: Boolean,
 )
 
-sealed class CodeGenMode {
+sealed interface CodeGenMode {
 
-    abstract fun shouldCreateSealedDestination(destinationSize: Int): Boolean
+    object NavGraphs : CodeGenMode
 
-    object NavGraphs : CodeGenMode() {
-        override fun shouldCreateSealedDestination(destinationSize: Int): Boolean {
-            return destinationSize > 1
-        }
-    }
-
-    object Destinations : CodeGenMode() {
-        override fun shouldCreateSealedDestination(destinationSize: Int): Boolean {
-            return destinationSize > 0
-        }
-    }
+    object Destinations : CodeGenMode
 
     class SingleModule(
         val generateNavGraphs: Boolean,
-    ) : CodeGenMode() {
-        override fun shouldCreateSealedDestination(destinationSize: Int): Boolean {
-            return true
-        }
-    }
+    ) : CodeGenMode
 }
