@@ -16,14 +16,15 @@ import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
+import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.ClassKind
-import com.ramcosta.composedestinations.codegen.model.Core
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
+import com.ramcosta.composedestinations.ksp.commons.MutableKSFileSourceMapper
 import com.ramcosta.composedestinations.ksp.commons.findActualClassDeclaration
 
 class Processor(
@@ -44,21 +45,29 @@ class Processor(
         val navTypeSerializers = resolver.getNavTypeSerializers()
         val navGraphAnnotations = resolver.getNavGraphAnnotations()
         val navHostGraphAnnotations = resolver.getNavHostGraphAnnotations()
+        val codeGenConfig = ConfigParser(logger, options).parse()
 
-        val classesToNavGraphsMapper = KspToCodeGenNavGraphsMapper()
+        val mutableKSFileSourceMapper = MutableKSFileSourceMapper()
+        val classesToNavGraphsMapper = KspToCodeGenNavGraphsMapper(
+            resolver,
+            mutableKSFileSourceMapper,
+            codeGenConfig,
+            navTypeSerializers.associateBy { it.genericType }
+        )
         val navGraphs = classesToNavGraphsMapper.map(navGraphAnnotations, navHostGraphAnnotations)
 
         val functionsToDestinationsMapper = KspToCodeGenDestinationsMapper(
             resolver,
+            mutableKSFileSourceMapper,
             navTypeSerializers.associateBy { it.genericType }
         )
-        val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, functionsToDestinationsMapper)
+        val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, mutableKSFileSourceMapper)
         val destinations = functionsToDestinationsMapper.map(composableDestinations, annotatedActivityDestinations)
 
         CodeGenerator(
             codeGenerator = kspCodeOutputStreamMaker,
             isBottomSheetDependencyPresent = resolver.isBottomSheetDepPresent(),
-            codeGenConfig = ConfigParser(logger, options).parse()
+            codeGenConfig = codeGenConfig
         ).generate(destinations, navGraphs, navTypeSerializers)
 
         return emptyList()

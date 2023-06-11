@@ -25,14 +25,10 @@ const val ACTIVITY_DESTINATION_FIELDS = "[ACTIVITY_DESTINATION_FIELDS]"
 val destinationTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName.destinations",
     imports = setOfImportable(
-        "androidx.annotation.RestrictTo",
         "androidx.compose.runtime.Composable",
         "androidx.navigation.NavBackStackEntry",
         "androidx.navigation.NavHostController",
         "androidx.navigation.NavType",
-        "androidx.navigation.navArgument",
-        "androidx.navigation.NamedNavArgument",
-        "androidx.navigation.NavDeepLink",
         "$CORE_PACKAGE_NAME.scope.DestinationScope",
         "$CORE_PACKAGE_NAME.navigation.DestinationDependenciesContainer",
         "$CORE_PACKAGE_NAME.navigation.DependenciesContainerBuilder",
@@ -46,7 +42,6 @@ val destinationTemplate = FileTemplate(
     sourceCode = """
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}${DESTINATION_VISIBILITY_PLACEHOLDER} object $DESTINATION_NAME : $SUPERTYPE {
     $ARGS_TO_DIRECTION_METHOD
-    @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override val baseRoute: String = "$BASE_ROUTE"
 
     override val route: String = $COMPOSED_ROUTE

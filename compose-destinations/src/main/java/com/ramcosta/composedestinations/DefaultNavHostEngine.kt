@@ -77,17 +77,21 @@ internal class DefaultNavHostEngine(
                 navigation(
                     startDestination = navGraph.startRoute.route,
                     route = navGraph.route,
+                    arguments = navGraph.arguments,
+                    deepLinks = navGraph.deepLinks,
                     enterTransition = { enterTransition() },
                     exitTransition = { exitTransition() },
                     popEnterTransition = { popEnterTransition() },
                     popExitTransition = { popExitTransition() },
-                    builder = builder
+                    builder = builder,
                 )
             }
         } else {
             navigation(
                 startDestination = navGraph.startRoute.route,
                 route = navGraph.route,
+                arguments = navGraph.arguments,
+                deepLinks = navGraph.deepLinks,
                 builder = builder
             )
         }

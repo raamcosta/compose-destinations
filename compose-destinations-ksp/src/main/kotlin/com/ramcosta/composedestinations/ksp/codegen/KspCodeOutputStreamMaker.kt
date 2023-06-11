@@ -17,12 +17,13 @@ class KspCodeOutputStreamMaker(
         vararg sourceIds: String
     ): OutputStream {
 
-        val dependencies = if (sourceIds.isEmpty()) {
+        val sources = sourceIds.mapNotNull { sourceMapper.mapToKSFile(it) }.toTypedArray()
+        val dependencies = if (sources.isEmpty()) {
             Dependencies.ALL_FILES
         } else {
             Dependencies(
                 true,
-                *sourceIds.mapNotNull { sourceMapper.mapToKSFile(it) }.toTypedArray()
+                *sources
             )
         }
 

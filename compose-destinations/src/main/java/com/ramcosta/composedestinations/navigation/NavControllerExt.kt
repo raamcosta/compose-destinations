@@ -42,21 +42,3 @@ fun NavController.popBackStack(
  */
 @MainThread
 fun NavController.clearBackStack(route: Route): Boolean = clearBackStack(route.route)
-
-// region deprecated APIs
-
-/**
- * Like [NavController.navigate], but uses [Direction] instead of a String route.
- */
-@Deprecated(
-    message = "Api will be removed! Use `navigate` extension method instead.",
-    replaceWith = ReplaceWith("navigate(direction, navOptionsBuilder)")
-)
-fun NavController.navigateTo(
-    direction: Direction,
-    navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
-) {
-    navigate(direction.route, navOptionsBuilder)
-}
-
-// endregion

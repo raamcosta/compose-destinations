@@ -1,30 +1,37 @@
 package com.ramcosta.composedestinations.codegen.writers.helpers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.*
-import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.commons.GeneratedExceptions
+import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.coreTypes
+import com.ramcosta.composedestinations.codegen.commons.isCustomTypeNavArg
+import com.ramcosta.composedestinations.codegen.model.CustomNavType
+import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.model.TypeInfo
 
 class NavArgResolver(
-    private val customNavTypeByType: Map<Type, CustomNavType>,
+    val customNavTypeByType: Map<Type, CustomNavType>,
     private val importableHelper: ImportableHelper
 ) {
 
     fun resolve(
-        destination: DestinationGeneratingParams,
+        errorLocationPrefix: String,
         parameter: Parameter
     ) = internalResolve(
         argGetter = parameter.type.toNavBackStackEntryArgGetter(
-            destination,
+            errorLocationPrefix,
             parameter.name
         ),
         parameter = parameter,
     )
 
     fun resolveFromSavedStateHandle(
-        destination: DestinationGeneratingParams,
+        errorLocationPrefix: String,
         parameter: Parameter,
     ) = internalResolve(
-        argGetter = parameter.type.toSavedStateHandleArgGetter(destination, parameter.name),
+        argGetter = parameter.type.toSavedStateHandleArgGetter(errorLocationPrefix, parameter.name),
         parameter = parameter,
     )
 
@@ -46,32 +53,32 @@ class NavArgResolver(
     }
 
     private fun TypeInfo.toSavedStateHandleArgGetter(
-        destination: DestinationGeneratingParams,
+        errorLocationPrefix: String,
         argName: String,
     ): String {
         return when {
             value in coreTypes.keys -> "${coreTypes[value]!!.simpleName}.get(savedStateHandle, \"$argName\")"
             isCustomTypeNavArg() -> "${customNavTypeCode(this)}.get(savedStateHandle, \"$argName\")"
             valueClassInnerInfo != null -> {
-                valueClassInnerInfo.typeInfo.toSavedStateHandleArgGetter(destination, argName) +
+                valueClassInnerInfo.typeInfo.toSavedStateHandleArgGetter(errorLocationPrefix, argName) +
                         "?.let { ${importableHelper.addAndGetPlaceholder(importable)}(it) }"
             }
-            else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type $importable.qualifiedName")
+            else -> throw IllegalDestinationsSetup("$errorLocationPrefix': Unknown type $importable.qualifiedName")
         }
     }
 
     private fun TypeInfo.toNavBackStackEntryArgGetter(
-        destination: DestinationGeneratingParams,
+        errorLocationPrefix: String,
         argName: String,
     ): String {
         return when {
             value in coreTypes.keys -> "${coreTypes[value]!!.simpleName}.safeGet(bundle, \"$argName\")"
             isCustomTypeNavArg() -> "${customNavTypeCode(this)}.safeGet(bundle, \"$argName\")"
             valueClassInnerInfo != null -> {
-                valueClassInnerInfo.typeInfo.toNavBackStackEntryArgGetter(destination, argName) +
+                valueClassInnerInfo.typeInfo.toNavBackStackEntryArgGetter(errorLocationPrefix, argName) +
                         "?.let { ${importableHelper.addAndGetPlaceholder(importable)}(it) }"
             }
-            else -> throw IllegalDestinationsSetup("Composable '${destination.composableName}': Unknown type ${importable.qualifiedName}")
+            else -> throw IllegalDestinationsSetup("$errorLocationPrefix: Unknown type ${importable.qualifiedName}")
         }
     }
 

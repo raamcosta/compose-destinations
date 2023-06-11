@@ -10,7 +10,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ramcosta.samples.playground.R
-import com.ramcosta.samples.playground.ui.screens.destinations.*
+import com.ramcosta.samples.playground.ui.screens.destinations.AnotherTestScreenDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.Destination
+import com.ramcosta.samples.playground.ui.screens.destinations.DirectionDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.FeedDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.GoToProfileConfirmationDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.OtherActivityDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.ProfileSettingsScreenDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.TestScreen2Destination
+import com.ramcosta.samples.playground.ui.screens.destinations.TestScreen3Destination
+import com.ramcosta.samples.playground.ui.screens.destinations.TestScreenDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
 
 @Composable
 fun DirectionDestination.DrawerContent(

@@ -28,7 +28,10 @@ val rootNavGraphGenParams = RawNavGraphGenParams(
     defaultTransitions = Importable(
         "NoTransitions",
         "com.ramcosta.composedestinations.animations.defaults.NoTransitions"
-    )
+    ),
+    deepLinks = emptyList(),
+    sourceIds = emptyList(),
+    navArgs = null,
 )
 
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"
@@ -48,14 +51,21 @@ const val NO_PREFIX_GENERATED_NO_ARGS_DESTINATION = "DirectionDestination"
 const val NO_PREFIX_GENERATED_ACTIVITY_DESTINATION = "ActivityDestination"
 const val NO_PREFIX_GENERATED_NO_ARGS_ACTIVITY_DESTINATION = "DirectionActivityDestination"
 const val GENERATED_NAV_GRAPH = "NavGraph"
-const val GENERATED_NAV_HOST_GRAPH = "NavHostGraph"
+const val NO_PREFIX_GENERATED_NAV_HOST_GRAPH = "NavHostGraph"
+const val NO_PREFIX_GENERATED_TYPED_NAV_GRAPH = "TypedNavGraph"
+const val NO_PREFIX_GENERATED_DIRECTION_NAV_GRAPH = "DirectionNavGraph"
 const val GENERATED_NAV_GRAPHS_OBJECT = "NavGraphs"
 const val GENERATED_DESTINATION_SUFFIX = "Destination"
 
 const val CORE_DESTINATION_SPEC = "DestinationSpec"
+const val CORE_TYPED_DESTINATION_SPEC = "TypedDestinationSpec"
 const val CORE_DIRECTION_DESTINATION_SPEC = "DirectionDestinationSpec"
 const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
-const val CORE_NAV_HOST_GRAPH_SPEC = "NavHostGraphSpec"
+
+val CORE_NAV_HOST_ANIMATED_DESTINATION_STYLE = Importable("NavHostAnimatedDestinationStyle", "$CORE_PACKAGE_NAME.animations.defaults.NavHostAnimatedDestinationStyle")
+val CORE_NAV_HOST_GRAPH_SPEC = Importable("NavHostGraphSpec", "$CORE_PACKAGE_NAME.spec.NavHostGraphSpec")
+val CORE_DIRECTION_NAV_GRAPH_SPEC = Importable("DirectionNavGraphSpec", "$CORE_PACKAGE_NAME.spec.DirectionNavGraphSpec")
+val CORE_TYPED_NAV_GRAPH_SPEC = Importable("TypedNavGraphSpec", "$CORE_PACKAGE_NAME.spec.TypedNavGraphSpec")
 val CORE_ACTIVITY_DESTINATION_SPEC = Importable("ActivityDestinationSpec", "$CORE_PACKAGE_NAME.spec.ActivityDestinationSpec")
 val CORE_DIRECTION_ACTIVITY_DESTINATION_SPEC = Importable("DirectionActivityDestinationSpec", "$CORE_PACKAGE_NAME.spec.DirectionActivityDestinationSpec")
 val CORE_STRING_NAV_TYPE = Importable("DestinationsStringNavType", "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsStringNavType")
@@ -90,11 +100,13 @@ const val RESULT_RECIPIENT_QUALIFIED_NAME = "$CORE_PACKAGE_NAME.result.ResultRec
 const val OPEN_RESULT_RECIPIENT_QUALIFIED_NAME = "$CORE_PACKAGE_NAME.result.OpenResultRecipient"
 const val NAV_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavController"
 const val NAV_HOST_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavHostController"
-const val SAVED_STATE_HANDLE_SIMPLE_NAME = "SavedStateHandle"
-const val SAVED_STATE_HANDLE_QUALIFIED_NAME = "androidx.lifecycle.SavedStateHandle"
 val bundleImportable = Importable(
     simpleName = "Bundle",
     qualifiedName = "android.os.Bundle"
+)
+val savedStateHandleImportable = Importable(
+    "SavedStateHandle",
+    "androidx.lifecycle.SavedStateHandle"
 )
 const val NAV_BACK_STACK_ENTRY_SIMPLE_NAME = "NavBackStackEntry"
 const val NAV_BACK_STACK_ENTRY_QUALIFIED_NAME = "androidx.navigation.$NAV_BACK_STACK_ENTRY_SIMPLE_NAME"

@@ -19,7 +19,7 @@ class NavArgsGettersWriter(
     private val importableHelper = ImportableHelper(navArgsGettersTemplate.imports)
 
     fun write(generatedDestinations: List<GeneratedDestination>) {
-        if (generatedDestinations.all { it.navArgsImportable == null }) {
+        if (generatedDestinations.all { it.navArgsClass == null }) {
             return
         }
 
@@ -29,8 +29,8 @@ class NavArgsGettersWriter(
             sourceIds = sourceIds(generatedDestinations).toTypedArray()
         )
 
-        val destinationsWithNavArgs = generatedDestinations.filter { it.navArgsImportable != null }
-            .associateBy { it.navArgsImportable!! }
+        val destinationsWithNavArgs = generatedDestinations.filter { it.navArgsClass != null }
+            .associateBy { it.navArgsClass!!.type }
             .values
             .toList()
 
@@ -58,7 +58,7 @@ class NavArgsGettersWriter(
         val sb = StringBuilder()
 
         destinationsWithNavArgs.forEachIndexed { idx, it ->
-            sb += "\t\t${importableHelper.addAndGetPlaceholder(it.navArgsImportable!!)}::class.java " +
+            sb += "\t\t${importableHelper.addAndGetPlaceholder(it.navArgsClass!!.type)}::class.java " +
                     "-> ${importableHelper.addAndGetPlaceholder(it.destinationImportable)}.argsFrom(argsContainer) as T"
 
             if (idx < destinationsWithNavArgs.lastIndex) {

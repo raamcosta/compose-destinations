@@ -11,10 +11,6 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  */
 class EmptyResultRecipient<D : DestinationSpec, R> : ResultRecipient<D, R> {
 
-    @Suppress("OverridingDeprecatedMember", "OVERRIDE_DEPRECATION")
-    @Composable
-    override fun onResult(listener: (R) -> Unit) = Unit
-
     @Composable
     override fun onNavResult(listener: (NavResult<R>) -> Unit) = Unit
 
