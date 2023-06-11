@@ -1,9 +1,16 @@
 package com.ramcosta.composedestinations.codegen.writers
 
-import com.ramcosta.composedestinations.codegen.model.*
-import com.ramcosta.composedestinations.codegen.writers.sub.*
+import com.ramcosta.composedestinations.codegen.commons.makeNavGraphTrees
+import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
+import com.ramcosta.composedestinations.codegen.model.CodeGenMode
+import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
+import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
+import com.ramcosta.composedestinations.codegen.writers.sub.DestinationsModeWriter
+import com.ramcosta.composedestinations.codegen.writers.sub.NavGraphsModeWriter
+import com.ramcosta.composedestinations.codegen.writers.sub.NavGraphsSingleObjectWriter
+import com.ramcosta.composedestinations.codegen.writers.sub.SingleModuleExtensionsWriter
 
-class ModuleOutputWriter(
+internal class ModuleOutputWriter(
     private val codeGenConfig: CodeGenConfig,
     private val navGraphsModeWriter: NavGraphsModeWriter,
     private val destinationsListModeWriter: DestinationsModeWriter,
@@ -17,7 +24,8 @@ class ModuleOutputWriter(
     ) {
         return when (codeGenConfig.mode) {
             is CodeGenMode.NavGraphs -> {
-                navGraphsModeWriter.write(navGraphs, generatedDestinations)
+                val graphTrees = makeNavGraphTrees(navGraphs, generatedDestinations)
+                navGraphsModeWriter.write(graphTrees)
             }
 
             is CodeGenMode.Destinations -> {
@@ -25,15 +33,15 @@ class ModuleOutputWriter(
             }
 
             is CodeGenMode.SingleModule -> {
-                val generatedNavGraphs = if (codeGenConfig.mode.generateNavGraphs) {
-                    navGraphsSingleObjectWriter.write(navGraphs, generatedDestinations)
+                val graphTrees = makeNavGraphTrees(navGraphs, generatedDestinations)
+                if (codeGenConfig.mode.generateNavGraphs) {
+                    navGraphsSingleObjectWriter.write(graphTrees, generatedDestinations)
                 } else {
                     // We fallback to just generate a list of all destinations
                     destinationsListModeWriter.write(generatedDestinations)
-                    emptyList()
                 }
 
-                singleModuleExtensionsWriter.write(generatedNavGraphs)
+                singleModuleExtensionsWriter.write()
             }
         }
     }

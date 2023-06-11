@@ -5,3 +5,6 @@ class IllegalDestinationsSetup(message: String, cause: Throwable? = null) : Runt
 class MissingRequiredDependency(message: String) : RuntimeException(message)
 
 class UnexpectedException(message: String) : RuntimeException(message)
+
+const val DOCS_WEBSITE = "https://composedestinations.rafaelcosta.xyz/"
+const val DOCS_WEBSITE_MULTI_MODULE_CONFIGS = "${DOCS_WEBSITE}codegenconfigs#multi-module-configs"

@@ -1,6 +1,17 @@
 package com.ramcosta.composedestinations.codegen.writers.sub
 
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.DESTINATIONS_NAVIGATOR_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.NAV_BACK_STACK_ENTRY_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.NAV_CONTROLLER_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_CONTROLLER_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.RESULT_RECIPIENT_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.Parameter
@@ -20,7 +31,7 @@ class DestinationContentFunctionWriter(
             functionCallCode += "\t\tval dependencyContainer = buildDependencies()\n"
         }
 
-        if (navArgs.isNotEmpty() && destination.navArgsDelegateType == null) {
+        if (navArgs.isNotEmpty() && destination.destinationNavArgsClass == null) {
             functionCallCode += "\t\tval (${argNamesInLine()}) = navArgs\n"
         }
 
@@ -149,7 +160,7 @@ class DestinationContentFunctionWriter(
                 )
                 "$placeHolder()"
             }
-            destination.navArgsDelegateType?.type?.qualifiedName -> {
+            destination.destinationNavArgsClass?.type?.qualifiedName -> {
                 "navArgs"
             }
             else -> {

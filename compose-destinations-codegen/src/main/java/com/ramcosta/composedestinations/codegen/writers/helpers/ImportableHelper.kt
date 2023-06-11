@@ -37,7 +37,7 @@ class ImportableHelper(
         var final = currentFile
 
         val importableImportsBySimpleName: Map<String, List<Importable>> =
-            imports.groupBy { it.simpleName }
+            imports.groupBy { it.preferredSimpleName }
         importableImportsBySimpleName.forEach {
             if (it.value.size > 1) {
                 val importsToRemove =
@@ -54,7 +54,7 @@ class ImportableHelper(
         }
 
         imports.forEach {
-            final = final.replace(it.qualifiedName, it.simpleName)
+            final = final.replace(it.qualifiedName, it.preferredSimpleName)
         }
 
         return "${additionalImports()}\n\n$final"
@@ -65,10 +65,11 @@ class ImportableHelper(
 
         imports
             .filter { it.qualifiedName != "kotlin.${it.simpleName}" }
-            .map { it.qualifiedName }
+            .map { it.importStatement }
+            .toSet()
             .sorted()
             .forEach {
-                importsStr += "\nimport ${it.sanitizePackageName()}"
+                importsStr += "\n$it"
             }
 
         return importsStr.toString()

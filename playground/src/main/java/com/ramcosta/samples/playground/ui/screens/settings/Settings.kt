@@ -20,11 +20,13 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.ramcosta.composedestinations.result.EmptyResultRecipient
 import com.ramcosta.composedestinations.result.ResultRecipient
+import com.ramcosta.playground.core.WithDefaultValueArgs
 import com.ramcosta.samples.playground.commons.SettingsNavGraph
 import com.ramcosta.samples.playground.commons.requireTitle
 import com.ramcosta.samples.playground.ui.screens.NavGraphs
 import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
+import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraph
 import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.playground.ui.screens.styles.SettingsTransitions
 
@@ -64,7 +66,17 @@ fun SettingsScreen(
             }
 
             Button(
-                onClick = { navigator.navigate(NavGraphs.profileSettings) }
+                onClick = {
+                    navigator.navigate(
+                        NavGraphs.profile(
+                            graphArg = "graph arg",
+                            startRouteArgs = ProfileSettingsGraph.NavArgs(
+                                anotherGraphArg = "another graph arg",
+                                startRouteArgs = WithDefaultValueArgs(false)
+                            )
+                        )
+                    )
+                }
             ) {
                 Text(text = "Navigate to Profile Settings nav graph")
             }

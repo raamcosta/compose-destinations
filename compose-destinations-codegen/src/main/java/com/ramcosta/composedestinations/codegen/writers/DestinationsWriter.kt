@@ -1,7 +1,11 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
+import com.ramcosta.composedestinations.codegen.model.CustomNavType
+import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
+import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
+import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 
@@ -25,7 +29,6 @@ class DestinationsWriter(
                 isBottomSheetDependencyPresent,
                 NavArgResolver(customNavTypeByType, importableHelper),
                 destination,
-                customNavTypeByType,
                 importableHelper
             ).write()
 

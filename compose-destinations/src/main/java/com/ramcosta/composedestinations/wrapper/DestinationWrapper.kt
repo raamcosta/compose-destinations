@@ -48,7 +48,7 @@ interface DestinationWrapper {
     )
 }
 
-// region used by generated code
+//region used by generated code
 
 /**
  * Function which will call [DestinationWrapper]'s Wrap method.
@@ -95,4 +95,4 @@ private fun DestinationScope<*>.WrapRecursively(
     }
 }
 
-// endregion
+//endregion

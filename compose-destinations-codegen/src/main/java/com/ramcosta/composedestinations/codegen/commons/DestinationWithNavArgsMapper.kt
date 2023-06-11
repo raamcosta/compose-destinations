@@ -18,11 +18,11 @@ class DestinationWithNavArgsMapper {
     }
 
     private fun DestinationGeneratingParams.getNavArgs(): List<Parameter> {
-        val navArgsDelegateTypeLocal = navArgsDelegateType
+        val navArgsDelegateTypeLocal = destinationNavArgsClass
         return if (navArgsDelegateTypeLocal == null) {
             parameters.filter { it.isNavArg() }
         } else {
-            val nonNavArg = navArgsDelegateTypeLocal.navArgs.firstOrNull { !it.isNavArg() }
+            val nonNavArg = navArgsDelegateTypeLocal.parameters.firstOrNull { !it.isNavArg() }
             if (nonNavArg != null) {
                 if (!nonNavArg.type.isCoreOrCustomNavArgType() &&
                     nonNavArg.type.valueClassInnerInfo != null && // is value class
@@ -43,7 +43,7 @@ class DestinationWithNavArgsMapper {
                         "function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class. (check argument '${navArgInFuncParams.name})'")
             }
 
-            navArgsDelegateTypeLocal.navArgs
+            navArgsDelegateTypeLocal.parameters
         }
     }
 
