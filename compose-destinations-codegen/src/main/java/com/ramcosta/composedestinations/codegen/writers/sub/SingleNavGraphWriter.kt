@@ -11,12 +11,14 @@ import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
 import com.ramcosta.composedestinations.codegen.commons.bundleImportable
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.savedStateHandleImportable
+import com.ramcosta.composedestinations.codegen.commons.setOfPublicStartParticipatingTypes
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.commons.startingDestinationName
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavGraphGenParams
+import com.ramcosta.composedestinations.codegen.model.Visibility
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ARGS_FROM
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ARGUMENTS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_DEEP_LINKS_PLACEHOLDER
@@ -30,6 +32,7 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ROUTE_PLACEH
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_START_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_TYPE
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_TYPED_ROUTE_TYPE
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_VISIBILITY_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NESTED_NAV_GRAPHS
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.moduleNavGraphTemplate
@@ -66,6 +69,7 @@ internal class SingleNavGraphWriter(
             .replace(NAV_GRAPH_ARGUMENTS_PLACEHOLDER, navGraph.navArgumentsCode())
             .replace(NAV_GRAPH_DEEP_LINKS_PLACEHOLDER, navGraph.deepLinksCode())
             .replace(NAV_GRAPH_GEN_NAV_ARGS, navGraph.generatedNavArgsClass())
+            .replace(NAV_GRAPH_VISIBILITY_PLACEHOLDER, navGraph.visibility.name.lowercase())
             .replace(
                 NAV_GRAPH_TYPE,
                 navGraph.graphSuperType()
@@ -209,15 +213,26 @@ internal class SingleNavGraphWriter(
 
         if (argTypes.first != null && argTypes.second != null && argTypes.first != argTypes.second) {
             val code = StringBuilder()
-            code += "\n\n"
-            code += "\tpublic data class NavArgs(\n"
-            code += "${navArgumentBridgeCodeBuilder.innerNavArgsParametersCode(true)}\n"
-            code += "\t\tval startRouteArgs: ${importableHelper.addAndGetPlaceholder(argTypes.second!!)}\n"
-            code += "\t)"
+            code += "${getGenNavArgsClassVisibility()} data class ${navGraph.name}NavArgs(\n"
+            code += "${navArgumentBridgeCodeBuilder.innerNavArgsParametersCode("\tval ")}\n"
+            code += "\tval startRouteArgs: ${importableHelper.addAndGetPlaceholder(argTypes.second!!)}\n"
+            code += ")\n\n"
             return code.toString()
         }
 
         return ""
+    }
+
+    private fun getGenNavArgsClassVisibility(): String {
+        if (navGraph.visibility == Visibility.PUBLIC) {
+            return "public"
+        }
+
+        if (navGraph.type in setOfPublicStartParticipatingTypes) {
+            return "public"
+        }
+
+        return "internal"
     }
 
     private fun RawNavGraphTree.graphRouteCode(): String {
@@ -261,21 +276,20 @@ internal class SingleNavGraphWriter(
     }
 
     private fun RawNavGraphTree.navArgTypes(): Pair<Importable?, Importable?> {
-        val startRouteNavArgs = startRouteArgs
         val graphArgs = if (navArgs?.parameters.isNullOrEmpty()) {
             null
         } else {
-            if (startRouteNavArgs != null) {
+            if (startRouteArgs != null) {
                 Importable(
-                    "NavArgs",
-                    "$navGraphsPackageName.${navGraph.name}.NavArgs"
+                    "${navGraph.name}NavArgs",
+                    "$navGraphsPackageName.${navGraph.name}NavArgs"
                 )
             } else {
                 navArgs!!.type
             }
         }
 
-        return (graphArgs ?: startRouteNavArgs) to startRouteNavArgs
+        return (graphArgs ?: startRouteArgs?.type) to startRouteArgs?.type
     }
 
     private fun RawNavGraphTree.startRouteType(): String {
@@ -283,19 +297,17 @@ internal class SingleNavGraphWriter(
             return "Unit"
         }
 
-        val startRouteNavArgsName = startRouteArgs
-
-        return if (startRouteNavArgsName != null) {
-            importableHelper.addAndGetPlaceholder(startRouteNavArgsName)
+        return if (startRouteArgs != null) {
+            importableHelper.addAndGetPlaceholder(startRouteArgs.type)
         } else {
             "Unit"
         }
     }
 
-    private fun navGraphDestinationsCode(destinations: List<GeneratedDestination>): String {
+    private fun navGraphDestinationsCode(destinations: List<CodeGenProcessedDestination>): String {
         val code = StringBuilder()
         destinations.forEachIndexed { idx, it ->
-            code += "\t\t${it.simpleName}"
+            code += "\t\t${it.destinationImportable.simpleName}"
 
             if (idx != destinations.lastIndex) {
                 code += ",\n"
@@ -306,7 +318,7 @@ internal class SingleNavGraphWriter(
     }
 
 
-    private fun ImportableHelper.requireOptInAnnotations(generatedDestinations: List<GeneratedDestination>): String {
+    private fun ImportableHelper.requireOptInAnnotations(generatedDestinations: List<CodeGenProcessedDestination>): String {
         val requireOptInClassTypes =
             generatedDestinations.flatMapTo(mutableSetOf()) { it.requireOptInAnnotationTypes }
         val code = StringBuilder()

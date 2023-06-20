@@ -4,7 +4,6 @@ data class CodeGenConfig(
     val packageName: String?,
     val moduleName: String?,
     val mode: CodeGenMode,
-    val useComposableVisibility: Boolean,
 )
 
 sealed interface CodeGenMode {

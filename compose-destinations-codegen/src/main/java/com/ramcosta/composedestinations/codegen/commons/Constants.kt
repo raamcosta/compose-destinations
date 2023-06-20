@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.codegen.commons
 
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
+import com.ramcosta.composedestinations.codegen.model.Visibility
 
 const val CORE_PACKAGE_NAME = "com.ramcosta.composedestinations"
 
@@ -32,6 +33,7 @@ val rootNavGraphGenParams = RawNavGraphGenParams(
     deepLinks = emptyList(),
     sourceIds = emptyList(),
     navArgs = null,
+    visibility = Visibility.PUBLIC
 )
 
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"

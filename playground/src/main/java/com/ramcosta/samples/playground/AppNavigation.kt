@@ -13,6 +13,8 @@ import com.ramcosta.composedestinations.bottomsheet.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.dependency
+import com.ramcosta.composedestinations.navigation.destination
+import com.ramcosta.composedestinations.navigation.navgraph
 import com.ramcosta.composedestinations.scope.resultBackNavigator
 import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.utils.composable
@@ -47,13 +49,17 @@ fun AppNavigation(
         modifier = modifier,
         dependenciesContainerBuilder = {
             dependency(drawerController)
-            dependency(ProfileScreenDestination) { viewModel<ProfileViewModel>() }
 
-            dependency(NavGraphs.settings) {
+            destination(ProfileScreenDestination) {
+                dependency(viewModel<ProfileViewModel>())
+            }
+
+            navgraph(NavGraphs.settings) {
                 val parentEntry = remember(navBackStackEntry) {
                     navController.getBackStackEntry(NavGraphs.settings.route)
                 }
-                viewModel<SettingsViewModel>(parentEntry)
+
+                dependency(viewModel<SettingsViewModel>(parentEntry))
             }
         }
     ) {

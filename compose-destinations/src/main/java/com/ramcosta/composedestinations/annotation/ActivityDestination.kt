@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.annotation
 
 import android.app.Activity
+import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
 import kotlin.reflect.KClass
 
 /**
@@ -19,6 +20,8 @@ import kotlin.reflect.KClass
  * @param targetPackage see [androidx.navigation.ActivityNavigator.Destination.targetPackage]
  * @param dataUri see [androidx.navigation.ActivityNavigator.Destination.data]
  * @param dataPattern see [androidx.navigation.ActivityNavigator.Destination.dataPattern]
+ * @param visibility [CodeGenVisibility] of the corresponding generated Destination object.
+ * Useful to control what the current module exposes to other modules. By default, it is public.
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
@@ -30,7 +33,8 @@ annotation class ActivityDestination(
     val targetPackage: String = DEFAULT_NULL,
     val action: String = DEFAULT_NULL,
     val dataUri: String = DEFAULT_NULL,
-    val dataPattern: String = DEFAULT_NULL
+    val dataPattern: String = DEFAULT_NULL,
+    val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
 ) {
     companion object {
         const val DEFAULT_NULL = "@ramcosta.destinations.activity-null-default@"

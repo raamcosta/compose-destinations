@@ -4,7 +4,7 @@ import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.moduleName
 import com.ramcosta.composedestinations.codegen.templates.MODULE_DESTINATIONS_LIST_NAME_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.MODULE_DESTINATIONS_PLACEHOLDER
@@ -12,15 +12,15 @@ import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTAT
 import com.ramcosta.composedestinations.codegen.templates.moduleDestinationTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
-import java.util.*
+import java.util.Locale
 
-class DestinationsModeWriter(
+internal class DestinationsModeWriter(
     private val codeGenerator: CodeOutputStreamMaker,
 ) {
 
     private val importableHelper = ImportableHelper(moduleDestinationTemplate.imports)
 
-    fun write(generatedDestinations: List<GeneratedDestination>) {
+    fun write(generatedDestinations: List<CodeGenProcessedDestination>) {
         if (generatedDestinations.isEmpty()) {
             return
         }
@@ -44,10 +44,10 @@ class DestinationsModeWriter(
         return "${moduleName.replaceFirstChar { it.lowercase(Locale.US) }}${if (moduleName.isEmpty()) "d" else "D"}estinations"
     }
 
-    private fun moduleDestinationsCode(generatedDestinations: List<GeneratedDestination>): String {
+    private fun moduleDestinationsCode(generatedDestinations: List<CodeGenProcessedDestination>): String {
         val code = StringBuilder()
         generatedDestinations.forEachIndexed { idx, it ->
-            code += "\t${it.simpleName}"
+            code += "\t${it.destinationImportable.simpleName}"
 
             if (idx != generatedDestinations.lastIndex) {
                 code += ",\n"
@@ -57,7 +57,7 @@ class DestinationsModeWriter(
         return code.toString()
     }
 
-    private fun requireOptInAnnotations(generatedDestinations: List<GeneratedDestination>): String {
+    private fun requireOptInAnnotations(generatedDestinations: List<CodeGenProcessedDestination>): String {
         val requireOptInClassTypes = generatedDestinations.flatMapTo(mutableSetOf()) { it.requireOptInAnnotationTypes }
         val code = StringBuilder()
 

@@ -26,34 +26,32 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(depen
 }
 
 /**
- * Adds [dependencyProvider] return object to this container builder.
- * If [navGraph] is passed in, then only provides the dependency to destinations
- * that belongs to it.
+ * Calls [dependencyProvider] when a destination (directly or indirectly) part of [navGraph] is
+ * navigated to, giving an opportunity to specify dependencies with [dependency] method
+ * that are supposed to be used only by destinations of that [navGraph].
  */
-inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
+inline fun <T> DependenciesContainerBuilder<T>.navgraph(
     navGraph: NavGraphSpec,
-    dependencyProvider: () -> D,
+    dependencyProvider: DependenciesContainerBuilder<T>.() -> Unit,
 ) {
     val route = requireNotNull(navBackStackEntry.destination.route)
 
     if (navGraph.findDestination(route) != null) {
-        (this as DestinationDependenciesContainerImpl<*>).dependency(dependencyProvider(),
-            asType = D::class)
+        dependencyProvider()
     }
 }
 
 /**
- * Adds [dependencyProvider] return object to this container builder.
- * If [destination] is passed in, then only provides the dependency in case that is the
- * destination being navigated to.
+ * Calls [dependencyProvider] when a [destination] is navigated to,
+ * giving an opportunity to specify dependencies with [dependency] method
+ * that are supposed to be used only by that [destination].
  */
-inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(
+inline fun <T> DependenciesContainerBuilder<T>.destination(
     destination: DestinationSpec,
-    dependencyProvider: () -> D,
+    dependencyProvider: DependenciesContainerBuilder<T>.() -> Unit,
 ) {
     if (this.destination.originalDestination.route == destination.originalDestination.route) {
-        (this as DestinationDependenciesContainerImpl<*>).dependency(dependencyProvider(),
-            asType = D::class)
+        dependencyProvider()
     }
 }
 

@@ -23,6 +23,7 @@ import com.ramcosta.composedestinations.ksp.commons.findArgumentValue
 import com.ramcosta.composedestinations.ksp.commons.getNavArgsDelegateType
 import com.ramcosta.composedestinations.ksp.commons.isNothing
 import com.ramcosta.composedestinations.ksp.commons.toDeepLink
+import com.ramcosta.composedestinations.ksp.commons.toGenVisibility
 import com.ramcosta.composedestinations.ksp.commons.toImportable
 
 internal class KspToCodeGenNavGraphsMapper(
@@ -72,6 +73,9 @@ internal class KspToCodeGenNavGraphsMapper(
             .findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT)
         val navGraphAnnotationDefaultArg = navGraphAnnotation
             .findArgumentValue<Boolean>("default")!!
+        val navGraphVisibility = navGraphAnnotation
+            .findArgumentValue<KSType>("visibility")!!
+            .toGenVisibility()
         val navGraphDefaultTransitions = navGraphAnnotation
             .findArgumentValue<KSType>("defaultTransitions")
             ?.findActualClassDeclaration()
@@ -134,7 +138,8 @@ internal class KspToCodeGenNavGraphsMapper(
             parent = parent,
             isParentStart = isParentStart,
             deepLinks = deepLinks,
-            navArgs = navArgs?.type
+            navArgs = navArgs?.type,
+            visibility = navGraphVisibility
         )
     }
 }
