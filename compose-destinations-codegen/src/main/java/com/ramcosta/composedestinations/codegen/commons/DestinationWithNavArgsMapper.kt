@@ -1,16 +1,16 @@
 package com.ramcosta.composedestinations.codegen.commons
 
 import com.ramcosta.composedestinations.codegen.facades.Logger
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
-import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
 
-class DestinationWithNavArgsMapper {
+internal class DestinationWithNavArgsMapper {
 
-    fun map(destinations: List<DestinationGeneratingParams>): List<DestinationGeneratingParamsWithNavArgs> {
+    fun map(destinations: List<DestinationGeneratingParams>): List<CodeGenProcessedDestination> {
         return destinations.map {
-            DestinationGeneratingParamsWithNavArgs(
+            CodeGenProcessedDestination(
                 it.getNavArgs(),
                 it
             )

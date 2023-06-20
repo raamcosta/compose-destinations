@@ -8,8 +8,8 @@ import com.ramcosta.composedestinations.codegen.commons.navGraphFieldName
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.CustomNavType
-import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
@@ -42,7 +42,7 @@ internal class NavGraphsSingleObjectWriter(
 
     fun write(
         graphTrees: List<RawNavGraphTree>,
-        generatedDestinations: List<GeneratedDestination>
+        generatedDestinations: List<CodeGenProcessedDestination>
     ) {
         val flattenGraphs = graphTrees.flatten()
         checkUniquenessOnNavGraphFieldNames(flattenGraphs)
@@ -63,7 +63,7 @@ internal class NavGraphsSingleObjectWriter(
     }
 
     private fun writeFile(
-        generatedDestinations: List<GeneratedDestination>,
+        generatedDestinations: List<CodeGenProcessedDestination>,
         navGraphsParams: List<RawNavGraphTree>
     ) {
         codeGenerator.makeFile(

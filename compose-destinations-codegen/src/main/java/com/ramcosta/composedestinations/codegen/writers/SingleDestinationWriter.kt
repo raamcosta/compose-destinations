@@ -14,15 +14,13 @@ import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
 import com.ramcosta.composedestinations.codegen.commons.experimentalAnimationApiType
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
-import com.ramcosta.composedestinations.codegen.commons.recursiveRequireOptInAnnotations
 import com.ramcosta.composedestinations.codegen.commons.removeInstancesOf
+import com.ramcosta.composedestinations.codegen.commons.setOfPublicStartParticipatingTypes
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
-import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
-import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
 import com.ramcosta.composedestinations.codegen.model.Importable
-import com.ramcosta.composedestinations.codegen.model.RawNavArgsClass
 import com.ramcosta.composedestinations.codegen.model.Visibility
 import com.ramcosta.composedestinations.codegen.templates.ACTIVITY_DESTINATION_FIELDS
 import com.ramcosta.composedestinations.codegen.templates.ARGS_FROM_METHODS
@@ -47,12 +45,12 @@ import com.ramcosta.composedestinations.codegen.writers.sub.NavArgumentBridgeCod
 
 val destinationsPackageName = "$codeGenBasePackageName.destinations"
 
-class SingleDestinationWriter(
+internal class SingleDestinationWriter(
     private val codeGenConfig: CodeGenConfig,
     private val codeGenerator: CodeOutputStreamMaker,
     private val isBottomSheetDependencyPresent: Boolean,
     private val navArgResolver: NavArgResolver,
-    private val destination: DestinationGeneratingParamsWithNavArgs,
+    private val destination: CodeGenProcessedDestination,
     private val importableHelper: ImportableHelper
 ) {
 
@@ -73,7 +71,7 @@ class SingleDestinationWriter(
         importableHelper.addPriorityQualifiedImport(destination.composableQualifiedName, destination.composableName)
     }
 
-    fun write(): GeneratedDestination = with(destination) {
+    fun write() = with(destination) {
         codeGenerator.makeFile(
             packageName = destinationsPackageName,
             name = name,
@@ -105,37 +103,10 @@ class SingleDestinationWriter(
                 )
                 .replace(ACTIVITY_DESTINATION_FIELDS, activityDestinationFields())
         )
-
-        return GeneratedDestination(
-            sourceIds = sourceIds,
-            qualifiedName = "$destinationsPackageName.$name",
-            simpleName = name,
-            navArgsClass = navArgsDataClassImportable()?.let {
-                RawNavArgsClass(
-                    parameters = navArgs,
-                    type =
-                    if (destinationNavArgsClass == null) {
-                        it.copy(
-                            simpleName = "NavArgs",
-                            qualifiedName = "$destinationsPackageName.$name.NavArgs"
-                        )
-                    } else {
-                        it
-                    }
-                )
-            },
-            hasMandatoryNavArgs = navArgs.any { it.isMandatory },
-            navGraphInfo = navGraphInfo,
-            requireOptInAnnotationTypes = gatherOptInAnnotations()
-                .filter { !it.isOptedIn }
-                .map { it.importable }
-                .toList(),
-        )
     }
 
     private fun getDestinationVisibilityModifier(): String {
-        return if (codeGenConfig.useComposableVisibility && destination.visibility == Visibility.INTERNAL) "internal"
-        else "public"
+        return destination.visibility.name.lowercase()
     }
 
     private fun String.replaceSuperclassDestination(): String {
@@ -156,7 +127,7 @@ class SingleDestinationWriter(
         val superType = if (destination.destinationNavArgsClass != null) {
             "${codeGenDestination}<${destination.destinationNavArgsClass.type.getCodePlaceHolder()}>"
         } else {
-            "${codeGenDestination}<${destination.name}.NavArgs>"
+            "${codeGenDestination}<${destination.name}NavArgs>"
         }
 
         return replace(SUPERTYPE, superType)
@@ -168,52 +139,28 @@ class SingleDestinationWriter(
         }
 
         val code = StringBuilder()
-        code += "\n"
-        code += "\tpublic data class NavArgs(\n"
-        code += "${navArgumentBridgeCodeBuilder.innerNavArgsParametersCode(true)}\n"
-        code += "\t)"
+        code += "${getGenNavArgsClassVisibility()} data class ${destination.name}NavArgs(\n"
+        code += "${navArgumentBridgeCodeBuilder.innerNavArgsParametersCode("\tval ")}\n"
+        code += ")\n\n"
 
         return replace(NAV_ARGS_DATA_CLASS, code.toString())
     }
 
-    private fun gatherOptInAnnotations(): List<OptInAnnotation> {
-        val optInByAnnotation = destination.requireOptInAnnotationTypes.associateWithTo(mutableMapOf()) { false }
-
-        destination.parameters.forEach { param ->
-            optInByAnnotation.putAll(
-                param.type.recursiveRequireOptInAnnotations().associateWith { requireOptInType ->
-                    // if the destination itself doesn't need this annotation, then it was opted in
-                    !destination.requireOptInAnnotationTypes.contains(requireOptInType)
-                }
-            )
+    private fun getGenNavArgsClassVisibility(): String {
+        if (destination.visibility == Visibility.PUBLIC) {
+            return "public"
         }
 
-        if (destination.destinationStyleType is DestinationStyleType.Animated) {
-            optInByAnnotation.putAll(destination.destinationStyleType.requireOptInAnnotations.associateWithTo(mutableMapOf()) { false })
+        if (destination.destinationImportable in setOfPublicStartParticipatingTypes) {
+            return "public"
         }
 
-        if (isRequiredReceiverExperimentalOptedIn() || isRequiredAnimationExperimentalOptedIn()) {
-            // user has opted in, so we will too
-            experimentalAnimationApiType.addImport()
-            optInByAnnotation[experimentalAnimationApiType] = true
-        }
-
-        return optInByAnnotation.map { OptInAnnotation(it.key, it.value) }
-    }
-
-    private fun isRequiredAnimationExperimentalOptedIn(): Boolean {
-        return destination.destinationStyleType is DestinationStyleType.Animated
-                && !destination.destinationStyleType.requireOptInAnnotations.contains(experimentalAnimationApiType)
-    }
-
-    private fun isRequiredReceiverExperimentalOptedIn(): Boolean {
-        return destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
-                && !destination.requireOptInAnnotationTypes.contains(experimentalAnimationApiType)
+        return "internal"
     }
 
     private fun objectWideRequireOptInAnnotationsCode(): String {
         val code = StringBuilder()
-        val optInByAnnotation = gatherOptInAnnotations()
+        val optInByAnnotation = destination.optInAnnotations
 
         val (optedIns, nonOptedIns) = optInByAnnotation
             .onEach { it.importable.addImport() }
@@ -268,20 +215,8 @@ class SingleDestinationWriter(
             .replace("@activityClass@", activityClassImportable.getCodePlaceHolder())
     }
 
-    private fun navArgsDataClassImportable(): Importable? = with(destination) {
-        return destinationNavArgsClass?.type
-            ?: if (navArgs.isEmpty()) {
-                null
-            } else {
-                Importable(
-                    "NavArgs",
-                    "$destinationsPackageName.${destination.name}.NavArgs"
-                )
-            }
-    }
-
     private fun navArgsDataClassName(): String =
-        navArgsDataClassImportable()?.getCodePlaceHolder() ?: "Unit"
+        destination.navArgsDataClassImportable?.getCodePlaceHolder() ?: "Unit"
 
     private fun contentFunctionCode(): String {
         if (destination.destinationStyleType is DestinationStyleType.Activity) {
@@ -369,11 +304,6 @@ class SingleDestinationWriter(
 
         return "\n\toverride val style: DestinationStyle = ${bottomSheetImportable.getCodePlaceHolder()}\n"
     }
-
-    private class OptInAnnotation(
-        val importable: Importable,
-        val isOptedIn: Boolean,
-    )
 
     private fun Importable.getCodePlaceHolder(): String {
         return importableHelper.addAndGetPlaceholder(this)

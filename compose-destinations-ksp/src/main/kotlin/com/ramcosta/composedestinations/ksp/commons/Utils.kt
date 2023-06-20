@@ -3,12 +3,15 @@ package com.ramcosta.composedestinations.ksp.commons
 import com.google.devtools.ksp.findActualType
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.getDeclaredProperties
+import com.google.devtools.ksp.isInternal
+import com.google.devtools.ksp.isPrivate
 import com.google.devtools.ksp.isPublic
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeAlias
@@ -28,6 +31,7 @@ import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
 import com.ramcosta.composedestinations.codegen.model.ValueClassInnerInfo
+import com.ramcosta.composedestinations.codegen.model.Visibility
 import com.ramcosta.composedestinations.ksp.processors.KSPClassKind
 import java.io.BufferedReader
 import java.io.File
@@ -182,6 +186,7 @@ private fun KSType.getNavArgsDelegateType(
     return NavArgsTypeWithFile(
         RawNavArgsClass(
             parameters,
+            ksClassDeclaration.getVisibility(),
             Importable(
                 ksClassDeclaration.simpleName.asString(),
                 ksClassDeclaration.qualifiedName!!.asString(),
@@ -190,6 +195,15 @@ private fun KSType.getNavArgsDelegateType(
         ksClassDeclaration.containingFile
     )
 }
+
+fun KSDeclaration.getVisibility(): Visibility {
+    if (isPrivate()) {
+        throw IllegalDestinationsSetup("${simpleName.asString()} cannot be private!")
+    }
+
+    return if (isInternal()) Visibility.INTERNAL else Visibility.PUBLIC
+}
+
 
 fun KSValueParameter.toParameter(
     resolver: Resolver,
@@ -210,6 +224,14 @@ fun KSValueParameter.toParameter(
         },
         lazyDefaultValue = lazy { getDefaultValue(resolver) }
     )
+}
+
+fun KSType.toGenVisibility(): Visibility {
+    return when (val visibility = declaration.simpleName.asString()) {
+        "PUBLIC" -> Visibility.PUBLIC
+        "INTERNAL" -> Visibility.INTERNAL
+        else -> error("Unexpected value for 'visibility' param $visibility")
+    }
 }
 
 fun KSType.toType(

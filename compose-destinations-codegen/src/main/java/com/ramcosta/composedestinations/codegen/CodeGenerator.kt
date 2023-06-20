@@ -43,22 +43,21 @@ class CodeGenerator(
 
         initConfigurationValues(destinations)
 
-        val destinationsWithNavArgs = destinationWithNavArgsMapper.map(destinations)
+        val processedDestinations = destinationWithNavArgsMapper.map(destinations)
 
-        val navTypeNamesByType = customNavTypeWriter.write(destinationsWithNavArgs, navTypeSerializers)
+        val navTypeNamesByType = customNavTypeWriter.write(processedDestinations, navTypeSerializers)
 
-        val generatedDestinations = destinationsWriter(navTypeNamesByType)
-            .write(destinationsWithNavArgs)
+        moduleOutputWriter(navTypeNamesByType).write(navGraphs, processedDestinations)
 
-        moduleOutputWriter(navTypeNamesByType).write(navGraphs, generatedDestinations)
+        destinationsWriter(navTypeNamesByType).write(processedDestinations)
 
-        sealedDestinationWriter.write(destinationsWithNavArgs.any { it.activityDestinationParams != null })
+        sealedDestinationWriter.write(processedDestinations.any { it.activityDestinationParams != null })
 
-        if (shouldWriteKtxSerializableNavTypeSerializer(destinationsWithNavArgs)) {
+        if (shouldWriteKtxSerializableNavTypeSerializer(processedDestinations)) {
             defaultKtxSerializableNavTypeSerializerWriter.write()
         }
 
-        navArgsGetters.write(generatedDestinations)
+        navArgsGetters.write(processedDestinations)
     }
 
     private fun initConfigurationValues(
@@ -78,7 +77,7 @@ class CodeGenerator(
     }
 
     private fun shouldWriteKtxSerializableNavTypeSerializer(
-        destinations: List<DestinationGeneratingParamsWithNavArgs>,
+        destinations: List<CodeGenProcessedDestination>,
     ) = destinations.any {
         it.navArgs.any { navArg ->
             if (navArg.type.isCustomArrayOrArrayListTypeNavArg()) {

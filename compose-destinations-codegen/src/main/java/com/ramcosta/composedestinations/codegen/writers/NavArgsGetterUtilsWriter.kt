@@ -4,7 +4,7 @@ import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.templates.NAV_ARGS_METHOD_WHEN_CASES
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navArgsGettersTemplate
@@ -12,13 +12,13 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import java.io.OutputStream
 
-class NavArgsGettersWriter(
+internal class NavArgsGettersWriter(
     private val codeGenerator: CodeOutputStreamMaker
 ) {
 
     private val importableHelper = ImportableHelper(navArgsGettersTemplate.imports)
 
-    fun write(generatedDestinations: List<GeneratedDestination>) {
+    fun write(generatedDestinations: List<CodeGenProcessedDestination>) {
         if (generatedDestinations.all { it.navArgsClass == null }) {
             return
         }
@@ -43,7 +43,7 @@ class NavArgsGettersWriter(
         )
     }
 
-    private fun requireOptInAnnotations(destinationsWithNavArgs: List<GeneratedDestination>): String {
+    private fun requireOptInAnnotations(destinationsWithNavArgs: List<CodeGenProcessedDestination>): String {
         val requireOptInClassTypes = destinationsWithNavArgs.flatMapTo(mutableSetOf()) { it.requireOptInAnnotationTypes }
         val code = StringBuilder()
 
@@ -54,7 +54,7 @@ class NavArgsGettersWriter(
         return code.toString()
     }
 
-    private fun navArgsMethodWhenCases(destinationsWithNavArgs: List<GeneratedDestination>): String {
+    private fun navArgsMethodWhenCases(destinationsWithNavArgs: List<CodeGenProcessedDestination>): String {
         val sb = StringBuilder()
 
         destinationsWithNavArgs.forEachIndexed { idx, it ->

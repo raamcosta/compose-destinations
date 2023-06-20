@@ -10,9 +10,13 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
+import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.WithDefaultValueArgs
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileGraph
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraph
+import kotlin.reflect.KClass
 
 @RootNavGraph
 @NavGraph(
@@ -25,44 +29,76 @@ annotation class SettingsNavGraph(
 /**
  * TODO RACOSTA:
  *
- * - Validate NavHostGraph vs normal graph with no parent (navgraphs mode) and their start arguments
- *  - NavHostGraph cannot have navargs (given by annotation not having navargs)
- *  - Normal graphs with no parent in navgraphs mode can have navargs or not
+ * - Use nav graph's nav args for NavArgGetters
  * - Allow internal NavHostGraphs gen on navgraphs mode + use visibility of the NavGraph annotation
+ *  - Or have a speicifc visibility parm on annotation? In case they want internal annotation but public
+ *  nav graph
+ *  - How would this work with NavArgGetters extensions? And with sealed Destinations / NavGraphs?
  */
 @RootNavGraph
 @NavGraph(
-    navArgs = ProfileNavGraph.NavArgs::class,
+    navArgs = ProfileNavGraphNavArgs::class,
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
-    ]
+    ],
+    visibility = CodeGenVisibility.PUBLIC
 )
 annotation class ProfileNavGraph(
     val start: Boolean = false
 ) {
-    data class NavArgs(
-        val graphArg: String,
-    )
 }
+
+data class ProfileNavGraphNavArgs(
+    val graphArg: String,
+)
 
 @ProfileNavGraph(start = true)
 @NavGraph(
-    navArgs = ProfileSettingsNavGraph.NavArgs::class
+    navArgs = ProfileSettingsNavGraphNavArgs::class,
+//    visibility = CodeGenVisibility.INTERNAL
 )
 annotation class ProfileSettingsNavGraph(
     val start: Boolean = false
-) {
-    data class NavArgs(
-        val anotherGraphArg: String
-    )
-}
+)
+
+data class ProfileSettingsNavGraphNavArgs(
+    val anotherGraphArg: String
+)
+
+//@NavGraph(
+//    defaultTransitions = NoTransitions::class,
+//    navArgs = TestNavGraphNavArgs::class
+//)
+//annotation class TestNavGraph(
+//    val start: Boolean = false
+//)
+//
+//data class TestNavGraphNavArgs(
+//    val testNavGraphArg: String
+//)
+//
+//@TestNavGraph(start = true)
+//@Destination
+//internal fun TestTestScreen() {
+//    Text("TEST")
+//}
+
+
+@Destination
+annotation class InternalDestination(
+    val navArgs: KClass<*> = Nothing::class,
+    val deepLinks: Array<DeepLink> = [],
+    val style: KClass<out DestinationStyle> = DestinationStyle.Default::class,
+    val wrappers: Array<KClass<out DestinationWrapper>> = [],
+    val visibility: CodeGenVisibility = CodeGenVisibility.INTERNAL
+)
 
 @ProfileSettingsNavGraph(start = true)
-@Destination(
+@InternalDestination(
     navArgs = WithDefaultValueArgs::class
 )
 @Composable
-internal fun ProfileSettingsScreen(
+fun ProfileSettingsScreen(
 //    vm: SettingsViewModel,
     args: WithDefaultValueArgs,
     navBackStackEntry: NavBackStackEntry
