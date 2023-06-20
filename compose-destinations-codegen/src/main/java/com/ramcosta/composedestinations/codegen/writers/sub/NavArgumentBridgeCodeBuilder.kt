@@ -162,14 +162,11 @@ class NavArgumentBridgeCodeBuilder(
             .replace("%s4", route)
     }
 
-    fun innerNavArgsParametersCode(prefixWithVal: Boolean = false): String {
+    fun innerNavArgsParametersCode(argPrefix: String = "\t\t"): String {
         val args = StringBuilder()
-        val argPrefix = if (prefixWithVal) {
-            "val "
-        } else ""
 
         navArgs.forEachIndexed { i, it ->
-            args += "\t\t$argPrefix${it.name}: ${it.type.toTypeCode(importableHelper)}${defaultValueForInvokeFunction(it)},"
+            args += "$argPrefix${it.name}: ${it.type.toTypeCode(importableHelper)}${defaultValueForInvokeFunction(it)},"
 
             if (i != navArgs.lastIndex) {
                 args += "\n"

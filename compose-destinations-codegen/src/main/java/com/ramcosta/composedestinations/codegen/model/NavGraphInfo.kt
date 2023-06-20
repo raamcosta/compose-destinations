@@ -4,6 +4,4 @@ data class NavGraphInfo(
     val start: Boolean,
     val isNavHostGraph: Boolean,
     val graphType: Importable
-) {
-    val isDefault = false
-}
+)

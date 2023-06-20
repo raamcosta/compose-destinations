@@ -80,7 +80,7 @@ android {
 
         // If set to "true" will use the annotated composable's visibility in the generated Destination
         // otherwise, Destinations will always be public in this module
-        arg("compose-destinations.useComposableVisibility", "true")
+//        arg("compose-destinations.useComposableVisibility", "true") TODO RACOSTA DELETED
     }
 }
 

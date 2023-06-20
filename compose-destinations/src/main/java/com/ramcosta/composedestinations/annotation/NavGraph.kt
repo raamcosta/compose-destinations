@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.annotation
 
+import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import kotlin.reflect.KClass
 
@@ -55,6 +56,8 @@ import kotlin.reflect.KClass
  * Basically, it will replace the default `@RootNavGraph` that usually takes this role.
  * You will still need to use it once in the start destination (or nav graph), like
  * `@YourNavGraph(start = true)`.
+ * @param visibility [CodeGenVisibility] of the corresponding generated NavGraph object.
+ * Useful to control what the current module exposes to other modules. By default, it is public.
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 annotation class NavGraph(
@@ -62,7 +65,8 @@ annotation class NavGraph(
     val navArgs: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
     val defaultTransitions: KClass<out DestinationStyle.Animated> = Nothing::class,
-    val default: Boolean = false
+    val default: Boolean = false,
+    val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
 ) {
     companion object {
         internal const val ANNOTATION_NAME = "@ramcosta.destinations.annotation-navgraph-route@"

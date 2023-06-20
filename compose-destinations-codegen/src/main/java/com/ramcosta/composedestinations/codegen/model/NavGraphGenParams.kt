@@ -15,6 +15,7 @@ interface NavGraphGenParams {
     val navArgs: RawNavArgsClass?
     val parent: Importable?
     val isParentStart: Boolean?
+    val visibility: Visibility
 }
 
 data class RawNavGraphGenParams(
@@ -27,6 +28,7 @@ data class RawNavGraphGenParams(
     override val sourceIds: List<String>,
     override val parent: Importable? = null,
     override val isParentStart: Boolean? = null,
+    override val visibility: Visibility,
     private val routeOverride: String? = null,
 ): NavGraphGenParams {
     private var nameOverride: String? = null

@@ -83,7 +83,7 @@ class InitialValidator(
         val nestedGraphsWithoutParent = navGraphs.filter { !it.isNavHostGraph && it.parent == null }
         if (nestedGraphsWithoutParent.isNotEmpty() && codeGenConfig.mode is CodeGenMode.SingleModule) {
             throw IllegalDestinationsSetup(
-                "[${nestedGraphsWithoutParent.joinToString(",") { "'${it.name}'" }}] are " +
+                "[${nestedGraphsWithoutParent.joinToString(",") { "'${it.type.preferredSimpleName}'" }}] are " +
                         "not @NavHostGraph but do not define a parent graph. " +
                         "If this graph is meant to be used on another module, use a different multi module mode: " +
                         DOCS_WEBSITE_MULTI_MODULE_CONFIGS
@@ -269,7 +269,7 @@ class InitialValidator(
         )
         if (resultType.importable.qualifiedName !in primitives && !resultType.isSerializable && !resultType.isParcelable) {
             throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: " +
-                    "Result types must be one of: ${listOf("String", "Long", "Boolean", "Float", "Int", "Parcelable", "Serializable").joinToString(", ")}")
+                    "Result types must be one of: ${listOf("String", "Long", "Boolean", "Float", "Int", "Parcelable", "java.io.Serializable").joinToString(", ")}")
         }
     }
 }

@@ -1,8 +1,6 @@
 package com.ramcosta.composedestinations.ksp.processors
 
 import com.google.devtools.ksp.getClassDeclarationByName
-import com.google.devtools.ksp.isInternal
-import com.google.devtools.ksp.isPrivate
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotation
@@ -45,6 +43,7 @@ import com.ramcosta.composedestinations.ksp.commons.getNavArgsDelegateType
 import com.ramcosta.composedestinations.ksp.commons.ignoreAnnotations
 import com.ramcosta.composedestinations.ksp.commons.isNothing
 import com.ramcosta.composedestinations.ksp.commons.toDeepLink
+import com.ramcosta.composedestinations.ksp.commons.toGenVisibility
 import com.ramcosta.composedestinations.ksp.commons.toImportable
 import com.ramcosta.composedestinations.ksp.commons.toParameter
 
@@ -67,7 +66,9 @@ internal class KspToCodeGenDestinationsMapper(
         val name = composableName + GENERATED_DESTINATION_SUFFIX
         val destinationAnnotations = findAnnotationPathRecursively(DESTINATION_ANNOTATION)!!.reversed()
 
-        val deepLinksAnnotations = destinationAnnotations.findCumulativeArgumentValue { findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT) }
+        val deepLinksAnnotations = destinationAnnotations.findCumulativeArgumentValue {
+            findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)
+        }
 
         val cleanRoute = destinationAnnotations.findOverridingArgumentValue { prepareRoute(composableName) }!!
 
@@ -82,7 +83,7 @@ internal class KspToCodeGenDestinationsMapper(
             name = name,
             composableName = composableName,
             composableQualifiedName = qualifiedName!!.asString(),
-            visibility = getDestinationVisibility(),
+            visibility = destinationAnnotations.findOverridingArgumentValue { getDestinationVisibility() }!!,
             baseRoute = cleanRoute,
             destinationStyleType = destinationAnnotations.findOverridingArgumentValue { getDestinationStyleType(composableName) }!!,
             parameters = parameters.map { it.toParameter(resolver, navTypeSerializersByType) },
@@ -117,7 +118,7 @@ internal class KspToCodeGenDestinationsMapper(
             name = finalActivityClass.simpleName + GENERATED_DESTINATION_SUFFIX,
             composableName = finalActivityClass.simpleName,
             composableQualifiedName = finalActivityClass.qualifiedName,
-            visibility = getDestinationVisibility(),
+            visibility = activityDestinationAnnotations.findOverridingArgumentValue { getDestinationVisibility() }!!,
             baseRoute = activityDestinationAnnotations.findOverridingArgumentValue { prepareRoute(finalActivityClass.simpleName) }!!,
             parameters = emptyList(),
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
@@ -168,8 +169,8 @@ internal class KspToCodeGenDestinationsMapper(
     private fun List<KSAnnotation>.getNavArgsDelegateType(): NavArgsTypeWithFile? {
         var lastFound: NavArgsTypeWithFile? = null
 
-        forEach {
-            it.getNavArgsDelegateType(resolver, navTypeSerializersByType)?.let {
+        forEach { each ->
+            each.getNavArgsDelegateType(resolver, navTypeSerializersByType)?.let {
                 lastFound = it
             }
         }
@@ -200,14 +201,6 @@ internal class KspToCodeGenDestinationsMapper(
         }
 
         return cumulative!!
-    }
-
-    private fun KSDeclaration.getDestinationVisibility(): Visibility {
-        if (isPrivate()) {
-            throw IllegalDestinationsSetup("Composable functions annotated with @Destination cannot be private!")
-        }
-
-        return if (isInternal()) Visibility.INTERNAL else Visibility.PUBLIC
     }
 
     private fun KSDeclaration.getNavGraphInfo(): NavGraphInfo? {
@@ -274,6 +267,10 @@ internal class KspToCodeGenDestinationsMapper(
             isNavHostGraph = true,
             graphType = rootNavGraphType
         )
+    }
+
+    private fun KSAnnotation.getDestinationVisibility(): Visibility? {
+        return findArgumentValue<KSType>("visibility")?.toGenVisibility()
     }
 
     private fun KSAnnotation.getDestinationStyleType(composableName: String): DestinationStyleType? {

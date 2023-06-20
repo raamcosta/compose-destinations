@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.annotation
 
 import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.animations.defaults.NoTransitions
+import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
 import kotlin.reflect.KClass
 
 /**
@@ -15,7 +16,8 @@ import kotlin.reflect.KClass
 annotation class NavHostGraph(
     val defaultTransitions: KClass<out NavHostAnimatedDestinationStyle>,
     val route: String = NavGraph.ANNOTATION_NAME,
-    val default: Boolean = false
+    val default: Boolean = false,
+    val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
 )
 
 /**

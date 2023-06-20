@@ -1,12 +1,13 @@
 package com.ramcosta.composedestinations.codegen.commons
 
+import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.writers.sub.navGraphsPackageName
 
 internal data class RawNavGraphTree(
     val rawNavGraphGenParams: RawNavGraphGenParams,
-    val destinations: List<GeneratedDestination>,
-    val startRouteArgs: Importable?,
+    val destinations: List<CodeGenProcessedDestination>,
+    val startRouteArgs: RawNavArgsClass?,
     val requireOptInAnnotationTypes: Set<Importable>,
     val nestedGraphs: List<RawNavGraphTree>,
 ): NavGraphGenParams by rawNavGraphGenParams {
@@ -20,20 +21,17 @@ internal data class RawNavGraphTree(
     }
 }
 
+internal val setOfPublicStartParticipatingTypes = mutableSetOf<Importable>()
+
 internal fun makeNavGraphTrees(
     navGraphs: List<RawNavGraphGenParams>,
-    generatedDestinations: List<GeneratedDestination>
+    generatedDestinations: List<CodeGenProcessedDestination>
 ): List<RawNavGraphTree> {
-    val defaultNavGraph = navGraphs.find { it.default }
     val navGraphsByType = navGraphs.associateBy { it.type }
 
-    val destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<GeneratedDestination>> =
+    val destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<CodeGenProcessedDestination>> =
         generatedDestinations.groupBy {
-            if (it.navGraphInfo.isDefault) {
-                defaultNavGraph ?: rootNavGraphGenParams
-            } else {
-                navGraphsByType[it.navGraphInfo.graphType] ?: rootNavGraphGenParams
-            }
+            navGraphsByType[it.navGraphInfo.graphType] ?: rootNavGraphGenParams
         }
 
     val rawNavGraphGenByParent = destinationsByNavGraphParams.keys.groupBy { it.parent }
@@ -49,7 +47,7 @@ internal fun makeNavGraphTrees(
 }
 
 internal fun RawNavGraphGenParams.makeGraphTree(
-    destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<GeneratedDestination>>,
+    destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<CodeGenProcessedDestination>>,
     navGraphsByParentType: Map<Importable?, List<RawNavGraphGenParams>>
 ): RawNavGraphTree {
     val destinations = destinationsByNavGraphParams[this].orEmpty()
@@ -65,21 +63,50 @@ internal fun RawNavGraphGenParams.makeGraphTree(
         startRouteArgs = calculateNavArgsAndValidate(destinations, nestedGraphs),
         requireOptInAnnotationTypes = calculateRequireOptInAnnotationTypes(destinations, nestedGraphs),
         nestedGraphs = nestedGraphs,
-    )
+    ).also {
+        if (visibility == Visibility.PUBLIC) {
+            it.addStartRouteTreeToParticipantsOfPublicAPIs()
+        }
+    }
+}
+
+private fun RawNavGraphTree.addStartRouteTreeToParticipantsOfPublicAPIs() {
+    val startDestination = destinations.firstOrNull { it.navGraphInfo.start }
+
+    if (startDestination != null) {
+        setOfPublicStartParticipatingTypes.add(startDestination.destinationImportable)
+    } else {
+        val startNestedGraph = nestedGraphs.first { it.isParentStart == true }
+        setOfPublicStartParticipatingTypes.add(startNestedGraph.type)
+        startNestedGraph.addStartRouteTreeToParticipantsOfPublicAPIs()
+    }
 }
 
 private fun calculateRequireOptInAnnotationTypes(
-    destinations: List<GeneratedDestination>,
+    destinations: List<CodeGenProcessedDestination>,
     nestedGraphs: List<RawNavGraphTree>
 ): Set<Importable> {
     return destinations.requireOptInAnnotationClassTypes() + nestedGraphs.requireOptInAnnotationClassTypes()
 }
 
 private fun RawNavGraphGenParams.calculateNavArgsAndValidate(
-    destinations: List<GeneratedDestination>,
+    destinations: List<CodeGenProcessedDestination>,
     nestedGraphs: List<RawNavGraphTree>
-): Importable? {
-    val startRouteArgsTree = calculateStartRouteNavArgsTree(type.preferredSimpleName, destinations, nestedGraphs)
+): RawNavArgsClass? {
+    val startRouteArgsTree = calculateStartRouteNavArgsTree(destinations, nestedGraphs)
+
+    if (visibility == Visibility.PUBLIC) {
+        val nonPublicNavArgClasses = startRouteArgsTree.allNavArgs
+            .filter { it.second.visibility != Visibility.PUBLIC }
+            .filter { !it.second.type.qualifiedName.startsWith(codeGenBasePackageName) }
+
+        if (nonPublicNavArgClasses.isNotEmpty()) {
+            throw IllegalDestinationsSetup(
+                "[${nonPublicNavArgClasses.joinToString(",") { "'${it.second.type.preferredSimpleName}'" }}] nav arg" +
+                        " classes need to be public because they're a part of the public ${type.preferredSimpleName}'s navigation arguments."
+            )
+        }
+    }
 
     val graphArgNames = navArgs?.parameters?.map { it.name }.orEmpty()
     val startRouteArgNames = startRouteArgsTree.allNavArgs.map { it.first.name }
@@ -99,10 +126,10 @@ private fun RawNavGraphGenParams.calculateNavArgsAndValidate(
     return startRouteArgsTree.first()
 }
 
-data class StartRouteArgsTree(
+private data class StartRouteArgsTree(
+    val graphTree: RawNavGraphTree?,
     val navArgsClass: RawNavArgsClass?,
     val subTree: StartRouteArgsTree?,
-    private val nestedGraphName: String?,
 ) {
 
     val allNavArgs = parametersRecursive()
@@ -112,28 +139,28 @@ data class StartRouteArgsTree(
         return currentParams + subTree?.parametersRecursive().orEmpty()
     }
 
-    fun first(): Importable? {
+    fun first(): RawNavArgsClass? {
         return if (navArgsClass == null) {
             subTree?.first()
         } else {
             if (subTree?.navArgsClass != null) {
                 RawNavArgsClass(
                     subTree.navArgsClass.parameters,
+                    graphTree!!.visibility,
                     Importable(
-                        "NavArgs",
-                        "$navGraphsPackageName.$nestedGraphName.NavArgs"
+                        "${graphTree.name}NavArgs",
+                        "$navGraphsPackageName.${graphTree.name}NavArgs"
                     )
-                ).type
+                )
             } else {
-                navArgsClass.type
+                navArgsClass
             }
         }
     }
 }
 
-private fun calculateStartRouteNavArgsTree(
-    navGraphName: String,
-    destinations: List<GeneratedDestination>,
+private fun RawNavGraphGenParams.calculateStartRouteNavArgsTree(
+    destinations: List<CodeGenProcessedDestination>,
     nestedGraphs: List<RawNavGraphTree>
 ): StartRouteArgsTree {
     val startDestination = destinations.firstOrNull { it.navGraphInfo.start }
@@ -141,27 +168,27 @@ private fun calculateStartRouteNavArgsTree(
         return StartRouteArgsTree(
             navArgsClass = startDestination.navArgsClass,
             subTree = null,
-            nestedGraphName = null
+            graphTree = null
         )
     }
 
     val nestedRawGraphTree = nestedGraphs.firstOrNull { it.isParentStart == true }
         ?: throw IllegalDestinationsSetup(
-            "NavGraph '$navGraphName' doesn't have any start route. " +
+            "NavGraph '${type.preferredSimpleName}' doesn't have any start route. " +
                     "Use corresponding annotation with `start = true` in the Destination or nested NavGraph you want to be the start of this graph!"
         )
 
     return StartRouteArgsTree(
+        nestedRawGraphTree,
         nestedRawGraphTree.navArgs,
-        calculateStartRouteNavArgsTree(nestedRawGraphTree.type.preferredSimpleName, nestedRawGraphTree.destinations, nestedRawGraphTree.nestedGraphs),
-        nestedRawGraphTree.name,
+        nestedRawGraphTree.rawNavGraphGenParams.calculateStartRouteNavArgsTree(nestedRawGraphTree.destinations, nestedRawGraphTree.nestedGraphs),
     )
 }
 
 internal fun startingDestinationName(
     graphTree: RawNavGraphTree
 ): String {
-    val startingRouteNames = graphTree.destinations.filter { it.navGraphInfo.start }.map { it.simpleName } +
+    val startingRouteNames = graphTree.destinations.filter { it.navGraphInfo.start }.map { it.destinationImportable.simpleName } +
             graphTree.nestedGraphs.filter { it.isParentStart == true }.map {
                     it.name
             }
@@ -180,7 +207,7 @@ internal fun startingDestinationName(
     return startingRouteNames.first()
 }
 
-internal fun sourceIds(generatedDestinations: List<GeneratedDestination>): MutableList<String> {
+internal fun sourceIds(generatedDestinations: List<CodeGenProcessedDestination>): MutableList<String> {
     val sourceIds = mutableListOf<String>()
     generatedDestinations.forEach {
         sourceIds.addAll(it.sourceIds)
@@ -221,7 +248,7 @@ private fun RawNavGraphTree.requireOptInAnnotationClassTypes(): Set<Importable> 
     return destinations.requireOptInAnnotationClassTypes() + nestedGraphAnnotations
 }
 
-private fun List<GeneratedDestination>.requireOptInAnnotationClassTypes(): MutableSet<Importable> {
+private fun List<CodeGenProcessedDestination>.requireOptInAnnotationClassTypes(): MutableSet<Importable> {
     val requireOptInClassTypes = flatMapTo(mutableSetOf()) { generatedDest ->
         generatedDest.requireOptInAnnotationTypes
     }

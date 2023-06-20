@@ -26,7 +26,7 @@ import com.ramcosta.samples.playground.commons.requireTitle
 import com.ramcosta.samples.playground.ui.screens.NavGraphs
 import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
-import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraph
+import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraphNavArgs
 import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.playground.ui.screens.styles.SettingsTransitions
 
@@ -70,7 +70,7 @@ fun SettingsScreen(
                     navigator.navigate(
                         NavGraphs.profile(
                             graphArg = "graph arg",
-                            startRouteArgs = ProfileSettingsGraph.NavArgs(
+                            startRouteArgs = ProfileSettingsGraphNavArgs(
                                 anotherGraphArg = "another graph arg",
                                 startRouteArgs = WithDefaultValueArgs(false)
                             )
