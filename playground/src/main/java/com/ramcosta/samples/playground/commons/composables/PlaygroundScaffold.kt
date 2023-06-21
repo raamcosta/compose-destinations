@@ -15,9 +15,11 @@ import androidx.navigation.plusAssign
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.route
+import com.ramcosta.composedestinations.utils.startDestination
 import com.ramcosta.samples.playground.ui.screens.*
-import com.ramcosta.samples.playground.ui.screens.destinations.Destination
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 @SuppressLint("RestrictedApi")
@@ -25,13 +27,13 @@ import com.ramcosta.samples.playground.ui.screens.destinations.Destination
 fun PlaygroundScaffold(
     navController: NavHostController,
     scaffoldState: ScaffoldState,
-    topBar: @Composable (Destination) -> Unit,
-    bottomBar: @Composable (Destination) -> Unit,
-    drawerContent: @Composable ColumnScope.(Destination) -> Unit,
+    topBar: @Composable (DestinationSpec) -> Unit,
+    bottomBar: @Composable (DestinationSpec) -> Unit,
+    drawerContent: @Composable ColumnScope.(DestinationSpec) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val destination = navController.appCurrentDestinationAsState().value
-        ?: NavGraphs.root.startAppDestination
+    val destination = navController.currentDestinationAsState().value
+        ?: NavGraphs.root.startDestination
 
     //Just for me to debug, ignore this line
     navController.currentBackStack.collectAsState().value.print()
@@ -56,7 +58,7 @@ fun PlaygroundScaffold(
 fun Collection<NavBackStackEntry>.print(prefix: String = "stack") {
     val stack = toMutableList()
         .map { it.route() }
-        .filterIsInstance<Destination>()
+        .filterIsInstance<DestinationSpec>()
         .map { it.javaClass.simpleName + "@" + it.toString().split("@")[1] }
         .toTypedArray().contentToString()
     println("$prefix = $stack")

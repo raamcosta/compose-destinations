@@ -14,14 +14,12 @@ import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
-import com.ramcosta.composedestinations.codegen.writers.SealedNavGraphWriter
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 
 internal class NavGraphsSingleObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val sealedNavGraphWriter: SealedNavGraphWriter,
     private val customNavTypeByType: Map<Type, CustomNavType>,
     private val singleNavGraphWriter: (
         CodeOutputStreamMaker,
@@ -50,7 +48,6 @@ internal class NavGraphsSingleObjectWriter(
         graphTrees.forEach { writeNavGraphTreeRecursively(it) }
 
         writeFile(generatedDestinations, flattenGraphs)
-        sealedNavGraphWriter.write()
     }
 
     private fun writeNavGraphTreeRecursively(
@@ -69,7 +66,7 @@ internal class NavGraphsSingleObjectWriter(
         codeGenerator.makeFile(
             packageName = codeGenBasePackageName,
             name = GENERATED_NAV_GRAPHS_OBJECT,
-            sourceIds = sourceIds(generatedDestinations).toTypedArray()
+            sourceIds = sourceIds(generatedDestinations, navGraphsParams).toTypedArray()
         ).writeSourceFile(
             packageStatement = navGraphsObjectTemplate.packageStatement,
             importableHelper = importableHelper,

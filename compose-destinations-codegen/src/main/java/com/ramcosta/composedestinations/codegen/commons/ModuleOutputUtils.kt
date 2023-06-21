@@ -11,13 +11,25 @@ internal data class RawNavGraphTree(
     val requireOptInAnnotationTypes: Set<Importable>,
     val nestedGraphs: List<RawNavGraphTree>,
 ): NavGraphGenParams by rawNavGraphGenParams {
-    fun anyGraphCollidesWith(newRootWithModuleName: NavGraphGenParams): Boolean {
-        val isThisColliding = (rawNavGraphGenParams.name == newRootWithModuleName.name
-                || rawNavGraphGenParams.baseRoute == newRootWithModuleName.baseRoute)
 
-        if (isThisColliding) return true
+    val navGraphImportable: Importable = Importable(
+        simpleName = name,
+        qualifiedName = "$navGraphsPackageName.$name"
+    )
 
-        return nestedGraphs.any { it.anyGraphCollidesWith(newRootWithModuleName) }
+    val genNavArgsClass = Importable(
+        "${name}NavArgs",
+        "$navGraphsPackageName.${name}NavArgs"
+    )
+
+    val graphArgs = if (navArgs?.parameters.isNullOrEmpty()) {
+        null
+    } else {
+        if (startRouteArgs != null) {
+            genNavArgsClass
+        } else {
+            navArgs!!.type
+        }
     }
 }
 
@@ -147,10 +159,7 @@ private data class StartRouteArgsTree(
                 RawNavArgsClass(
                     subTree.navArgsClass.parameters,
                     graphTree!!.visibility,
-                    Importable(
-                        "${graphTree.name}NavArgs",
-                        "$navGraphsPackageName.${graphTree.name}NavArgs"
-                    )
+                    graphTree.genNavArgsClass
                 )
             } else {
                 navArgsClass
@@ -207,11 +216,19 @@ internal fun startingDestinationName(
     return startingRouteNames.first()
 }
 
-internal fun sourceIds(generatedDestinations: List<CodeGenProcessedDestination>): MutableList<String> {
+internal fun sourceIds(
+    generatedDestinations: List<CodeGenProcessedDestination>,
+    navGraphTrees: List<RawNavGraphTree> = emptyList()
+): MutableList<String> {
     val sourceIds = mutableListOf<String>()
     generatedDestinations.forEach {
         sourceIds.addAll(it.sourceIds)
     }
+
+    navGraphTrees.forEach {
+        sourceIds.addAll(it.sourceIds)
+    }
+
     return sourceIds
 }
 

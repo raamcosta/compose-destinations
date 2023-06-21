@@ -13,7 +13,6 @@ internal data class CodeGenProcessedDestination(
         qualifiedName = "$destinationsPackageName.$name",
     )
 
-
     val optInAnnotations: List<OptInAnnotation> = gatherOptInAnnotations()
     val navArgsDataClassImportable: Importable? = navArgsDataClassImportable()
     val navArgsClass: RawNavArgsClass? = navArgsClass()

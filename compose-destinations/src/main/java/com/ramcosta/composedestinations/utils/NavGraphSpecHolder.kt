@@ -4,6 +4,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 
 /**
  * Register with a [NavGraphSpecHolder] for each top level route passed in in a `DestinationsNavHost`.
@@ -72,8 +73,8 @@ internal class NavGraphSpecHolder {
         }
     }
 
-    fun topLevelNavGraph(navController: NavController): NavGraphSpec? {
-        return navGraphSpecsByRoute[navController.graph.route!!]
+    fun topLevelNavGraph(navController: NavController): NavHostGraphSpec? {
+        return navGraphSpecsByRoute[navController.graph.route!!] as NavHostGraphSpec?
     }
 
     fun parentNavGraph(navBackStackEntry: NavBackStackEntry): NavGraphSpec? {

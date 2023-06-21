@@ -1,15 +1,15 @@
 package com.ramcosta.composedestinations.codegen.writers
 
-import com.ramcosta.composedestinations.codegen.codeGenActivityDestination
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.codeGenDestination
-import com.ramcosta.composedestinations.codegen.codeGenNoArgsActivityDestination
-import com.ramcosta.composedestinations.codegen.codeGenNoArgsDestination
 import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
 import com.ramcosta.composedestinations.codegen.commons.BOTTOM_SHEET_DEPENDENCY
+import com.ramcosta.composedestinations.codegen.commons.CORE_ACTIVITY_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_BOTTOM_SHEET_DESTINATION_STYLE
+import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_ACTIVITY_DESTINATION_SPEC
+import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.CORE_TYPED_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
 import com.ramcosta.composedestinations.codegen.commons.experimentalAnimationApiType
@@ -113,21 +113,21 @@ internal class SingleDestinationWriter(
         if (destination.destinationStyleType is DestinationStyleType.Activity) {
             return replace(
                 SUPERTYPE, if (navArgs.isEmpty()) {
-                    codeGenNoArgsActivityDestination
+                    CORE_DIRECTION_ACTIVITY_DESTINATION_SPEC.simpleName
                 } else {
-                    "$codeGenActivityDestination<${destination.destinationNavArgsClass!!.type.getCodePlaceHolder()}>"
+                    "${CORE_ACTIVITY_DESTINATION_SPEC.simpleName}<${destination.destinationNavArgsClass!!.type.getCodePlaceHolder()}>"
                 }
             )
         }
 
         if (navArgs.isEmpty()) {
-            return replace(SUPERTYPE, codeGenNoArgsDestination)
+            return replace(SUPERTYPE, CORE_DIRECTION_DESTINATION_SPEC)
         }
 
         val superType = if (destination.destinationNavArgsClass != null) {
-            "${codeGenDestination}<${destination.destinationNavArgsClass.type.getCodePlaceHolder()}>"
+            "${CORE_TYPED_DESTINATION_SPEC}<${destination.destinationNavArgsClass.type.getCodePlaceHolder()}>"
         } else {
-            "${codeGenDestination}<${destination.name}NavArgs>"
+            "${CORE_TYPED_DESTINATION_SPEC}<${destination.name}NavArgs>"
         }
 
         return replace(SUPERTYPE, superType)

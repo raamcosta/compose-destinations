@@ -1,12 +1,13 @@
 package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.codeGenDirectionNavGraph
-import com.ramcosta.composedestinations.codegen.codeGenNavHostNavGraph
-import com.ramcosta.composedestinations.codegen.codeGenTypedNavGraph
+import com.ramcosta.composedestinations.codegen.commons.CORE_ALIAS_NAV_GRAPH_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_DESTINATION_ANIMATION_STYLE
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION
+import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_NAV_GRAPH_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_NAV_HOST_ANIMATED_DESTINATION_STYLE
+import com.ramcosta.composedestinations.codegen.commons.CORE_NAV_HOST_GRAPH_SPEC
+import com.ramcosta.composedestinations.codegen.commons.CORE_TYPED_NAV_GRAPH_SPEC
 import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
 import com.ramcosta.composedestinations.codegen.commons.bundleImportable
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
@@ -39,7 +40,6 @@ import com.ramcosta.composedestinations.codegen.templates.moduleNavGraphTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
-import com.ramcosta.composedestinations.codegen.writers.typeAliasNavGraph
 
 val navGraphsPackageName = "$codeGenBasePackageName.navgraphs"
 
@@ -49,9 +49,9 @@ internal class SingleNavGraphWriter(
     private val navGraph: RawNavGraphTree,
     private val navArgResolver: NavArgResolver
 ) {
-    private val navGraphType = Importable(codeGenTypedNavGraph, "$navGraphsPackageName.$codeGenTypedNavGraph")
-    private val navHostNavGraphType = Importable(codeGenNavHostNavGraph, "$navGraphsPackageName.$codeGenNavHostNavGraph")
-    private val directionNavGraphType = Importable(codeGenDirectionNavGraph, "$navGraphsPackageName.$codeGenDirectionNavGraph")
+    private val navGraphType = CORE_TYPED_NAV_GRAPH_SPEC
+    private val navHostNavGraphType = CORE_NAV_HOST_GRAPH_SPEC
+    private val directionNavGraphType = CORE_DIRECTION_NAV_GRAPH_SPEC
 
     private val navArgumentBridgeCodeBuilder = NavArgumentBridgeCodeBuilder(
         navArgResolver = navArgResolver,
@@ -112,7 +112,7 @@ internal class SingleNavGraphWriter(
         codeGenerator.makeFile(
             packageName = navGraphsPackageName,
             name = navGraph.name,
-            sourceIds = (sourceIds(navGraph.destinations) + navGraph.sourceIds).toTypedArray()
+            sourceIds = sourceIds(navGraph.destinations, listOf(navGraph)).toTypedArray()
         )
             .writeSourceFile(
                 packageStatement = moduleNavGraphTemplate.packageStatement,
@@ -259,7 +259,7 @@ internal class SingleNavGraphWriter(
 
     private fun RawNavGraphTree.graphSuperType(): String {
         if (isNavHostGraph) {
-            return "${importableHelper.addAndGetPlaceholder(navHostNavGraphType)}()"
+            return importableHelper.addAndGetPlaceholder(navHostNavGraphType)
         }
 
         val (graphArgs, startRouteNavArgsName) = navArgTypes().let { argTypes ->
@@ -269,26 +269,13 @@ internal class SingleNavGraphWriter(
         return if (graphArgs != null || startRouteNavArgsName != null) {
             val startRouteArgType = startRouteNavArgsName ?: "Unit"
             val argTypes = "${graphArgs ?: startRouteArgType}, $startRouteArgType"
-            "${importableHelper.addAndGetPlaceholder(navGraphType)}<$argTypes>()"
+            "${importableHelper.addAndGetPlaceholder(navGraphType)}<$argTypes>"
         } else {
-            "${importableHelper.addAndGetPlaceholder(directionNavGraphType)}()"
+            importableHelper.addAndGetPlaceholder(directionNavGraphType)
         }
     }
 
     private fun RawNavGraphTree.navArgTypes(): Pair<Importable?, Importable?> {
-        val graphArgs = if (navArgs?.parameters.isNullOrEmpty()) {
-            null
-        } else {
-            if (startRouteArgs != null) {
-                Importable(
-                    "${navGraph.name}NavArgs",
-                    "$navGraphsPackageName.${navGraph.name}NavArgs"
-                )
-            } else {
-                navArgs!!.type
-            }
-        }
-
         return (graphArgs ?: startRouteArgs?.type) to startRouteArgs?.type
     }
 
@@ -338,7 +325,7 @@ internal class SingleNavGraphWriter(
         return """
 
 
-            override val nestedNavGraphs: List<$typeAliasNavGraph> get() = listOf(
+            override val nestedNavGraphs: List<$CORE_ALIAS_NAV_GRAPH_SPEC> get() = listOf(
                 %s1
             )
         """.trimIndent()

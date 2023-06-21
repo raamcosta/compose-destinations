@@ -8,6 +8,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 import com.ramcosta.composedestinations.spec.Route
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.transform
  * The top level navigation graph associated with this [NavController].
  * Can only be called after [com.ramcosta.composedestinations.DestinationsNavHost].
  */
-val NavController.navGraph: NavGraphSpec
+val NavController.navGraph: NavHostGraphSpec
     get() {
         return NavGraphRegistry[this]?.topLevelNavGraph(this)
             ?: error("Cannot call rootNavGraph before DestinationsNavHost!")
@@ -106,9 +107,10 @@ fun NavController.isRouteOnBackStack(route: Route): Boolean {
  */
 @Composable
 fun NavController.isRouteOnBackStackAsState(route: Route): State<Boolean> {
-    return remember(currentBackStackEntryFlow) {
+    val mappedFlow = remember(currentBackStackEntryFlow) {
         currentBackStackEntryFlow.map { isRouteOnBackStack(route) }
-    }.collectAsState(initial = isRouteOnBackStack(route))
+    }
+    return mappedFlow.collectAsState(initial = isRouteOnBackStack(route))
 }
 
 /**
@@ -149,9 +151,7 @@ fun NavGraphSpec.contains(destination: DestinationSpec): Boolean {
  * Returns all [DestinationSpec]s including those of nested graphs
  */
 val NavGraphSpec.allDestinations get(): List<DestinationSpec> {
-    val destinations = destinationsByRoute
-        .values
-        .toMutableList()
+    val destinations = destinations.toMutableList()
 
     nestedNavGraphs.forEach {
         destinations.addAll(it.allDestinations)
@@ -165,7 +165,7 @@ val NavGraphSpec.allDestinations get(): List<DestinationSpec> {
  * Returns `null` if there is no such destination.
  */
 fun NavGraphSpec.findDestination(route: String): DestinationSpec? {
-    val destination = destinationsByRoute[route]
+    val destination = destinations.find { it.route == route }
 
     if (destination != null) {
         return destination
@@ -181,48 +181,3 @@ fun NavGraphSpec.findDestination(route: String): DestinationSpec? {
 
     return null
 }
-
-// region deprecated APIs
-
-/**
- * Finds the destination correspondent to this [NavBackStackEntry] in [navGraph] and its nested nav graphs,
- * null if none is found or if no route is set in this back stack entry's destination.
- */
-@Deprecated(
-    message = "Api will be removed! Use `destination` instead.",
-    replaceWith = ReplaceWith("destination()")
-)
-fun NavBackStackEntry.destination(navGraph: NavGraphSpec): DestinationSpec? {
-    return destination.route?.let { navGraph.findDestination(it) }
-}
-
-/**
- * Finds the destination correspondent to this [NavBackStackEntry] in [navGraph] and its nested nav graphs,
- * null if none is found or if no route is set in this back stack entry's destination.
- */
-@Deprecated(
-    message = "Api will be removed! Use `destination(NavGraphSpec)` instead.",
-    replaceWith = ReplaceWith("destination()")
-)
-fun NavBackStackEntry.destinationSpec(navGraph: NavGraphSpec): DestinationSpec? {
-    return destination.route?.let { navGraph.findDestination(it) }
-}
-
-/**
- * If this [Route] is a [DestinationSpec], returns it
- *
- * If this [Route] is a [NavGraphSpec], returns its
- * start [DestinationSpec].
- */
-@Deprecated(
-    message = "Api will be removed! Use `startDestination` instead.",
-    replaceWith = ReplaceWith("startDestination")
-)
-val Route.startDestinationSpec get(): DestinationSpec {
-    return when (this) {
-        is DestinationSpec -> this
-        is NavGraphSpec -> startRoute.startDestination
-    }
-}
-
-// endregion

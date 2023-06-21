@@ -45,13 +45,12 @@ class Processor(
         val navTypeSerializers = resolver.getNavTypeSerializers()
         val navGraphAnnotations = resolver.getNavGraphAnnotations()
         val navHostGraphAnnotations = resolver.getNavHostGraphAnnotations()
-        val codeGenConfig = ConfigParser(logger, options).parse()
+        val codeGenConfig = ConfigParser(options).parse()
 
         val mutableKSFileSourceMapper = MutableKSFileSourceMapper()
         val classesToNavGraphsMapper = KspToCodeGenNavGraphsMapper(
             resolver,
             mutableKSFileSourceMapper,
-            codeGenConfig,
             navTypeSerializers.associateBy { it.genericType }
         )
         val navGraphs = classesToNavGraphsMapper.map(navGraphAnnotations, navHostGraphAnnotations)
