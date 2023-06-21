@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.templates
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.commons.CORE_ALIAS_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
@@ -33,7 +34,7 @@ $NAV_GRAPH_GEN_NAV_ARGS${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}$NAV_GRAPH_VISIB
     
     override val startRoute: TypedRoute<$NAV_GRAPH_TYPED_ROUTE_TYPE> = $NAV_GRAPH_START_ROUTE_PLACEHOLDER
     
-    override val destinations: List<$typeAliasDestination> get() = listOf(
+    override val destinations: List<$CORE_ALIAS_DESTINATION_SPEC> get() = listOf(
 $NAV_GRAPH_DESTINATIONS
     )$NESTED_NAV_GRAPHS
 

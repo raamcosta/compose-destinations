@@ -26,7 +26,7 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T> NavBackSt
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public fun <T> navArgs(argsClass: Class<T>, argsContainer: SavedStateHandle): T {
     return when (argsClass) {
 $NAV_ARGS_METHOD_WHEN_CASES
-        else -> error("Class $CLASS_ESCAPED is not a navigation arguments class!")
+        else -> error("Class $CLASS_ESCAPED is not a navigation arguments class known by this module!")
     }
 }
 
@@ -34,7 +34,7 @@ $NAV_ARGS_METHOD_WHEN_CASES
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public fun <T> navArgs(argsClass: Class<T>, argsContainer: NavBackStackEntry): T {
     return when (argsClass) {
 $NAV_ARGS_METHOD_WHEN_CASES
-        else -> error("Class $CLASS_ESCAPED is not a navigation arguments class!")
+        else -> error("Class $CLASS_ESCAPED is not a navigation arguments class known by this module!")
     }
 }
 

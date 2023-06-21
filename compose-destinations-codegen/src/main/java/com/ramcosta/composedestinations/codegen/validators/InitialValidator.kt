@@ -3,7 +3,6 @@ package com.ramcosta.composedestinations.codegen.validators
 import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
 import com.ramcosta.composedestinations.codegen.commons.BOTTOM_SHEET_DEPENDENCY
 import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_SIMPLE_NAME
-import com.ramcosta.composedestinations.codegen.commons.DOCS_WEBSITE_MULTI_MODULE_CONFIGS
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.OPEN_RESULT_RECIPIENT_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
@@ -14,7 +13,6 @@ import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayList
 import com.ramcosta.composedestinations.codegen.commons.toTypeCode
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
-import com.ramcosta.composedestinations.codegen.model.CodeGenMode
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
 import com.ramcosta.composedestinations.codegen.model.Parameter
@@ -79,21 +77,10 @@ class InitialValidator(
                         " marked as the default nav graph. Only one nav graph can be the default one!"
             )
         }
-
-        val nestedGraphsWithoutParent = navGraphs.filter { !it.isNavHostGraph && it.parent == null }
-        if (nestedGraphsWithoutParent.isNotEmpty() && codeGenConfig.mode is CodeGenMode.SingleModule) {
-            throw IllegalDestinationsSetup(
-                "[${nestedGraphsWithoutParent.joinToString(",") { "'${it.type.preferredSimpleName}'" }}] are " +
-                        "not @NavHostGraph but do not define a parent graph. " +
-                        "If this graph is meant to be used on another module, use a different multi module mode: " +
-                        DOCS_WEBSITE_MULTI_MODULE_CONFIGS
-            )
-        }
     }
 
     private fun DestinationGeneratingParams.warnIgnoredAnnotationArguments() {
-        if (codeGenConfig.mode == CodeGenMode.Destinations
-            || (codeGenConfig.mode is CodeGenMode.SingleModule && !codeGenConfig.mode.generateNavGraphs)) {
+        if (!codeGenConfig.generateNavGraphs) {
 
             Logger.instance.warn(
                 "'${composableName}' composable: is annotated with a `NavGraph` annotation, but it will be ignored." +

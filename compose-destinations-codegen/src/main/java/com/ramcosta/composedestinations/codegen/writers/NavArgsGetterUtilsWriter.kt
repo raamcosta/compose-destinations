@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
@@ -18,15 +19,18 @@ internal class NavArgsGettersWriter(
 
     private val importableHelper = ImportableHelper(navArgsGettersTemplate.imports)
 
-    fun write(generatedDestinations: List<CodeGenProcessedDestination>) {
+    fun write(
+        generatedDestinations: List<CodeGenProcessedDestination>,
+        navGraphTrees: List<RawNavGraphTree>
+    ) {
         if (generatedDestinations.all { it.navArgsClass == null }) {
             return
         }
 
         val file: OutputStream = codeGenerator.makeFile(
-            packageName = codeGenBasePackageName,
+            packageName = "$codeGenBasePackageName.navargs",
             name = "NavArgsGetters",
-            sourceIds = sourceIds(generatedDestinations).toTypedArray()
+            sourceIds = sourceIds(generatedDestinations, navGraphTrees).toTypedArray()
         )
 
         val destinationsWithNavArgs = generatedDestinations.filter { it.navArgsClass != null }
@@ -34,11 +38,16 @@ internal class NavArgsGettersWriter(
             .values
             .toList()
 
+        val navGraphsWithNavArgs = navGraphTrees.filter { it.graphArgs != null }
+            .associateBy { it.graphArgs }
+            .values
+            .toList()
+
         file.writeSourceFile(
             packageStatement = navArgsGettersTemplate.packageStatement,
             importableHelper = importableHelper,
             sourceCode = navArgsGettersTemplate.sourceCode
-                .replace(NAV_ARGS_METHOD_WHEN_CASES, navArgsMethodWhenCases(destinationsWithNavArgs))
+                .replace(NAV_ARGS_METHOD_WHEN_CASES, navArgsMethodWhenCases(destinationsWithNavArgs, navGraphsWithNavArgs))
                 .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinationsWithNavArgs))
         )
     }
@@ -54,14 +63,26 @@ internal class NavArgsGettersWriter(
         return code.toString()
     }
 
-    private fun navArgsMethodWhenCases(destinationsWithNavArgs: List<CodeGenProcessedDestination>): String {
+    private fun navArgsMethodWhenCases(
+        destinationsWithNavArgs: List<CodeGenProcessedDestination>,
+        navGraphsWithNavArgs: List<RawNavGraphTree>
+    ): String {
         val sb = StringBuilder()
 
         destinationsWithNavArgs.forEachIndexed { idx, it ->
             sb += "\t\t${importableHelper.addAndGetPlaceholder(it.navArgsClass!!.type)}::class.java " +
                     "-> ${importableHelper.addAndGetPlaceholder(it.destinationImportable)}.argsFrom(argsContainer) as T"
 
-            if (idx < destinationsWithNavArgs.lastIndex) {
+            if (navGraphsWithNavArgs.isNotEmpty() || idx < destinationsWithNavArgs.lastIndex) {
+                sb += "\n"
+            }
+        }
+
+        navGraphsWithNavArgs.forEachIndexed { idx, it ->
+            sb += "\t\t${importableHelper.addAndGetPlaceholder(it.graphArgs!!)}::class.java " +
+                    "-> ${importableHelper.addAndGetPlaceholder(it.navGraphImportable)}.argsFrom(argsContainer) as T"
+
+            if (idx < navGraphsWithNavArgs.lastIndex) {
                 sb += "\n"
             }
         }

@@ -11,12 +11,8 @@ import com.ramcosta.composedestinations.codegen.writers.DefaultKtxSerializableNa
 import com.ramcosta.composedestinations.codegen.writers.DestinationsWriter
 import com.ramcosta.composedestinations.codegen.writers.ModuleOutputWriter
 import com.ramcosta.composedestinations.codegen.writers.NavArgsGettersWriter
-import com.ramcosta.composedestinations.codegen.writers.SealedDestinationWriter
-import com.ramcosta.composedestinations.codegen.writers.SealedNavGraphWriter
 import com.ramcosta.composedestinations.codegen.writers.sub.DestinationsModeWriter
-import com.ramcosta.composedestinations.codegen.writers.sub.NavGraphsModeWriter
 import com.ramcosta.composedestinations.codegen.writers.sub.NavGraphsSingleObjectWriter
-import com.ramcosta.composedestinations.codegen.writers.sub.SingleModuleExtensionsWriter
 import com.ramcosta.composedestinations.codegen.writers.sub.SingleNavGraphWriter
 
 internal interface ServiceLocatorAccessor {
@@ -29,10 +25,9 @@ internal fun ServiceLocatorAccessor.moduleOutputWriter(
     customNavTypeByType: Map<Type, CustomNavType>
 ) = ModuleOutputWriter(
     codeGenConfig,
-    navGraphsModeWriter(customNavTypeByType),
     destinationsListModeWriter,
     navGraphsSingleObjectWriter(customNavTypeByType),
-    singleModuleExtensionsWriter
+    navArgsGetters
 )
 
 internal val ServiceLocatorAccessor.customNavTypeWriter get() = CustomNavTypesWriter(
@@ -52,38 +47,12 @@ internal val ServiceLocatorAccessor.destinationsListModeWriter get() = Destinati
     codeGenerator,
 )
 
-internal val ServiceLocatorAccessor.sealedNavGraphWriter get() = SealedNavGraphWriter(
-    codeGenerator,
-    codeGenConfig
-)
-
-internal fun ServiceLocatorAccessor.navGraphsModeWriter(
-    customNavTypeByType: Map<Type, CustomNavType>
-): NavGraphsModeWriter {
-        return NavGraphsModeWriter(
-            codeGenerator,
-            codeGenConfig,
-            sealedNavGraphWriter,
-            customNavTypeByType,
-            ::SingleNavGraphWriter,
-        )
-    }
-
 internal fun ServiceLocatorAccessor.navGraphsSingleObjectWriter(
     customNavTypeByType: Map<Type, CustomNavType>
 ) = NavGraphsSingleObjectWriter(
     codeGenerator,
-    sealedNavGraphWriter,
     customNavTypeByType,
     ::SingleNavGraphWriter
-)
-
-internal val ServiceLocatorAccessor.singleModuleExtensionsWriter get() = SingleModuleExtensionsWriter(
-    codeGenerator,
-)
-
-internal val ServiceLocatorAccessor.sealedDestinationWriter get() = SealedDestinationWriter(
-    codeGenerator,
 )
 
 internal val ServiceLocatorAccessor.destinationWithNavArgsMapper get() = DestinationWithNavArgsMapper()

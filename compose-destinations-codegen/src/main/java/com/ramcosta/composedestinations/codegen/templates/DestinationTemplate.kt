@@ -32,12 +32,7 @@ val destinationTemplate = FileTemplate(
         "$CORE_PACKAGE_NAME.scope.DestinationScope",
         "$CORE_PACKAGE_NAME.navigation.DestinationDependenciesContainer",
         "$CORE_PACKAGE_NAME.navigation.DependenciesContainerBuilder",
-        "$CORE_PACKAGE_NAME.spec.DestinationSpec",
-        "$CORE_PACKAGE_NAME.spec.DestinationStyle",
-        "$CORE_PACKAGE_NAME.spec.Direction",
-        "$CORE_PACKAGE_NAME.spec.DirectionDestinationSpec",
-        "$CORE_PACKAGE_NAME.spec.NavGraphSpec",
-        "$CORE_PACKAGE_NAME.spec.Route",
+        "$CORE_PACKAGE_NAME.spec.*",
     ),
     sourceCode = """
 $NAV_ARGS_DATA_CLASS${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}${DESTINATION_VISIBILITY_PLACEHOLDER} object $DESTINATION_NAME : $SUPERTYPE {

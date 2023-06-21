@@ -14,9 +14,8 @@ interface TypedNavGraphSpec<NAV_ARGS, START_ROUTE_NAV_ARGS>: TypedRoute<NAV_ARGS
 
     /**
      * All destinations which belong to this navigation graph
-     * by their route
      */
-    val destinationsByRoute: Map<String, DestinationSpec>
+    val destinations: List<DestinationSpec>
 
     /**
      * Nested navigation graphs of this navigation graph.

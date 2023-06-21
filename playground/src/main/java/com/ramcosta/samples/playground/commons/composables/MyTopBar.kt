@@ -17,13 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.samples.playground.commons.title
-import com.ramcosta.samples.playground.ui.screens.destinations.Destination
 import com.ramcosta.samples.playground.ui.screens.NavGraphs
 
 @Composable
 fun TopBar(
-    destination: Destination,
+    destination: DestinationSpec,
     onDrawerClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {

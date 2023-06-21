@@ -59,28 +59,13 @@ android {
     ksp {
 //        // Module name.
 //        // It will be used as the generated sealed Destinations prefix
-//        arg("compose-destinations.moduleName", "featureX")
-//
-//        // Can be:
-//        // - "destinations":
-//        // Generates the destinations and exposes a list with all of them. Doesn't generate any nav graphs
-//        //
-//        // - "navgraphs":
-//        // Generates destinations and nav graph(s) individually without nesting any of them
-//        //
-//        // - "singlemodule" (default):
-//        // Generates destinations and nav graphs nesting all graphs inside the default "root" one.
-//        // Also creates a CoreExtensions.kt file with useful utilities for a single module case.
-//        arg("compose-destinations.mode", "navgraphs")
+        arg("compose-destinations.moduleName", "featureX") //TODO RACOSTA
+
 //        // If you have a single module but you want to manually create the nav graphs, use this:
 //        arg("compose-destinations.generateNavGraphs", "false")
 //
 //        // To change the package name where the generated files will be placed
         arg("compose-destinations.codeGenPackageName", "com.ramcosta.samples.playground.ui.screens")
-
-        // If set to "true" will use the annotated composable's visibility in the generated Destination
-        // otherwise, Destinations will always be public in this module
-//        arg("compose-destinations.useComposableVisibility", "true") TODO RACOSTA DELETED
     }
 }
 
@@ -90,6 +75,9 @@ dependencies {
     implementation(project(mapOf("path" to ":compose-destinations-bottom-sheet")))
     implementation(project(mapOf("path" to ":playground-core")))
     ksp(project(":compose-destinations-ksp"))
+
+    debugImplementation("androidx.compose.ui:ui-tooling:1.4.3")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.4.3")
 
     implementation(libs.androidMaterial)
 

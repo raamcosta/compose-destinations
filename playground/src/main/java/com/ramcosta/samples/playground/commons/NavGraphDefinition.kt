@@ -5,10 +5,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransitions
+import com.ramcosta.composedestinations.animations.defaults.NoTransitions
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.annotation.NavGraph
+import com.ramcosta.composedestinations.annotation.NavHostGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
 import com.ramcosta.composedestinations.spec.DestinationStyle
@@ -26,18 +28,9 @@ annotation class SettingsNavGraph(
     val start: Boolean = false
 )
 
-/**
- * TODO RACOSTA:
- *
- * - Use nav graph's nav args for NavArgGetters
- * - Allow internal NavHostGraphs gen on navgraphs mode + use visibility of the NavGraph annotation
- *  - Or have a speicifc visibility parm on annotation? In case they want internal annotation but public
- *  nav graph
- *  - How would this work with NavArgGetters extensions? And with sealed Destinations / NavGraphs?
- */
 @RootNavGraph
 @NavGraph(
-    navArgs = ProfileNavGraphNavArgs::class,
+    navArgs = ProfileNavGraph.NavArgs::class,
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
@@ -46,24 +39,38 @@ annotation class SettingsNavGraph(
 annotation class ProfileNavGraph(
     val start: Boolean = false
 ) {
+    data class NavArgs(
+        val graphArg: String,
+    )
 }
 
-data class ProfileNavGraphNavArgs(
-    val graphArg: String,
+@NavHostGraph(
+    defaultTransitions = NoTransitions::class,
+    visibility = CodeGenVisibility.INTERNAL
 )
+annotation class MyTopLevelNavGraph(
+    val start: Boolean = false
+)
+
+@MyTopLevelNavGraph(start = true)
+@Destination
+@Composable
+fun Asd() {
+    Text("Asd")
+}
 
 @ProfileNavGraph(start = true)
 @NavGraph(
-    navArgs = ProfileSettingsNavGraphNavArgs::class,
+    navArgs = ProfileSettingsNavGraph.NavArgs::class,
 //    visibility = CodeGenVisibility.INTERNAL
 )
 annotation class ProfileSettingsNavGraph(
     val start: Boolean = false
-)
-
-data class ProfileSettingsNavGraphNavArgs(
-    val anotherGraphArg: String
-)
+) {
+    data class NavArgs(
+        val anotherGraphArg: String
+    )
+}
 
 //@NavGraph(
 //    defaultTransitions = NoTransitions::class,
