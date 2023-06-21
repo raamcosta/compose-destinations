@@ -12,8 +12,6 @@ import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_DEF
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
-import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
-import com.ramcosta.composedestinations.codegen.model.CodeGenMode
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
@@ -29,7 +27,6 @@ import com.ramcosta.composedestinations.ksp.commons.toImportable
 internal class KspToCodeGenNavGraphsMapper(
     private val resolver: Resolver,
     private val mutableKSFileSourceMapper: MutableKSFileSourceMapper,
-    private val codeGenConfig: CodeGenConfig,
     private val navTypeSerializersByType: Map<Importable, NavTypeSerializer>,
 ) {
 
@@ -37,11 +34,6 @@ internal class KspToCodeGenNavGraphsMapper(
         navGraphAnnotations: Sequence<KSClassDeclaration>,
         navHostGraphAnnotations: Sequence<KSClassDeclaration>
     ): List<RawNavGraphGenParams> {
-        if (codeGenConfig.mode !is CodeGenMode.SingleModule
-            && navHostGraphAnnotations.any { it.qualifiedName!!.asString() != "com.ramcosta.composedestinations.annotation.RootNavGraph" }) {
-            throw IllegalDestinationsSetup("You cannot define @NavHostGraph on modules configured with mode 'navgraphs' or 'destinations'")
-        }
-
         return navGraphAnnotations.map { it.mapToRawNavGraphGenParams(false) }.toList() +
                 navHostGraphAnnotations.map { it.mapToRawNavGraphGenParams(true) }
     }
@@ -83,13 +75,14 @@ internal class KspToCodeGenNavGraphsMapper(
             ?.toImportable()
 
         val deepLinks = navGraphAnnotation
-            .findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)!!
-            .map { it.toDeepLink() }
+            .findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)
+            ?.map { it.toDeepLink() }
+            .orEmpty()
 
         val navArgs = navGraphAnnotation
             .getNavArgsDelegateType(resolver, navTypeSerializersByType)
 
-        if (isNavHostGraph && codeGenConfig.mode is CodeGenMode.SingleModule && navGraphDefaultTransitions == null) {
+        if (isNavHostGraph && navGraphDefaultTransitions == null) {
             throw IllegalDestinationsSetup("A $NAV_HOST_GRAPH_ANNOTATION needs a non Nothing::class as defaultTransitions! " +
                     "Use `NoTransitions` if you wish to have no animations as default for this nav graph ${simpleName.asString()}")
         }
@@ -132,7 +125,7 @@ internal class KspToCodeGenNavGraphsMapper(
             sourceIds = listOfNotNull(containingFile?.filePath, navArgs?.file?.filePath),
             routeOverride = if (navGraphAnnotationNameArg == NAV_GRAPH_ANNOTATION_DEFAULT_NAME) null else navGraphAnnotationNameArg,
             default = navGraphAnnotationDefaultArg,
-            isNavHostGraph = isNavHostGraph && codeGenConfig.mode is CodeGenMode.SingleModule,
+            isNavHostGraph = isNavHostGraph,
             defaultTransitions = navGraphDefaultTransitions,
             type = Importable(this.simpleName.asString(), this.qualifiedName!!.asString()),
             parent = parent,

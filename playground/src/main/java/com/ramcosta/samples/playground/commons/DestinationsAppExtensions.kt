@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.samples.playground.R
 import com.ramcosta.samples.playground.ui.screens.destinations.AnotherTestScreenDestination
-import com.ramcosta.samples.playground.ui.screens.destinations.Destination
-import com.ramcosta.samples.playground.ui.screens.destinations.DirectionDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.FeedDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.GoToProfileConfirmationDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
@@ -26,9 +26,9 @@ import com.ramcosta.samples.playground.ui.screens.destinations.TestScreenDestina
 import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
 
 @Composable
-fun DirectionDestination.DrawerContent(
+fun DirectionDestinationSpec.DrawerContent(
     isSelected: Boolean,
-    onDestinationClick: (DirectionDestination) -> Unit
+    onDestinationClick: (DirectionDestinationSpec) -> Unit
 ) {
     when (this) {
         FeedDestination,
@@ -51,13 +51,13 @@ fun DirectionDestination.DrawerContent(
 }
 
 @get:StringRes
-val Destination.requireTitle
+val DestinationSpec.requireTitle
     get(): Int {
         return title ?: throw RuntimeException("Destination $this, doesn't contain title")
     }
 
 @get:StringRes
-val Destination.title
+val DestinationSpec.title
     get(): Int? {
         return when (this) {
             GreetingScreenDestination -> R.string.greeting_screen
@@ -72,5 +72,6 @@ val Destination.title
             ProfileSettingsScreenDestination -> null
             OtherActivityDestination -> null
             AnotherTestScreenDestination -> null
+            else -> error("Title for destination $route not defined!")
         }
     }

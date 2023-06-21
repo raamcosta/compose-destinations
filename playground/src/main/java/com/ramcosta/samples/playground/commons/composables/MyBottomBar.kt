@@ -11,10 +11,10 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.samples.playground.R
-import com.ramcosta.samples.playground.ui.screens.destinations.Destination
 import com.ramcosta.samples.playground.ui.screens.destinations.FeedDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
 
@@ -29,7 +29,7 @@ enum class BottomBarDestination(
 
 @Composable
 fun BottomBar(
-    currentDestination: Destination,
+    currentDestination: DestinationSpec,
     onBottomBarItemClick: (Direction) -> Unit
 ) {
     BottomNavigation {

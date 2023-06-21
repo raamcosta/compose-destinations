@@ -47,22 +47,13 @@ const val DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER = "@ramcosta.destinat
 const val ACTIVITY_DESTINATION_ANNOTATION_DEFAULT_NULL = "@ramcosta.destinations.activity-null-default@" // Needs to be the same as the constant in core module's ActivityDestination
 const val NAV_GRAPH_ANNOTATION_DEFAULT_NAME = "@ramcosta.destinations.annotation-navgraph-route@" // Needs to be the same as the constant in core module's NavGraph
 
-const val SINGLE_MODULE_EXTENSIONS = "SingleModuleExtensions"
-const val NO_PREFIX_GENERATED_DESTINATION = "TypedDestination"
-const val NO_PREFIX_GENERATED_NO_ARGS_DESTINATION = "DirectionDestination"
-const val NO_PREFIX_GENERATED_ACTIVITY_DESTINATION = "ActivityDestination"
-const val NO_PREFIX_GENERATED_NO_ARGS_ACTIVITY_DESTINATION = "DirectionActivityDestination"
-const val GENERATED_NAV_GRAPH = "NavGraph"
-const val NO_PREFIX_GENERATED_NAV_HOST_GRAPH = "NavHostGraph"
-const val NO_PREFIX_GENERATED_TYPED_NAV_GRAPH = "TypedNavGraph"
-const val NO_PREFIX_GENERATED_DIRECTION_NAV_GRAPH = "DirectionNavGraph"
 const val GENERATED_NAV_GRAPHS_OBJECT = "NavGraphs"
 const val GENERATED_DESTINATION_SUFFIX = "Destination"
 
-const val CORE_DESTINATION_SPEC = "DestinationSpec"
+const val CORE_ALIAS_DESTINATION_SPEC = "DestinationSpec"
 const val CORE_TYPED_DESTINATION_SPEC = "TypedDestinationSpec"
 const val CORE_DIRECTION_DESTINATION_SPEC = "DirectionDestinationSpec"
-const val CORE_NAV_GRAPH_SPEC = "NavGraphSpec"
+const val CORE_ALIAS_NAV_GRAPH_SPEC = "NavGraphSpec"
 
 val CORE_NAV_HOST_ANIMATED_DESTINATION_STYLE = Importable("NavHostAnimatedDestinationStyle", "$CORE_PACKAGE_NAME.animations.defaults.NavHostAnimatedDestinationStyle")
 val CORE_NAV_HOST_GRAPH_SPEC = Importable("NavHostGraphSpec", "$CORE_PACKAGE_NAME.spec.NavHostGraphSpec")

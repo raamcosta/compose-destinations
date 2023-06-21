@@ -8,7 +8,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationStyle
-import com.ramcosta.samples.playground.ui.screens.appDestination
+import com.ramcosta.composedestinations.utils.destination
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
 
@@ -16,7 +16,7 @@ object GreetingTransitions : DestinationStyle.Animated() {
 
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
 
-        return when (initialState.appDestination()) {
+        return when (initialState.destination()) {
             SettingsScreenDestination,
             ProfileScreenDestination ->
                 slideInHorizontally(
@@ -29,7 +29,7 @@ object GreetingTransitions : DestinationStyle.Animated() {
 
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
 
-        return when (targetState.appDestination()) {
+        return when (targetState.destination()) {
             ProfileScreenDestination,
             SettingsScreenDestination ->
                 slideOutHorizontally(
@@ -42,7 +42,7 @@ object GreetingTransitions : DestinationStyle.Animated() {
 
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
 
-        return when (initialState.appDestination()) {
+        return when (initialState.destination()) {
             ProfileScreenDestination,
             SettingsScreenDestination ->
                 slideInHorizontally(
@@ -55,7 +55,7 @@ object GreetingTransitions : DestinationStyle.Animated() {
 
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
 
-        return when (targetState.appDestination()) {
+        return when (targetState.destination()) {
             ProfileScreenDestination,
             SettingsScreenDestination ->
                 slideOutHorizontally(

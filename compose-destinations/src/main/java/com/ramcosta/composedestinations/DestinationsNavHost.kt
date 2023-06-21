@@ -12,8 +12,8 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
-import com.ramcosta.composedestinations.spec.Route
 import com.ramcosta.composedestinations.spec.NavHostGraphSpec
+import com.ramcosta.composedestinations.spec.Route
 import com.ramcosta.composedestinations.utils.NavGraphRegistry
 
 /**
@@ -116,7 +116,7 @@ private fun NavGraphBuilder.addNavGraphDestinations(
     manualComposableCalls: ManualComposableCalls,
 ): Unit = with(engine) {
 
-    navGraph.destinationsByRoute.values.forEach { destination ->
+    navGraph.destinations.forEach { destination ->
         composable(
             destination,
             navController,
