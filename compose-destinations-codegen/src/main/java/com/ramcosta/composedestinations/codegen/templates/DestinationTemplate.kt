@@ -8,6 +8,7 @@ import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 //region anchors
 const val DESTINATION_NAME = "[DESTINATION_NAME]"
 const val BASE_ROUTE = "[ROUTE_ID]"
+const val USER_COMPOSABLE_DESTINATION = "[USER_COMPOSABLE_DESTINATION]"
 const val COMPOSED_ROUTE = "[COMPOSED_ROUTE]"
 const val NAV_ARGUMENTS = "[NAV_ARGUMENTS]"
 const val DEEP_LINKS = "[DEEP_LINKS]"
@@ -35,7 +36,10 @@ val destinationTemplate = FileTemplate(
         "$CORE_PACKAGE_NAME.spec.*",
     ),
     sourceCode = """
-$NAV_ARGS_DATA_CLASS${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}${DESTINATION_VISIBILITY_PLACEHOLDER} object $DESTINATION_NAME : $SUPERTYPE {
+$NAV_ARGS_DATA_CLASS/**
+ * Generated from [$USER_COMPOSABLE_DESTINATION] 
+ */
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}${DESTINATION_VISIBILITY_PLACEHOLDER} object $DESTINATION_NAME : $SUPERTYPE {
     $ARGS_TO_DIRECTION_METHOD
     override val baseRoute: String = "$BASE_ROUTE"
 

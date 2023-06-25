@@ -22,6 +22,7 @@ const val NAV_GRAPH_TYPED_ROUTE_TYPE = "@NAV_GRAPH_TYPED_ROUTE_TYPE@"
 const val NAV_GRAPH_DEFAULT_TRANSITIONS_TYPE = "@NAV_GRAPH_DEFAULT_TRANSITIONS_TYPE@"
 const val NAV_GRAPH_DEFAULT_TRANSITIONS = "@NAV_GRAPH_DEFAULT_TRANSITIONS@"
 const val NAV_GRAPH_VISIBILITY_PLACEHOLDER = "@DESTINATION_VISIBILITY_PLACEHOLDER@"
+const val USER_NAV_GRAPH_ANNOTATION = "@USER_NAV_GRAPH_ANNOTATION@"
 
 val moduleNavGraphTemplate = FileTemplate(
     packageStatement = "package $navGraphsPackageName",
@@ -30,6 +31,9 @@ val moduleNavGraphTemplate = FileTemplate(
         "${codeGenBasePackageName}.destinations.*",
     ),
     sourceCode = """
+/**
+ * Generated from [$USER_NAV_GRAPH_ANNOTATION]
+ */
 $NAV_GRAPH_GEN_NAV_ARGS${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}$NAV_GRAPH_VISIBILITY_PLACEHOLDER object $NAV_GRAPH_NAME_PLACEHOLDER : $NAV_GRAPH_TYPE {
     
     override val startRoute: TypedRoute<$NAV_GRAPH_TYPED_ROUTE_TYPE> = $NAV_GRAPH_START_ROUTE_PLACEHOLDER

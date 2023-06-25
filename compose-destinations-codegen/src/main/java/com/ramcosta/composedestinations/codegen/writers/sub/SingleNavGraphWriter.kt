@@ -36,6 +36,7 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_TYPED_ROUTE_
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_VISIBILITY_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NESTED_NAV_GRAPHS
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.USER_NAV_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.templates.moduleNavGraphTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
@@ -62,6 +63,7 @@ internal class SingleNavGraphWriter(
 
     fun write() {
         val file = moduleNavGraphTemplate.sourceCode
+            .replace(USER_NAV_GRAPH_ANNOTATION, importableHelper.addAndGetPlaceholder(navGraph.type))
             .replace(NAV_GRAPH_NAME_PLACEHOLDER, navGraph.name)
             .replace(NAV_GRAPH_ROUTE_PLACEHOLDER, navGraph.graphRouteCode())
             .replace(NAV_GRAPH_INVOKE_FUNCTION, navGraph.graphInvokeFunction())
