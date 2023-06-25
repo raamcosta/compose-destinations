@@ -59,12 +59,17 @@ android {
     ksp {
 //        // Module name.
 //        // It will be used as the generated sealed Destinations prefix
-        arg("compose-destinations.moduleName", "featureX") //TODO RACOSTA
+//        arg("compose-destinations.moduleName", "featureX")
+        // TODO RACOSTA
+        // - Visualisation of nav graph even more important!
+        // - Add doc links from gen code to real code
+        // - Removing default RootGraph annotation and allow start = true for trivial cases?! 🤔
+        //      - means we could take configs like the codegen package name or module name there?
 
-//        // If you have a single module but you want to manually create the nav graphs, use this:
+//        // If you want to manually create the nav graphs, use this:
 //        arg("compose-destinations.generateNavGraphs", "false")
-//
-//        // To change the package name where the generated files will be placed
+
+        // To change the package name where the generated files will be placed
         arg("compose-destinations.codeGenPackageName", "com.ramcosta.samples.playground.ui.screens")
     }
 }
