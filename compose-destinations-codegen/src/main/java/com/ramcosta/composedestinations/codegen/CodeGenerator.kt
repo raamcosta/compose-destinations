@@ -8,6 +8,7 @@ import com.ramcosta.composedestinations.codegen.model.*
 import com.ramcosta.composedestinations.codegen.servicelocator.*
 import java.util.*
 
+private const val DEFAULT_GEN_PACKAGE_NAME = "com.ramcosta.composedestinations.generated"
 internal lateinit var codeGenBasePackageName: String
 internal lateinit var moduleName: String
 
@@ -24,7 +25,7 @@ class CodeGenerator(
     ) {
         initialValidator.validate(navGraphs, destinations)
 
-        initConfigurationValues(destinations)
+        initConfigurationValues()
 
         val processedDestinations = destinationWithNavArgsMapper.map(destinations)
 
@@ -39,11 +40,14 @@ class CodeGenerator(
         }
     }
 
-    private fun initConfigurationValues(
-        destinations: List<DestinationGeneratingParams>
-    ) {
-        codeGenBasePackageName = (codeGenConfig.packageName ?: destinations.getCommonPackageNamePart()).sanitizePackageName()
+    private fun initConfigurationValues() {
         moduleName = codeGenConfig.moduleName?.replaceFirstChar { it.uppercase(Locale.US) } ?: ""
+        val defaultPackageName = DEFAULT_GEN_PACKAGE_NAME + if (moduleName.isEmpty()) {
+            ""
+        } else {
+            ".$moduleName".lowercase()
+        }
+        codeGenBasePackageName = codeGenConfig.packageName?.sanitizePackageName() ?: defaultPackageName
     }
 
     private fun shouldWriteKtxSerializableNavTypeSerializer(
@@ -66,35 +70,5 @@ class CodeGenerator(
                 }
             }
         }
-    }
-
-    private fun List<DestinationGeneratingParams>.getCommonPackageNamePart(): String {
-        var currentCommonPackageName = ""
-        map { it.composableQualifiedName }
-            .forEachIndexed { idx, packageName ->
-                if (idx == 0) {
-                    currentCommonPackageName = packageName
-                    return@forEachIndexed
-                }
-                currentCommonPackageName = currentCommonPackageName.commonPrefixWith(packageName)
-            }
-
-        if (!currentCommonPackageName.endsWith(".")) {
-            currentCommonPackageName = currentCommonPackageName.split(".")
-                .dropLast(1)
-                .joinToString(".")
-        }
-
-        return currentCommonPackageName.removeSuffix(".")
-            .ifEmpty {
-                throw UnexpectedException(
-                    """Unable to get package name for module. Please specify a package name to use in the module's build.gradle file with:"
-                    ksp {
-                        arg("compose-destinations.codeGenPackageName", "your.preferred.package.name")
-                    }
-                    And report this issue (with steps to reproduce) if possible. 
-                """.trimIndent()
-                )
-            }
     }
 }
