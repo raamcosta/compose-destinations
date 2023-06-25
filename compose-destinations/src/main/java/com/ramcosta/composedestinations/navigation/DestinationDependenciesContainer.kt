@@ -30,7 +30,7 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(depen
  * navigated to, giving an opportunity to specify dependencies with [dependency] method
  * that are supposed to be used only by destinations of that [navGraph].
  */
-inline fun <T> DependenciesContainerBuilder<T>.navgraph(
+inline fun <T> DependenciesContainerBuilder<T>.navGraph(
     navGraph: NavGraphSpec,
     dependencyProvider: DependenciesContainerBuilder<T>.() -> Unit,
 ) {
