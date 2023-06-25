@@ -14,7 +14,7 @@ import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCa
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.destination
-import com.ramcosta.composedestinations.navigation.navgraph
+import com.ramcosta.composedestinations.navigation.navGraph
 import com.ramcosta.composedestinations.scope.resultBackNavigator
 import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.utils.composable
@@ -54,7 +54,7 @@ fun AppNavigation(
                 dependency(viewModel<ProfileViewModel>())
             }
 
-            navgraph(NavGraphs.settings) {
+            navGraph(NavGraphs.settings) {
                 val parentEntry = remember(navBackStackEntry) {
                     navController.getBackStackEntry(NavGraphs.settings.route)
                 }
