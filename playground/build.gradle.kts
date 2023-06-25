@@ -62,7 +62,6 @@ android {
 //        arg("compose-destinations.moduleName", "featureX")
         // TODO RACOSTA
         // - Visualisation of nav graph even more important!
-        // - Add doc links from gen code to real code
         // - Removing default RootGraph annotation and allow start = true for trivial cases?! 🤔
         //      - means we could take configs like the codegen package name or module name there?
 

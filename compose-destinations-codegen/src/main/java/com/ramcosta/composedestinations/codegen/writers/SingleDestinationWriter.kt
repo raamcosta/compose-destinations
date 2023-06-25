@@ -36,6 +36,7 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_ARGS_DATA_CLASS
 import com.ramcosta.composedestinations.codegen.templates.NAV_ARGUMENTS
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.SUPERTYPE
+import com.ramcosta.composedestinations.codegen.templates.USER_COMPOSABLE_DESTINATION
 import com.ramcosta.composedestinations.codegen.templates.destinationTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
@@ -81,6 +82,7 @@ internal class SingleDestinationWriter(
             importableHelper = importableHelper,
             sourceCode = destinationTemplate.sourceCode
                 .replace(DESTINATION_NAME, name)
+                .replace(USER_COMPOSABLE_DESTINATION, composableName)
                 .replaceSuperclassDestination()
                 .addNavArgsDataClass()
                 .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
