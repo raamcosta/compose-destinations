@@ -75,6 +75,19 @@ fun GreetingScreen(
         }
     }
 
+    GreetingScreenContent(uiState, uiEvents, navigator, testProfileDeepLink) {
+        coroutineScope.launch { drawerController.open() }
+    }
+}
+
+@Composable
+private fun GreetingScreenContent(
+    uiState: GreetingUiState,
+    uiEvents: GreetingUiEvents,
+    navigator: DestinationsNavigator,
+    testProfileDeepLink: () -> Unit,
+    onOpenDrawerClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -122,7 +135,7 @@ fun GreetingScreen(
 //                            id = "test-id",
                             asd = "test asd+qwe_-!.~'()*",
                             stuff1 = arrayListOf("%sqwe", "asd", "4", "zxc"),
-                            stuff2 = arrayOf(Stuff.STUFF2, Stuff.STUFF2 ,Stuff.STUFF1),
+                            stuff2 = arrayOf(Stuff.STUFF2, Stuff.STUFF2, Stuff.STUFF1),
                             stuff3 = arrayListOf(Color.Blue, Color.Red, Color.Green, Color.Cyan),
                             stuff5 = Color.DarkGray,
                             stuff6 = OtherThings(
@@ -149,9 +162,7 @@ fun GreetingScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = {
-                    coroutineScope.launch { drawerController.open() }
-                }
+                onClick = onOpenDrawerClick
             ) {
                 Text(text = stringResource(R.string.open_drawer))
             }

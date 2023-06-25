@@ -233,7 +233,7 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
     if (location is NonExistLocation) {
         throw IllegalDestinationsSetup("Cannot detect default value for navigation" +
                 " argument '${name!!.asString()}' because we don't have access to source code. " +
-                "Are you using navArgsDelegate with code from different module?")
+                "Nav argument classes from other modules with default values are not supported!")
     }
 
     Logger.instance.info("getDefaultValue | name = ${name!!.asString()} type = $type")
