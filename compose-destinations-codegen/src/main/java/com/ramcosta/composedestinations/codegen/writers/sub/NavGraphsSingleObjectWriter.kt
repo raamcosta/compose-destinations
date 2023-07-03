@@ -13,6 +13,7 @@ import com.ramcosta.composedestinations.codegen.model.CustomNavType
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PRETTY_KDOC_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
@@ -47,7 +48,7 @@ internal class NavGraphsSingleObjectWriter(
 
         graphTrees.forEach { writeNavGraphTreeRecursively(it) }
 
-        writeFile(generatedDestinations, flattenGraphs)
+        writeFile(generatedDestinations, graphTrees, flattenGraphs)
     }
 
     private fun writeNavGraphTreeRecursively(
@@ -61,17 +62,19 @@ internal class NavGraphsSingleObjectWriter(
 
     private fun writeFile(
         generatedDestinations: List<CodeGenProcessedDestination>,
-        navGraphsParams: List<RawNavGraphTree>
+        topLevelGraphs: List<RawNavGraphTree>,
+        flattenGraphs: List<RawNavGraphTree>
     ) {
         codeGenerator.makeFile(
             packageName = codeGenBasePackageName,
             name = GENERATED_NAV_GRAPHS_OBJECT,
-            sourceIds = sourceIds(generatedDestinations, navGraphsParams).toTypedArray()
+            sourceIds = sourceIds(generatedDestinations, flattenGraphs).toTypedArray()
         ).writeSourceFile(
             packageStatement = navGraphsObjectTemplate.packageStatement,
             importableHelper = importableHelper,
             sourceCode = navGraphsObjectTemplate.sourceCode
-                .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(navGraphsParams))
+                .replace(NAV_GRAPHS_PRETTY_KDOC_PLACEHOLDER, NavGraphsPrettyKdocWriter(importableHelper, topLevelGraphs).write())
+                .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(flattenGraphs))
         )
     }
 
