@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.codegen.model
 
 import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
-import java.util.Locale
 
 interface NavGraphGenParams {
     val sourceIds: List<String>
@@ -32,12 +31,6 @@ data class RawNavGraphGenParams(
     private val routeOverride: String? = null,
 ): NavGraphGenParams {
     private var nameOverride: String? = null
-
-    internal fun copyWithNameForRoute(newRoute: String): RawNavGraphGenParams {
-        return copy(routeOverride = newRoute).apply {
-            nameOverride = newRoute.replaceFirstChar { it.uppercase(Locale.US) } + "Graph"
-        }
-    }
 
     override val name: String get() = nameOverride ?: type.simpleName.let {
         if (it.endsWith("NavGraph")) {
