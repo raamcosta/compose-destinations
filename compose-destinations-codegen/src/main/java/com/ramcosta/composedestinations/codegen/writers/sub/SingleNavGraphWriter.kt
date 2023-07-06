@@ -17,6 +17,7 @@ import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.commons.startingDestinationName
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavGraphGenParams
 import com.ramcosta.composedestinations.codegen.model.Visibility
@@ -28,6 +29,7 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_DEFAULT_TRAN
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_DESTINATIONS
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_GEN_NAV_ARGS
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_INVOKE_FUNCTION
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_KDOC
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_NAME_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_START_ROUTE_PLACEHOLDER
@@ -63,7 +65,7 @@ internal class SingleNavGraphWriter(
 
     fun write() {
         val file = moduleNavGraphTemplate.sourceCode
-            .replace(USER_NAV_GRAPH_ANNOTATION, importableHelper.addAndGetPlaceholder(navGraph.type))
+            .replace(USER_NAV_GRAPH_ANNOTATION, importableHelper.addAndGetPlaceholder(navGraph.annotationType))
             .replace(NAV_GRAPH_NAME_PLACEHOLDER, navGraph.name)
             .replace(NAV_GRAPH_ROUTE_PLACEHOLDER, navGraph.graphRouteCode())
             .replace(NAV_GRAPH_INVOKE_FUNCTION, navGraph.graphInvokeFunction())
@@ -82,11 +84,15 @@ internal class SingleNavGraphWriter(
             )
             .replace(
                 NAV_GRAPH_START_ROUTE_PLACEHOLDER,
-                startingDestinationName(navGraph)
+                importableHelper.startingDestinationName(navGraph)
             )
             .replace(
                 NAV_GRAPH_DESTINATIONS,
-                navGraphDestinationsCode(navGraph.destinations)
+                navGraphDestinationsCode(navGraph.destinations, navGraph.externalDestinations)
+            )
+            .replace(
+                NAV_GRAPH_KDOC,
+                NavGraphsPrettyKdocWriter(importableHelper, listOf(navGraph)).write(includeLegend = false)
             )
             .replace(
                 REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER,
@@ -94,7 +100,7 @@ internal class SingleNavGraphWriter(
             )
             .replace(
                 NESTED_NAV_GRAPHS,
-                nestedNavGraphsCode(navGraph.nestedGraphs)
+                nestedNavGraphsCode(navGraph.nestedGraphs, navGraph.externalNavGraphs)
             )
             .replace(
                 NAV_GRAPH_DEFAULT_TRANSITIONS_TYPE,
@@ -215,6 +221,9 @@ internal class SingleNavGraphWriter(
 
         if (argTypes.first != null && argTypes.second != null && argTypes.first != argTypes.second) {
             val code = StringBuilder()
+            code += "/**\n"
+            code += " * Generated to have args containing both [${importableHelper.addAndGetPlaceholder(navArgs!!.type)}] and [${argTypes.second!!.preferredSimpleName}]\n"
+            code += " **/\n"
             code += "${getGenNavArgsClassVisibility()} data class ${navGraph.name}NavArgs(\n"
             code += "${navArgumentBridgeCodeBuilder.innerNavArgsParametersCode("\tval ")}\n"
             code += "\tval startRouteArgs: ${importableHelper.addAndGetPlaceholder(argTypes.second!!)}\n"
@@ -230,7 +239,7 @@ internal class SingleNavGraphWriter(
             return "public"
         }
 
-        if (navGraph.type in setOfPublicStartParticipatingTypes) {
+        if (navGraph.annotationType in setOfPublicStartParticipatingTypes) {
             return "public"
         }
 
@@ -293,19 +302,24 @@ internal class SingleNavGraphWriter(
         }
     }
 
-    private fun navGraphDestinationsCode(destinations: List<CodeGenProcessedDestination>): String {
-        val code = StringBuilder()
-        destinations.forEachIndexed { idx, it ->
-            code += "\t\t${it.destinationImportable.simpleName}"
+    private fun navGraphDestinationsCode(
+        destinations: List<CodeGenProcessedDestination>,
+        externalDestinations: List<Importable>,
+    ): String {
+        val allDestinations = destinations.map { it.destinationImportable.simpleName } +
+                    externalDestinations.map { importableHelper.addAndGetPlaceholder(it) }
 
-            if (idx != destinations.lastIndex) {
+        val code = StringBuilder()
+        allDestinations.forEachIndexed { idx, it ->
+            code += "\t\t${it}"
+
+            if (idx != allDestinations.lastIndex) {
                 code += ",\n"
             }
         }
 
         return code.toString()
     }
-
 
     private fun ImportableHelper.requireOptInAnnotations(generatedDestinations: List<CodeGenProcessedDestination>): String {
         val requireOptInClassTypes =
@@ -319,10 +333,16 @@ internal class SingleNavGraphWriter(
         return code.toString()
     }
 
-    private fun nestedNavGraphsCode(nestedNavGraphs: List<NavGraphGenParams>): String {
-        if (nestedNavGraphs.isEmpty()) {
+    private fun nestedNavGraphsCode(
+        nestedNavGraphs: List<NavGraphGenParams>,
+        externalNestedImportables: List<ExternalRoute>
+    ): String {
+        if (nestedNavGraphs.isEmpty() && externalNestedImportables.isEmpty()) {
             return ""
         }
+
+        val allNestedGraphs = nestedNavGraphs.map { it.name } +
+                externalNestedImportables.map { importableHelper.addAndGetPlaceholder(it.generatedType) }
 
         return """
 
@@ -332,7 +352,7 @@ internal class SingleNavGraphWriter(
             )
         """.trimIndent()
             .prependIndent("\t")
-            .replace("%s1", nestedNavGraphs.joinToString(", \n\t\t") { it.name })
+            .replace("%s1", allNestedGraphs.joinToString(", \n\t\t"))
     }
 }
 

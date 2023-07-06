@@ -170,7 +170,7 @@ fun KSAnnotation.getNavArgsDelegateType(
             " of annotation ${shortName.asString()}: make sure it is a class with a primary constructor.", it)
 }
 
-private fun KSType.getNavArgsDelegateType(
+fun KSType.getNavArgsDelegateType(
     resolver: Resolver,
     navTypeSerializersByType: Map<Importable, NavTypeSerializer>
 ): NavArgsTypeWithFile? {

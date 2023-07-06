@@ -18,6 +18,7 @@
       <module name="ComposeDestinations.playground" target="17" />
       <module name="ComposeDestinations.playground-core" target="17" />
       <module name="ComposeDestinations.playground-core.main" target="17" />
+      <module name="ComposeDestinations.playground-featurex" target="17" />
       <module name="ComposeDestinations.sample" target="17" />
       <module name="ComposeDestinations.sample-wear" target="17" />
       <module name="playground-core.ComposeDestinations.playground-core.test" target="17" />

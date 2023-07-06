@@ -12,17 +12,12 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.samples.playground.R
-import com.ramcosta.samples.playground.ui.screens.destinations.AnotherTestScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.FeedDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.GoToProfileConfirmationDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
-import com.ramcosta.samples.playground.ui.screens.destinations.OtherActivityDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
-import com.ramcosta.samples.playground.ui.screens.destinations.ProfileSettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
-import com.ramcosta.samples.playground.ui.screens.destinations.TestScreen2Destination
 import com.ramcosta.samples.playground.ui.screens.destinations.TestScreen3Destination
-import com.ramcosta.samples.playground.ui.screens.destinations.TestScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
 
 @Composable
@@ -65,13 +60,6 @@ val DestinationSpec.title
             SettingsScreenDestination -> R.string.settings_screen
             FeedDestination -> R.string.feed_screen
             ThemeSettingsDestination -> R.string.theme_settings_screen
-            GoToProfileConfirmationDestination -> null
-            TestScreenDestination -> null
-            TestScreen2Destination -> null
-            TestScreen3Destination -> null
-            ProfileSettingsScreenDestination -> null
-            OtherActivityDestination -> null
-            AnotherTestScreenDestination -> null
-            else -> error("Title for destination $route not defined!")
+            else -> null
         }
     }

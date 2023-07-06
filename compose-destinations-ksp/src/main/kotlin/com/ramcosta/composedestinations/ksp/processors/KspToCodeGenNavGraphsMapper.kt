@@ -12,6 +12,7 @@ import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_DEF
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
+import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
@@ -43,21 +44,23 @@ internal class KspToCodeGenNavGraphsMapper(
             throw IllegalDestinationsSetup("Classes annotated with `@NavGraph` must be annotation classes!")
         }
 
-       primaryConstructor?.parameters?.firstOrNull {
+        primaryConstructor?.parameters?.firstOrNull {
             it.name?.asString() == "start" &&
                     it.type.toString() == "Boolean" &&
                     it.hasDefault
         }
-            ?: throw IllegalDestinationsSetup("Classes annotated with `@NavGraph` must contain " +
-                    "a single parameter like: `val start: Boolean = false`!")
+            ?: throw IllegalDestinationsSetup(
+                "Classes annotated with `@NavGraph` must contain " +
+                        "a single parameter like: `val start: Boolean = false`!"
+            )
 
         val navGraphAnnotation = if (isNavHostGraph) {
             annotations.first {
                 it.shortName.asString() == NAV_HOST_GRAPH_ANNOTATION
             }
         } else {
-             annotations.first {
-                 it.shortName.asString() == NAV_GRAPH_ANNOTATION
+            annotations.first {
+                it.shortName.asString() == NAV_GRAPH_ANNOTATION
             }
         }
 
@@ -79,12 +82,21 @@ internal class KspToCodeGenNavGraphsMapper(
             ?.map { it.toDeepLink() }
             .orEmpty()
 
+        val externalRoutesAnnotation = navGraphAnnotation
+            .findArgumentValue<KSAnnotation>("externalRoutes")
+
+        val externalNavGraphs = getExternalNavGraphs(externalRoutesAnnotation)
+        val externalDestinations = getExternalDestinations(externalRoutesAnnotation)
+        val externalStartRoute = getExternalStartRoute(externalRoutesAnnotation, externalNavGraphs, externalDestinations)
+
         val navArgs = navGraphAnnotation
             .getNavArgsDelegateType(resolver, navTypeSerializersByType)
 
         if (isNavHostGraph && navGraphDefaultTransitions == null) {
-            throw IllegalDestinationsSetup("A $NAV_HOST_GRAPH_ANNOTATION needs a non Nothing::class as defaultTransitions! " +
-                    "Use `NoTransitions` if you wish to have no animations as default for this nav graph ${simpleName.asString()}")
+            throw IllegalDestinationsSetup(
+                "A $NAV_HOST_GRAPH_ANNOTATION needs a non Nothing::class as defaultTransitions! " +
+                        "Use `NoTransitions` if you wish to have no animations as default for this nav graph ${simpleName.asString()}"
+            )
         }
 
         var parentGraphAnnotationResolved: KSType? = null
@@ -98,7 +110,8 @@ internal class KspToCodeGenNavGraphsMapper(
                     return@any false
                 }
 
-                val annotationQualifiedName = it.annotationType.resolve().declaration.qualifiedName?.asString()
+                val annotationQualifiedName =
+                    it.annotationType.resolve().declaration.qualifiedName?.asString()
                 annotationQualifiedName == NAV_GRAPH_ANNOTATION_QUALIFIED
                         || annotationQualifiedName == NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
             }.also {
@@ -127,12 +140,97 @@ internal class KspToCodeGenNavGraphsMapper(
             default = navGraphAnnotationDefaultArg,
             isNavHostGraph = isNavHostGraph,
             defaultTransitions = navGraphDefaultTransitions,
-            type = Importable(this.simpleName.asString(), this.qualifiedName!!.asString()),
+            annotationType = Importable(
+                this.simpleName.asString(),
+                this.qualifiedName!!.asString()
+            ),
             parent = parent,
             isParentStart = isParentStart,
             deepLinks = deepLinks,
             navArgs = navArgs?.type,
-            visibility = navGraphVisibility
+            visibility = navGraphVisibility,
+            externalStartRoute = externalStartRoute,
+            externalNavGraphs = externalNavGraphs,
+            externalDestinations = externalDestinations,
         )
+    }
+
+    private fun getExternalDestinations(externalRoutesAnnotation: KSAnnotation?): List<Importable> {
+        return externalRoutesAnnotation?.findArgumentValue<ArrayList<KSType>>("destinations")?.map {
+            Importable(
+                it.declaration.simpleName.asString(),
+                it.declaration.qualifiedName!!.asString()
+            )
+        }.orEmpty()
+    }
+
+    private fun KSClassDeclaration.getExternalStartRoute(
+        externalRoutes: KSAnnotation?,
+        externalNavGraphs: List<ExternalRoute>,
+        externalDestinations: List<Importable>
+    ): ExternalRoute? {
+        return externalRoutes?.findArgumentValue<KSType>("startRoute")?.let { startRoute ->
+            if ((startRoute.declaration as KSClassDeclaration).isNothing) {
+                return null
+            }
+
+            val matchingNavGraph =
+                externalNavGraphs.firstOrNull { it.generatedType.qualifiedName == startRoute.declaration.qualifiedName!!.asString() }
+            if (matchingNavGraph != null) {
+                return matchingNavGraph
+            }
+
+            val generatedType = Importable(
+                simpleName = startRoute.declaration.simpleName.asString(),
+                qualifiedName = startRoute.declaration.qualifiedName!!.asString()
+            )
+
+            if (externalDestinations.none { it.qualifiedName == generatedType.qualifiedName }) {
+                throw IllegalDestinationsSetup("`startRoute` of ${this.simpleName.asString()} is not present in the `destinations` or `navGraphs` list provided! " +
+                        "External start route must be one of the external destination or nav graphs.")
+            }
+
+            val superType =
+                (startRoute.declaration as KSClassDeclaration).superTypes.first().resolve()
+            val navArgs =
+                if (superType.declaration.simpleName.asString() == "TypedDestinationSpec") {
+                    superType.arguments.first().type!!.resolve()
+                        .getNavArgsDelegateType(resolver, navTypeSerializersByType)?.type
+                } else {
+                    null
+                }
+
+            ExternalRoute(
+                generatedType = generatedType,
+                navArgs = navArgs,
+                isDestination = true
+            )
+        }
+    }
+
+    private fun getExternalNavGraphs(externalRoutes: KSAnnotation?): List<ExternalRoute> {
+        return externalRoutes
+            ?.findArgumentValue<ArrayList<KSType>>("nestedNavGraphs")
+            ?.map { graphType ->
+                val superType =
+                    (graphType.declaration as KSClassDeclaration).superTypes.first().resolve()
+
+                val navArgs =
+                    if (superType.declaration.simpleName.asString() == "TypedNavGraphSpec") {
+                        superType.arguments.first().type!!.resolve()
+                            .getNavArgsDelegateType(resolver, navTypeSerializersByType)?.type
+                    } else {
+                        null
+                    }
+
+                ExternalRoute(
+                    generatedType = Importable(
+                        simpleName = graphType.declaration.simpleName.asString(),
+                        qualifiedName = graphType.declaration.qualifiedName!!.asString()
+                    ),
+                    navArgs = navArgs,
+                    isDestination = false
+                )
+            }.orEmpty()
     }
 }

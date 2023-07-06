@@ -103,7 +103,7 @@ internal class NavGraphsSingleObjectWriter(
             }.flatMap {
                 it.value
             }.map {
-                it.rawNavGraphGenParams.type.simpleName
+                it.rawNavGraphGenParams.annotationType.simpleName
             }
 
         if (nonUniqueFieldNames.isNotEmpty()) {

@@ -73,7 +73,7 @@ class InitialValidator(
         val defaultNavGraphs = navGraphs.filter { it.default }
         if (defaultNavGraphs.size > 1) {
             throw IllegalDestinationsSetup(
-                "${defaultNavGraphs.joinToString(",")} are" +
+                "${defaultNavGraphs.joinToString(", ") { it.annotationType.preferredSimpleName }} are" +
                         " marked as the default nav graph. Only one nav graph can be the default one!"
             )
         }
