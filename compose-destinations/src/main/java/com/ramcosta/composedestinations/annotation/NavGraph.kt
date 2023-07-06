@@ -65,6 +65,7 @@ annotation class NavGraph(
     val navArgs: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
     val defaultTransitions: KClass<out DestinationStyle.Animated> = Nothing::class,
+    val externalRoutes: ExternalRoutes = ExternalRoutes(),
     val default: Boolean = false,
     val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
 ) {

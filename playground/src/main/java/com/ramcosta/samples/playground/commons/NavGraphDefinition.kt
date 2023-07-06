@@ -8,11 +8,14 @@ import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransit
 import com.ramcosta.composedestinations.animations.defaults.NoTransitions
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.ExternalRoutes
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.NavHostGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
+import com.ramcosta.composedestinations.generated.navgraphs.FeatureXGraph
+import com.ramcosta.composedestinations.generated.navgraphs.FeatureYGraph
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.WithDefaultValueArgs
@@ -34,6 +37,13 @@ annotation class SettingsNavGraph(
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
+    externalRoutes = ExternalRoutes(
+        nestedNavGraphs = [
+            FeatureXGraph::class,
+            FeatureYGraph::class
+        ],
+//        startRoute = FeatureXGraph::class,
+    ),
     visibility = CodeGenVisibility.PUBLIC
 )
 annotation class ProfileNavGraph(
