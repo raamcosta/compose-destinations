@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
-import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 
@@ -12,19 +11,23 @@ internal class NavGraphsPrettyKdocWriter(
 
     private val minIndent = "        " // 8 spaces
 
-    fun write(
-    ): String {
+    fun write(includeLegend: Boolean = true): String {
         val sb = StringBuilder()
             .append("\n *\n")
-            .append("""
+
+        if (includeLegend) {
+            sb.append(
+                """
                  | * -------------------------------------------------------
                  | * | Legend:                                             |
                  | * | - 🗺️: Navigation graph                              |
                  | * | - 📍: Destination                                   |
                  | * | - 🏁: Marks 🗺️/📍as the start of the parent graph   |
+                 | * | - 🧩: 🗺️/📍is generated on external module          |
                  | * -------------------------------------------------------
-            """.trimMargin())
-            .append("\n *\n")
+            """.trimMargin()
+            ).append("\n *\n")
+        }
 
         topLevelGraphs.forEachIndexed { idx, it ->
             sb.appendGraphPrettyKdoc(it, 0)
@@ -48,15 +51,19 @@ internal class NavGraphsPrettyKdocWriter(
         if (navGraphTree.isParentStart == true) {
             appendStartIcon()
         }
-        append("[${importableHelper.addAndGetPlaceholder(navGraphTree.type)}]")
+        append("[${importableHelper.addAndGetPlaceholder(navGraphTree.annotationType)}]")
         appendNewLines()
 
-        navGraphTree.destinations
-            .sortedBy { if (it.navGraphInfo.start) 0 else 1 }
-            .forEachIndexed { idx, it ->
-                appendDestination(it, depth + 1)
+        val allDestinations =
+        navGraphTree.destinations.map { KdocRoute(false, it.navGraphInfo.start, Importable(it.composableName, it.composableQualifiedName), true) } +
+                navGraphTree.externalDestinations.map { KdocRoute(true, it == navGraphTree.externalStartRoute?.generatedType, it, true) }
 
-                if (idx < navGraphTree.destinations.lastIndex) {
+        allDestinations
+            .sortedBy { if (it.isStart) 0 else 1 }
+            .forEachIndexed { idx, it ->
+                appendKdocRoute(it, depth + 1)
+
+                if (idx < allDestinations.lastIndex) {
                     appendNewLines()
                 }
             }
@@ -74,19 +81,54 @@ internal class NavGraphsPrettyKdocWriter(
                     appendNewLines()
                 }
             }
+
+        if (navGraphTree.externalNavGraphs.isNotEmpty()) {
+            appendNewLines()
+        }
+
+        navGraphTree.externalNavGraphs
+            .sortedBy { if (it == navGraphTree.externalStartRoute) 0 else 1 }
+            .forEachIndexed { idx, it ->
+                appendKdocRoute(
+                    KdocRoute(
+                        true,
+                        it == navGraphTree.externalStartRoute,
+                        it.generatedType,
+                        false
+                    ),
+                    depth +1
+                )
+
+                if (idx < navGraphTree.externalNavGraphs.lastIndex) {
+                    appendNewLines()
+                }
+            }
     }
 
-    private fun StringBuilder.appendDestination(
-        destination: CodeGenProcessedDestination,
+    private fun StringBuilder.appendKdocRoute(
+        kdocRoute: KdocRoute,
         depth: Int,
     ) {
         append(" * ∙")
         appendDepthRelatedPadding(depth)
-        appendDestinationIcon(true)
-        if (destination.navGraphInfo.start) {
+        if (kdocRoute.isDestination) {
+            appendDestinationIcon(true)
+        } else {
+            appendGraphIcon(true)
+        }
+        if (kdocRoute.isStart) {
             appendStartIcon()
         }
-        append("[${importableHelper.addAndGetPlaceholder(Importable(destination.composableName, destination.composableQualifiedName))}]")
+        append("[${importableHelper.addAndGetPlaceholder(kdocRoute.type)}]")
+        if (kdocRoute.isExternal) {
+            appendExternalIcon()
+        }
+        if (!kdocRoute.isDestination) {
+            append("\n")
+            append(" * ∙")
+            appendDepthRelatedPadding(depth + 1)
+            append("[...]")
+        }
     }
 
     private fun StringBuilder.appendDepthRelatedPadding(depth: Int) {
@@ -120,4 +162,16 @@ internal class NavGraphsPrettyKdocWriter(
         append("""🏁""")
         return this
     }
+
+    private fun StringBuilder.appendExternalIcon(): StringBuilder {
+        append("""🧩""")
+        return this
+    }
+
+    private class KdocRoute(
+        val isExternal: Boolean,
+        val isStart: Boolean,
+        val type: Importable,
+        val isDestination: Boolean,
+    )
 }

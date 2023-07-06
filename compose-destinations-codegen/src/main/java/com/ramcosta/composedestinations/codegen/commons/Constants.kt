@@ -23,7 +23,7 @@ val rootNavGraphType = Importable(
     "$CORE_PACKAGE_NAME.annotation.RootNavGraph"
 )
 val rootNavGraphGenParams = RawNavGraphGenParams(
-    type = rootNavGraphType,
+    annotationType = rootNavGraphType,
     default = true,
     isNavHostGraph = true,
     defaultTransitions = Importable(
@@ -33,7 +33,10 @@ val rootNavGraphGenParams = RawNavGraphGenParams(
     deepLinks = emptyList(),
     sourceIds = emptyList(),
     navArgs = null,
-    visibility = Visibility.PUBLIC
+    visibility = Visibility.PUBLIC,
+    externalStartRoute = null,
+    externalNavGraphs = emptyList(),
+    externalDestinations = emptyList(),
 )
 
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"

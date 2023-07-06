@@ -28,7 +28,6 @@ sealed interface TypedRoute<NAV_ARGS> {
 
     /**
      * Prefix of the route - basically [route] without argument info.
-     * Meant for internal usage only.
      */
     val baseRoute: String
 

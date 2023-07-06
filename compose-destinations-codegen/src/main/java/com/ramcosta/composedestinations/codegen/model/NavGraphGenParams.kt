@@ -6,7 +6,7 @@ interface NavGraphGenParams {
     val sourceIds: List<String>
     val name: String
     val baseRoute: String
-    val type: Importable
+    val annotationType: Importable
     val default: Boolean
     val isNavHostGraph: Boolean
     val defaultTransitions: Importable?
@@ -15,10 +15,19 @@ interface NavGraphGenParams {
     val parent: Importable?
     val isParentStart: Boolean?
     val visibility: Visibility
+    val externalStartRoute: ExternalRoute?
+    val externalNavGraphs: List<ExternalRoute>
+    val externalDestinations: List<Importable>
 }
 
+data class ExternalRoute(
+    val generatedType: Importable,
+    val navArgs: RawNavArgsClass?,
+    val isDestination: Boolean
+)
+
 data class RawNavGraphGenParams(
-    override val type: Importable,
+    override val annotationType: Importable,
     override val default: Boolean,
     override val isNavHostGraph: Boolean,
     override val defaultTransitions: Importable?,
@@ -28,11 +37,13 @@ data class RawNavGraphGenParams(
     override val parent: Importable? = null,
     override val isParentStart: Boolean? = null,
     override val visibility: Visibility,
+    override val externalStartRoute: ExternalRoute?,
+    override val externalNavGraphs: List<ExternalRoute>,
+    override val externalDestinations: List<Importable>,
     private val routeOverride: String? = null,
 ): NavGraphGenParams {
-    private var nameOverride: String? = null
 
-    override val name: String get() = nameOverride ?: type.simpleName.let {
+    override val name: String = annotationType.simpleName.let {
         if (it.endsWith("NavGraph")) {
             it.replace("NavGraph", "Graph")
         } else if (it.endsWith("Graph")) {
