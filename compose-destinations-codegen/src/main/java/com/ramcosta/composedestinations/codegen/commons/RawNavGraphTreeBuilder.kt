@@ -55,7 +55,7 @@ internal fun makeNavGraphTrees(
     val rawNavGraphGenByParent: Map<Importable?, List<RawNavGraphGenParams>> =
         destinationsByNavGraphParams.keys.groupBy { it.parent }
 
-    return destinationsByNavGraphParams.keys
+    return (navGraphs + destinationsByNavGraphParams.keys).toSet()
         .filter { it.parent == null }
         .map {
             it.makeGraphTree(
