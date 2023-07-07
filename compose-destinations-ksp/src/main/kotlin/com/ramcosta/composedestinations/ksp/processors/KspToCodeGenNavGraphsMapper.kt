@@ -18,6 +18,7 @@ import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 import com.ramcosta.composedestinations.ksp.commons.MutableKSFileSourceMapper
 import com.ramcosta.composedestinations.ksp.commons.findActualClassDeclaration
+import com.ramcosta.composedestinations.ksp.commons.findAllRequireOptInAnnotations
 import com.ramcosta.composedestinations.ksp.commons.findArgumentValue
 import com.ramcosta.composedestinations.ksp.commons.getNavArgsDelegateType
 import com.ramcosta.composedestinations.ksp.commons.isNothing
@@ -154,11 +155,18 @@ internal class KspToCodeGenNavGraphsMapper(
         )
     }
 
-    private fun getExternalDestinations(externalRoutesAnnotation: KSAnnotation?): List<Importable> {
+    private fun getExternalDestinations(externalRoutesAnnotation: KSAnnotation?): List<ExternalRoute> {
         return externalRoutesAnnotation?.findArgumentValue<ArrayList<KSType>>("destinations")?.map {
-            Importable(
-                it.declaration.simpleName.asString(),
-                it.declaration.qualifiedName!!.asString()
+            ExternalRoute(
+                generatedType = Importable(
+                    it.declaration.simpleName.asString(),
+                    it.declaration.qualifiedName!!.asString()
+                ),
+                // normal external destinations don't need this info, we can not populate it
+                // we will do that though for the external start route if that exists
+                navArgs = null,
+                isDestination = true,
+                requireOptInAnnotationTypes = it.declaration.findAllRequireOptInAnnotations()
             )
         }.orEmpty()
     }
@@ -166,7 +174,7 @@ internal class KspToCodeGenNavGraphsMapper(
     private fun KSClassDeclaration.getExternalStartRoute(
         externalRoutes: KSAnnotation?,
         externalNavGraphs: List<ExternalRoute>,
-        externalDestinations: List<Importable>
+        externalDestinations: List<ExternalRoute>
     ): ExternalRoute? {
         return externalRoutes?.findArgumentValue<KSType>("startRoute")?.let { startRoute ->
             if ((startRoute.declaration as KSClassDeclaration).isNothing) {
@@ -184,7 +192,7 @@ internal class KspToCodeGenNavGraphsMapper(
                 qualifiedName = startRoute.declaration.qualifiedName!!.asString()
             )
 
-            if (externalDestinations.none { it.qualifiedName == generatedType.qualifiedName }) {
+            if (externalDestinations.none { it.generatedType.qualifiedName == generatedType.qualifiedName }) {
                 throw IllegalDestinationsSetup("`startRoute` of ${this.simpleName.asString()} is not present in the `destinations` or `navGraphs` list provided! " +
                         "External start route must be one of the external destination or nav graphs.")
             }
@@ -202,7 +210,8 @@ internal class KspToCodeGenNavGraphsMapper(
             ExternalRoute(
                 generatedType = generatedType,
                 navArgs = navArgs,
-                isDestination = true
+                isDestination = true,
+                startRoute.declaration.findAllRequireOptInAnnotations()
             )
         }
     }
@@ -228,7 +237,8 @@ internal class KspToCodeGenNavGraphsMapper(
                         qualifiedName = graphType.declaration.qualifiedName!!.asString()
                     ),
                     navArgs = navArgs,
-                    isDestination = false
+                    isDestination = false,
+                    graphType.declaration.findAllRequireOptInAnnotations()
                 )
             }.orEmpty()
     }

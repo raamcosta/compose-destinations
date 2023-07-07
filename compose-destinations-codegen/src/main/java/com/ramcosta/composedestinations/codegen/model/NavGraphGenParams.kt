@@ -17,13 +17,14 @@ interface NavGraphGenParams {
     val visibility: Visibility
     val externalStartRoute: ExternalRoute?
     val externalNavGraphs: List<ExternalRoute>
-    val externalDestinations: List<Importable>
+    val externalDestinations: List<ExternalRoute>
 }
 
 data class ExternalRoute(
     val generatedType: Importable,
     val navArgs: RawNavArgsClass?,
-    val isDestination: Boolean
+    val isDestination: Boolean,
+    val requireOptInAnnotationTypes: List<Importable>
 )
 
 data class RawNavGraphGenParams(
@@ -39,7 +40,7 @@ data class RawNavGraphGenParams(
     override val visibility: Visibility,
     override val externalStartRoute: ExternalRoute?,
     override val externalNavGraphs: List<ExternalRoute>,
-    override val externalDestinations: List<Importable>,
+    override val externalDestinations: List<ExternalRoute>,
     private val routeOverride: String? = null,
 ): NavGraphGenParams {
 

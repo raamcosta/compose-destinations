@@ -39,6 +39,7 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_VISIBILITY_P
 import com.ramcosta.composedestinations.codegen.templates.NESTED_NAV_GRAPHS
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.USER_NAV_GRAPH_ANNOTATION
+import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 import com.ramcosta.composedestinations.codegen.templates.moduleNavGraphTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
@@ -88,7 +89,7 @@ internal class SingleNavGraphWriter(
             )
             .replace(
                 NAV_GRAPH_DESTINATIONS,
-                navGraphDestinationsCode(navGraph.destinations, navGraph.externalDestinations)
+                navGraphDestinationsCode(navGraph.destinations, navGraph.externalDestinations.map { it.generatedType })
             )
             .replace(
                 NAV_GRAPH_KDOC,
@@ -96,7 +97,7 @@ internal class SingleNavGraphWriter(
             )
             .replace(
                 REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER,
-                importableHelper.requireOptInAnnotations(navGraph.destinations)
+                importableHelper.requireOptInAnnotations(navGraph.destinations.flatMap { it.requireOptInAnnotationTypes } + navGraph.requireOptInAnnotationTypes)
             )
             .replace(
                 NESTED_NAV_GRAPHS,
@@ -115,7 +116,12 @@ internal class SingleNavGraphWriter(
                 navGraph.defaultTransitions?.let {
                     importableHelper.addAndGetPlaceholder(it)
                 } ?: "null"
-            )
+            ).let {
+                if (navGraph.destinations.isEmpty()) {
+                    importableHelper.remove(setOfImportable("${codeGenBasePackageName}.destinations.*"))
+                }
+                it
+            }
 
         codeGenerator.makeFile(
             packageName = navGraphsPackageName,
@@ -321,12 +327,10 @@ internal class SingleNavGraphWriter(
         return code.toString()
     }
 
-    private fun ImportableHelper.requireOptInAnnotations(generatedDestinations: List<CodeGenProcessedDestination>): String {
-        val requireOptInClassTypes =
-            generatedDestinations.flatMapTo(mutableSetOf()) { it.requireOptInAnnotationTypes }
+    private fun ImportableHelper.requireOptInAnnotations(requireOptInClassTypes: List<Importable>): String {
         val code = StringBuilder()
 
-        requireOptInClassTypes.forEach { annotationType ->
+        requireOptInClassTypes.toSet().forEach { annotationType ->
             code += "@${addAndGetPlaceholder(annotationType)}\n"
         }
 

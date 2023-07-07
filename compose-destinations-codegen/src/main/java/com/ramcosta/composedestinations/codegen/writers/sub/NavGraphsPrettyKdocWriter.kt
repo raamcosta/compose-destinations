@@ -56,7 +56,7 @@ internal class NavGraphsPrettyKdocWriter(
 
         val allDestinations =
         navGraphTree.destinations.map { KdocRoute(false, it.navGraphInfo.start, Importable(it.composableName, it.composableQualifiedName), true) } +
-                navGraphTree.externalDestinations.map { KdocRoute(true, it == navGraphTree.externalStartRoute?.generatedType, it, true) }
+                navGraphTree.externalDestinations.map { KdocRoute(true, it.generatedType == navGraphTree.externalStartRoute?.generatedType, it.generatedType, true) }
 
         allDestinations
             .sortedBy { if (it.isStart) 0 else 1 }
