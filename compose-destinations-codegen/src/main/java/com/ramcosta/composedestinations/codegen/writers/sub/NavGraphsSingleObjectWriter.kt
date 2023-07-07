@@ -14,6 +14,7 @@ import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PRETTY_KDOC_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
@@ -75,6 +76,12 @@ internal class NavGraphsSingleObjectWriter(
             sourceCode = navGraphsObjectTemplate.sourceCode
                 .replace(NAV_GRAPHS_PRETTY_KDOC_PLACEHOLDER, NavGraphsPrettyKdocWriter(importableHelper, topLevelGraphs).write())
                 .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(flattenGraphs))
+                .let {
+                    if (generatedDestinations.isEmpty()) {
+                        importableHelper.remove(setOfImportable("\"${codeGenBasePackageName}.destinations.*"))
+                    }
+                    it
+                }
         )
     }
 
