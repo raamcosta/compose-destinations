@@ -35,12 +35,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
     buildFeatures {
@@ -72,6 +72,11 @@ android {
         arg("compose-destinations.codeGenPackageName", "com.ramcosta.samples.playground.ui.screens")
     }
 }
+
+kotlin {
+    jvmToolchain(8)
+}
+
 
 dependencies {
 
