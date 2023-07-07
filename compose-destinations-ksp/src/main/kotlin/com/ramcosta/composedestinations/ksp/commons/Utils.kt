@@ -43,6 +43,7 @@ val ignoreAnnotations = listOf(
     "Composable",
     "Target",
     "Retention",
+    "Suppress",
     "MustBeDocumented",
     "OptIn",
     "RequiresOptIn"

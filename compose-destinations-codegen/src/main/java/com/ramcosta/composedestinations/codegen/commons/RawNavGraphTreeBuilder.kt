@@ -203,7 +203,7 @@ private fun RawNavGraphGenParams.calculateStartRouteNavArgsTree(
         )
     }
 
-    val startDestination = destinations.firstOrNull { it.navGraphInfo.start }
+    val startDestination = destinations.find { it.navGraphInfo.start }
     if (startDestination != null) {
         return StartRouteArgsTree(
             navArgsClass = startDestination.navArgsClass,
@@ -212,7 +212,7 @@ private fun RawNavGraphGenParams.calculateStartRouteNavArgsTree(
         )
     }
 
-    val nestedRawGraphTree = nestedGraphs.firstOrNull { it.isParentStart == true }
+    val nestedRawGraphTree = nestedGraphs.find { it.isParentStart == true }
         ?: throw IllegalDestinationsSetup(
             "NavGraph '${annotationType.preferredSimpleName}' doesn't have any start route. " +
                     "Use corresponding annotation with `start = true` in the Destination or nested NavGraph you want to be the start of this graph!"

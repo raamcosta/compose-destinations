@@ -14,9 +14,9 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 annotation class NavHostGraph(
-    val defaultTransitions: KClass<out NavHostAnimatedDestinationStyle>,
-    val route: String = NavGraph.ANNOTATION_NAME,
     val default: Boolean = false,
+    val defaultTransitions: KClass<out NavHostAnimatedDestinationStyle> = NoTransitions::class,
+    val route: String = NavGraph.ANNOTATION_NAME,
     val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
 )
 
@@ -26,10 +26,7 @@ annotation class NavHostGraph(
  * If you're using it (i.e, you're not defining your own "NavGraph" annotation with `default = true`),
  * then you must annotate the start destination (or nav graph) with `@RootNavGraph(start = true)`.
  */
-@NavHostGraph(
-    defaultTransitions = NoTransitions::class,
-    default = true
-)
+@NavHostGraph(default = true)
 annotation class RootNavGraph(
     val start: Boolean = false
 )

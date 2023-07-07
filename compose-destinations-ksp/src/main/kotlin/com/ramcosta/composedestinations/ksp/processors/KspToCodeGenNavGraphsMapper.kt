@@ -82,8 +82,7 @@ internal class KspToCodeGenNavGraphsMapper(
             ?.map { it.toDeepLink() }
             .orEmpty()
 
-        val externalRoutesAnnotation = navGraphAnnotation
-            .findArgumentValue<KSAnnotation>("externalRoutes")
+        val externalRoutesAnnotation = annotations.find { it.shortName.asString() == "ExternalRoutes" }
 
         val externalNavGraphs = getExternalNavGraphs(externalRoutesAnnotation)
         val externalDestinations = getExternalDestinations(externalRoutesAnnotation)
