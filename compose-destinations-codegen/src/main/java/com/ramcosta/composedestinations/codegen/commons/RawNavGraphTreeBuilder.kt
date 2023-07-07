@@ -48,8 +48,8 @@ internal fun makeNavGraphTrees(
     val navGraphsByType = navGraphs.associateBy { it.annotationType }
 
     val destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<CodeGenProcessedDestination>> =
-        generatedDestinations.groupBy {
-            navGraphsByType[it.navGraphInfo.graphType] ?: rootNavGraphGenParams
+        generatedDestinations.groupBy { destination ->
+            navGraphsByType[destination.navGraphInfo.graphType] ?: navGraphs.find { it.default } ?: rootNavGraphGenParams
         }
 
     val rawNavGraphGenByParent: Map<Importable?, List<RawNavGraphGenParams>> =
