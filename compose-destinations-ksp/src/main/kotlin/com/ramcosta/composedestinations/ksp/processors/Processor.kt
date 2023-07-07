@@ -38,7 +38,10 @@ class Processor(
 
         val composableDestinations = resolver.getComposableDestinations()
         val annotatedActivityDestinations = resolver.getActivityDestinations()
-        if (!composableDestinations.iterator().hasNext() && !annotatedActivityDestinations.iterator().hasNext()) {
+        if (!composableDestinations.iterator().hasNext() &&
+            !annotatedActivityDestinations.iterator().hasNext() &&
+                    !resolver.getSymbolsWithAnnotation("com.ramcosta.composedestinations.annotation.ExternalRoutes").iterator().hasNext()
+        ) {
             return emptyList()
         }
 
