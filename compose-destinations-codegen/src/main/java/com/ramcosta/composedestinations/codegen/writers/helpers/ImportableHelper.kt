@@ -20,6 +20,11 @@ class ImportableHelper(
         priorityImports.add(element)
     }
 
+    fun remove(importables: Set<Importable>) {
+        imports.removeAll(importables)
+        priorityImports.removeAll(importables)
+    }
+
     fun addAndGetPlaceholder(importable: Importable): String {
         imports.add(importable)
         return importable.qualifiedName
