@@ -82,8 +82,8 @@ internal fun RawNavGraphGenParams.makeGraphTree(
         startRouteArgs = calculateNavArgsAndValidate(destinations, nestedGraphs),
         requireOptInAnnotationTypes = calculateRequireOptInAnnotationTypes(
             destinations,
-            nestedGraphs
-        ),
+            nestedGraphs,
+        ) + (externalDestinations.flatMap{ it.requireOptInAnnotationTypes } + externalNavGraphs.flatMap { it.requireOptInAnnotationTypes }).toSet(),
         nestedGraphs = nestedGraphs,
     ).also {
         if (visibility == Visibility.PUBLIC) {
@@ -231,7 +231,7 @@ private fun RawNavGraphGenParams.calculateStartRouteNavArgsTree(
 @JvmName("requireOptInAnnotationClassTypesRawNavGraphTree")
 private fun List<RawNavGraphTree>.requireOptInAnnotationClassTypes(): MutableSet<Importable> {
     return this.flatMapTo(mutableSetOf()) {
-        it.requireOptInAnnotationClassTypes()
+        it.requireOptInAnnotationClassTypes() + it.externalNavGraphs.flatMap { it.requireOptInAnnotationTypes }
     }
 }
 

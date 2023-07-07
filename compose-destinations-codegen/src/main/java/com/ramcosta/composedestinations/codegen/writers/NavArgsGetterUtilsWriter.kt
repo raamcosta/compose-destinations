@@ -48,12 +48,13 @@ internal class NavArgsGettersWriter(
             importableHelper = importableHelper,
             sourceCode = navArgsGettersTemplate.sourceCode
                 .replace(NAV_ARGS_METHOD_WHEN_CASES, navArgsMethodWhenCases(destinationsWithNavArgs, navGraphsWithNavArgs))
-                .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinationsWithNavArgs))
+                .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinationsWithNavArgs, navGraphsWithNavArgs))
         )
     }
 
-    private fun requireOptInAnnotations(destinationsWithNavArgs: List<CodeGenProcessedDestination>): String {
-        val requireOptInClassTypes = destinationsWithNavArgs.flatMapTo(mutableSetOf()) { it.requireOptInAnnotationTypes }
+    private fun requireOptInAnnotations(destinationsWithNavArgs: List<CodeGenProcessedDestination>, navGraphs: List<RawNavGraphTree>): String {
+        val requireOptInClassTypes = destinationsWithNavArgs.flatMapTo(mutableSetOf()) { it.requireOptInAnnotationTypes } +
+                navGraphs.flatMap { it.requireOptInAnnotationTypes }
         val code = StringBuilder()
 
         requireOptInClassTypes.forEach { annotationType ->
