@@ -8,6 +8,8 @@ import kotlin.reflect.KClass
 /**
  * TODO RACOSTA
  */
+@Target(AnnotationTarget.ANNOTATION_CLASS)
+@Retention(AnnotationRetention.SOURCE)
 annotation class ExternalRoutes(
     val destinations: Array<KClass<out DestinationSpec>> = [],
     val nestedNavGraphs: Array<KClass<out NavGraphSpec>> = [],

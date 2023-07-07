@@ -36,7 +36,7 @@ internal annotation class FeatureYNavGraph(
 )
 
 @FeatureYNavGraph(start = true)
-@Destination()
+@Destination
 @Composable
 internal fun FeatureYHome() {
     Text("FeatureY Home screen")

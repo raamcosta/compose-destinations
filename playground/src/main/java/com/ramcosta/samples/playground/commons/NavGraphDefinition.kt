@@ -5,7 +5,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransitions
-import com.ramcosta.composedestinations.animations.defaults.NoTransitions
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.ExternalRoutes
@@ -37,14 +36,14 @@ annotation class SettingsNavGraph(
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
-    externalRoutes = ExternalRoutes(
-        nestedNavGraphs = [
-            FeatureXGraph::class,
-            FeatureYGraph::class
-        ],
-//        startRoute = FeatureXGraph::class,
-    ),
     visibility = CodeGenVisibility.PUBLIC
+)
+@ExternalRoutes(
+    nestedNavGraphs = [
+        FeatureXGraph::class,
+        FeatureYGraph::class
+    ],
+//        startRoute = FeatureXGraph::class,
 )
 annotation class ProfileNavGraph(
     val start: Boolean = false
@@ -55,7 +54,6 @@ annotation class ProfileNavGraph(
 }
 
 @NavHostGraph(
-    defaultTransitions = NoTransitions::class,
     visibility = CodeGenVisibility.INTERNAL
 )
 annotation class MyTopLevelNavGraph(
