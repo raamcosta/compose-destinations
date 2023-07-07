@@ -38,6 +38,11 @@ import kotlin.reflect.KClass
  * Annotation classes annotated with this *MUST* have a single parameter named "start"
  * with a default value of "false". This is enforced at compile time by the KSP task.
  *
+ * @param default pass true, if you want all Destination annotated Composables that are not
+ * annotated with a "NavGraph" annotation to be considered as part of this navigation graph.
+ * Basically, it will replace the default `@RootNavGraph` that usually takes this role.
+ * You will still need to use it once in the start destination (or nav graph), like
+ * `@YourNavGraph(start = true)`.
  * @param navArgs class with a primary constructor where all navigation arguments specific
  * to this navigation graph are to be defined. Note that these nav arguments will be available on
  * the start destination by using `argsFrom` function of the generated Navigation graph.
@@ -51,22 +56,16 @@ import kotlin.reflect.KClass
  * @param route unique id name of the nav graph used to register it in the `DestinationsNavHost`.
  * By default the name of the annotation class will be used removing "NavGraph" (case insensitive)
  * and changing it to snake case.
- * @param default pass true, if you want all Destination annotated Composables that are not
- * annotated with a "NavGraph" annotation to be considered as part of this navigation graph.
- * Basically, it will replace the default `@RootNavGraph` that usually takes this role.
- * You will still need to use it once in the start destination (or nav graph), like
- * `@YourNavGraph(start = true)`.
  * @param visibility [CodeGenVisibility] of the corresponding generated NavGraph object.
  * Useful to control what the current module exposes to other modules. By default, it is public.
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 annotation class NavGraph(
-    val route: String = ANNOTATION_NAME,
+    val default: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
     val defaultTransitions: KClass<out DestinationStyle.Animated> = Nothing::class,
-    val externalRoutes: ExternalRoutes = ExternalRoutes(),
-    val default: Boolean = false,
+    val route: String = ANNOTATION_NAME,
     val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
 ) {
     companion object {

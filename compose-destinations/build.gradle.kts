@@ -53,4 +53,5 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
     api(libs.compose.navigation)
+    // TODO RACOSTA check lintPublish for rules like adding start: Boolean = false to NavGraphs
 }
