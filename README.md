@@ -23,7 +23,7 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
 - Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
 - Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
 - Easy deep linking to screens
-- Wear OS support (NEW since versions 1.x.30!)
+- Wear OS support (since versions 1.x.30!)
 - All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
 
 For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
@@ -250,9 +250,8 @@ applicationVariants.all {
 
 ## About
 
-The library is now in its beta stage, which means that I am happy
-with the core feature set. If the APIs change, I will provide a migration path.
-Please do try it and open issues if you find any.
+The library is no longer in general beta as of 1.9.50. 
+Version 2 is coming out very soon with API improvements, quality-of-life improvements, and support for mandatory arguments when navigating to a Navigation graph.
 If you're interested in contributing, reach out via [twitter DM](https://twitter.com/raamcosta).
 
 Any feedback and contributions are highly appreciated!
