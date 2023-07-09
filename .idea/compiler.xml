@@ -8,19 +8,19 @@
       <module name="ComposeDestinations.buildSrc.test" target="17" />
       <module name="ComposeDestinations.compose-destinations" target="17" />
       <module name="ComposeDestinations.compose-destinations-animations" target="17" />
-      <module name="ComposeDestinations.compose-destinations-codegen" target="17" />
-      <module name="ComposeDestinations.compose-destinations-codegen.main" target="17" />
-      <module name="ComposeDestinations.compose-destinations-codegen.test" target="17" />
-      <module name="ComposeDestinations.compose-destinations-ksp" target="17" />
-      <module name="ComposeDestinations.compose-destinations-ksp.main" target="17" />
-      <module name="ComposeDestinations.compose-destinations-ksp.test" target="17" />
-      <module name="ComposeDestinations.compose-destinations-wear" target="17" />
-      <module name="ComposeDestinations.playground" target="17" />
-      <module name="ComposeDestinations.playground-core" target="17" />
-      <module name="ComposeDestinations.playground-core.main" target="17" />
-      <module name="ComposeDestinations.sample" target="17" />
+      <module name="ComposeDestinations.compose-destinations-codegen" target="11" />
+      <module name="ComposeDestinations.compose-destinations-codegen.main" target="11" />
+      <module name="ComposeDestinations.compose-destinations-codegen.test" target="11" />
+      <module name="ComposeDestinations.compose-destinations-ksp" target="11" />
+      <module name="ComposeDestinations.compose-destinations-ksp.main" target="11" />
+      <module name="ComposeDestinations.compose-destinations-ksp.test" target="11" />
+      <module name="ComposeDestinations.compose-destinations-wear" target="11" />
+      <module name="ComposeDestinations.playground" target="11" />
+      <module name="ComposeDestinations.playground-core" target="11" />
+      <module name="ComposeDestinations.playground-core.main" target="11" />
+      <module name="ComposeDestinations.sample" target="11" />
       <module name="ComposeDestinations.sample-wear" target="17" />
-      <module name="playground-core.ComposeDestinations.playground-core.test" target="17" />
+      <module name="playground-core.ComposeDestinations.playground-core.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
