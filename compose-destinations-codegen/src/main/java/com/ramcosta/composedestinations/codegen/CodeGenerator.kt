@@ -2,11 +2,23 @@
 
 package com.ramcosta.composedestinations.codegen
 
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.firstTypeInfoArg
+import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayListTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.sanitizePackageName
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.model.*
-import com.ramcosta.composedestinations.codegen.servicelocator.*
-import java.util.*
+import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
+import com.ramcosta.composedestinations.codegen.model.RawDestinationGenParams
+import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
+import com.ramcosta.composedestinations.codegen.servicelocator.ServiceLocatorAccessor
+import com.ramcosta.composedestinations.codegen.servicelocator.customNavTypeWriter
+import com.ramcosta.composedestinations.codegen.servicelocator.defaultKtxSerializableNavTypeSerializerWriter
+import com.ramcosta.composedestinations.codegen.servicelocator.destinationWithNavArgsMapper
+import com.ramcosta.composedestinations.codegen.servicelocator.destinationsWriter
+import com.ramcosta.composedestinations.codegen.servicelocator.initialValidator
+import com.ramcosta.composedestinations.codegen.servicelocator.moduleOutputWriter
+import java.util.Locale
 
 private const val DEFAULT_GEN_PACKAGE_NAME = "com.ramcosta.composedestinations.generated"
 internal lateinit var codeGenBasePackageName: String
@@ -42,10 +54,10 @@ class CodeGenerator(
 
     private fun initConfigurationValues() {
         moduleName = codeGenConfig.moduleName?.replaceFirstChar { it.uppercase(Locale.US) } ?: ""
-        val defaultPackageName = DEFAULT_GEN_PACKAGE_NAME + if (moduleName.isEmpty()) {
-            ""
+        val defaultPackageName = if (moduleName.isEmpty()) {
+            DEFAULT_GEN_PACKAGE_NAME
         } else {
-            ".$moduleName".lowercase()
+            "$DEFAULT_GEN_PACKAGE_NAME.${moduleName.lowercase()}"
         }
         codeGenBasePackageName = codeGenConfig.packageName?.sanitizePackageName() ?: defaultPackageName
     }
