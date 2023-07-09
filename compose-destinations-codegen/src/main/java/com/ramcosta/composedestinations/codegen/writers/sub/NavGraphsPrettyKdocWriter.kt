@@ -52,11 +52,39 @@ internal class NavGraphsPrettyKdocWriter(
             appendStartIcon()
         }
         append("[${importableHelper.addAndGetPlaceholder(navGraphTree.annotationType)}]")
-        appendNewLines()
 
+        addDestinations(navGraphTree, depth)
+
+        addNestedNavGraphs(navGraphTree, depth)
+
+        addExternalNavGraphs(navGraphTree, depth)
+    }
+
+    private fun StringBuilder.addDestinations(
+        navGraphTree: RawNavGraphTree,
+        depth: Int
+    ) {
         val allDestinations =
-        navGraphTree.destinations.map { KdocRoute(false, it.navGraphInfo.start, Importable(it.composableName, it.composableQualifiedName), true) } +
-                navGraphTree.externalDestinations.map { KdocRoute(true, it.generatedType == navGraphTree.externalStartRoute?.generatedType, it.generatedType, true) }
+            navGraphTree.destinations.map {
+                KdocRoute(
+                    false,
+                    it.navGraphInfo.start,
+                    Importable(it.composableName, it.composableQualifiedName),
+                    true
+                )
+            } +
+                    navGraphTree.externalDestinations.map {
+                        KdocRoute(
+                            true,
+                            it.generatedType == navGraphTree.externalStartRoute?.generatedType,
+                            it.generatedType,
+                            true
+                        )
+                    }
+
+        if (allDestinations.isNotEmpty()) {
+            appendNewLines()
+        }
 
         allDestinations
             .sortedBy { if (it.isStart) 0 else 1 }
@@ -67,7 +95,12 @@ internal class NavGraphsPrettyKdocWriter(
                     appendNewLines()
                 }
             }
+    }
 
+    private fun StringBuilder.addNestedNavGraphs(
+        navGraphTree: RawNavGraphTree,
+        depth: Int
+    ) {
         if (navGraphTree.nestedGraphs.isNotEmpty()) {
             appendNewLines()
         }
@@ -81,7 +114,12 @@ internal class NavGraphsPrettyKdocWriter(
                     appendNewLines()
                 }
             }
+    }
 
+    private fun StringBuilder.addExternalNavGraphs(
+        navGraphTree: RawNavGraphTree,
+        depth: Int
+    ) {
         if (navGraphTree.externalNavGraphs.isNotEmpty()) {
             appendNewLines()
         }
@@ -96,7 +134,7 @@ internal class NavGraphsPrettyKdocWriter(
                         it.generatedType,
                         false
                     ),
-                    depth +1
+                    depth + 1
                 )
 
                 if (idx < navGraphTree.externalNavGraphs.lastIndex) {
