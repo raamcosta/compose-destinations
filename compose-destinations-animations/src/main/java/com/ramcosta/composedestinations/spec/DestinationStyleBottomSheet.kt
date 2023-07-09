@@ -22,15 +22,18 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
  * top level Composable.
  * Example:
  * ```
- * val navController = rememberAnimatedNavController()
+ * val navController = rememberNavController()
  * val bottomSheetNavigator = rememberBottomSheetNavigator()
  * navController.navigatorProvider += bottomSheetNavigator
  *
  * ModalBottomSheetLayout(
  *     bottomSheetNavigator = bottomSheetNavigator
  * ) {
- *     //YOUR TOP LEVEL COMPOSABLE LIKE `DestinationsNavHost` or `Scaffold`
- * }
+ *     //...
+ *     DestinationsNavHost(
+ *         engine = rememberAnimatedNavHostEngine(),
+ *         navController = navController
+ *     )
  * ```
  */
 object DestinationStyleBottomSheet : DestinationStyle
