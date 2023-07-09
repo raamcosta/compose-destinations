@@ -250,10 +250,11 @@ applicationVariants.all {
 
 ## About
 
-The library is no longer in general beta as of 1.9.50. 
-Version 2 is coming out very soon with API improvements, quality-of-life improvements, and support for mandatory arguments when navigating to a Navigation graph.
-If you're interested in contributing, reach out via [twitter DM](https://twitter.com/raamcosta).
+The library is no longer in general beta as of 1.9.50.
 
+Version 2 is coming out very soon with API improvements, quality-of-life improvements, and support for mandatory arguments when navigating to a Navigation graph.
+
+If you're interested in contributing, reach out via [twitter DM](https://twitter.com/raamcosta).
 Any feedback and contributions are highly appreciated!
 
 **If you like the library, consider starring and sharing it with your colleagues.**
