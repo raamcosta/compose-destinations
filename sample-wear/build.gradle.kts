@@ -54,6 +54,10 @@ android {
     }
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+
 dependencies {
     implementation(project(mapOf("path" to ":compose-destinations-wear")))
     ksp(project(":compose-destinations-ksp"))

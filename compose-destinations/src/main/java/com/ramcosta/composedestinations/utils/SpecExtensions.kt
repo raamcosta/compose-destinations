@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.spec.DestinationSpec
@@ -106,8 +107,8 @@ fun NavController.isRouteOnBackStack(route: Route): Boolean {
  */
 @Composable
 fun NavController.isRouteOnBackStackAsState(route: Route): State<Boolean> {
-    return currentBackStackEntryFlow.map {
-        isRouteOnBackStack(route)
+    return remember(currentBackStackEntryFlow) {
+        currentBackStackEntryFlow.map { isRouteOnBackStack(route) }
     }.collectAsState(initial = isRouteOnBackStack(route))
 }
 
