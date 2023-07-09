@@ -5,12 +5,15 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
-import com.ramcosta.composedestinations.DefaultNavHostEngine
+import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
+import com.ramcosta.composedestinations.scope.AnimatedNavGraphBuilderDestinationScope
+import com.ramcosta.composedestinations.scope.AnimatedNavGraphBuilderDestinationScopeImpl
 import com.ramcosta.composedestinations.scope.NavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.scope.NavGraphBuilderDestinationScopeImpl
 import com.ramcosta.composedestinations.spec.ActivityDestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.addActivityDestination
 
 /**
  * Like [androidx.navigation.compose.composable] but accepts
@@ -29,23 +32,60 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
  * }
  * ```
  */
+@OptIn(InternalDestinationsApi::class)
 fun <T> NavGraphBuilder.composable(
     destination: DestinationSpec<T>,
-    content: @Composable NavGraphBuilderDestinationScope<T>.() -> Unit
-) = with(destination) {
-    composable(
-        route,
-        arguments,
-        deepLinks
-    ) {
-        val scope = remember(it) {
-            NavGraphBuilderDestinationScopeImpl.Default(
-                destination,
-                it,
-            )
+    content: @Composable AnimatedNavGraphBuilderDestinationScope<T>.() -> Unit
+) {
+    when (val style = destination.style) {
+        is DestinationStyle.Runtime,
+        is DestinationStyle.Default -> {
+            composable(
+                route = destination.route,
+                arguments = destination.arguments,
+                deepLinks = destination.deepLinks
+            ) {
+                val scope = remember {
+                    AnimatedNavGraphBuilderDestinationScopeImpl(
+                        destination,
+                        it,
+                        this
+                    )
+                }
+
+                scope.content()
+            }
         }
 
-        scope.content()
+        is DestinationStyle.Animated -> with(style) {
+            composable(
+                route = destination.route,
+                arguments = destination.arguments,
+                deepLinks = destination.deepLinks,
+                enterTransition = { enterTransition() },
+                exitTransition = { exitTransition() },
+                popEnterTransition = { popEnterTransition() },
+                popExitTransition = { popExitTransition() }
+            ) {
+                val scope = remember {
+                    AnimatedNavGraphBuilderDestinationScopeImpl(
+                        destination,
+                        it,
+                        this
+                    )
+                }
+
+                scope.content()
+            }
+        }
+
+        is DestinationStyle.Dialog -> {
+            throw IllegalArgumentException("You need to use `dialogComposable` for Dialog destinations!")
+        }
+
+        is DestinationStyle.Activity -> {
+            throw IllegalArgumentException("You need to use `activity` for Activity destinations!")
+        }
     }
 }
 
@@ -109,6 +149,6 @@ fun <T> NavGraphBuilder.dialogComposable(
  */
 fun <T> NavGraphBuilder.activity(
     destination: ActivityDestinationSpec<T>,
-) = with(DefaultNavHostEngine.Companion) {
+) {
     addActivityDestination(destination)
 }

@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.scope
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -11,8 +10,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.resultBackNavigator
-import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.result.resultRecipient
+import com.ramcosta.composedestinations.spec.DestinationSpec
 
 @Immutable
 interface NavGraphBuilderDestinationScope<T> {
@@ -61,7 +60,6 @@ inline fun <reified D : DestinationSpec<*>, reified R> NavGraphBuilderDestinatio
  * if you're using the "animations-core" you can use this Scope as a receiver
  * of your Bottom Sheet styled Composable
  */
-@ExperimentalAnimationApi
 @Immutable
 interface AnimatedNavGraphBuilderDestinationScope<T> : NavGraphBuilderDestinationScope<T>,
     AnimatedVisibilityScope

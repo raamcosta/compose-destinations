@@ -64,7 +64,7 @@ val CORE_INT_ARRAY_LIST_NAV_TYPE = Importable("DestinationsIntArrayListNavType",
 val CORE_LONG_ARRAY_LIST_NAV_TYPE = Importable("DestinationsLongArrayListNavType", "$CORE_PACKAGE_NAME.navargs.primitives.arraylist.DestinationsLongArrayListNavType")
 val CORE_STRING_ARRAY_LIST_NAV_TYPE = Importable("DestinationsStringArrayListNavType", "$CORE_PACKAGE_NAME.navargs.primitives.arraylist.DestinationsStringArrayListNavType")
 const val CORE_DIRECTION = "Direction"
-const val CORE_DESTINATION_ANIMATION_STYLE = "DestinationStyleAnimated"
+const val CORE_DESTINATION_ANIMATION_STYLE = "DestinationStyle.Animated"
 const val CORE_BOTTOM_SHEET_DESTINATION_STYLE = "DestinationStyleBottomSheet"
 
 private const val EXPERIMENTAL_ANIMATION_API_SIMPLE_NAME = "ExperimentalAnimationApi"

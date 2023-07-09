@@ -1,100 +1,15 @@
 package com.ramcosta.composedestinations.animations.utils
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
-import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import com.ramcosta.composedestinations.animations.scope.AnimatedNavGraphBuilderDestinationScopeImpl
 import com.ramcosta.composedestinations.animations.scope.BottomSheetNavGraphBuilderDestinationScopeImpl
-import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
-import com.ramcosta.composedestinations.scope.AnimatedNavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.scope.BottomSheetNavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
-import com.ramcosta.composedestinations.spec.DestinationStyleAnimated
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
-
-/**
- * Like [com.google.accompanist.navigation.animation.composable] but accepts
- * a [DestinationSpec] to get the route, arguments and deep links.
- *
- * The [content] lambda will receive the navigation arguments class ([T]).
- *
- * Useful if you opt to use [com.google.accompanist.navigation.animation.AnimatedNavHost] instead of
- * [com.ramcosta.composedestinations.DestinationsNavHost].
- * This way, you can build the navigation graph in the "vanilla compose navigation" way.
- * If you do this, you should also disable the `NavGraphs` generation
- * in build.gradle:
- * ```
- * ksp {
- *     arg("compose-destinations.generateNavGraphs", "false")
- * }
- * ```
- */
-@OptIn(InternalDestinationsApi::class)
-@ExperimentalAnimationApi
-fun <T> NavGraphBuilder.animatedComposable(
-    destination: DestinationSpec<T>,
-    content: @Composable AnimatedNavGraphBuilderDestinationScope<T>.() -> Unit
-) {
-    when (val style = destination.style) {
-        is DestinationStyle.Runtime,
-        is DestinationStyle.Default -> {
-            composable(
-                route = destination.route,
-                arguments = destination.arguments,
-                deepLinks = destination.deepLinks
-            ) {
-                val scope = remember {
-                    AnimatedNavGraphBuilderDestinationScopeImpl(
-                        destination,
-                        it,
-                        this
-                    )
-                }
-
-                scope.content()
-            }
-        }
-
-        is DestinationStyleAnimated -> with(style) {
-            composable(
-                route = destination.route,
-                arguments = destination.arguments,
-                deepLinks = destination.deepLinks,
-                enterTransition = { enterTransition() },
-                exitTransition = { exitTransition() },
-                popEnterTransition = { popEnterTransition() },
-                popExitTransition = { popExitTransition() }
-            ) {
-                val scope = remember {
-                    AnimatedNavGraphBuilderDestinationScopeImpl(
-                        destination,
-                        it,
-                        this
-                    )
-                }
-
-                scope.content()
-            }
-        }
-
-        is DestinationStyleBottomSheet -> {
-            throw IllegalArgumentException("You need to use `bottomSheetComposable` for Bottom Sheet destinations!")
-        }
-
-        is DestinationStyle.Dialog -> {
-            throw IllegalArgumentException("You need to use `dialogComposable` for Dialog destinations!")
-        }
-
-        is DestinationStyle.Activity -> {
-            throw IllegalArgumentException("You need to use `activity` for Activity destinations!")
-        }
-    }
-}
 
 /**
  * Like [com.google.accompanist.navigation.material.bottomSheet] but accepts
@@ -139,7 +54,7 @@ fun <T> NavGraphBuilder.bottomSheetComposable(
             throw IllegalArgumentException("You need to use `dialogComposable` for Dialog destinations!")
         }
         else -> {
-            throw IllegalArgumentException("You need to use `animatedComposable` for Animated or Default styled destinations!")
+            throw IllegalArgumentException("You need to use `composable` for Animated or Default styled destinations!")
         }
     }
 }

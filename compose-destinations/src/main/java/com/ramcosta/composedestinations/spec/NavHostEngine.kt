@@ -26,12 +26,6 @@ interface NavHostEngine {
         DEFAULT,
 
         /**
-         * The engine you get if using "io.github.raamcosta.compose-destinations:animations-core"
-         * and calling `rememberAnimatedNavHostEngine`
-         */
-        ANIMATED,
-
-        /**
          * The engine you get if using "io.github.raamcosta.compose-destinations:wear-core"
          * and calling `rememberWearNavHostEngine`
          */

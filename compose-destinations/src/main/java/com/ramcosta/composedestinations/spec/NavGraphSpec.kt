@@ -3,7 +3,7 @@ package com.ramcosta.composedestinations.spec
 /**
  * Defines a navigation graph.
  */
-interface NavGraphSpec: Direction, Route {
+interface NavGraphSpec : Direction, Route {
 
     /**
      * Route string for this navigation graph which serves as

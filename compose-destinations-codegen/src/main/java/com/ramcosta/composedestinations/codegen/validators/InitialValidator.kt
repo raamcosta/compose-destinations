@@ -1,8 +1,27 @@
 package com.ramcosta.composedestinations.codegen.validators
 
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.CORE_ANIMATIONS_DEPENDENCY
+import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.OPEN_RESULT_RECIPIENT_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.RESULT_RECIPIENT_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.firstTypeArg
+import com.ramcosta.composedestinations.codegen.commons.firstTypeInfoArg
+import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayListTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.toTypeCode
 import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
+import com.ramcosta.composedestinations.codegen.model.CodeGenMode
+import com.ramcosta.composedestinations.codegen.model.Core
+import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
+import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
+import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
+import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
+import com.ramcosta.composedestinations.codegen.model.TypeInfo
 
 class InitialValidator(
     private val codeGenConfig: CodeGenConfig,
@@ -104,17 +123,10 @@ class InitialValidator(
 
     private fun DestinationGeneratingParams.validateReceiverAnimatedVisibilityScope() {
         if (composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
-            if (core != Core.ANIMATIONS) {
+            if (destinationStyleType !is DestinationStyleType.Animated && destinationStyleType !is DestinationStyleType.Default) {
                 throw IllegalDestinationsSetup(
                     "'${composableName}' composable: " +
-                            "You need to include $CORE_ANIMATIONS_DEPENDENCY dependency to use a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!"
-                )
-            }
-
-            if (destinationStyleType is DestinationStyleType.Dialog || destinationStyleType is DestinationStyleType.BottomSheet) {
-                throw IllegalDestinationsSetup(
-                    "'${composableName}' composable: " +
-                            "Only destinations with a DestinationStyleAnimated or DestinationStyle.Default style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!"
+                            "Only destinations with a DestinationStyle.Animated or DestinationStyle.Default style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!"
                 )
             }
         }

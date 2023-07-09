@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.*
 import com.ramcosta.composedestinations.scope.DestinationScope
-import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 
 /**
  * Defines what a Destination needs to have to be able to be
@@ -77,8 +76,8 @@ interface DestinationSpec<T> : Route {
      * - [DestinationStyle.Default]
      * - [DestinationStyle.Dialog]
      * - [DestinationStyle.Runtime]
+     * - [DestinationStyle.Animated]
      * And when using animations core, it can also be:
-     * - `DestinationStyleAnimated`
      * - `DestinationStyleBottomSheet`
      */
     val style: DestinationStyle get() = DestinationStyle.Default

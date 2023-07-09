@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.wear
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -104,7 +103,8 @@ internal class WearNavHostEngine(
         manualComposableCalls: ManualComposableCalls,
     ) {
         @SuppressLint("RestrictedApi")
-        val contentLambda = manualComposableCalls[destination.baseRoute]
+        @Suppress("UNCHECKED_CAST")
+        val contentLambda = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
 
         composable(
             route = destination.route,
@@ -128,14 +128,13 @@ internal class WearNavHostEngine(
         override val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
     ) : DestinationScopeImpl<T>()
 
-    @Suppress("UNCHECKED_CAST")
     @Composable
     private fun <T> CallComposable(
         destination: DestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-        contentLambda: DestinationLambda<*>?
+        contentWrapper: DestinationLambda<T>?
     ) {
         val scope = remember(navBackStackEntry) {
             WearDestinationScope(
@@ -146,11 +145,10 @@ internal class WearNavHostEngine(
             )
         }
 
-        if (contentLambda == null) {
+        if (contentWrapper == null) {
             with(destination) { scope.Content() }
         } else {
-            contentLambda as DestinationLambda<T>
-            contentLambda(scope)
+            contentWrapper(scope)
         }
     }
 }

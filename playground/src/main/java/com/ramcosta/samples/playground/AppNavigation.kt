@@ -5,18 +5,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.navigation
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
-import com.ramcosta.composedestinations.animations.utils.animatedComposable
 import com.ramcosta.composedestinations.animations.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.scope.resultBackNavigator
 import com.ramcosta.composedestinations.scope.resultRecipient
+import com.ramcosta.composedestinations.utils.composable
 import com.ramcosta.composedestinations.utils.dialogComposable
 import com.ramcosta.samples.playground.commons.DrawerController
 import com.ramcosta.samples.playground.di.viewModel
@@ -107,14 +107,14 @@ fun SampleAppAnimatedNavHostExample(
     drawerController: DrawerController,
     testProfileDeepLink: () -> Unit
 ) {
-    AnimatedNavHost(
+    NavHost(
         modifier = modifier,
         navController = navController,
         startDestination = GreetingScreenDestination.route,
         route = "root"
     ) {
 
-        animatedComposable(GreetingScreenDestination) {
+        composable(GreetingScreenDestination) {
             val vm = viewModel<GreetingViewModel>()
 
             GreetingScreen(
@@ -128,7 +128,7 @@ fun SampleAppAnimatedNavHostExample(
             )
         }
 
-        animatedComposable(FeedDestination) {
+        composable(FeedDestination) {
             Feed(destinationsNavigator(navController))
         }
 
@@ -138,7 +138,7 @@ fun SampleAppAnimatedNavHostExample(
             )
         }
 
-        animatedComposable(TestScreenDestination) {
+        composable(TestScreenDestination) {
             TestScreen(
                 id = navArgs.id,
                 asd = navArgs.asd,
@@ -150,7 +150,7 @@ fun SampleAppAnimatedNavHostExample(
             )
         }
 
-        animatedComposable(ProfileScreenDestination) {
+        composable(ProfileScreenDestination) {
             val vm = viewModel<ProfileViewModel>()
 
             ProfileScreen(
@@ -163,7 +163,7 @@ fun SampleAppAnimatedNavHostExample(
             startDestination = SettingsScreenDestination.route,
             route = "settings"
         ) {
-            animatedComposable(SettingsScreenDestination) {
+            composable(SettingsScreenDestination) {
                 SettingsScreen(
                     viewModel = viewModel(),
                     navigator = destinationsNavigator(navController),

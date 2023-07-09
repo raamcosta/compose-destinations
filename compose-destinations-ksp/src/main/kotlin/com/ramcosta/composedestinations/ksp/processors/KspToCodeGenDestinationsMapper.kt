@@ -1,13 +1,66 @@
 package com.ramcosta.composedestinations.ksp.processors
 
-import com.google.devtools.ksp.*
+import com.google.devtools.ksp.getClassDeclarationByName
+import com.google.devtools.ksp.getDeclaredProperties
+import com.google.devtools.ksp.isInternal
+import com.google.devtools.ksp.isPrivate
+import com.google.devtools.ksp.isPublic
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.symbol.*
 import com.google.devtools.ksp.symbol.ClassKind
-import com.ramcosta.composedestinations.codegen.commons.*
-import com.ramcosta.composedestinations.codegen.model.*
+import com.google.devtools.ksp.symbol.FileLocation
+import com.google.devtools.ksp.symbol.KSAnnotation
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeAlias
+import com.google.devtools.ksp.symbol.KSValueParameter
+import com.google.devtools.ksp.symbol.Location
+import com.google.devtools.ksp.symbol.Modifier
+import com.google.devtools.ksp.symbol.Variance
+import com.ramcosta.composedestinations.codegen.commons.ACTIVITY_DESTINATION_ANNOTATION
+import com.ramcosta.composedestinations.codegen.commons.ACTIVITY_DESTINATION_ANNOTATION_DEFAULT_NULL
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_NAV_GRAPH_ARGUMENT
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_ROUTE_ARGUMENT
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_START_ARGUMENT
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_STYLE_ARGUMENT
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_WRAPPERS_ARGUMENT
+import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION_SUFFIX
+import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
+import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_PARAM_ANNOTATION_QUALIFIED
+import com.ramcosta.composedestinations.codegen.commons.rootNavGraphType
+import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
+import com.ramcosta.composedestinations.codegen.model.ActivityDestinationParams
+import com.ramcosta.composedestinations.codegen.model.DeepLink
+import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
+import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.model.NavArgsDelegateType
+import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
+import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
+import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.RawDestinationGenParams
+import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
+import com.ramcosta.composedestinations.codegen.model.TypeInfo
+import com.ramcosta.composedestinations.codegen.model.ValueClassInnerInfo
 import com.ramcosta.composedestinations.codegen.model.Visibility
-import com.ramcosta.composedestinations.ksp.commons.*
+import com.ramcosta.composedestinations.ksp.commons.KSFileSourceMapper
+import com.ramcosta.composedestinations.ksp.commons.findActualClassDeclaration
+import com.ramcosta.composedestinations.ksp.commons.findAllRequireOptInAnnotations
+import com.ramcosta.composedestinations.ksp.commons.findAnnotationPathRecursively
+import com.ramcosta.composedestinations.ksp.commons.findArgumentValue
+import com.ramcosta.composedestinations.ksp.commons.getDefaultValue
+import com.ramcosta.composedestinations.ksp.commons.ignoreAnnotations
+import com.ramcosta.composedestinations.ksp.commons.isNothing
+import com.ramcosta.composedestinations.ksp.commons.readLine
+import com.ramcosta.composedestinations.ksp.commons.toImportable
 import java.io.File
 
 class KspToCodeGenDestinationsMapper(
@@ -286,14 +339,14 @@ class KspToCodeGenDestinationsMapper(
             return DestinationStyleType.Runtime
         }
 
-        val type = ksStyleType.toType(location) ?: throw IllegalDestinationsSetup("Parameter $DESTINATION_ANNOTATION_STYLE_ARGUMENT of Destination annotation in composable $composableName was not resolvable: please review it.")
+        val importable = ksStyleType.findActualClassDeclaration()?.toImportable() ?: throw IllegalDestinationsSetup("Parameter $DESTINATION_ANNOTATION_STYLE_ARGUMENT of Destination annotation in composable $composableName was not resolvable: please review it.")
 
         if (dialogStyle.isAssignableFrom(ksStyleType)) {
-            return DestinationStyleType.Dialog(type)
+            return DestinationStyleType.Dialog(importable)
         }
 
         if (animatedStyle != null && animatedStyle!!.isAssignableFrom(ksStyleType)) {
-            return DestinationStyleType.Animated(type, ksStyleType.declaration.findAllRequireOptInAnnotations())
+            return DestinationStyleType.Animated(importable, ksStyleType.declaration.findAllRequireOptInAnnotations())
         }
 
         throw IllegalDestinationsSetup("Unknown style used on $composableName. Please recheck it.")
@@ -435,9 +488,6 @@ class KspToCodeGenDestinationsMapper(
         return File(fileLocation.filePath).readLine(fileLocation.lineNumber)
     }
 
-    private val KSClassDeclaration.isNothing get() =
-        qualifiedName?.asString() == "java.lang.Void" || qualifiedName?.asString() == "kotlin.Nothing"
-
 
     private val defaultStyle by lazy {
         resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Default")!!
@@ -449,7 +499,7 @@ class KspToCodeGenDestinationsMapper(
     }
 
     private val animatedStyle by lazy {
-        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyleAnimated")?.asType(emptyList())
+        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Animated")?.asType(emptyList())
     }
 
     private val dialogStyle by lazy {

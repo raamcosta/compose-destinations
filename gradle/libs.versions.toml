@@ -1,12 +1,12 @@
 [versions]
 
 minSdk = "21"
-compileSdk = "33"
-targetSdk = "33"
+compileSdk = "34"
+targetSdk = "34"
 
 kotlin = "1.8.22"
 dependencyCheckPluginVersion = "0.47.0"
-gradlePluginVersion = "8.0.2"
+gradlePluginVersion = "8.1.0-rc01"
 mavenPublishPluginVersion = "0.25.3"
 
 composeViewModel = "2.6.1"
@@ -22,7 +22,7 @@ junit = "4.13.2"
 compose = "1.5.0-beta03"
 composeMaterial = "1.5.0-beta03"
 composeCompiler = "1.4.8"
-composeNavigation = "2.7.0-beta01"
+composeNavigation = "2.7.0-beta02"
 accompanist = "0.31.5-beta"
 
 ktxSerialization = "1.5.1"
@@ -57,7 +57,6 @@ compose-navigation = { module = "androidx.navigation:navigation-compose", versio
 compose-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "composeViewModel" }
 
 accompanist-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist" }
-accompanist-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
 
 # Ksp
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }

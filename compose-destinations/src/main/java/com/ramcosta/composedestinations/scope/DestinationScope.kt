@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.scope
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -75,10 +74,9 @@ inline fun <reified D : DestinationSpec<*>, reified R> DestinationScopeWithNoDep
 
 /**
  * Like [DestinationScope] but also [AnimatedVisibilityScope] so that
- * if you're using the "animations-core" you can use this Scope as a receiver
+ * if you're using animations you can use this Scope as a receiver
  * of your Animated Composable
  */
-@ExperimentalAnimationApi
 @Immutable
 interface AnimatedDestinationScope<T> : DestinationScope<T>, AnimatedVisibilityScope
 

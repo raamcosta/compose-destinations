@@ -1,9 +1,16 @@
 package com.ramcosta.composedestinations.ksp.commons
 
 import com.google.devtools.ksp.findActualType
-import com.google.devtools.ksp.symbol.*
-import com.ramcosta.composedestinations.codegen.model.*
-import java.io.*
+import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSAnnotation
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeAlias
+import com.ramcosta.composedestinations.codegen.model.Importable
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStreamReader
 
 
 val ignoreAnnotations = listOf(
@@ -103,3 +110,13 @@ fun KSType.findActualClassDeclaration(): KSClassDeclaration? {
 
     return declaration as? KSClassDeclaration?
 }
+
+fun KSClassDeclaration.toImportable(): Importable {
+    return Importable(
+        simpleName.asString(),
+        qualifiedName!!.asString()
+    )
+}
+
+val KSClassDeclaration.isNothing get() =
+    qualifiedName?.asString() == "java.lang.Void" || qualifiedName?.asString() == "kotlin.Nothing"

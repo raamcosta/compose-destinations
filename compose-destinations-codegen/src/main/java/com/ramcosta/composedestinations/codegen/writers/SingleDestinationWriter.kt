@@ -5,10 +5,56 @@ import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.codeGenDestination
 import com.ramcosta.composedestinations.codegen.codeGenNoArgsActivityDestination
 import com.ramcosta.composedestinations.codegen.codeGenNoArgsDestination
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.CORE_ANIMATIONS_DEPENDENCY
+import com.ramcosta.composedestinations.codegen.commons.CORE_BOTTOM_SHEET_DESTINATION_STYLE
+import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.CORE_STRING_NAV_TYPE
+import com.ramcosta.composedestinations.codegen.commons.DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
+import com.ramcosta.composedestinations.codegen.commons.SAVED_STATE_HANDLE_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.SAVED_STATE_HANDLE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.bundleImportable
+import com.ramcosta.composedestinations.codegen.commons.coreTypes
+import com.ramcosta.composedestinations.codegen.commons.experimentalAnimationApiType
+import com.ramcosta.composedestinations.codegen.commons.isCustomTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.isEnumTypeOrTypeArg
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.commons.recursiveRequireOptInAnnotations
+import com.ramcosta.composedestinations.codegen.commons.removeInstancesOf
+import com.ramcosta.composedestinations.codegen.commons.toCoreNavTypeImportableOrNull
+import com.ramcosta.composedestinations.codegen.commons.toTypeCode
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.model.*
-import com.ramcosta.composedestinations.codegen.templates.*
+import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
+import com.ramcosta.composedestinations.codegen.model.Core
+import com.ramcosta.composedestinations.codegen.model.CustomNavType
+import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
+import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
+import com.ramcosta.composedestinations.codegen.model.GeneratedDestination
+import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
+import com.ramcosta.composedestinations.codegen.model.TypeInfo
+import com.ramcosta.composedestinations.codegen.model.Visibility
+import com.ramcosta.composedestinations.codegen.templates.ACTIVITY_DESTINATION_FIELDS
+import com.ramcosta.composedestinations.codegen.templates.ARGS_FROM_METHODS
+import com.ramcosta.composedestinations.codegen.templates.ARGS_TO_DIRECTION_METHOD
+import com.ramcosta.composedestinations.codegen.templates.BASE_ROUTE
+import com.ramcosta.composedestinations.codegen.templates.COMPOSED_ROUTE
+import com.ramcosta.composedestinations.codegen.templates.CONTENT_FUNCTION_CODE
+import com.ramcosta.composedestinations.codegen.templates.DEEP_LINKS
+import com.ramcosta.composedestinations.codegen.templates.DESTINATION_NAME
+import com.ramcosta.composedestinations.codegen.templates.DESTINATION_STYLE
+import com.ramcosta.composedestinations.codegen.templates.DESTINATION_VISIBILITY_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.NAV_ARGS_DATA_CLASS
+import com.ramcosta.composedestinations.codegen.templates.NAV_ARGUMENTS
+import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.SUPERTYPE
+import com.ramcosta.composedestinations.codegen.templates.destinationTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
@@ -576,14 +622,10 @@ class SingleDestinationWriter(
     }
 
     private fun destinationStyleDialog(destinationStyleType: DestinationStyleType.Dialog): String {
-        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.type.importable.getCodePlaceHolder()}\n"
+        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.importable.getCodePlaceHolder()}\n"
     }
 
     private fun destinationStyleAnimated(destinationStyleType: DestinationStyleType.Animated): String {
-        if (core != Core.ANIMATIONS) {
-            throw MissingRequiredDependency("You need to include '$CORE_ANIMATIONS_DEPENDENCY' to use $CORE_DESTINATION_ANIMATION_STYLE!")
-        }
-
         experimentalAnimationApiType.addImport()
 
         if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
@@ -593,7 +635,7 @@ class SingleDestinationWriter(
             ).addImport()
         }
 
-        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.type.importable.getCodePlaceHolder()}\n"
+        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.importable.getCodePlaceHolder()}\n"
     }
 
     private fun destinationStyleBottomSheet(): String {
