@@ -20,7 +20,7 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
 - Simple but configurable navigation graphs setup
 - Navigating back with a result in a simple and type-safe way
 - Getting the navigation arguments from the `SavedStateHandle` (useful in ViewModels) and `NavBackStackEntry` in a type-safe way.
-- Navigation animations through integration with [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation)
+- Navigation animations
 - Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
 - Easy deep linking to screens
 - Wear OS support (since versions 1.x.30!)
@@ -174,9 +174,9 @@ ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
 ```
 </details>
 
-> **Note**: If you want to use animations between screens and/or bottom sheet screens, replace above core dependency with: </br>
+> **Note**: If you want to use bottom sheet screens, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
-> this will use [Accompanist Navigation-Animation](https://github.com/google/accompanist/tree/main/navigation-animation) and [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
+> this will use [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/styles-and-animations)
    
 > **Note**: If you want to use Compose Destinations in a **Wear OS** app, replace above core dependency with: </br>
