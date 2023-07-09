@@ -24,7 +24,7 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
 - Destination wrappers to allow reusing Compose logic on multiple screens
 - Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
 - Easy deep linking to screens
-- Wear OS support (NEW since versions 1.x.30!)
+- Wear OS support (since versions 1.x.30!)
 - All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
 
 For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
@@ -189,5 +189,78 @@ implementation("io.github.raamcosta.compose-destinations:bottom-sheet:<version>"
 `implementation 'io.github.raamcosta.compose-destinations:wear-core:<version>'` </br>
 > this will use [Wear Compose Navigation](https://developer.android.com/training/wearables/compose/navigation) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/wear-os)
+
+
+#### 3. Important for Kotlin < 1.8.0
+
+When using Kotlin version older than 1.8.0, you need to make sure the IDE looks at the generated folder.
+See KSP related [issue](https://github.com/google/ksp/issues/37).
+
+How to do it depends on the AGP version you are using in this case:
+
+> **Warning**: In both cases, add this inside `android` block and replacing `applicationVariants` with `libraryVariants` if the module is not an application one (i.e, it uses `'com.android.library'` plugin).
+
+<details><summary>Since AGP (Android Gradle Plugin) version 7.4.0</summary>  
+
+
+* groovy - build.gradle(:module-name)
+
+```gradle
+applicationVariants.all { variant ->
+    variant.addJavaSourceFoldersToModel(
+            new File(buildDir, "generated/ksp/${variant.name}/kotlin")
+    )
+}
+```
+
+
+* kotlin - build.gradle.kts(:module-name)
+
+```gradle
+applicationVariants.all {
+    addJavaSourceFoldersToModel(
+        File(buildDir, "generated/ksp/$name/kotlin")
+    )
+}
+```
+</details>
+
+
+<details><summary>For AGP (Android Gradle Plugin) version older than 7.4.0</summary>  
+
+* groovy - build.gradle(:module-name)
+
+```gradle
+applicationVariants.all { variant ->
+    kotlin.sourceSets {
+        getByName(variant.name) {
+            kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
+        }
+    }
+}
+```
+
+* kotlin - build.gradle.kts(:module-name) 
+
+```gradle
+applicationVariants.all {
+    kotlin.sourceSets {
+        getByName(name) {
+            kotlin.srcDir("build/generated/ksp/$name/kotlin")
+        }
+    }
+}
+```
+
+</details>
+
+## About
+
+The library is no longer in general beta as of 1.9.50.
+
+Version 2 is coming out very soon with API improvements, quality-of-life improvements, and support for mandatory arguments when navigating to a Navigation graph.
+
+If you're interested in contributing, reach out via [twitter DM](https://twitter.com/raamcosta).
+Any feedback and contributions are highly appreciated!
 
 **If you like the library, consider starring and sharing it with your colleagues.**
