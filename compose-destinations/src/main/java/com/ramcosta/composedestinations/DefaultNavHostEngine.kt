@@ -12,7 +12,6 @@ import androidx.navigation.compose.navigation
 import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
-import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.Route
@@ -71,7 +70,7 @@ internal class DefaultNavHostEngine(
         navGraph: NavGraphSpec,
         builder: NavGraphBuilder.() -> Unit
     ) {
-        val transitions: DestinationStyle.Animated? = navGraph.defaultTransitions
+        val transitions = navGraph.defaultTransitions
         if (transitions != null) {
             with(transitions) {
                 navigation(
