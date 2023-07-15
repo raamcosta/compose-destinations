@@ -6,7 +6,7 @@ targetSdk = "34"
 
 kotlin = "1.8.22"
 dependencyCheckPluginVersion = "0.47.0"
-gradlePluginVersion = "8.2.0-alpha11"
+gradlePluginVersion = "8.2.0-alpha12"
 mavenPublishPluginVersion = "0.25.3"
 
 composeViewModel = "2.6.1"

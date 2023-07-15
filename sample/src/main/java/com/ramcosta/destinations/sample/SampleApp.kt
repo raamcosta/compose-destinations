@@ -1,6 +1,7 @@
 package com.ramcosta.destinations.sample
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,7 +47,7 @@ fun SampleApp() {
             engine = engine,
             navController = navController,
             navGraph = NavGraphs.root,
-            modifier = Modifier.padding(it),
+            modifier = Modifier.padding(it).fillMaxSize(),
             startRoute = startRoute
         )
 
