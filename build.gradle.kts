@@ -31,9 +31,8 @@ tasks.register<Delete>("clean") {
  */
 tasks.withType<DependencyUpdatesTask> {
     rejectVersionIf {
-        false
         // Don't allow non-stable versions, unless we are already using one for this dependency
-//        isNonStable(candidate.version) && !isNonStable(currentVersion)
+        isNonStable(candidate.version) && !isNonStable(currentVersion)
     }
 }
 

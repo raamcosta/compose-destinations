@@ -6,7 +6,7 @@ targetSdk = "34"
 
 kotlin = "1.9.0"
 dependencyCheckPluginVersion = "0.47.0"
-gradlePluginVersion = "8.2.0-alpha14"
+gradlePluginVersion = "8.2.0-alpha15"
 mavenPublishPluginVersion = "0.25.3"
 
 composeViewModel = "2.6.1"
@@ -15,15 +15,15 @@ activityCompose = "1.7.2"
 material = "1.9.0"
 lifecycleRuntimeKtx = "2.6.1"
 
-ksp = "1.9.0-1.0.11"
+ksp = "1.9.0-1.0.13"
 
 junit = "4.13.2"
 
-compose = "1.5.0-rc01"
-composeMaterial = "1.5.0-rc01"
+compose = "1.5.0"
+composeMaterial = "1.5.0"
 composeCompiler = "1.5.1"
-composeNavigation = "2.7.0-rc01"
-accompanist = "0.31.5-beta"
+composeNavigation = "2.7.0"
+accompanist = "0.31.6-rc"
 
 ktxSerialization = "1.5.1"
 mockk = "1.13.5"

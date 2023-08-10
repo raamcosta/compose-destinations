@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="1.8">
+    <bytecodeTargetLevel target="11">
       <module name="compose-destinations.buildSrc" target="11" />
       <module name="ComposeDestinations.buildSrc" target="17" />
       <module name="ComposeDestinations.buildSrc.main" target="17" />
       <module name="ComposeDestinations.buildSrc.test" target="17" />
       <module name="ComposeDestinations.compose-destinations" target="17" />
       <module name="ComposeDestinations.compose-destinations-animations" target="17" />
-      <module name="ComposeDestinations.compose-destinations-codegen" target="11" />
-      <module name="ComposeDestinations.compose-destinations-codegen.main" target="11" />
-      <module name="ComposeDestinations.compose-destinations-codegen.test" target="11" />
-      <module name="ComposeDestinations.compose-destinations-ksp" target="11" />
-      <module name="ComposeDestinations.compose-destinations-ksp.main" target="11" />
-      <module name="ComposeDestinations.compose-destinations-ksp.test" target="11" />
-      <module name="ComposeDestinations.compose-destinations-wear" target="11" />
-      <module name="ComposeDestinations.playground" target="11" />
-      <module name="ComposeDestinations.playground-core" target="11" />
-      <module name="ComposeDestinations.playground-core.main" target="11" />
-      <module name="ComposeDestinations.sample" target="11" />
-      <module name="ComposeDestinations.sample-wear" target="11" />
       <module name="playground-core.ComposeDestinations.playground-core.test" target="11" />
     </bytecodeTargetLevel>
   </component>
