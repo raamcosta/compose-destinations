@@ -2,22 +2,17 @@ package com.ramcosta.composedestinations.ksp.processors
 
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
-import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Modifier
 import com.ramcosta.composedestinations.codegen.commons.ACTIVITY_DESTINATION_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.ACTIVITY_DESTINATION_ANNOTATION_DEFAULT_NULL
-import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_ROUTE_ARGUMENT
-import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_STYLE_ARGUMENT
-import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_WRAPPERS_ARGUMENT
 import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION_SUFFIX
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION
@@ -25,6 +20,7 @@ import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUA
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.rootNavGraphType
+import com.ramcosta.composedestinations.codegen.commons.snakeToCamelCase
 import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
 import com.ramcosta.composedestinations.codegen.model.ActivityDestinationParams
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
@@ -33,9 +29,9 @@ import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.codegen.model.RawDestinationGenParams
 import com.ramcosta.composedestinations.codegen.model.Visibility
+import com.ramcosta.composedestinations.ksp.commons.DestinationMappingUtils
 import com.ramcosta.composedestinations.ksp.commons.MutableKSFileSourceMapper
 import com.ramcosta.composedestinations.ksp.commons.NavArgsTypeWithFile
-import com.ramcosta.composedestinations.ksp.commons.findActualClassDeclaration
 import com.ramcosta.composedestinations.ksp.commons.findAllRequireOptInAnnotations
 import com.ramcosta.composedestinations.ksp.commons.findAnnotationPathRecursively
 import com.ramcosta.composedestinations.ksp.commons.findArgumentValue
@@ -44,54 +40,56 @@ import com.ramcosta.composedestinations.ksp.commons.ignoreAnnotations
 import com.ramcosta.composedestinations.ksp.commons.isNothing
 import com.ramcosta.composedestinations.ksp.commons.toDeepLink
 import com.ramcosta.composedestinations.ksp.commons.toGenVisibility
-import com.ramcosta.composedestinations.ksp.commons.toImportable
 import com.ramcosta.composedestinations.ksp.commons.toParameter
+import java.util.Locale
 
 internal class KspToCodeGenDestinationsMapper(
     private val resolver: Resolver,
+    private val destinationMappingUtils: DestinationMappingUtils,
     private val sourceFileMapper: MutableKSFileSourceMapper,
     private val navTypeSerializersByType: Map<Importable, NavTypeSerializer>,
 ) {
 
     fun map(
-        composableDestinations: Sequence<KSFunctionDeclaration>,
-        activityDestinations: Sequence<KSClassDeclaration>
+        composableDestinations: Sequence<DestinationAnnotationsPath>,
+        activityDestinations: Sequence<KSClassDeclaration> //TODO RACOSTA do we need to have a path as well for activity? 🤔
     ): List<RawDestinationGenParams> {
         return composableDestinations.map { it.toDestination() }.toList() +
                 activityDestinations.map { it.toActivityDestination() }.toList()
     }
 
-    private fun KSFunctionDeclaration.toDestination(): RawDestinationGenParams {
-        val composableName = simpleName.asString()
-        val name = composableName + GENERATED_DESTINATION_SUFFIX
-        val destinationAnnotations = findAnnotationPathRecursively(DESTINATION_ANNOTATION)!!.reversed()
+    private fun DestinationAnnotationsPath.toDestination(): RawDestinationGenParams {
+        val composableName = function.simpleName.asString()
+        val destinationAnnotations = annotations//findAnnotationPathRecursively(DESTINATION_ANNOTATION)!!.reversed()
 
         val deepLinksAnnotations = destinationAnnotations.findCumulativeArgumentValue {
             findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)
         }
 
         val cleanRoute = destinationAnnotations.findOverridingArgumentValue { prepareRoute(composableName) }!!
+        val isStart = destinationAnnotations.findOverridingArgumentValue { findArgumentValue<Boolean>("start") }!!
+        val name = cleanRoute.replace("/", "_").snakeToCamelCase().replaceFirstChar { it.uppercase() } + GENERATED_DESTINATION_SUFFIX
 
         val navArgsDelegateTypeAndFile = destinationAnnotations.getNavArgsDelegateType()
         if (navArgsDelegateTypeAndFile?.file != null) {
             sourceFileMapper[navArgsDelegateTypeAndFile.file.filePath] = navArgsDelegateTypeAndFile.file
         }
-        sourceFileMapper[containingFile!!.filePath] = containingFile
+        sourceFileMapper[function.containingFile!!.filePath] = function.containingFile
 
         return RawDestinationGenParams(
-            sourceIds = listOfNotNull(containingFile!!.filePath, navArgsDelegateTypeAndFile?.file?.filePath),
+            sourceIds = listOfNotNull(function.containingFile!!.filePath, navArgsDelegateTypeAndFile?.file?.filePath),
             name = name,
             composableName = composableName,
-            composableQualifiedName = qualifiedName!!.asString(),
+            composableQualifiedName = function.qualifiedName!!.asString(),
             visibility = destinationAnnotations.findOverridingArgumentValue { getDestinationVisibility() }!!,
             baseRoute = cleanRoute,
-            destinationStyleType = destinationAnnotations.findOverridingArgumentValue { getDestinationStyleType(composableName) }!!,
-            parameters = parameters.map { it.toParameter(resolver, navTypeSerializersByType) },
-            composableWrappers = destinationAnnotations.findCumulativeArgumentValue { getDestinationWrappers() },
+            destinationStyleType = destinationAnnotations.findOverridingArgumentValue { destinationMappingUtils.getDestinationStyleType(this, "composable $composableName") }!!,
+            parameters = function.parameters.map { it.toParameter(resolver, navTypeSerializersByType) },
+            composableWrappers = destinationAnnotations.findCumulativeArgumentValue { destinationMappingUtils.getDestinationWrappers(this) },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
-            navGraphInfo = getNavGraphInfo() ?: getDefaultNavGraphInfo(),
-            composableReceiverSimpleName = extensionReceiver?.toString(),
-            requireOptInAnnotationTypes = findAllRequireOptInAnnotations(),
+            navGraphInfo = getNavGraphInfo().let { it.copy(start = it.start || isStart) },
+            composableReceiverSimpleName = function.extensionReceiver?.toString(),
+            requireOptInAnnotationTypes = function.findAllRequireOptInAnnotations(),
             destinationNavArgsClass = navArgsDelegateTypeAndFile?.type
         )
     }
@@ -203,6 +201,43 @@ internal class KspToCodeGenDestinationsMapper(
         return cumulative!!
     }
 
+    private fun Sequence<KSAnnotation>.findNavGraphAnnotation(): NavGraphInfo? {
+        var resolvedAnnotation: KSType? = null
+        var isNavHostGraph = false
+
+        val directNavGraphAnnotation = find {
+            val annotationType = it.annotationType.resolve()
+            if (annotationType.isNavGraphAnnotation()) {
+                resolvedAnnotation = annotationType
+                return@find true
+            }
+
+            if (annotationType.isNavHostGraphAnnotation()) {
+                resolvedAnnotation = annotationType
+                isNavHostGraph = true
+                return@find true
+            }
+
+            return@find false
+        }
+
+        return directNavGraphAnnotation?.let {
+            NavGraphInfo(
+                start = directNavGraphAnnotation.arguments.first().value as Boolean,
+                isNavHostGraph = isNavHostGraph,
+                graphType = Importable(
+                    resolvedAnnotation!!.declaration.simpleName.asString(),
+                    resolvedAnnotation!!.declaration.qualifiedName!!.asString()
+                )
+            )
+        }
+    }
+
+    private fun DestinationAnnotationsPath.getNavGraphInfo() =
+        function.annotations.findNavGraphAnnotation()
+            ?: annotations.flatMap { it.annotationType.resolve().declaration.annotations }
+                .asSequence().findNavGraphAnnotation() ?: getDefaultNavGraphInfo()
+
     private fun KSDeclaration.getNavGraphInfo(): NavGraphInfo? {
         if (modifiers.contains(Modifier.ANNOTATION) &&
             annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == qualifiedName?.asString() }) {
@@ -221,20 +256,14 @@ internal class KspToCodeGenDestinationsMapper(
         val navGraphAnnotation = relevantAnnotations.find { functionAnnotation ->
             val functionAnnotationType = functionAnnotation.annotationType.resolve()
 
-            val didWeFindNavGraph = functionAnnotationType.declaration.annotations.any { annotationOfAnnotation ->
-                annotationOfAnnotation.shortName.asString() == NAV_GRAPH_ANNOTATION
-                        && annotationOfAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_GRAPH_ANNOTATION_QUALIFIED
-            }
+            val didWeFindNavGraph = functionAnnotationType.isNavGraphAnnotation()
 
             if (didWeFindNavGraph) {
                 resolvedAnnotation = functionAnnotationType
                 return@find true
             }
 
-            val didWeFindNavHostGraph = functionAnnotationType.declaration.annotations.any { annotationOfAnnotation ->
-                annotationOfAnnotation.shortName.asString() == NAV_HOST_GRAPH_ANNOTATION
-                        && annotationOfAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
-            }
+            val didWeFindNavHostGraph = functionAnnotationType.isNavHostGraphAnnotation()
 
             if (didWeFindNavHostGraph) {
                 isNavHostGraph = true
@@ -261,6 +290,20 @@ internal class KspToCodeGenDestinationsMapper(
         }
     }
 
+    private fun KSType.isNavGraphAnnotation(): Boolean {
+        return declaration.annotations.any { annotationOfAnnotation ->
+            annotationOfAnnotation.shortName.asString() == NAV_GRAPH_ANNOTATION
+                    && annotationOfAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_GRAPH_ANNOTATION_QUALIFIED
+        }
+    }
+
+    private fun KSType.isNavHostGraphAnnotation(): Boolean {
+        return declaration.annotations.any { annotationOfAnnotation ->
+            annotationOfAnnotation.shortName.asString() == NAV_HOST_GRAPH_ANNOTATION
+                    && annotationOfAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
+        }
+    }
+
     private fun getDefaultNavGraphInfo(): NavGraphInfo {
         return NavGraphInfo(
             start = false,
@@ -273,76 +316,9 @@ internal class KspToCodeGenDestinationsMapper(
         return findArgumentValue<KSType>("visibility")?.toGenVisibility()
     }
 
-    private fun KSAnnotation.getDestinationStyleType(composableName: String): DestinationStyleType? {
-        val ksStyleType = findArgumentValue<KSType>(DESTINATION_ANNOTATION_STYLE_ARGUMENT)
-            ?: return null
-
-        if (defaultStyle.isAssignableFrom(ksStyleType)) {
-            return DestinationStyleType.Default
-        }
-
-        if (bottomSheetStyle != null && bottomSheetStyle!!.isAssignableFrom(ksStyleType)) {
-            return DestinationStyleType.BottomSheet
-        }
-
-        if (runtimeStyle.isAssignableFrom(ksStyleType)) {
-            return DestinationStyleType.Runtime
-        }
-
-        val importable = ksStyleType.findActualClassDeclaration()?.toImportable() ?: throw IllegalDestinationsSetup("Parameter $DESTINATION_ANNOTATION_STYLE_ARGUMENT of Destination annotation in composable $composableName was not resolvable: please review it.")
-
-        if (dialogStyle.isAssignableFrom(ksStyleType)) {
-            return DestinationStyleType.Dialog(importable)
-        }
-
-        if (animatedStyle != null && animatedStyle!!.isAssignableFrom(ksStyleType)) {
-            return DestinationStyleType.Animated(importable, ksStyleType.declaration.findAllRequireOptInAnnotations())
-        }
-
-        throw IllegalDestinationsSetup("Unknown style used on $composableName. Please recheck it.")
-    }
-
-    private fun KSAnnotation.getDestinationWrappers(): List<Importable>? {
-        val ksTypes = findArgumentValue<ArrayList<KSType>>(DESTINATION_ANNOTATION_WRAPPERS_ARGUMENT)
-            ?: return null
-
-        return ksTypes.map {
-            if ((it.declaration as? KSClassDeclaration)?.classKind != ClassKind.OBJECT) {
-                throw IllegalDestinationsSetup("DestinationWrappers need to be objects! (check ${it.declaration.simpleName.asString()})")
-            }
-
-            Importable(
-                it.declaration.simpleName.asString(),
-                it.declaration.qualifiedName!!.asString()
-            )
-        }
-    }
-
     private fun KSAnnotation.prepareRoute(composableName: String): String? {
         val cleanRoute = findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT)
         return if (cleanRoute == DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER) composableName.toSnakeCase() else cleanRoute
-    }
-
-
-    private val defaultStyle by lazy {
-        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Default")!!
-            .asType(emptyList())
-    }
-
-    private val bottomSheetStyle by lazy {
-        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.bottomsheet.spec.DestinationStyleBottomSheet")?.asType(emptyList())
-    }
-
-    private val animatedStyle by lazy {
-        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Animated")?.asType(emptyList())
-    }
-
-    private val dialogStyle by lazy {
-        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Dialog")!!.asType(emptyList())
-    }
-
-    private val runtimeStyle by lazy {
-        resolver.getClassDeclarationByName("$CORE_PACKAGE_NAME.spec.DestinationStyle.Runtime")!!.asType(emptyList())
     }
 
     private val activityType by lazy {

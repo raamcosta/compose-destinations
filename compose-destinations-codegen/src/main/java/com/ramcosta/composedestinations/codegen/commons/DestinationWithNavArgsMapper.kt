@@ -37,7 +37,7 @@ internal class DestinationWithNavArgsMapper {
                         "'$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types. (check argument '${nonNavArg.name}')")
             }
 
-            val navArgInFuncParams = parameters.firstOrNull { it.isNavArg() && it.type.value.importable != navArgsDelegateType?.type }
+            val navArgInFuncParams = parameters.firstOrNull { it.isNavArg() && it.type.value.importable != navArgsDelegateTypeLocal.type }
             if (navArgInFuncParams != null) {
                 throw IllegalDestinationsSetup("Composable '${composableName}': annotated " +
                         "function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class. (check argument '${navArgInFuncParams.name})'")

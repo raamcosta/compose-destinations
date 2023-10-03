@@ -17,6 +17,7 @@ import kotlin.reflect.KClass
  * where you define Wrappers or DeepLinks for example.
  *
  * @param route main route of this destination (by default, the name of the Composable function)
+ * @param start TODO RACOSTA
  * @param navArgs class with a primary constructor where all navigation arguments are
  * to be defined. Useful when the arguments are not needed in this Composable or to simplify
  * the Composable function signature when it has a lot of navigation arguments (which should be rare).
@@ -34,8 +35,10 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.SOURCE)
+@Repeatable
 annotation class Destination(
     val route: String = COMPOSABLE_NAME,
+    val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
     val style: KClass<out DestinationStyle> = DestinationStyle.Default::class,

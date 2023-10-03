@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.bottomsheet.spec
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -44,7 +43,6 @@ object DestinationStyleBottomSheet : DestinationStyle() {
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls
     ) {
-        @SuppressLint("RestrictedApi")
         @Suppress("UNCHECKED_CAST")
         val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
 

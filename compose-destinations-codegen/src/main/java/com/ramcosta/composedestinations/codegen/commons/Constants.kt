@@ -34,9 +34,7 @@ val rootNavGraphGenParams = RawNavGraphGenParams(
     sourceIds = emptyList(),
     navArgs = null,
     visibility = Visibility.PUBLIC,
-    externalStartRoute = null,
-    externalNavGraphs = emptyList(),
-    externalDestinations = emptyList(),
+    includedRoutes = emptyList()
 )
 
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"

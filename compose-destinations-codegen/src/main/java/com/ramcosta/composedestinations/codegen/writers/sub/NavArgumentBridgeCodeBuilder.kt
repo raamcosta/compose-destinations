@@ -183,22 +183,28 @@ class NavArgumentBridgeCodeBuilder(
 
     fun deepLinksDeclarationCode(
         deepLinks: List<DeepLink>,
-        fullRoutePlaceholderReplacement: (List<Parameter>) -> String
+        listOfOnly: Boolean = false,
+        innerTabsCount: Int = 2,
+        fullRoutePlaceholderReplacement: (List<Parameter>) -> String = { constructRoute(true, it) }
     ): String {
         val code = StringBuilder()
 
         deepLinks.forEachIndexed { i, it ->
             if (i == 0) {
-                code += "\n\toverride val deepLinks: List<${navClassDeepLinkImportable.getCodePlaceHolder()}> get() = listOf(\n\t\t"
+                code += if (listOfOnly) {
+                    "listOf(\n${"\t".repeat(innerTabsCount)}"
+                } else {
+                    "\n\toverride val deepLinks: List<${navClassDeepLinkImportable.getCodePlaceHolder()}> get() = listOf(\n${"\t".repeat(innerTabsCount)}"
+                }
             }
 
-            code += "${navDeepLinkImportable.getCodePlaceHolder()} {\n\t\t"
+            code += "${navDeepLinkImportable.getCodePlaceHolder()} {\n${"\t".repeat(innerTabsCount)}"
 
             if (it.action.isNotEmpty()) {
-                code += "\taction = \"${it.action}\"\n\t\t"
+                code += "\taction = \"${it.action}\"\n${"\t".repeat(innerTabsCount)}"
             }
             if (it.mimeType.isNotEmpty()) {
-                code += "\tmimeType = \"${it.mimeType}\"\n\t\t"
+                code += "\tmimeType = \"${it.mimeType}\"\n${"\t".repeat(innerTabsCount)}"
             }
             if (it.uriPattern.isNotEmpty()) {
                 val uriPattern = if (it.uriPattern.contains(
@@ -212,14 +218,14 @@ class NavArgumentBridgeCodeBuilder(
                 } else {
                     it.uriPattern
                 }
-                code += "\turiPattern = \"$uriPattern\"\n\t\t"
+                code += "\turiPattern = \"$uriPattern\"\n${"\t".repeat(innerTabsCount)}"
             }
             code += "}"
 
             code += if (i != deepLinks.lastIndex) {
-                ",\n\t\t"
+                ",\n${"\t".repeat(innerTabsCount)}"
             } else {
-                "\n\t)\n"
+                "\n${"\t".repeat(innerTabsCount - 1)})${if (listOfOnly) "" else "\n"}"
             }
         }
 
@@ -286,7 +292,8 @@ class NavArgumentBridgeCodeBuilder(
 
     fun constructRoute(
         isConcatenatingInString: Boolean,
-        args: List<Parameter> = navArgs
+        args: List<Parameter> = navArgs,
+        baseRouteStr: String = "baseRoute"
     ): String {
         val mandatoryArgs = StringBuilder()
         val optionalArgs = StringBuilder()
@@ -300,9 +307,9 @@ class NavArgumentBridgeCodeBuilder(
         }
 
         val baseRoutePrefix = if (isConcatenatingInString) {
-            "\$baseRoute"
+            "\$$baseRouteStr"
         } else {
-            "baseRoute"
+            baseRouteStr
         }
 
         return if (args.isEmpty()) baseRoutePrefix

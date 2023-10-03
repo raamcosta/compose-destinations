@@ -20,7 +20,6 @@ interface TypedDestinationSpec<T> : TypedRoute<T> {
      * Style of this destination. It can be one of:
      * - [DestinationStyle.Default]
      * - [DestinationStyle.Dialog]
-     * - [DestinationStyle.Runtime]
      * - [DestinationStyle.Animated]
      * And when using "bottom-sheet" dependency, it can also be:
      * - `DestinationStyleBottomSheet`

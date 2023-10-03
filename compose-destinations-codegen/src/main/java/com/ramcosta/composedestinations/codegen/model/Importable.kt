@@ -7,7 +7,7 @@ data class Importable(
     val qualifiedName: String
 ) {
 
-    internal val preferredSimpleName = getCodeFriendlyName()
+    val preferredSimpleName = getCodeFriendlyName()
     internal val importStatement = getImportStatement().sanitizePackageName()
 
     private fun getImportStatement() = "import " + if (preferredSimpleName == simpleName) {

@@ -8,7 +8,6 @@ import com.ramcosta.composedestinations.codegen.commons.CORE_ACTIVITY_DESTINATIO
 import com.ramcosta.composedestinations.codegen.commons.CORE_BOTTOM_SHEET_DESTINATION_STYLE
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_ACTIVITY_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_DESTINATION_SPEC
-import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.CORE_TYPED_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
@@ -92,9 +91,7 @@ internal class SingleDestinationWriter(
                 .replace(NAV_ARGUMENTS, navArgumentBridgeCodeBuilder.navArgumentsDeclarationCode())
                 .replace(
                     DEEP_LINKS,
-                    navArgumentBridgeCodeBuilder.deepLinksDeclarationCode(destination.deepLinks) {
-                        navArgumentBridgeCodeBuilder.constructRoute(true, it)
-                    }
+                    navArgumentBridgeCodeBuilder.deepLinksDeclarationCode(destination.deepLinks)
                 )
                 .replace(DESTINATION_STYLE, destinationStyle())
                 .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
@@ -149,15 +146,14 @@ internal class SingleDestinationWriter(
     }
 
     private fun getGenNavArgsClassVisibility(): String {
-        if (destination.visibility == Visibility.PUBLIC) {
-            return "public"
+        return when (destination.visibility) {
+            Visibility.PUBLIC -> "public"
+            Visibility.INTERNAL -> if (destination.destinationImportable in setOfPublicStartParticipatingTypes) {
+                "public"
+            } else {
+                "internal"
+            }
         }
-
-        if (destination.destinationImportable in setOfPublicStartParticipatingTypes) {
-            return "public"
-        }
-
-        return "internal"
     }
 
     private fun objectWideRequireOptInAnnotationsCode(): String {
@@ -250,35 +246,11 @@ internal class SingleDestinationWriter(
             is DestinationStyleType.Animated -> destinationStyleAnimated(destination.destinationStyleType)
 
             is DestinationStyleType.Dialog -> destinationStyleDialog(destination.destinationStyleType)
-
-            is DestinationStyleType.Runtime -> destinationStyleRuntime()
         }
     }
 
-    private fun destinationStyleRuntime(): String {
-        return """
-                            
-            private var _style: DestinationStyle? = null
-
-            override var style: DestinationStyle
-                set(value) {
-                    if (value is DestinationStyle.Runtime) {
-                        error("You cannot use `DestinationStyle.Runtime` other than in the `@Destination`" +
-                            "annotation 'style' parameter!")
-                    }
-                    _style = value
-                }
-                get() {
-                    return _style ?: error("For annotated Composables with `style = DestinationStyle.Runtime`, " +
-                            "you need to explicitly set the style before calling `DestinationsNavHost`")
-                }
-                
-        """.trimIndent()
-            .prependIndent("\t")
-    }
-
     private fun destinationStyleDialog(destinationStyleType: DestinationStyleType.Dialog): String {
-        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.importable.getCodePlaceHolder()}\n"
+        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.code(importableHelper)}\n"
     }
 
     private fun destinationStyleAnimated(destinationStyleType: DestinationStyleType.Animated): String {
@@ -291,7 +263,7 @@ internal class SingleDestinationWriter(
             ).addImport()
         }
 
-        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.importable.getCodePlaceHolder()}\n"
+        return "\n\toverride val style: DestinationStyle = ${destinationStyleType.code(importableHelper)}\n"
     }
 
     private fun destinationStyleBottomSheet(): String {
@@ -299,12 +271,7 @@ internal class SingleDestinationWriter(
             throw MissingRequiredDependency("You need to include '$BOTTOM_SHEET_DEPENDENCY' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
         }
 
-        val bottomSheetImportable = Importable(
-            CORE_BOTTOM_SHEET_DESTINATION_STYLE,
-            "$CORE_PACKAGE_NAME.bottomsheet.spec.$CORE_BOTTOM_SHEET_DESTINATION_STYLE",
-        )
-
-        return "\n\toverride val style: DestinationStyle = ${bottomSheetImportable.getCodePlaceHolder()}\n"
+        return "\n\toverride val style: DestinationStyle = ${DestinationStyleType.BottomSheet.code(importableHelper)}\n"
     }
 
     private fun Importable.getCodePlaceHolder(): String {

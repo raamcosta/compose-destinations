@@ -25,8 +25,7 @@ interface TypedNavGraphSpec<NAV_ARGS, START_ROUTE_NAV_ARGS>: TypedRoute<NAV_ARGS
     /**
      * Default enter/exit transition animations for destinations that belong
      * to this navigation graph.
-     * If this is a nested graph, then if not specified (null) the parent ones
-     * will apply.
+     * If not specified (null), then the parent ones will apply.
      *
      * If the [TypedDestinationSpec.style] itself defines another set of animations, then
      * those ones will apply instead of this.

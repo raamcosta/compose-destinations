@@ -13,23 +13,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.AccountScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TaskListScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.popBackStack
 import com.ramcosta.composedestinations.navigation.popUpTo
+import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
-import com.ramcosta.destinations.sample.NavGraphs
 import com.ramcosta.destinations.sample.R
-import com.ramcosta.destinations.sample.destinations.AccountScreenDestination
-import com.ramcosta.destinations.sample.destinations.DirectionDestination
-import com.ramcosta.destinations.sample.destinations.SettingsScreenDestination
-import com.ramcosta.destinations.sample.destinations.TaskListScreenDestination
 
 @Composable
 fun BottomBar(
     navController: NavHostController
 ) {
     BottomNavigation {
-        BottomBarItem.values().forEach { destination ->
+        BottomBarItem.entries.forEach { destination ->
             val isCurrentDestOnBackStack = navController.isRouteOnBackStack(destination.direction)
             BottomNavigationItem(
                 selected = isCurrentDestOnBackStack,
@@ -69,7 +69,7 @@ fun BottomBar(
 }
 
 enum class BottomBarItem(
-    val direction: DirectionDestination,
+    val direction: DirectionDestinationSpec,
     val icon: ImageVector,
     @StringRes val label: Int
 ) {
