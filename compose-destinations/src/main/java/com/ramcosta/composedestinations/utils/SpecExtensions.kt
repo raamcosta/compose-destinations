@@ -10,6 +10,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transform
@@ -80,7 +81,7 @@ fun NavBackStackEntry.navGraph(): NavGraphSpec {
 val NavController.currentDestinationFlow: Flow<DestinationSpec>
     get() = currentBackStackEntryFlow.transform { navStackEntry ->
         when (val route = navStackEntry.route()) {
-            is DestinationSpec<*> -> emit(route)
+            is DestinationSpec -> emit(route)
             is NavGraphSpec -> Unit
         }
     }

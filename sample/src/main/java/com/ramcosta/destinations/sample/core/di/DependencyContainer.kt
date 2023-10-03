@@ -1,11 +1,11 @@
 package com.ramcosta.destinations.sample.core.di
 
 import androidx.lifecycle.SavedStateHandle
+import com.ramcosta.composedestinations.generated.navArgs
 import com.ramcosta.destinations.sample.MainActivity
 import com.ramcosta.destinations.sample.MainViewModel
 import com.ramcosta.destinations.sample.account.AccountViewModel
 import com.ramcosta.destinations.sample.login.data.LoginStateRepository
-import com.ramcosta.destinations.sample.navArgs
 import com.ramcosta.destinations.sample.tasks.data.StepsRepository
 import com.ramcosta.destinations.sample.tasks.data.TasksRepository
 import com.ramcosta.destinations.sample.tasks.presentation.details.StepDetailsViewModel

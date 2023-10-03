@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.codegen.commons
 
 import java.io.OutputStream
-import java.util.*
+import java.util.Locale
 
 operator fun OutputStream.plusAssign(str: String) {
     write(str.toByteArray())
@@ -37,3 +37,8 @@ fun String.sanitizePackageName(): String {
 
 private val humps = "(?<=.)(?=\\p{Upper})".toRegex()
 fun String.toSnakeCase() = replace(humps, "_").lowercase(Locale.US)
+
+private val pattern = "_[a-z]".toRegex()
+fun String.snakeToCamelCase(): String {
+    return replace(pattern) { it.value.last().uppercase() }
+}

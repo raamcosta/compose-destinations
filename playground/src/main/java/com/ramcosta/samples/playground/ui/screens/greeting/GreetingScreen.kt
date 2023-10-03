@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavHostParam
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.generated.destinations.FeatureXHomeDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
@@ -39,8 +39,10 @@ import kotlinx.coroutines.launch
 
 typealias ResultCena<T> = ResultRecipient<GoToProfileConfirmationDestination, T>
 
-@RootNavGraph(start = true)
-@Destination(style = GreetingTransitions::class)
+@Destination(
+    start = true,
+    style = GreetingTransitions::class
+)
 @Composable
 fun GreetingScreen(
     navigator: DestinationsNavigator,
@@ -120,7 +122,11 @@ private fun GreetingScreenContent(
 
             Button(
                 onClick = {
-                    navigator.navigate(GoToProfileConfirmationDestination)
+//                    navigator.navigate(GoToProfileConfirmationDestination)
+                    navigator.navigate(FeatureXHomeDestination("SOMETHING"))
+//                    navigator.navigate(
+//                        FeatureXGraph("something", FeatureXHomeNavArgs("SOMETHING2"))
+//                    )
                 }
             ) {
                 Text(text = stringResource(R.string.go_to_profile))

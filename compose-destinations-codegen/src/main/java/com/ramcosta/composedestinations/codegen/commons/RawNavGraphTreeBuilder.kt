@@ -83,7 +83,7 @@ internal fun RawNavGraphGenParams.makeGraphTree(
         requireOptInAnnotationTypes = calculateRequireOptInAnnotationTypes(
             destinations,
             nestedGraphs,
-        ) + (externalDestinations.flatMap{ it.requireOptInAnnotationTypes } + externalNavGraphs.flatMap { it.requireOptInAnnotationTypes }).toSet(),
+        ) + (includedRoutes.flatMap{ it.requireOptInAnnotationTypes }).toSet(),
         nestedGraphs = nestedGraphs,
     ).also {
         if (visibility == Visibility.PUBLIC) {
@@ -96,15 +96,15 @@ private fun RawNavGraphTree.addStartRouteTreeToParticipantsOfPublicAPIs() {
     val startDestination = destinations.firstOrNull { it.navGraphInfo.start }
     val startNestedGraph = nestedGraphs.firstOrNull { it.isParentStart == true }
 
-    if (externalStartRoute != null) {
+    if (includedStartRoute != null) {
         if (startDestination != null || startNestedGraph != null) {
             throw IllegalDestinationsSetup(
-                "${annotationType.preferredSimpleName} defines external start route but " +
+                "${annotationType.preferredSimpleName} defines imported route with `start = true` but " +
                         "'${(startDestination?.composableName ?: startNestedGraph?.annotationType?.preferredSimpleName)}' is also defined " +
-                        "as its start. Use external startRoute only when start route is not in the current module!"
+                        "as its start. Use imported annotations with `start = true` only when start route is not in the current module!"
             )
         }
-        // external routes are already generated, so no need to include them in the setOfPublicStartParticipatingTypes
+        // included routes are already generated, so no need to include them in the setOfPublicStartParticipatingTypes
         return
     }
 
@@ -195,9 +195,9 @@ private fun RawNavGraphGenParams.calculateStartRouteNavArgsTree(
     destinations: List<CodeGenProcessedDestination>,
     nestedGraphs: List<RawNavGraphTree>
 ): StartRouteArgsTree {
-    if (externalStartRoute != null) {
+    if (includedStartRoute != null) {
         return StartRouteArgsTree(
-            navArgsClass = externalStartRoute.navArgs,
+            navArgsClass = includedStartRoute.navArgs,
             graphTree = null,
             subTree = null
         )
@@ -231,7 +231,7 @@ private fun RawNavGraphGenParams.calculateStartRouteNavArgsTree(
 @JvmName("requireOptInAnnotationClassTypesRawNavGraphTree")
 private fun List<RawNavGraphTree>.requireOptInAnnotationClassTypes(): MutableSet<Importable> {
     return this.flatMapTo(mutableSetOf()) {
-        it.requireOptInAnnotationClassTypes() + it.externalNavGraphs.flatMap { it.requireOptInAnnotationTypes }
+        it.requireOptInAnnotationClassTypes() + it.importedNavGraphs.flatMap { it.requireOptInAnnotationTypes }
     }
 }
 

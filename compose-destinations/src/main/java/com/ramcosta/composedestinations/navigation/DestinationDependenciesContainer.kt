@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.navigation
 
-import com.ramcosta.composedestinations.dynamic.originalDestination
+import com.ramcosta.composedestinations.dynamic.destination.originalDestination
 import com.ramcosta.composedestinations.scope.DestinationScopeWithNoDependencies
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec

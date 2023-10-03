@@ -11,6 +11,7 @@ import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCa
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.TypedNavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 import com.ramcosta.composedestinations.spec.Route
@@ -37,7 +38,7 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
  * of the [navGraph]. This makes it possible to override that default on runtime.
  *
  * @param defaultTransitions default enter/exit transition animations for all destinations.
- * By default it's [navGraph]'s [NavGraphSpec.defaultTransitions].
+ * By default it's [navGraph]'s [TypedNavGraphSpec.defaultTransitions].
  *
  * @param engine [NavHostEngine] to use. If you are not targeting wear
  * (which need "io.github.raamcosta.compose-destinations:wear" dependency), you don't

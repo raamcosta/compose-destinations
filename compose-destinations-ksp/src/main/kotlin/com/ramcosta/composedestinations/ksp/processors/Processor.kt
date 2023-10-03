@@ -5,6 +5,7 @@ import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
@@ -24,6 +25,7 @@ import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
+import com.ramcosta.composedestinations.ksp.commons.DestinationMappingUtils
 import com.ramcosta.composedestinations.ksp.commons.MutableKSFileSourceMapper
 import com.ramcosta.composedestinations.ksp.commons.findActualClassDeclaration
 
@@ -36,23 +38,27 @@ class Processor(
     override fun process(resolver: Resolver): List<KSAnnotated> {
         Logger.instance = KspLogger(logger)
 
-        val composableDestinations = resolver.getComposableDestinations()
-        val annotatedActivityDestinations = resolver.getActivityDestinations()
+        val composableDestinations = resolver.getComposableDestinationPaths()
+        val activityDestinations = resolver.getActivityDestinations()
+        val navGraphAnnotations = resolver.getNavGraphAnnotations()
+        val navHostGraphAnnotations = resolver.getNavHostGraphAnnotations()
+
         if (!composableDestinations.iterator().hasNext() &&
-            !annotatedActivityDestinations.iterator().hasNext() &&
-                    !resolver.getSymbolsWithAnnotation("com.ramcosta.composedestinations.annotation.ExternalRoutes").iterator().hasNext()
+            !activityDestinations.iterator().hasNext() &&
+            !navGraphAnnotations.iterator().hasNext() &&
+            !navHostGraphAnnotations.iterator().hasNext()
         ) {
             return emptyList()
         }
 
         val navTypeSerializers = resolver.getNavTypeSerializers()
-        val navGraphAnnotations = resolver.getNavGraphAnnotations()
-        val navHostGraphAnnotations = resolver.getNavHostGraphAnnotations()
         val codeGenConfig = ConfigParser(options).parse()
+        val destinationMappingUtils = DestinationMappingUtils(resolver)
 
         val mutableKSFileSourceMapper = MutableKSFileSourceMapper()
         val classesToNavGraphsMapper = KspToCodeGenNavGraphsMapper(
             resolver,
+            destinationMappingUtils,
             mutableKSFileSourceMapper,
             navTypeSerializers.associateBy { it.genericType }
         )
@@ -60,11 +66,12 @@ class Processor(
 
         val functionsToDestinationsMapper = KspToCodeGenDestinationsMapper(
             resolver,
+            destinationMappingUtils,
             mutableKSFileSourceMapper,
             navTypeSerializers.associateBy { it.genericType }
         )
         val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, mutableKSFileSourceMapper)
-        val destinations = functionsToDestinationsMapper.map(composableDestinations, annotatedActivityDestinations)
+        val destinations = functionsToDestinationsMapper.map(composableDestinations.map { it.immutable() }, activityDestinations)
 
         CodeGenerator(
             codeGenerator = kspCodeOutputStreamMaker,
@@ -75,18 +82,61 @@ class Processor(
         return emptyList()
     }
 
-    private fun Resolver.getComposableDestinations(name: String = DESTINATION_ANNOTATION_QUALIFIED): Sequence<KSFunctionDeclaration> {
-        val symbolsWithAnnotation = getSymbolsWithAnnotation(name)
+    private class DestinationAnnotationsPath {
+        var annotations: Sequence<KSAnnotation> = emptySequence()
+        var function: KSFunctionDeclaration? = null
 
-        return symbolsWithAnnotation.filterIsInstance<KSFunctionDeclaration>() + symbolsWithAnnotation.getAnnotationDestinations(this)
+        fun copy(): DestinationAnnotationsPath {
+            return DestinationAnnotationsPath().also {
+                it.annotations = annotations
+                it.function = function
+            }
+        }
+
+        override fun toString(): String {
+            return "DestinationAnnotationsPath(annotations=${annotations.toList().map { it.shortName.asString() }}, function=${function?.qualifiedName?.asString()})"
+        }
+
+        fun immutable() = DestinationAnnotationsPath(annotations.toList(), function!!)
     }
 
-    private fun Sequence<KSAnnotated>.getAnnotationDestinations(resolver: Resolver): Sequence<KSFunctionDeclaration> {
-        return filterIsInstance<KSClassDeclaration>()
-            .filter { Modifier.ANNOTATION in it.modifiers && it.qualifiedName != null }
-            .flatMap {
-                resolver.getComposableDestinations(it.qualifiedName!!.asString())
+    private fun Resolver.getComposableDestinationPaths(
+        annotationQualifiedName: String = DESTINATION_ANNOTATION_QUALIFIED,
+        annotationsPath: DestinationAnnotationsPath = DestinationAnnotationsPath()
+    ): Sequence<DestinationAnnotationsPath> {
+        val symbolsWithAnnotation = getSymbolsWithAnnotation(annotationQualifiedName)
+
+        return symbolsWithAnnotation.flatMap {
+            createPaths(
+                annotationQualifiedName,
+                it,
+                annotationsPath.copy()
+            )
+        }
+    }
+
+    private fun Resolver.createPaths(
+        annotationQualifiedName: String,
+        annotated: KSAnnotated,
+        annotationsPath: DestinationAnnotationsPath
+    ) : Sequence<DestinationAnnotationsPath> {
+        return when {
+            annotated is KSFunctionDeclaration -> {
+                annotated.annotations.filter { it.annotationType.resolve().declaration.qualifiedName!!.asString() == annotationQualifiedName }.map { annotation ->
+                    annotationsPath.copy().also {
+                        it.annotations += annotation
+                        it.function = annotated
+                    }
+                }
             }
+
+            annotated is KSClassDeclaration && Modifier.ANNOTATION in annotated.modifiers -> {
+                annotationsPath.annotations += annotated.annotations.find { it.annotationType.resolve().declaration.qualifiedName!!.asString() == annotationQualifiedName }!!
+                getComposableDestinationPaths(annotated.qualifiedName!!.asString(), annotationsPath)
+            }
+
+            else -> emptySequence()
+        }
     }
 
     private fun Resolver.getActivityDestinations(name: String = ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED): Sequence<KSClassDeclaration> {
@@ -94,14 +144,14 @@ class Processor(
 
         return symbolsWithAnnotation
             .filterIsInstance<KSClassDeclaration>()
-            .filter { Modifier.ANNOTATION !in it.modifiers } + symbolsWithAnnotation.getAnnotationActivityDestinations(this)
+            .filter { Modifier.ANNOTATION !in it.modifiers } + getAnnotationActivityDestinations(symbolsWithAnnotation)
     }
 
-    private fun Sequence<KSAnnotated>.getAnnotationActivityDestinations(resolver: Resolver): Sequence<KSClassDeclaration> {
-        return filterIsInstance<KSClassDeclaration>()
+    private fun Resolver.getAnnotationActivityDestinations(symbolsWithAnnotation: Sequence<KSAnnotated>): Sequence<KSClassDeclaration> {
+        return symbolsWithAnnotation.filterIsInstance<KSClassDeclaration>()
             .filter { Modifier.ANNOTATION in it.modifiers && it.qualifiedName != null }
             .flatMap {
-                resolver.getActivityDestinations(it.qualifiedName!!.asString())
+                getActivityDestinations(it.qualifiedName!!.asString())
             }
     }
 

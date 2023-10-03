@@ -122,7 +122,8 @@ class InitialValidator(
         currentKnownComposableNames: List<String>,
     ) {
         if (currentKnownComposableNames.contains(composableName)) {
-            throw IllegalDestinationsSetup("Destination composable names must be unique: found multiple named '${composableName}'")
+            // TODO RACOSTA
+//            throw IllegalDestinationsSetup("Destination composable names must be unique: found multiple named '${composableName}'")
         }
     }
 
@@ -162,7 +163,7 @@ class InitialValidator(
 
             val resultOriginDestinationParams =
                 destinationsByName.value[resultOriginDestinationName]
-                    ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin!")
+                    ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin (type aliases are not allowed here).")
 
             resultOriginDestinationParams.parameters.firstOrNull {
                 it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME &&

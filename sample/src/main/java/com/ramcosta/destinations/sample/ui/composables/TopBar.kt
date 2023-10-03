@@ -11,14 +11,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
+import com.ramcosta.composedestinations.generated.destinations.AccountScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.AddStepDialogDestination
+import com.ramcosta.composedestinations.generated.destinations.AddTaskDialogDestination
+import com.ramcosta.composedestinations.generated.destinations.LoginScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.StepScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TaskListScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TaskScreenDestination
+import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
-import com.ramcosta.destinations.sample.destinations.*
 import com.ramcosta.destinations.sample.tasks.presentation.details.StepDetailsViewModel
 import com.ramcosta.destinations.sample.tasks.presentation.details.TaskDetailsViewModel
 
 @Composable
 fun TopBar(
-    destination: Destination,
+    destination: DestinationSpec,
     navBackStackEntry: NavBackStackEntry?
 ) {
     TopAppBar {
@@ -33,7 +41,7 @@ fun TopBar(
 }
 
 @Composable
-fun Destination.topBarTitle(navBackStackEntry: NavBackStackEntry?): String {
+fun DestinationSpec.topBarTitle(navBackStackEntry: NavBackStackEntry?): String {
     return when (this) {
         TaskScreenDestination -> {
             // Here you can also call another Composable on another file like TaskScreenTopBar
@@ -61,5 +69,7 @@ fun Destination.topBarTitle(navBackStackEntry: NavBackStackEntry?): String {
         LoginScreenDestination,
         SettingsScreenDestination,
         TaskListScreenDestination -> javaClass.simpleName.removeSuffix("Destination")
+
+        else -> error("unknown Destination $this")
     }
 }

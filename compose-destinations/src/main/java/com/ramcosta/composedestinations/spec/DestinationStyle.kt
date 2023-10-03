@@ -178,27 +178,6 @@ abstract class DestinationStyle {
         }
     }
 
-    /**
-     * Marks the style as "Runtime" defined.
-     *
-     * This means that for this Destination, the style property will
-     * contain a setter and you need to set it before calling `DestinationsNavHost`.
-     *
-     * This is useful if you want to define the style for a Destination in a
-     * different module than the one which has the annotated Composable.
-     */
-    object Runtime: DestinationStyle() {
-        override fun <T> NavGraphBuilder.addComposable(
-            destination: TypedDestinationSpec<T>,
-            navController: NavHostController,
-            dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-            manualComposableCalls: ManualComposableCalls
-        ) = with(Default) {
-            addComposable(destination, navController, dependenciesContainerBuilder, manualComposableCalls)
-        }
-    }
-
-
     @InternalDestinationsApi
     object Activity: DestinationStyle() {
         override fun <T> NavGraphBuilder.addComposable(

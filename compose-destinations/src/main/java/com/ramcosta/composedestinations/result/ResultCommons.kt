@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.ramcosta.composedestinations.dynamic.originalDestination
+import com.ramcosta.composedestinations.dynamic.destination.originalDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
 @Composable

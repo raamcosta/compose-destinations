@@ -20,6 +20,11 @@ class ImportableHelper(
         priorityImports.add(element)
     }
 
+    fun addPriorityQualifiedImport(importable: Importable) {
+        imports.add(importable)
+        priorityImports.add(importable)
+    }
+
     fun remove(importables: Set<Importable>) {
         imports.removeAll(importables)
         priorityImports.removeAll(importables)

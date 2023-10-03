@@ -80,7 +80,7 @@ inside the Composable (as is likely the case when using ViewModel). Read more [h
 @Composable
 fun HomeScreen(
    navigator: DestinationsNavigator
-   // OR navigator: NavController if you prefer, in which case there's a navigate extension function
+   // OR navigator: NavController if you prefer, in which case you can use `navigate` extension function
 ) {
    /*...*/
    navigator.navigate(ProfileScreenDestination(id = 7, groupName = "Kotlin programmers"))

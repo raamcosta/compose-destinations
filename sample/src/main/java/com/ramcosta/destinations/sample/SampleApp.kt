@@ -9,10 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.destinations.sample.core.viewmodel.activityViewModel
-import com.ramcosta.destinations.sample.destinations.Destination
-import com.ramcosta.destinations.sample.destinations.LoginScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.LoginScreenDestination
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.destinations.sample.ui.composables.BottomBar
 import com.ramcosta.destinations.sample.ui.composables.SampleScaffold
 import com.ramcosta.destinations.sample.ui.composables.TopBar
@@ -53,14 +55,14 @@ fun SampleApp() {
     }
 }
 
-private val Destination.shouldShowScaffoldElements get() = this !is LoginScreenDestination
+private val DestinationSpec.shouldShowScaffoldElements get() = this !is LoginScreenDestination
 
 @Composable
 private fun ShowLoginWhenLoggedOut(
     vm: MainViewModel,
     navController: NavHostController
 ) {
-    val currentDestination by navController.appCurrentDestinationAsState()
+    val currentDestination by navController.currentDestinationAsState()
     val isLoggedIn by vm.isLoggedInFlow.collectAsState()
 
     if (!isLoggedIn && currentDestination != LoginScreenDestination) {

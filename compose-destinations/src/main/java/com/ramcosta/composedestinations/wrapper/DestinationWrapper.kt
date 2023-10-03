@@ -75,7 +75,11 @@ fun DestinationScope<*>.Wrap(
     vararg wrappers: DestinationWrapper,
     content: @Composable () -> Unit
 ) {
-    WrapRecursively(wrappers, 0, content)
+    if (wrappers.isEmpty()) {
+        content()
+    } else {
+        WrapRecursively(wrappers, 0, content)
+    }
 }
 
 @Composable

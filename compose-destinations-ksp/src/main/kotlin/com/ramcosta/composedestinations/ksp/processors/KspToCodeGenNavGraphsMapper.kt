@@ -12,10 +12,11 @@ import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_DEF
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
-import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.model.IncludedRoute
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
+import com.ramcosta.composedestinations.ksp.commons.DestinationMappingUtils
 import com.ramcosta.composedestinations.ksp.commons.MutableKSFileSourceMapper
 import com.ramcosta.composedestinations.ksp.commons.findActualClassDeclaration
 import com.ramcosta.composedestinations.ksp.commons.findAllRequireOptInAnnotations
@@ -28,6 +29,7 @@ import com.ramcosta.composedestinations.ksp.commons.toImportable
 
 internal class KspToCodeGenNavGraphsMapper(
     private val resolver: Resolver,
+    private val destinationMappingUtils: DestinationMappingUtils,
     private val mutableKSFileSourceMapper: MutableKSFileSourceMapper,
     private val navTypeSerializersByType: Map<Importable, NavTypeSerializer>,
 ) {
@@ -83,11 +85,15 @@ internal class KspToCodeGenNavGraphsMapper(
             ?.map { it.toDeepLink() }
             .orEmpty()
 
-        val externalRoutesAnnotation = annotations.find { it.shortName.asString() == "ExternalRoutes" }
-
-        val externalNavGraphs = getExternalNavGraphs(externalRoutesAnnotation)
-        val externalDestinations = getExternalDestinations(externalRoutesAnnotation)
-        val externalStartRoute = getExternalStartRoute(externalRoutesAnnotation, externalNavGraphs, externalDestinations)
+        val includedRoutes = declarations.firstOrNull {
+            it is KSClassDeclaration && it.isCompanionObject
+        }?.annotations?.mapNotNull {
+            when (it.shortName.asString()) {
+                "IncludeDestination" -> it.getIncludedDestination()
+                "IncludeNavGraph" -> it.getIncludedNavGraph()
+                else -> null
+            }
+        }.orEmpty()
 
         val navArgs = navGraphAnnotation
             .getNavArgsDelegateType(resolver, navTypeSerializersByType)
@@ -149,97 +155,83 @@ internal class KspToCodeGenNavGraphsMapper(
             deepLinks = deepLinks,
             navArgs = navArgs?.type,
             visibility = navGraphVisibility,
-            externalStartRoute = externalStartRoute,
-            externalNavGraphs = externalNavGraphs,
-            externalDestinations = externalDestinations,
+            includedRoutes = includedRoutes.toList()
         )
     }
 
-    private fun getExternalDestinations(externalRoutesAnnotation: KSAnnotation?): List<ExternalRoute> {
-        return externalRoutesAnnotation?.findArgumentValue<ArrayList<KSType>>("destinations")?.map {
-            ExternalRoute(
-                generatedType = Importable(
-                    it.declaration.simpleName.asString(),
-                    it.declaration.qualifiedName!!.asString()
-                ),
-                // normal external destinations don't need this info, we can not populate it
-                // we will do that though for the external start route if that exists
-                navArgs = null,
-                isDestination = true,
-                requireOptInAnnotationTypes = it.declaration.findAllRequireOptInAnnotations()
-            )
-        }.orEmpty()
-    }
-
-    private fun KSClassDeclaration.getExternalStartRoute(
-        externalRoutes: KSAnnotation?,
-        externalNavGraphs: List<ExternalRoute>,
-        externalDestinations: List<ExternalRoute>
-    ): ExternalRoute? {
-        return externalRoutes?.findArgumentValue<KSType>("startRoute")?.let { startRoute ->
-            if ((startRoute.declaration as KSClassDeclaration).isNothing) {
-                return null
-            }
-
-            val matchingNavGraph =
-                externalNavGraphs.firstOrNull { it.generatedType.qualifiedName == startRoute.declaration.qualifiedName!!.asString() }
-            if (matchingNavGraph != null) {
-                return matchingNavGraph
-            }
-
-            val generatedType = Importable(
-                simpleName = startRoute.declaration.simpleName.asString(),
-                qualifiedName = startRoute.declaration.qualifiedName!!.asString()
-            )
-
-            if (externalDestinations.none { it.generatedType.qualifiedName == generatedType.qualifiedName }) {
-                throw IllegalDestinationsSetup("`startRoute` of ${this.simpleName.asString()} is not present in the `destinations` or `navGraphs` list provided! " +
-                        "External start route must be one of the external destination or nav graphs.")
-            }
-
-            val superType =
-                (startRoute.declaration as KSClassDeclaration).superTypes.first().resolve()
-            val navArgs =
-                if (superType.declaration.simpleName.asString() == "TypedDestinationSpec") {
-                    superType.arguments.first().type!!.resolve()
-                        .getNavArgsDelegateType(resolver, navTypeSerializersByType)?.type
-                } else {
-                    null
-                }
-
-            ExternalRoute(
-                generatedType = generatedType,
-                navArgs = navArgs,
-                isDestination = true,
-                startRoute.declaration.findAllRequireOptInAnnotations()
+    private fun KSAnnotation.getIncludedDestination(): IncludedRoute.Destination {
+        val destinationType = findArgumentValue<KSType>("destination")!!
+        val importable = destinationType.let {
+            Importable(
+                it.declaration.simpleName.asString(),
+                it.declaration.qualifiedName!!.asString()
             )
         }
+
+        val superType =
+            (destinationType.declaration as KSClassDeclaration).superTypes.first().resolve()
+        val navArgs = if (superType.declaration.simpleName.asString() == "TypedDestinationSpec") {
+            superType.arguments.first().type!!.resolve()
+                .getNavArgsDelegateType(resolver, navTypeSerializersByType)?.type
+        } else {
+            null
+        }
+
+        val deepLinks = findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)
+            ?.map { it.toDeepLink() }
+            .orEmpty()
+
+        return IncludedRoute.Destination(
+            isStart = findArgumentValue<Boolean>("start")!!,
+            generatedType = importable,
+            navArgs = navArgs,
+            requireOptInAnnotationTypes = destinationType.declaration.findAllRequireOptInAnnotations(),
+            additionalDeepLinks = deepLinks,
+            overriddenDestinationStyleType = destinationMappingUtils.getDestinationStyleType(this, "@IncludeDestination of ${importable.preferredSimpleName}", allowNothing = true),
+            additionalComposableWrappers = destinationMappingUtils.getDestinationWrappers(this)!!,
+        )
     }
 
-    private fun getExternalNavGraphs(externalRoutes: KSAnnotation?): List<ExternalRoute> {
-        return externalRoutes
-            ?.findArgumentValue<ArrayList<KSType>>("nestedNavGraphs")
-            ?.map { graphType ->
-                val superType =
-                    (graphType.declaration as KSClassDeclaration).superTypes.first().resolve()
+    private fun KSAnnotation.getIncludedNavGraph(): IncludedRoute.NavGraph {
+        val graphType = findArgumentValue<KSType>("graph")!!
+        val importable = graphType.let {
+            Importable(
+                it.declaration.simpleName.asString(),
+                it.declaration.qualifiedName!!.asString()
+            )
+        }
 
-                val navArgs =
-                    if (superType.declaration.simpleName.asString() == "TypedNavGraphSpec") {
-                        superType.arguments.first().type!!.resolve()
-                            .getNavArgsDelegateType(resolver, navTypeSerializersByType)?.type
-                    } else {
-                        null
-                    }
+        val superType =
+            (graphType.declaration as KSClassDeclaration).superTypes.first().resolve()
 
-                ExternalRoute(
-                    generatedType = Importable(
-                        simpleName = graphType.declaration.simpleName.asString(),
-                        qualifiedName = graphType.declaration.qualifiedName!!.asString()
-                    ),
-                    navArgs = navArgs,
-                    isDestination = false,
-                    graphType.declaration.findAllRequireOptInAnnotations()
-                )
-            }.orEmpty()
+        val navArgs =
+            if (superType.declaration.simpleName.asString() == "TypedNavGraphSpec") {
+                superType.arguments.first().type!!.resolve()
+                    .getNavArgsDelegateType(resolver, navTypeSerializersByType)?.type
+            } else {
+                null
+            }
+
+        val deepLinks = findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)
+            ?.map { it.toDeepLink() }
+            .orEmpty()
+
+        val navGraphDefaultTransitions = findArgumentValue<KSType>("defaultTransitions")
+            ?.findActualClassDeclaration()
+            ?.takeIf { !it.isNothing }
+            ?.toImportable()
+
+        return IncludedRoute.NavGraph(
+            isStart = findArgumentValue<Boolean>("start")!!,
+            generatedType = importable,
+            navArgs = navArgs,
+            requireOptInAnnotationTypes = graphType.declaration.findAllRequireOptInAnnotations(),
+            additionalDeepLinks = deepLinks,
+            overriddenDefaultTransitions = if (navGraphDefaultTransitions?.qualifiedName == "com.ramcosta.composedestinations.annotation.IncludeNavGraph.Companion.NoOverride") {
+                IncludedRoute.NavGraph.OverrideDefaultTransitions.NoOverride
+            } else {
+                IncludedRoute.NavGraph.OverrideDefaultTransitions.Override(navGraphDefaultTransitions)
+            }
+        )
     }
 }

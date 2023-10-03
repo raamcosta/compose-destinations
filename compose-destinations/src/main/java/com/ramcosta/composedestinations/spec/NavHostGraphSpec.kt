@@ -3,7 +3,7 @@ package com.ramcosta.composedestinations.spec
 import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
 
 /**
- * Like [NavGraphSpec] but used specifically for top level navigation graphs (i.e they
+ * Like [DirectionNavGraphSpec] but used specifically for top level navigation graphs (i.e they
  * have no parent graph) that are meant to pass to [com.ramcosta.composedestinations.DestinationsNavHost] call.
  */
 interface NavHostGraphSpec : DirectionNavGraphSpec {

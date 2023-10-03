@@ -15,6 +15,7 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeAlias
+import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.google.devtools.ksp.symbol.Location
 import com.google.devtools.ksp.symbol.Modifier
@@ -258,10 +259,31 @@ fun KSType.toType(
         ksClassDeclaration?.qualifiedName?.asString() ?: qualifiedName.asString()
     )
 
+    val typeArgs: List<TypeArgument> = if (declaration is KSTypeAlias) {
+        val aliasTypes = (declaration as KSTypeAlias).type.resolve()
+            .argumentTypes((declaration as KSTypeAlias).location, resolver, navTypeSerializersByType)
+
+        if (aliasTypes.any { it is TypeArgument.GenericType }) {
+            val siteArgs = argumentTypes(location, resolver, navTypeSerializersByType).toMutableList()
+
+            aliasTypes.toMutableList().apply {
+                mapIndexed { idx, it ->
+                    if (it is TypeArgument.GenericType) {
+                        this[idx] = siteArgs.removeAt(0)
+                    }
+                }
+            }
+        } else {
+            aliasTypes
+        }
+    } else {
+        argumentTypes(location, resolver, navTypeSerializersByType)
+    }
+
     return TypeInfo(
         value = Type(
             importable = importable,
-            typeArguments = argumentTypes(location, resolver, navTypeSerializersByType),
+            typeArguments = typeArgs,
             requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
             isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
             isParcelable = classDeclarationType?.let { resolver.parcelableType().isAssignableFrom(it) } ?: false,
@@ -282,16 +304,20 @@ private fun KSType.argumentTypes(location: Location, resolver: Resolver, navType
         val resolvedType = typeArg.type?.resolve()
 
         if (resolvedType?.isError == true) {
-            return@mapNotNull TypeArgument.Error(lazy { getErrorLine(location) })
+            return@mapNotNull TypeArgument.Error(lazy { getErrorLines(location) })
         }
+
+        if (resolvedType?.declaration is KSTypeParameter) return@mapNotNull TypeArgument.GenericType
 
         resolvedType?.toType(location, resolver, navTypeSerializersByType)?.let { TypeArgument.Typed(it, typeArg.variance.label) }
     }
 }
 
-private fun getErrorLine(location: Location): String {
-    val fileLocation = location as FileLocation
-    return File(fileLocation.filePath).readLine(fileLocation.lineNumber)
+private fun getErrorLines(location: Location): String {
+    val fileLocation = location as? FileLocation ?: return "NonExistentLocation"
+    return File(fileLocation.filePath)
+        .readLines(fileLocation.lineNumber, fileLocation.lineNumber + 10)
+        .joinToString("\n")
 }
 
 private var _parcelableType: KSType? = null
