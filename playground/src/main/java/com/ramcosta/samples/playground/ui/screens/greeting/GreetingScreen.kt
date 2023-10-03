@@ -2,7 +2,12 @@ package com.ramcosta.samples.playground.ui.screens.greeting
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +37,8 @@ import com.ramcosta.samples.playground.ui.screens.profile.ValueClassArg
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+typealias ResultCena<T> = ResultRecipient<GoToProfileConfirmationDestination, T>
+
 @RootNavGraph(start = true)
 @Destination(style = GreetingTransitions::class)
 @Composable
@@ -43,7 +50,8 @@ fun GreetingScreen(
     uiEvents: GreetingUiEvents,
     uiState: GreetingUiState,
     @NavHostParam test: String,
-    resultRecipient: ResultRecipient<GoToProfileConfirmationDestination, Boolean>,
+    resultRecipient:
+    ResultCena<Boolean>,
 ) {
     val context = LocalContext.current
     resultRecipient.onNavResult { result ->

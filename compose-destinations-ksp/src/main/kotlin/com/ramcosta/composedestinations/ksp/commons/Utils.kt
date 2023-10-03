@@ -77,6 +77,17 @@ fun File.readLine(lineNumber: Int): String {
         }
 }
 
+fun File.readLines(startLineNumber: Int, endLineNumber: Int): List<String> {
+    val bufferedReader = BufferedReader(InputStreamReader(FileInputStream(this), Charsets.UTF_8))
+    return bufferedReader
+        .useLines { lines: Sequence<String> ->
+            lines
+                .take(endLineNumber)
+                .toList()
+                .takeLast(endLineNumber - (startLineNumber - 1))
+        }
+}
+
 fun KSAnnotated.findAllRequireOptInAnnotations(): List<Importable> {
     val requireOptInAnnotations = mutableListOf<Importable>()
     annotations.forEach { annotation ->

@@ -15,6 +15,7 @@ import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeAlias
+import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.google.devtools.ksp.symbol.Location
 import com.google.devtools.ksp.symbol.Modifier
@@ -59,7 +60,7 @@ import com.ramcosta.composedestinations.ksp.commons.findArgumentValue
 import com.ramcosta.composedestinations.ksp.commons.getDefaultValue
 import com.ramcosta.composedestinations.ksp.commons.ignoreAnnotations
 import com.ramcosta.composedestinations.ksp.commons.isNothing
-import com.ramcosta.composedestinations.ksp.commons.readLine
+import com.ramcosta.composedestinations.ksp.commons.readLines
 import com.ramcosta.composedestinations.ksp.commons.toImportable
 import java.io.File
 
@@ -392,10 +393,31 @@ class KspToCodeGenDestinationsMapper(
             ksClassDeclaration?.qualifiedName?.asString() ?: qualifiedName.asString()
         )
 
+        val typeArgs: List<TypeArgument> = if (declaration is KSTypeAlias) {
+            val aliasTypes = (declaration as KSTypeAlias).type.resolve()
+                .argumentTypes((declaration as KSTypeAlias).location)
+
+            if (aliasTypes.any { it is TypeArgument.GenericType }) {
+                val siteArgs = argumentTypes(location).toMutableList()
+
+                aliasTypes.toMutableList().apply {
+                    mapIndexed { idx, it ->
+                        if (it is TypeArgument.GenericType) {
+                            this[idx] = siteArgs.removeAt(0)
+                        }
+                    }
+                }
+            } else {
+                aliasTypes
+            }
+        } else {
+            argumentTypes(location)
+        }
+
         return TypeInfo(
             value = Type(
                 importable = importable,
-                typeArguments = argumentTypes(location),
+                typeArguments = typeArgs,
                 requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
                 isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
                 isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
@@ -458,8 +480,10 @@ class KspToCodeGenDestinationsMapper(
             val resolvedType = typeArg.type?.resolve()
 
             if (resolvedType?.isError == true) {
-                return@mapNotNull TypeArgument.Error(lazy { getErrorLine(location) })
+                return@mapNotNull TypeArgument.Error(lazy { getErrorLines(location) })
             }
+
+            if (resolvedType?.declaration is KSTypeParameter) return@mapNotNull TypeArgument.GenericType
 
             resolvedType?.toType(location)?.let { TypeArgument.Typed(it, typeArg.variance.label) }
         }
@@ -483,9 +507,11 @@ class KspToCodeGenDestinationsMapper(
         )
     }
 
-    private fun getErrorLine(location: Location): String {
-        val fileLocation = location as FileLocation
-        return File(fileLocation.filePath).readLine(fileLocation.lineNumber)
+    private fun getErrorLines(location: Location): String {
+        val fileLocation = location as? FileLocation ?: return "NonExistentLocation"
+        return File(fileLocation.filePath)
+            .readLines(fileLocation.lineNumber, fileLocation.lineNumber + 1)
+            .joinToString("")
     }
 
 

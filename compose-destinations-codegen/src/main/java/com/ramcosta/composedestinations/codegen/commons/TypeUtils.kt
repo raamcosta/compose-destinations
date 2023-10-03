@@ -1,7 +1,12 @@
 package com.ramcosta.composedestinations.codegen.commons
 
-import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.model.CodeGenType
+import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.model.TypeArgument.Star.varianceLabel
+import com.ramcosta.composedestinations.codegen.model.TypeInfo
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import java.io.Serializable
 import kotlin.reflect.KClass
@@ -32,6 +37,7 @@ fun TypeInfo.recursiveRequireOptInAnnotations(): List<Importable> {
         when (it) {
             is TypeArgument.Typed -> mutableList.addAll(it.type.recursiveRequireOptInAnnotations())
             is TypeArgument.Error,
+            is TypeArgument.GenericType,
             is TypeArgument.Star -> Unit
         }
     }
@@ -63,6 +69,7 @@ fun TypeArgument.toTypeCode(importableHelper: ImportableHelper? = null): String 
             )
         }"
         is TypeArgument.Error -> "ERROR"
+        is TypeArgument.GenericType -> "GENERIC TYPE"
     }
 }
 

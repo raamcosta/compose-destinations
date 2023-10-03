@@ -186,7 +186,7 @@ class InitialValidator(
 
             val resultOriginDestinationParams =
                 destinationsByName.value[resultOriginDestinationName]
-                    ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin!")
+                    ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin (type aliases are not allowed here).")
 
             resultOriginDestinationParams.parameters.firstOrNull {
                 it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME &&
@@ -236,8 +236,8 @@ class InitialValidator(
         if (firstTypeArg is TypeArgument.Error) {
             // Since the Destination is not yet generated, we are expecting this to happen
             return firstTypeArg.lineStr
-                .replaceBefore("<", "")
-                .removePrefix("<")
+                .replaceBefore("ResultRecipient<", "")
+                .removePrefix("ResultRecipient<")
                 .replaceAfter(">", "")
                 .removeSuffix(">")
                 .split(",")

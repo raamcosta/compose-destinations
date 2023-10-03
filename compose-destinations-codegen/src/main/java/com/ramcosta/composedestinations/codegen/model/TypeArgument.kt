@@ -13,6 +13,8 @@ sealed interface TypeArgument {
         val lineStr get() = lazyLineStr.value
     }
 
+    object GenericType: TypeArgument
+
     object Star : TypeArgument {
         const val varianceLabel = "*"
     }
