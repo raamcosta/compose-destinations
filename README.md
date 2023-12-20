@@ -250,7 +250,7 @@ applicationVariants.all {
 
 ## About
 
-The library is no longer in general beta as of 1.9.50.
+The library is out of general beta as of 1.9.50.
 
 Version 2 is coming out very soon with API improvements, quality-of-life improvements, and support for mandatory arguments when navigating to a Navigation graph.
 
