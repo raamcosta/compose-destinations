@@ -12,7 +12,7 @@ mavenPublishPluginVersion = "0.25.3"
 composeViewModel = "2.6.2"
 activityCompose = "1.7.2"
 
-material = "1.11.0"
+material = "1.9.0" #ProcessorProviderTests fail when trying to update this one
 lifecycleRuntimeKtx = "2.6.2"
 
 ksp = "1.9.21-1.0.15"
