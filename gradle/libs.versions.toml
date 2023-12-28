@@ -4,29 +4,29 @@ minSdk = "21"
 compileSdk = "34"
 targetSdk = "34"
 
-kotlin = "1.9.20"
-dependencyCheckPluginVersion = "0.48.0"
-gradlePluginVersion = "8.1.4"
+kotlin = "1.9.21"
+dependencyCheckPluginVersion = "0.50.0"
+agp = "8.2.0"
 mavenPublishPluginVersion = "0.25.3"
 
 composeViewModel = "2.6.2"
 activityCompose = "1.7.2"
 
-material = "1.9.0"
+material = "1.11.0"
 lifecycleRuntimeKtx = "2.6.2"
 
-ksp = "1.9.20-1.0.14"
+ksp = "1.9.21-1.0.15"
 
 junit = "4.13.2"
 
 compose = "1.5.4"
 composeMaterial = "1.5.4"
-composeCompiler = "1.5.4"
-composeNavigation = "2.7.5"
+composeCompiler = "1.5.7"
+composeNavigation = "2.7.6"
 accompanist = "0.32.0"
 
-ktxSerialization = "1.6.0"
-mockk = "1.13.7"
+ktxSerialization = "1.6.2"
+mockk = "1.13.8"
 
 compileTesting = "1.5.0"
 composeWear = "1.1.2"
@@ -40,7 +40,7 @@ dependencyCheckPlugin = { id = "com.github.ben-manes.versions", version.ref = "d
 # Plugins
 kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
-pluginVersion = { module = "com.android.tools.build:gradle", version.ref = "gradlePluginVersion" }
+agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 mavenPublishPlugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "mavenPublishPluginVersion" }
 
 # Android

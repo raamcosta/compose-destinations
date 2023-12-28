@@ -13,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath(libs.pluginVersion)
+        classpath(libs.agp)
         classpath(libs.kotlin)
         classpath(libs.kotlinSerialization)
         classpath(libs.mavenPublishPlugin)
