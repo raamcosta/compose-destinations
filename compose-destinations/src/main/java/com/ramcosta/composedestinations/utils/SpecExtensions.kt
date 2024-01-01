@@ -78,10 +78,9 @@ fun NavBackStackEntry.navGraph(): NavGraphSpec {
  */
 val NavController.currentDestinationFlow: Flow<DestinationSpec<*>>
     get() = currentBackStackEntryFlow.transform { navStackEntry ->
-        kotlin.runCatching {
-            navStackEntry.destination()
-        }.onSuccess { destination ->
-            emit(destination)
+        when (val route = navStackEntry.route()) {
+            is DestinationSpec<*> -> emit(route)
+            is NavGraphSpec -> Unit
         }
     }
 
