@@ -510,7 +510,7 @@ class KspToCodeGenDestinationsMapper(
     private fun getErrorLines(location: Location): String {
         val fileLocation = location as? FileLocation ?: return "NonExistentLocation"
         return File(fileLocation.filePath)
-            .readLines(fileLocation.lineNumber, fileLocation.lineNumber + 1)
+            .readLines(fileLocation.lineNumber, fileLocation.lineNumber + 10)
             .joinToString("")
     }
 
