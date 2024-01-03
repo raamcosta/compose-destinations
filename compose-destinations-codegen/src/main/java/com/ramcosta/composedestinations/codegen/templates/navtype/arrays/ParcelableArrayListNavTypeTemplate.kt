@@ -4,6 +4,7 @@ import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
+import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_VISIBILITY
 
 val parcelableArrayListNavTypeTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName.navtype",
@@ -22,7 +23,7 @@ val parcelableArrayListNavTypeTemplate = FileTemplate(
     sourceCode = """
 $NAV_TYPE_INITIALIZATION_CODE
 @Suppress("UNCHECKED_CAST")
-public class $ARRAY_CUSTOM_NAV_TYPE_NAME(
+$NAV_TYPE_VISIBILITY class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     private val serializer: DestinationsNavTypeSerializer<$SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME>
 ) : DestinationsNavType<ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>?>() {
 

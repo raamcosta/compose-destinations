@@ -103,7 +103,11 @@ class KspToCodeGenDestinationsMapper(
             name = name,
             composableName = composableName,
             composableQualifiedName = qualifiedName!!.asString(),
-            visibility = getDestinationVisibility(),
+            visibility = getVisibility().also {
+                check(it != Visibility.PRIVATE) {
+                    "Composable functions annotated with @Destination cannot be private!"
+                }
+            },
             cleanRoute = cleanRoute,
             destinationStyleType = destinationAnnotations.findOverridingArgumentValue { getDestinationStyleType(composableName) }!!,
             parameters = parameters.map { it.toParameter(composableName) },
@@ -138,7 +142,11 @@ class KspToCodeGenDestinationsMapper(
             name = finalActivityClass.simpleName + GENERATED_DESTINATION_SUFFIX,
             composableName = finalActivityClass.simpleName,
             composableQualifiedName = finalActivityClass.qualifiedName,
-            visibility = getDestinationVisibility(),
+            visibility = getVisibility().also {
+                check(it != Visibility.PRIVATE) {
+                    "Activities annotated with @Destination cannot be private!"
+                }
+            },
             cleanRoute = activityDestinationAnnotations.findOverridingArgumentValue { prepareRoute(finalActivityClass.simpleName) }!!,
             parameters = emptyList(),
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
@@ -225,12 +233,12 @@ class KspToCodeGenDestinationsMapper(
         return cumulative!!
     }
 
-    private fun KSDeclaration.getDestinationVisibility(): Visibility {
-        if (isPrivate()) {
-            throw IllegalDestinationsSetup("Composable functions annotated with @Destination cannot be private!")
+    fun KSDeclaration.getVisibility(): Visibility {
+        return when {
+            isPrivate() -> Visibility.PRIVATE
+            isInternal() -> Visibility.INTERNAL
+            else -> Visibility.PUBLIC
         }
-
-        return if (isInternal()) Visibility.INTERNAL else Visibility.PUBLIC
     }
 
     private fun KSDeclaration.getNavGraphInfo(): NavGraphInfo? {
@@ -419,6 +427,7 @@ class KspToCodeGenDestinationsMapper(
                 importable = importable,
                 typeArguments = typeArgs,
                 requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
+                visibility = declaration.getVisibility(),
                 isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
                 isParcelable = classDeclarationType?.let { parcelableType.isAssignableFrom(it) } ?: false,
                 isSerializable = classDeclarationType?.let { serializableType.isAssignableFrom(it) } ?: false,

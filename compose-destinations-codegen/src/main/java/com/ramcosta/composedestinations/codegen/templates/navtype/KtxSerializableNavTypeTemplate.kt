@@ -18,12 +18,12 @@ val ktxSerializableNavTypeTemplate = FileTemplate(
     ),
     sourceCode = """
 @OptIn(ExperimentalSerializationApi::class)
-public val $NAV_TYPE_NAME: $NAV_TYPE_CLASS_SIMPLE_NAME = $NAV_TYPE_CLASS_SIMPLE_NAME(
+$NAV_TYPE_VISIBILITY val $NAV_TYPE_NAME: $NAV_TYPE_CLASS_SIMPLE_NAME = $NAV_TYPE_CLASS_SIMPLE_NAME(
     $SERIALIZER_SIMPLE_CLASS_NAME
 )
 
 @OptIn(ExperimentalSerializationApi::class)
-public class $NAV_TYPE_CLASS_SIMPLE_NAME(
+$NAV_TYPE_VISIBILITY class $NAV_TYPE_CLASS_SIMPLE_NAME(
     private val serializer: DefaultKtxSerializableNavTypeSerializer<$CLASS_SIMPLE_NAME_CAMEL_CASE>
 ) : DestinationsNavType<$CLASS_SIMPLE_NAME_CAMEL_CASE?>() {
 

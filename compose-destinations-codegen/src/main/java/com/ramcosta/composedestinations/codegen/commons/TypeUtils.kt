@@ -7,28 +7,29 @@ import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.model.TypeArgument.Star.varianceLabel
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
+import com.ramcosta.composedestinations.codegen.model.Visibility
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import java.io.Serializable
 import kotlin.reflect.KClass
 
 val coreTypes = mapOf(
-    String::class.asType() to CORE_STRING_NAV_TYPE,
-    Int::class.asType() to CORE_INT_NAV_TYPE,
-    Float::class.asType() to CORE_FLOAT_NAV_TYPE,
-    Long::class.asType() to CORE_LONG_NAV_TYPE,
-    Boolean::class.asType() to CORE_BOOLEAN_NAV_TYPE,
+    String::class.asType(Visibility.PUBLIC) to CORE_STRING_NAV_TYPE,
+    Int::class.asType(Visibility.PUBLIC) to CORE_INT_NAV_TYPE,
+    Float::class.asType(Visibility.PUBLIC) to CORE_FLOAT_NAV_TYPE,
+    Long::class.asType(Visibility.PUBLIC) to CORE_LONG_NAV_TYPE,
+    Boolean::class.asType(Visibility.PUBLIC) to CORE_BOOLEAN_NAV_TYPE,
 
-    IntArray::class.asType() to CORE_INT_ARRAY_NAV_TYPE,
-    FloatArray::class.asType() to CORE_FLOAT_ARRAY_NAV_TYPE,
-    LongArray::class.asType() to CORE_LONG_ARRAY_NAV_TYPE,
-    BooleanArray::class.asType() to CORE_BOOLEAN_ARRAY_NAV_TYPE,
-    Array::class.asTypeWithArg(String::class) to CORE_STRING_ARRAY_NAV_TYPE,
+    IntArray::class.asType(Visibility.PUBLIC) to CORE_INT_ARRAY_NAV_TYPE,
+    FloatArray::class.asType(Visibility.PUBLIC) to CORE_FLOAT_ARRAY_NAV_TYPE,
+    LongArray::class.asType(Visibility.PUBLIC) to CORE_LONG_ARRAY_NAV_TYPE,
+    BooleanArray::class.asType(Visibility.PUBLIC) to CORE_BOOLEAN_ARRAY_NAV_TYPE,
+    Array::class.asTypeWithArg(String::class, Visibility.PUBLIC) to CORE_STRING_ARRAY_NAV_TYPE,
 
-    ArrayList::class.asTypeWithArg(Boolean::class) to CORE_BOOLEAN_ARRAY_LIST_NAV_TYPE,
-    ArrayList::class.asTypeWithArg(Float::class) to CORE_FLOAT_ARRAY_LIST_NAV_TYPE,
-    ArrayList::class.asTypeWithArg(Int::class) to CORE_INT_ARRAY_LIST_NAV_TYPE,
-    ArrayList::class.asTypeWithArg(Long::class) to CORE_LONG_ARRAY_LIST_NAV_TYPE,
-    ArrayList::class.asTypeWithArg(String::class) to CORE_STRING_ARRAY_LIST_NAV_TYPE,
+    ArrayList::class.asTypeWithArg(Boolean::class, Visibility.PUBLIC) to CORE_BOOLEAN_ARRAY_LIST_NAV_TYPE,
+    ArrayList::class.asTypeWithArg(Float::class, Visibility.PUBLIC) to CORE_FLOAT_ARRAY_LIST_NAV_TYPE,
+    ArrayList::class.asTypeWithArg(Int::class, Visibility.PUBLIC) to CORE_INT_ARRAY_LIST_NAV_TYPE,
+    ArrayList::class.asTypeWithArg(Long::class, Visibility.PUBLIC) to CORE_LONG_ARRAY_LIST_NAV_TYPE,
+    ArrayList::class.asTypeWithArg(String::class, Visibility.PUBLIC) to CORE_STRING_ARRAY_LIST_NAV_TYPE,
 )
 
 fun TypeInfo.recursiveRequireOptInAnnotations(): List<Importable> {
@@ -138,7 +139,7 @@ val Type.firstTypeArg get() = firstTypeInfoArg.value
 
 val Type.firstTypeInfoArg get() = (typeArguments.first() as TypeArgument.Typed).type
 
-private fun KClass<*>.asTypeWithArg(that: KClass<*>) = Type(
+private fun KClass<*>.asTypeWithArg(that: KClass<*>, visibility: Visibility) = Type(
     importable = Importable(
         this.simpleName!!,
         this.qualifiedName!!
@@ -146,7 +147,7 @@ private fun KClass<*>.asTypeWithArg(that: KClass<*>) = Type(
     typeArguments = listOf(
         TypeArgument.Typed(
             type = TypeInfo(
-                that.asType(),
+                that.asType(visibility),
                 isNullable = false,
                 hasCustomTypeSerializer = false,
             ),
@@ -159,9 +160,10 @@ private fun KClass<*>.asTypeWithArg(that: KClass<*>) = Type(
     isSerializable = Serializable::class.java.isAssignableFrom(this.javaObjectType),
     isKtxSerializable = false,
     valueClassInnerInfo = null,
+    visibility = Visibility.PUBLIC,
 )
 
-private fun KClass<*>.asType(): Type {
+private fun KClass<*>.asType(visibility: Visibility): Type {
 
     return Type(
         importable = Importable(
@@ -175,5 +177,6 @@ private fun KClass<*>.asType(): Type {
         isSerializable = Serializable::class.java.isAssignableFrom(this.javaObjectType),
         isKtxSerializable = false,
         valueClassInnerInfo = null,
+        visibility = visibility,
     )
 }

@@ -5,6 +5,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.samples.playground.ui.screens.settings.SettingsViewModel
+import kotlinx.serialization.Serializable
 
 @RootNavGraph
 @NavGraph
@@ -18,8 +19,19 @@ annotation class ProfileSettingsNavGraph(
     val start: Boolean = false
 )
 
+internal data class InternalNavArgs(
+    val cena: ArrayList<InternalDataClass>?
+)
+
+@Serializable
+internal data class InternalDataClass(
+    val cena: String
+)
+
 @ProfileSettingsNavGraph(start = true)
-@Destination
+@Destination(
+    navArgsDelegate = InternalNavArgs::class
+)
 @Composable
 internal fun ProfileSettingsScreen(
     vm: SettingsViewModel

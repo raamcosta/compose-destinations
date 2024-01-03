@@ -9,6 +9,7 @@ interface CodeGenType {
     val isSerializable: Boolean
     val isKtxSerializable: Boolean
     val valueClassInnerInfo: ValueClassInnerInfo?
+    val visibility: Visibility
 }
 
 data class TypeInfo(
@@ -26,6 +27,7 @@ data class Type(
     override val isSerializable: Boolean,
     override val isKtxSerializable: Boolean,
     override val valueClassInnerInfo: ValueClassInnerInfo?,
+    override val visibility: Visibility,
 ): CodeGenType
 
 data class ValueClassInnerInfo(

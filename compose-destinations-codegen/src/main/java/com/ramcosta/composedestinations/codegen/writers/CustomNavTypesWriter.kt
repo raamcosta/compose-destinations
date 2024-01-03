@@ -255,8 +255,9 @@ class CustomNavTypesWriter(
                     .replace(SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME, serializerTypeArg)
                     .replace(
                         NAV_TYPE_INITIALIZATION_CODE,
-                        "public val $navTypeName: $className = $className($navTypeSerializerInit)\n"
+                        "$NAV_TYPE_VISIBILITY val $navTypeName: $className = $className($navTypeSerializerInit)\n"
                     )
+                    .replace(NAV_TYPE_VISIBILITY, typeArg.visibility.name.lowercase())
             )
         }
     }
@@ -336,8 +337,9 @@ class CustomNavTypesWriter(
                     .replace(SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME, serializerTypeArg)
                     .replace(
                         NAV_TYPE_INITIALIZATION_CODE,
-                        "public val $navTypeName: $className = $className($navTypeSerializerInit)\n"
+                        "$NAV_TYPE_VISIBILITY val $navTypeName: $className = $className($navTypeSerializerInit)\n"
                     )
+                    .replace(NAV_TYPE_VISIBILITY, typeArg.visibility.name.lowercase())
             )
         }
     }
@@ -374,6 +376,7 @@ class CustomNavTypesWriter(
                     if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(serializableImportable)
                     else importableHelper.addAndGetPlaceholder(importable)
                 )
+                .replace(NAV_TYPE_VISIBILITY, visibility.name.lowercase())
         )
     }
 
@@ -399,6 +402,7 @@ class CustomNavTypesWriter(
                     DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
                     importable.simpleName,
                 )
+                .replace(NAV_TYPE_VISIBILITY, visibility.name.lowercase())
         )
     }
 
@@ -421,6 +425,7 @@ class CustomNavTypesWriter(
                 )
                 .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importableHelper.addAndGetPlaceholder(importable))
                 .replace(DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE, importableHelper.addAndGetPlaceholder(importable))
+                .replace(NAV_TYPE_VISIBILITY, visibility.name.lowercase())
         )
     }
 
@@ -453,6 +458,7 @@ class CustomNavTypesWriter(
                     if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(parcelableImportable)
                     else importableHelper.addAndGetPlaceholder(importable)
                 )
+                .replace(NAV_TYPE_VISIBILITY, visibility.name.lowercase())
         )
     }
 
