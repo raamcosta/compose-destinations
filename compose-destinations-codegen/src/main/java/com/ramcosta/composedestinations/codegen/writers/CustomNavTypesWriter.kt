@@ -23,6 +23,7 @@ import com.ramcosta.composedestinations.codegen.templates.navtype.CLASS_SIMPLE_N
 import com.ramcosta.composedestinations.codegen.templates.navtype.DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE
 import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_CLASS_SIMPLE_NAME
 import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_VISIBILITY
 import com.ramcosta.composedestinations.codegen.templates.navtype.PARSE_VALUE_CAST_TO_CLASS
 import com.ramcosta.composedestinations.codegen.templates.navtype.SERIALIZER_SIMPLE_CLASS_NAME
 import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.ARRAY_CUSTOM_NAV_TYPE_NAME

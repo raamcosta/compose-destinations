@@ -153,6 +153,7 @@ internal class SingleDestinationWriter(
             } else {
                 "internal"
             }
+            Visibility.PRIVATE -> error("unexpected visibility ${destination.visibility}")
         }
     }
 

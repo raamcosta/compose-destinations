@@ -193,10 +193,16 @@ fun KSType.getNavArgsDelegateType(
         .parameters
         .map { it.toParameter(resolver, navTypeSerializersByType) }
 
+    val visibility = ksClassDeclaration.getVisibility().also {
+        check(it != Visibility.PRIVATE) {
+            "${ksClassDeclaration.simpleName.asString()} cannot be private!"
+        }
+    }
+
     return NavArgsTypeWithFile(
         RawNavArgsClass(
             parameters,
-            ksClassDeclaration.getVisibility(),
+            visibility,
             Importable(
                 ksClassDeclaration.simpleName.asString(),
                 ksClassDeclaration.qualifiedName!!.asString(),
@@ -207,13 +213,12 @@ fun KSType.getNavArgsDelegateType(
 }
 
 fun KSDeclaration.getVisibility(): Visibility {
-    if (isPrivate()) {
-        throw IllegalDestinationsSetup("${simpleName.asString()} cannot be private!")
+    return when {
+        isPrivate() -> Visibility.PRIVATE
+        isInternal() -> Visibility.INTERNAL
+        else -> Visibility.PUBLIC
     }
-
-    return if (isInternal()) Visibility.INTERNAL else Visibility.PUBLIC
 }
-
 
 fun KSValueParameter.toParameter(
     resolver: Resolver,
@@ -285,6 +290,7 @@ fun KSType.toType(
             importable = importable,
             typeArguments = typeArgs,
             requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
+            visibility = declaration.getVisibility(),
             isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
             isParcelable = classDeclarationType?.let { resolver.parcelableType().isAssignableFrom(it) } ?: false,
             isSerializable = classDeclarationType?.let { resolver.serializableType().isAssignableFrom(it) } ?: false,
