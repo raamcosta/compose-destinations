@@ -15,8 +15,6 @@ import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.NavHostGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
-import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
-import com.ramcosta.composedestinations.generated.destinations.FeatureXHomeDestination
 import com.ramcosta.composedestinations.generated.destinations.FeatureYHomeDestination
 import com.ramcosta.composedestinations.generated.navgraphs.FeatureXGraph
 import com.ramcosta.composedestinations.generated.navgraphs.FeatureYGraph
@@ -25,7 +23,6 @@ import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.WithDefaultValueArgs
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileGraph
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraph
-import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
 import kotlin.reflect.KClass
 
 /*
@@ -72,13 +69,6 @@ annotation class ProfileNavGraph(
         val graphArg: String,
     )
 
-    @IncludeDestination(
-        FeatureXHomeDestination::class,
-//        start = true,
-        style = DestinationStyleBottomSheet::class,
-        wrappers = [HidingScreenWrapper::class],
-        deepLinks = [DeepLink(uriPattern = "https://cenas/$FULL_ROUTE_PLACEHOLDER"), DeepLink(uriPattern = "https://qweqwe/$FULL_ROUTE_PLACEHOLDER")]
-    )
     @IncludeDestination(FeatureYHomeDestination::class)
     @IncludeNavGraph(
         FeatureXGraph::class,

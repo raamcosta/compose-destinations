@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     id("com.google.devtools.ksp") version libs.versions.ksp.get()
+    kotlin("plugin.serialization")
 }
 
 android {
