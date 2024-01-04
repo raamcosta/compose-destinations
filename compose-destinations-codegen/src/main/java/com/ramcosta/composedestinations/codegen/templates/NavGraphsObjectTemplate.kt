@@ -5,6 +5,7 @@ import com.ramcosta.composedestinations.codegen.commons.CORE_ALIAS_DESTINATION_S
 import com.ramcosta.composedestinations.codegen.commons.CORE_ALIAS_NAV_GRAPH_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.GENERATED_NAV_GRAPHS_OBJECT
+import com.ramcosta.composedestinations.codegen.moduleName
 import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 
@@ -23,7 +24,7 @@ val navGraphsObjectTemplate = FileTemplate(
  * Class generated if any Composable is annotated with `@Destination`.
  * It aggregates all [$CORE_ALIAS_DESTINATION_SPEC]s in their [$CORE_ALIAS_NAV_GRAPH_SPEC]s.$NAV_GRAPHS_PRETTY_KDOC_PLACEHOLDER
  */
-internal object $GENERATED_NAV_GRAPHS_OBJECT {
+internal object $moduleName$GENERATED_NAV_GRAPHS_OBJECT {
 
 $NAV_GRAPHS_PLACEHOLDER
 }

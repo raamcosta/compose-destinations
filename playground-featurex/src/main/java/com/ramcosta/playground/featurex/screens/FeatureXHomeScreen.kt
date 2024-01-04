@@ -6,9 +6,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.generated.destinations.FeatureXHomeDestination
-import com.ramcosta.composedestinations.generated.destinations.InternalArgsScreenDestination
-import com.ramcosta.composedestinations.generated.navgraphs.FeatureXGraph
+import com.ramcosta.composedestinations.generated.featurex.destinations.FeatureXHomeDestination
+import com.ramcosta.composedestinations.generated.featurex.destinations.InternalArgsScreenDestination
+import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.playground.featurex.FeatureXNavGraph
 import com.ramcosta.playground.featurex.FeatureXWrapper

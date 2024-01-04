@@ -41,7 +41,6 @@ import com.ramcosta.composedestinations.ksp.commons.isNothing
 import com.ramcosta.composedestinations.ksp.commons.toDeepLink
 import com.ramcosta.composedestinations.ksp.commons.toGenVisibility
 import com.ramcosta.composedestinations.ksp.commons.toParameter
-import java.util.Locale
 
 internal class KspToCodeGenDestinationsMapper(
     private val resolver: Resolver,
@@ -60,17 +59,16 @@ internal class KspToCodeGenDestinationsMapper(
 
     private fun DestinationAnnotationsPath.toDestination(): RawDestinationGenParams {
         val composableName = function.simpleName.asString()
-        val destinationAnnotations = annotations//findAnnotationPathRecursively(DESTINATION_ANNOTATION)!!.reversed()
 
-        val deepLinksAnnotations = destinationAnnotations.findCumulativeArgumentValue {
+        val deepLinksAnnotations = annotations.findCumulativeArgumentValue {
             findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)
         }
 
-        val cleanRoute = destinationAnnotations.findOverridingArgumentValue { prepareRoute(composableName) }!!
-        val isStart = destinationAnnotations.findOverridingArgumentValue { findArgumentValue<Boolean>("start") }!!
+        val cleanRoute = annotations.findOverridingArgumentValue { prepareRoute(composableName) }!!
+        val isStart = annotations.findOverridingArgumentValue { findArgumentValue<Boolean>("start") }!!
         val name = cleanRoute.replace("/", "_").snakeToCamelCase().replaceFirstChar { it.uppercase() } + GENERATED_DESTINATION_SUFFIX
 
-        val navArgsDelegateTypeAndFile = destinationAnnotations.getNavArgsDelegateType()
+        val navArgsDelegateTypeAndFile = annotations.getNavArgsDelegateType()
         if (navArgsDelegateTypeAndFile?.file != null) {
             sourceFileMapper[navArgsDelegateTypeAndFile.file.filePath] = navArgsDelegateTypeAndFile.file
         }
@@ -81,11 +79,11 @@ internal class KspToCodeGenDestinationsMapper(
             name = name,
             composableName = composableName,
             composableQualifiedName = function.qualifiedName!!.asString(),
-            visibility = destinationAnnotations.findOverridingArgumentValue { getDestinationVisibility() }!!,
+            visibility = annotations.findOverridingArgumentValue { getDestinationVisibility() }!!,
             baseRoute = cleanRoute,
-            destinationStyleType = destinationAnnotations.findOverridingArgumentValue { destinationMappingUtils.getDestinationStyleType(this, "composable $composableName") }!!,
+            destinationStyleType = annotations.findOverridingArgumentValue { destinationMappingUtils.getDestinationStyleType(this, "composable $composableName") }!!,
             parameters = function.parameters.map { it.toParameter(resolver, navTypeSerializersByType) },
-            composableWrappers = destinationAnnotations.findCumulativeArgumentValue { destinationMappingUtils.getDestinationWrappers(this) },
+            composableWrappers = annotations.findCumulativeArgumentValue { destinationMappingUtils.getDestinationWrappers(this) },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             navGraphInfo = getNavGraphInfo().let { it.copy(start = it.start || isStart) },
             composableReceiverSimpleName = function.extensionReceiver?.toString(),

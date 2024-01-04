@@ -41,6 +41,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
+
+    ksp {
+        arg("compose-destinations.moduleName", "featureX")
+    }
 }
 
 kotlin {
