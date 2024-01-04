@@ -76,7 +76,6 @@ internal class WearNavHostEngine(
         manualComposableCalls: ManualComposableCalls,
     ) {
         when (destination.style) {
-            is DestinationStyle.Runtime,
             is DestinationStyle.Default -> {
                 addComposable(
                     destination,

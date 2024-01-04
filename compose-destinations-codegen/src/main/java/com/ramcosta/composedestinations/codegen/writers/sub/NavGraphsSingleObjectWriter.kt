@@ -12,6 +12,7 @@ import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestinatio
 import com.ramcosta.composedestinations.codegen.model.CustomNavType
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.moduleName
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PRETTY_KDOC_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
@@ -68,7 +69,7 @@ internal class NavGraphsSingleObjectWriter(
     ) {
         codeGenerator.makeFile(
             packageName = codeGenBasePackageName,
-            name = GENERATED_NAV_GRAPHS_OBJECT,
+            name = "$moduleName$GENERATED_NAV_GRAPHS_OBJECT",
             sourceIds = sourceIds(generatedDestinations, flattenGraphs).toTypedArray()
         ).writeSourceFile(
             packageStatement = navGraphsObjectTemplate.packageStatement,
