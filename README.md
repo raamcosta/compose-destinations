@@ -15,7 +15,7 @@ A KSP library that processes annotations and generates code that uses Official J
 No need to learn a whole new framework to navigate - most APIs are either the same as with the Jetpack Components or inspired by them.
 
 
-## Main features
+## Main features 🧭
 - Typesafe navigation arguments
 - Simple but configurable navigation graphs setup
 - Navigating back with a result in a simple and type-safe way
@@ -28,7 +28,7 @@ No need to learn a whole new framework to navigate - most APIs are either the sa
 
 For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
 
-## Materials
+## Materials 📄
 
 - Alex Styl's quick introduction videos [_Navigate using the Compose Destinations library_](https://www.composables.co/courses/destination-compose)
 - Philipp Lackner's Youtube video [_Compose Navigation Just Got SO MUCH EASIER_ 😱](https://www.youtube.com/watch?v=Q3iZyW2etm4)
@@ -38,7 +38,7 @@ For a deeper look into all the features, check our [documentation website](https
 - aseem wangoo's blog post (and Youtube video inside): [_Using compose destinations_](https://flatteredwithflutter.com/using-compose-destinations%ef%bf%bc/)
 - Vincent Tsen post in Android Kotlin Weekly [_How to convert your Jetpack Compose navigation app to use Compose Destinations Library to get rid of boilerplate code?_](https://vtsen.hashnode.dev/compose-destinations-navigation-library#heading-build-navigation-graph)
 
-## Basic Usage
+## Basic Usage 🧑‍💻
 
 1. Annotate your screen Composables with `@Destination`:
 
@@ -63,6 +63,7 @@ fun ProfileScreen(
 `Parcelable`, `Serializable`, `Enum` and classes annotated with [`@kotlinx.serialization.Serializable`](https://github.com/Kotlin/kotlinx.serialization) (as well as `Array`s and `ArrayList`s of these) work out of the box!
 You can also make any other type a navigation argument type. Read about it [here](https://composedestinations.rafaelcosta.xyz/destination-arguments/navigation-arguments#custom-navigation-argument-types)
 
+> [!NOTE]  
 > There is an alternative way to define the destination arguments in case you don't need to use them
 inside the Composable (as is likely the case when using ViewModel). Read more [here](https://composedestinations.rafaelcosta.xyz/destination-arguments/navigation-arguments#navigation-arguments-class-delegate).
 
@@ -83,6 +84,7 @@ fun HomeScreen(
    navigator.navigate(ProfileScreenDestination(id = 7, groupName = "Kotlin programmers"))
 }
 ```
+> [!NOTE]  
 > DestinationsNavigator is a wrapper interface to NavController that if declared as a parameter, will be provided for free by the library. NavController can also be provided in the exact same way, but it ties your composables to a specific implementation which will make it harder to test and preview. Read more [here](https://composedestinations.rafaelcosta.xyz/navigation/basics#destinationsnavigator-vs-navcontroller)
 
 5. Finally, add the NavHost call:
@@ -90,6 +92,7 @@ fun HomeScreen(
 ```kotlin
 DestinationsNavHost(navGraph = NavGraphs.root)
 ```
+> [!NOTE]  
 > `NavGraphs` is a generated file that describes your navigation graphs and their destinations. By default all destinations will belong to "root" (@RootNavGraph), but you can create your own nav graphs annotations to have certain screens in other navigation graphs.
 
 This call adds all annotated Composable functions as destinations of the Navigation Host.
@@ -97,7 +100,7 @@ This call adds all annotated Composable functions as destinations of the Navigat
 That's it! No need to worry about routes, `NavType`, bundles and strings. All that redundant and
 error-prone code gets generated for you.
 
-## Setup
+## Setup 🧩
 
 Compose destinations is available via maven central.
 
@@ -154,7 +157,8 @@ Choose the one that matches your Compose version, considering this table:
  </tr>
 </table>
 
-> **Warning**: If you choose a version that uses a higher version of Compose than the one you're setting for your app, gradle will upgrade your Compose version via transitive dependency.
+> [!WARNING]  
+> If you choose a version that uses a higher version of Compose than the one you're setting for your app, gradle will upgrade your Compose version via transitive dependency.
 
 <details open>
   <summary>groovy - build.gradle(:module-name)</summary>
@@ -174,25 +178,28 @@ ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
 ```
 </details>
 
-> **Note**: If you want to use bottom sheet screens, replace above core dependency with: </br>
+> [!IMPORTANT]  
+> If you want to use bottom sheet screens, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
 > this will use [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/styles-and-animations)
    
-> **Note**: If you want to use Compose Destinations in a **Wear OS** app, replace above core dependency with: </br>
+> [!IMPORTANT]  
+> If you want to use Compose Destinations in a **Wear OS** app, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:wear-core:<version>'` </br>
 > this will use [Wear Compose Navigation](https://developer.android.com/training/wearables/compose/navigation) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/wear-os)
 
 
-#### 3. Important for Kotlin < 1.8.0
+<details><summary>3. Important for Kotlin < 1.8.0</summary>  
 
 When using Kotlin version older than 1.8.0, you need to make sure the IDE looks at the generated folder.
 See KSP related [issue](https://github.com/google/ksp/issues/37).
 
 How to do it depends on the AGP version you are using in this case:
 
-> **Warning**: In both cases, add this inside `android` block and replacing `applicationVariants` with `libraryVariants` if the module is not an application one (i.e, it uses `'com.android.library'` plugin).
+> [!IMPORTANT]  
+> In both cases, add this inside `android` block and replacing `applicationVariants` with `libraryVariants` if the module is not an application one (i.e, it uses `'com.android.library'` plugin).
 
 <details><summary>Since AGP (Android Gradle Plugin) version 7.4.0</summary>  
 
@@ -248,13 +255,20 @@ applicationVariants.all {
 
 </details>
 
-## About
+</details>
+
+## Community 💬
+
+Please join the community at Kotlin slack channel: [#compose-destinations](https://kotlinlang.slack.com/archives/C06CS4UCQ10)  
+Ask questions, suggest improvements, or anything else related to the library.
+
+## About ℹ️
 
 The library is out of general beta as of 1.9.50.
 
 Version 2 is coming out very soon with API improvements, quality-of-life improvements, and support for mandatory arguments when navigating to a Navigation graph.
 
-If you're interested in contributing, reach out via [twitter DM](https://twitter.com/raamcosta).
+If you're interested in contributing, reach out via [twitter DM](https://twitter.com/raamcosta) or [compose destinations slack channel](https://kotlinlang.slack.com/archives/C06CS4UCQ10).  
 Any feedback and contributions are highly appreciated!
 
 **If you like the library, consider starring and sharing it with your colleagues.**
