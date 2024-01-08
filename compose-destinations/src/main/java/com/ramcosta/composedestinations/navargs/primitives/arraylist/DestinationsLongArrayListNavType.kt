@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.navargs.primitives.arraylist
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
@@ -11,7 +10,7 @@ import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 object DestinationsLongArrayListNavType : DestinationsNavType<ArrayList<Long>?>() {
 
     override fun put(bundle: Bundle, key: String, value: ArrayList<Long>?) {
-        bundle.putLongArray(key, value?.let { list -> LongArray(list.size) { list[it] } })
+        bundle.putLongArray(key, value.toArray())
     }
 
     override fun get(bundle: Bundle, key: String): ArrayList<Long>? {
@@ -41,6 +40,14 @@ object DestinationsLongArrayListNavType : DestinationsNavType<ArrayList<Long>?>(
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<Long>? {
         return savedStateHandle.get<LongArray?>(key).toArrayList()
+    }
+
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: ArrayList<Long>?) {
+        savedStateHandle[key] = value.toArray()
+    }
+
+    private fun ArrayList<Long>?.toArray(): LongArray? {
+        return this?.let { list -> LongArray(list.size) { list[it] } }
     }
 
     private fun LongArray?.toArrayList(): ArrayList<Long>? {

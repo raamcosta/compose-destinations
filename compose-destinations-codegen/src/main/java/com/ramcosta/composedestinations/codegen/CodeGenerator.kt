@@ -11,6 +11,7 @@ import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestinatio
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.codegen.model.RawDestinationGenParams
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
+import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
 import com.ramcosta.composedestinations.codegen.servicelocator.ServiceLocatorAccessor
 import com.ramcosta.composedestinations.codegen.servicelocator.customNavTypeWriter
 import com.ramcosta.composedestinations.codegen.servicelocator.defaultKtxSerializableNavTypeSerializerWriter
@@ -18,7 +19,10 @@ import com.ramcosta.composedestinations.codegen.servicelocator.destinationWithNa
 import com.ramcosta.composedestinations.codegen.servicelocator.destinationsWriter
 import com.ramcosta.composedestinations.codegen.servicelocator.initialValidator
 import com.ramcosta.composedestinations.codegen.servicelocator.moduleOutputWriter
+import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
+import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import java.util.Locale
+import java.util.UUID
 
 private const val DEFAULT_GEN_PACKAGE_NAME = "com.ramcosta.composedestinations.generated"
 internal lateinit var codeGenBasePackageName: String
@@ -33,7 +37,8 @@ class CodeGenerator(
     fun generate(
         destinations: List<RawDestinationGenParams>,
         navGraphs: List<RawNavGraphGenParams>,
-        navTypeSerializers: List<NavTypeSerializer>
+        navTypeSerializers: List<NavTypeSerializer>,
+        submodules: List<SubModuleInfo>
     ) {
         initialValidator.validate(navGraphs, destinations)
 
@@ -43,13 +48,38 @@ class CodeGenerator(
 
         val navTypeNamesByType = customNavTypeWriter.write(processedDestinations, navTypeSerializers)
 
-        moduleOutputWriter(navTypeNamesByType).write(navGraphs, processedDestinations)
+        moduleOutputWriter(navTypeNamesByType, submodules).write(navGraphs, processedDestinations)
 
         destinationsWriter(navTypeNamesByType).write(processedDestinations)
 
         if (shouldWriteKtxSerializableNavTypeSerializer(processedDestinations)) {
             defaultKtxSerializableNavTypeSerializerWriter.write()
         }
+
+        addSubmoduleRegistry()
+    }
+
+    private fun addSubmoduleRegistry() {
+        val registrySuffix = moduleName.ifEmpty { UUID.randomUUID().toString().replace("-", "_") }
+        codeGenerator.makeFile(
+            "_ModuleRegistry",
+            "_generated._ramcosta._composedestinations._moduleregistry"
+        ).writeSourceFile(
+            packageStatement = "package _generated._ramcosta._composedestinations._moduleregistry",
+            importableHelper = ImportableHelper(),
+            sourceCode = """
+                    annotation class _Info_$registrySuffix(
+                        val moduleName: String,
+                        val packageName: String,
+                    )
+                    
+                    @_Info_$registrySuffix(
+                        moduleName = "${codeGenConfig.moduleName ?: ""}",
+                        packageName = "$codeGenBasePackageName"
+                    )
+                    object _ModuleRegistry_$registrySuffix
+                """.trimIndent()
+        )
     }
 
     private fun initConfigurationValues() {
@@ -57,7 +87,7 @@ class CodeGenerator(
         val defaultPackageName = if (moduleName.isEmpty()) {
             DEFAULT_GEN_PACKAGE_NAME
         } else {
-            "$DEFAULT_GEN_PACKAGE_NAME.${moduleName.lowercase()}"
+            "$DEFAULT_GEN_PACKAGE_NAME.${moduleName.lowercase()}".sanitizePackageName()
         }
         codeGenBasePackageName = codeGenConfig.packageName?.sanitizePackageName() ?: defaultPackageName
     }

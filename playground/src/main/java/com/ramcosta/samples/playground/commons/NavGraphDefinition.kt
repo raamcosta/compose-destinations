@@ -15,9 +15,9 @@ import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.NavHostGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
-import com.ramcosta.composedestinations.generated.destinations.FeatureYHomeDestination
-import com.ramcosta.composedestinations.generated.navgraphs.FeatureXGraph
-import com.ramcosta.composedestinations.generated.navgraphs.FeatureYGraph
+import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXGraph
+import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureYHomeDestination
+import com.ramcosta.composedestinations.generated.featurey.navgraphs.FeatureYGraph
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.WithDefaultValueArgs
@@ -28,13 +28,6 @@ import kotlin.reflect.KClass
 /*
  TODO RACOSTA:
  - Enable multiple destinations in the same Composable - possibility to belong to multiple graphs as well
- - DECISION: 🤔
-        - DO NOT allow to import destinations from other modules. Everyone wins in that case if the modules just expose Composables
- that know nothing about navigation, and then in the "gathering" module, you have an additional Composable annotated with @Destination
-  which can be tied to navigation, Android stuff like ViewModel, etc and calls the feature module composables.
-        - OR allow import of destinations and overriding style, deep links, wrappers?.
- - When importing NavGraphs from other modules, allow to override things like animations (since the modules might not know about their siblings),
- deep links.
  - Runtime animations that could depend on some app logic or state - maybe with manual composable calls, also accept animations to be set, in
  which case we would call those instead of the ones from DestinationStyle.
 */
@@ -55,13 +48,6 @@ annotation class SettingsNavGraph(
     ],
     visibility = CodeGenVisibility.PUBLIC
 )
-//@ExternalRoutes(
-//    nestedNavGraphs = [
-//        FeatureXGraph::class,
-//        FeatureYGraph::class
-//    ],
-//        startRoute = FeatureXGraph::class,
-//)
 annotation class ProfileNavGraph(
     val start: Boolean = false
 ) {
@@ -151,7 +137,13 @@ annotation class InternalDestination(
 //)
 
 @ProfileSettingsNavGraph
-@Destination(start = true, navArgs = WithDefaultValueArgs::class)
+@Destination
+annotation class ProfileSettingsDestination(
+    val start: Boolean = false,
+    val navArgs: KClass<*> = Nothing::class,
+)
+
+@ProfileSettingsDestination(start = true, navArgs = WithDefaultValueArgs::class)
 @Destination(route = "settings/profile_settings_screen", navArgs = WithDefaultValueArgs::class)
 @Composable
 fun ProfileSettingsScreen(

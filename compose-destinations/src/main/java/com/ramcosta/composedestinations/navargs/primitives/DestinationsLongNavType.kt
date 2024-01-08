@@ -2,22 +2,21 @@ package com.ramcosta.composedestinations.navargs.primitives
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 
 object DestinationsLongNavType : DestinationsNavType<Long?>() {
 
     override fun put(bundle: Bundle, key: String, value: Long?) {
-        if (value == null) {
-            bundle.putByte(key, 0)
-        } else {
-            bundle.putLong(key, value)
+        when (val bundleValue = longToBundleValue(value)) {
+            is Byte -> bundle.putByte(key, bundleValue)
+            is Long -> bundle.putLong(key, bundleValue)
+            else -> error("Unexpected type ${bundleValue.javaClass}")
         }
     }
 
     override fun get(bundle: Bundle, key: String): Long? {
         @Suppress("DEPRECATION")
-        return longValue(bundle[key])
+        return bundleValueToLong(bundle[key])
     }
 
     override fun parseValue(value: String): Long? {
@@ -33,10 +32,16 @@ object DestinationsLongNavType : DestinationsNavType<Long?>() {
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): Long? {
-        return longValue(savedStateHandle.get<Any?>(key))
+        return bundleValueToLong(savedStateHandle[key])
     }
 
-    private fun longValue(valueForKey: Any?): Long? {
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: Long?) {
+        savedStateHandle[key] = longToBundleValue(value)
+    }
+
+    private fun longToBundleValue(value: Long?) = value ?: 0.toByte()
+
+    private fun bundleValueToLong(valueForKey: Any?): Long? {
         return if (valueForKey is Long) {
             valueForKey
         } else {

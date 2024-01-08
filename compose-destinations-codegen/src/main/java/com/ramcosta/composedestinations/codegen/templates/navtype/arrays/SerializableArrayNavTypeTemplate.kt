@@ -63,6 +63,10 @@ $NAV_TYPE_VISIBILITY class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     override fun get(savedStateHandle: SavedStateHandle, key: String): Array<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
         return savedStateHandle.get(key)
     }
+    
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: Array<$TYPE_ARG_CLASS_SIMPLE_NAME>?) {
+        savedStateHandle[key] = value
+    }
 
 }
 """.trimIndent()

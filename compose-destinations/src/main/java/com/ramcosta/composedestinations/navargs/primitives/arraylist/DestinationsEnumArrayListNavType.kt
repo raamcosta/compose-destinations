@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.navargs.primitives.arraylist
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
@@ -42,7 +41,10 @@ class DestinationsEnumArrayListNavType<E : Enum<*>>(
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<E>? {
-        return savedStateHandle.get<ArrayList<E>?>(key)
+        return savedStateHandle[key]
     }
 
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: ArrayList<E>?) {
+        savedStateHandle[key] = value
+    }
 }

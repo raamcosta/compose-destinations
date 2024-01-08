@@ -32,7 +32,7 @@ private val keywords: Set<String> = setOf(
 
 fun String.sanitizePackageName(): String {
     return split(".")
-        .joinToString(".") { if (keywords.contains(it)) "`$it`" else it }
+        .joinToString(".") { if (it in keywords) "`$it`" else it }
 }
 
 private val humps = "(?<=.)(?=\\p{Upper})".toRegex()

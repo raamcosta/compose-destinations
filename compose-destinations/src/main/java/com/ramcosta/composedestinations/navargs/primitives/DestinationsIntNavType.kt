@@ -2,22 +2,21 @@ package com.ramcosta.composedestinations.navargs.primitives
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 
 object DestinationsIntNavType : DestinationsNavType<Int?>() {
 
     override fun put(bundle: Bundle, key: String, value: Int?) {
-        if (value == null) {
-            bundle.putByte(key, 0)
-        } else {
-            bundle.putInt(key, value)
+        when (val bundleValue = intToBundleValue(value)) {
+            is Byte -> bundle.putByte(key, bundleValue)
+            is Int -> bundle.putInt(key, bundleValue)
+            else -> error("Unexpected type ${bundleValue.javaClass}")
         }
     }
 
     override fun get(bundle: Bundle, key: String): Int? {
         @Suppress("DEPRECATION")
-        return intValue(bundle[key])
+        return bundleValueToInt(bundle[key])
     }
 
     override fun parseValue(value: String): Int? {
@@ -33,10 +32,16 @@ object DestinationsIntNavType : DestinationsNavType<Int?>() {
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): Int? {
-        return intValue(savedStateHandle.get<Any?>(key))
+        return bundleValueToInt(savedStateHandle[key])
     }
 
-    private fun intValue(valueForKey: Any?): Int? {
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: Int?) {
+        savedStateHandle[key] = intToBundleValue(value)
+    }
+
+    private fun intToBundleValue(value: Int?) = value ?: 0.toByte()
+
+    private fun bundleValueToInt(valueForKey: Any?): Int? {
         return if (valueForKey is Int) {
             valueForKey
         } else {

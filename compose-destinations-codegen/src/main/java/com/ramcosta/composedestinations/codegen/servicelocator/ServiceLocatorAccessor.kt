@@ -4,8 +4,10 @@ import com.ramcosta.composedestinations.codegen.commons.DestinationWithNavArgsMa
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CustomNavType
+import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
 import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.validators.InitialValidator
+import com.ramcosta.composedestinations.codegen.writers.ArgsToSavedStateHandleUtilsWriter
 import com.ramcosta.composedestinations.codegen.writers.CustomNavTypesWriter
 import com.ramcosta.composedestinations.codegen.writers.DefaultKtxSerializableNavTypeSerializerWriter
 import com.ramcosta.composedestinations.codegen.writers.DestinationsWriter
@@ -22,12 +24,15 @@ internal interface ServiceLocatorAccessor {
 }
 
 internal fun ServiceLocatorAccessor.moduleOutputWriter(
-    customNavTypeByType: Map<Type, CustomNavType>
+    customNavTypeByType: Map<Type, CustomNavType>,
+    submodules: List<SubModuleInfo>
 ) = ModuleOutputWriter(
     codeGenConfig,
     destinationsListModeWriter,
     navGraphsSingleObjectWriter(customNavTypeByType),
-    navArgsGetters
+    navArgsGetters,
+    argsToSavedStateHandle(customNavTypeByType),
+    submodules
 )
 
 internal val ServiceLocatorAccessor.customNavTypeWriter get() = CustomNavTypesWriter(
@@ -71,3 +76,10 @@ internal val ServiceLocatorAccessor.navArgsGetters get() =
     NavArgsGettersWriter(
         codeGenerator,
     )
+
+internal fun ServiceLocatorAccessor.argsToSavedStateHandle(
+    customNavTypeByType: Map<Type, CustomNavType>
+) = ArgsToSavedStateHandleUtilsWriter(
+    codeGenerator,
+    customNavTypeByType
+)

@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.navargs.primitives
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.utils.encodeForRoute
 
@@ -51,6 +50,10 @@ object DestinationsStringNavType : DestinationsNavType<String?>() {
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): String? {
-        return savedStateHandle.get<String?>(key)
+        return savedStateHandle[key]
+    }
+
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: String?) {
+        savedStateHandle[key] = value
     }
 }
