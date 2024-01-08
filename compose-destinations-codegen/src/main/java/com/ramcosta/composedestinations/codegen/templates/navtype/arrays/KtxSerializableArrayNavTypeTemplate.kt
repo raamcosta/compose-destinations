@@ -65,6 +65,10 @@ $NAV_TYPE_VISIBILITY class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     override fun get(savedStateHandle: SavedStateHandle, key: String): Array<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
         return savedStateHandle.get<Array<Parcelable>?>(key)?.toTypeArray()
     }
+    
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: Array<$TYPE_ARG_CLASS_SIMPLE_NAME>?) {
+        savedStateHandle[key] = value?.toBundleArray()
+    }
 
     private fun Array<$TYPE_ARG_CLASS_SIMPLE_NAME>.toBundleArray() =
         Array<ParcelableByteArray>(size) { ParcelableByteArray(serializer.toByteArray(this[it])) }

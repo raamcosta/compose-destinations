@@ -35,6 +35,8 @@ class NavArgResolver(
         parameter = parameter,
     )
 
+    fun resolveToSavedStateHandle(parameter: Parameter) = parameter.type.toSavedStateHandleArgPutter(parameter.name)
+
     fun customNavTypeCode(type: TypeInfo): String {
         val navTypeName = customNavTypeByType[type.value]!!.name
         return importableHelper.addAndGetPlaceholder(
@@ -64,6 +66,20 @@ class NavArgResolver(
                         "?.let { ${importableHelper.addAndGetPlaceholder(importable)}(it) }"
             }
             else -> throw IllegalDestinationsSetup("$errorLocationPrefix': Unknown type $importable.qualifiedName")
+        }
+    }
+
+    private fun TypeInfo.toSavedStateHandleArgPutter(
+        argName: String,
+        valueClassSuffix: String = ""
+    ): String {
+        return when {
+            value in coreTypes.keys -> "${coreTypes[value]!!.simpleName}.put(handle, \"$argName\", $argName$valueClassSuffix)"
+            isCustomTypeNavArg() -> "${customNavTypeCode(this)}.put(handle, \"$argName\", $argName$valueClassSuffix)"
+            valueClassInnerInfo != null -> {
+                valueClassInnerInfo.typeInfo.toSavedStateHandleArgPutter(argName, ".${valueClassInnerInfo.publicNonNullableField!!}")
+            }
+            else -> throw IllegalDestinationsSetup("Unknown type $importable.qualifiedName")
         }
     }
 

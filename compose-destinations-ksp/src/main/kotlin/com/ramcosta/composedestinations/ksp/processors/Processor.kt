@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.ksp.processors
 
+import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
@@ -23,11 +24,13 @@ import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.ClassKind
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
+import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
 import com.ramcosta.composedestinations.ksp.codegen.KspCodeOutputStreamMaker
 import com.ramcosta.composedestinations.ksp.codegen.KspLogger
 import com.ramcosta.composedestinations.ksp.commons.DestinationMappingUtils
 import com.ramcosta.composedestinations.ksp.commons.MutableKSFileSourceMapper
 import com.ramcosta.composedestinations.ksp.commons.findActualClassDeclaration
+import com.ramcosta.composedestinations.ksp.commons.findArgumentValue
 
 class Processor(
     private val codeGenerator: KSPCodeGenerator,
@@ -77,10 +80,32 @@ class Processor(
             codeGenerator = kspCodeOutputStreamMaker,
             isBottomSheetDependencyPresent = resolver.isBottomSheetDepPresent(),
             codeGenConfig = codeGenConfig
-        ).generate(destinations, navGraphs, navTypeSerializers)
+        ).generate(
+            destinations,
+            navGraphs,
+            navTypeSerializers,
+            resolver.getSubModuleInfos()
+        )
 
         return emptyList()
     }
+
+    @OptIn(KspExperimental::class)
+    private fun Resolver.getSubModuleInfos() =
+        getDeclarationsFromPackage(
+            "_generated._ramcosta._composedestinations._moduleregistry"
+        )
+            .filter { it.simpleName.asString().startsWith("_ModuleRegistry_") }
+            .flatMap { pckgDeclaration ->
+                pckgDeclaration.annotations
+                    .filter { it.shortName.asString().startsWith("_Info_") }
+                    .map {
+                        SubModuleInfo(
+                            it.findArgumentValue<String>("moduleName"),
+                            it.findArgumentValue<String>("packageName")!!
+                        )
+                    }
+            }.toList()
 
     private class DestinationAnnotationsPath {
         var annotations: Sequence<KSAnnotation> = emptySequence()

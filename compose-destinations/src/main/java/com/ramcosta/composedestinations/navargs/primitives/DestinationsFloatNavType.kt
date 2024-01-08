@@ -2,22 +2,21 @@ package com.ramcosta.composedestinations.navargs.primitives
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 
 object DestinationsFloatNavType : DestinationsNavType<Float?>() {
 
     override fun put(bundle: Bundle, key: String, value: Float?) {
-        if (value == null) {
-            bundle.putByte(key, 0)
-        } else {
-            bundle.putFloat(key, value)
+        when (val bundleValue = floatToBundleValue(value)) {
+            is Byte -> bundle.putByte(key, bundleValue)
+            is Float -> bundle.putFloat(key, bundleValue)
+            else -> error("Unexpected type ${bundleValue.javaClass}")
         }
     }
 
     override fun get(bundle: Bundle, key: String): Float? {
         @Suppress("DEPRECATION")
-        return floatValue(bundle[key])
+        return bundleValueToFloat(bundle[key])
     }
 
     override fun parseValue(value: String): Float? {
@@ -33,10 +32,16 @@ object DestinationsFloatNavType : DestinationsNavType<Float?>() {
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): Float? {
-        return floatValue(savedStateHandle.get<Any?>(key))
+        return bundleValueToFloat(savedStateHandle[key])
     }
 
-    private fun floatValue(valueForKey: Any?): Float? {
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: Float?) {
+        savedStateHandle[key] = floatToBundleValue(value)
+    }
+
+    private fun floatToBundleValue(value: Float?) = value ?: 0.toByte()
+
+    private fun bundleValueToFloat(valueForKey: Any?): Float? {
         return if (valueForKey is Float) {
             valueForKey
         } else {

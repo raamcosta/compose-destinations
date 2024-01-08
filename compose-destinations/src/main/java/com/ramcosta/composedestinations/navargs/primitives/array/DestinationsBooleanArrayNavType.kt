@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.navargs.primitives.array
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
@@ -41,7 +40,11 @@ object DestinationsBooleanArrayNavType : DestinationsNavType<BooleanArray?>() {
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): BooleanArray? {
-        return savedStateHandle.get(key)
+        return savedStateHandle[key]
+    }
+
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: BooleanArray?) {
+        savedStateHandle[key] = value
     }
 
 }

@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.navargs.primitives.arraylist
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
@@ -11,7 +10,7 @@ import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 object DestinationsBooleanArrayListNavType : DestinationsNavType<ArrayList<Boolean>?>() {
 
     override fun put(bundle: Bundle, key: String, value: ArrayList<Boolean>?) {
-        bundle.putBooleanArray(key, value?.let { list -> BooleanArray(list.size) { list[it] } })
+        bundle.putBooleanArray(key, value.toArray())
     }
 
     override fun get(bundle: Bundle, key: String): ArrayList<Boolean>? {
@@ -40,6 +39,14 @@ object DestinationsBooleanArrayListNavType : DestinationsNavType<ArrayList<Boole
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<Boolean>? {
         return savedStateHandle.get<BooleanArray?>(key).toArrayList()
+    }
+
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: ArrayList<Boolean>?) {
+        savedStateHandle[key] = value.toArray()
+    }
+
+    private fun ArrayList<Boolean>?.toArray(): BooleanArray? {
+        return this?.let { list -> BooleanArray(list.size) { list[it] } }
     }
 
     private fun BooleanArray?.toArrayList(): ArrayList<Boolean>? {

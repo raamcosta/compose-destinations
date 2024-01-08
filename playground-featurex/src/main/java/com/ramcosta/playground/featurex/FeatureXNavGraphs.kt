@@ -13,8 +13,3 @@ internal annotation class FeatureXNavGraph(
 data class FeatureXNavArgs(
     val something: String
 )
-
-@NavGraph
-internal annotation class FeatureYNavGraph(
-    val start: Boolean = false
-)

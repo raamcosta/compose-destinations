@@ -14,6 +14,8 @@ abstract class DestinationsNavType<T: Any?>: NavType<T>(true) {
 
     abstract fun get(savedStateHandle: SavedStateHandle, key: String): T
 
+    abstract fun put(savedStateHandle: SavedStateHandle, key: String, value: T)
+
     fun safeGet(bundle: Bundle?, key: String): T? {
         return bundle?.let { get(it, key) }
     }

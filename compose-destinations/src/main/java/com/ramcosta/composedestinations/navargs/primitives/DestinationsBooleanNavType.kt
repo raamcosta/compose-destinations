@@ -2,22 +2,21 @@ package com.ramcosta.composedestinations.navargs.primitives
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 
 object DestinationsBooleanNavType : DestinationsNavType<Boolean?>() {
 
     override fun put(bundle: Bundle, key: String, value: Boolean?) {
-        if (value == null) {
-            bundle.putByte(key, 0)
-        } else {
-            bundle.putBoolean(key, value)
+        when (val bundleValue = booleanToBundleValue(value)) {
+            is Byte -> bundle.putByte(key, bundleValue)
+            is Boolean -> bundle.putBoolean(key, bundleValue)
+            else -> error("Unexpected type ${bundleValue.javaClass}")
         }
     }
 
     override fun get(bundle: Bundle, key: String): Boolean? {
         @Suppress("DEPRECATION")
-        return booleanValue(bundle[key])
+        return bundleValueToBoolean(bundle[key])
     }
 
     override fun parseValue(value: String): Boolean? {
@@ -33,10 +32,16 @@ object DestinationsBooleanNavType : DestinationsNavType<Boolean?>() {
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): Boolean? {
-        return booleanValue(savedStateHandle.get<Any?>(key))
+        return bundleValueToBoolean(savedStateHandle[key])
     }
 
-    private fun booleanValue(valueForKey: Any?): Boolean? {
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: Boolean?) {
+        savedStateHandle[key] = booleanToBundleValue(value)
+    }
+
+    private fun booleanToBundleValue(value: Boolean?) = value ?: 0.toByte()
+
+    private fun bundleValueToBoolean(valueForKey: Any?): Boolean? {
         return if (valueForKey is Boolean) {
             valueForKey
         } else {

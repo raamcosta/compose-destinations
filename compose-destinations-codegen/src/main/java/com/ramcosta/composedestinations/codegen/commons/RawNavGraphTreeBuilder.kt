@@ -23,20 +23,40 @@ internal data class RawNavGraphTree(
         qualifiedName = "$navGraphsPackageName.$name"
     )
 
-    val genNavArgsClass = Importable(
+    val genNavArgsType = Importable(
         "${name}NavArgs",
         "$navGraphsPackageName.${name}NavArgs"
     )
 
-    val graphArgs = if (navArgs?.parameters.isNullOrEmpty()) {
+    val graphArgsType: Importable? = if (navArgs?.parameters.isNullOrEmpty()) {
+        // the graph itself has no arguments
         null
     } else {
+        // the graph itself has arguments
         if (startRouteArgs != null) {
-            genNavArgsClass
+            // the graph's start route also has arguments
+            // So we're going to generate a new nav args class that has
+            // this graph's arguments and also the start route's args class
+            genNavArgsType
         } else {
+            // the graph's start route has no arguments
             navArgs!!.type
         }
     }
+
+    val navArgTypes: Pair<Importable?, Importable?> = (graphArgsType ?: startRouteArgs?.type) to startRouteArgs?.type
+
+    fun requiresGeneratingNavArgsClass() = navArgTypes.first != null
+            && navArgTypes.second != null
+            && navArgTypes.first != navArgTypes.second
+
+    fun usesSameArgsAsStartRoute() = navArgTypes.first == navArgTypes.second
+            && navArgTypes.second != null
+
+    fun hasNoArgs() = navArgTypes.first == null
+            && navArgTypes.second == null
+
+    fun hasOnlyGraphArgs() = navArgTypes.first != null && navArgTypes.second == null
 }
 
 internal val setOfPublicStartParticipatingTypes = mutableSetOf<Importable>()
@@ -182,7 +202,7 @@ private data class StartRouteArgsTree(
                 RawNavArgsClass(
                     parameters = subTree.navArgsClass.parameters,
                     visibility = graphTree!!.visibility,
-                    type = graphTree.genNavArgsClass
+                    type = graphTree.genNavArgsType
                 )
             } else {
                 navArgsClass

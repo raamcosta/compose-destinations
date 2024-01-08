@@ -155,9 +155,7 @@ internal class SingleNavGraphWriter(
     }
 
     private fun RawNavGraphTree.graphInvokeFunction(): String {
-        val navArgTypes = navArgTypes()
-
-        if (navArgTypes.first == navArgTypes.second && navArgTypes.second != null) {
+        if (usesSameArgsAsStartRoute()) {
             return """
             |
             |
@@ -169,7 +167,7 @@ internal class SingleNavGraphWriter(
             """.trimMargin()
         }
 
-        if (isNavHostGraph || navArgTypes.first == null && navArgTypes.second == null) {
+        if (isNavHostGraph || hasNoArgs()) {
             return ""
         }
 
@@ -194,9 +192,7 @@ internal class SingleNavGraphWriter(
     }
 
     private fun RawNavGraphTree.argsFromFunctions(): String {
-        val navArgTypes = navArgTypes()
-
-        if (navArgTypes.first == navArgTypes.second && navArgTypes.second != null) {
+        if (usesSameArgsAsStartRoute()) {
             val startRouteArgsTypePlaceHolder = importableHelper.addAndGetPlaceholder(navArgTypes.second!!)
             return """
             |
@@ -221,16 +217,14 @@ internal class SingleNavGraphWriter(
     }
 
     private fun RawNavGraphTree.generatedNavArgsClass(): String {
-        val argTypes = navArgTypes()
-
-        if (argTypes.first != null && argTypes.second != null && argTypes.first != argTypes.second) {
+        if (requiresGeneratingNavArgsClass()) {
             val code = StringBuilder()
             code += "/**\n"
-            code += " * Generated to have args containing both [${importableHelper.addAndGetPlaceholder(navArgs!!.type)}] and [${argTypes.second!!.preferredSimpleName}]\n"
+            code += " * Generated to have args containing both [${importableHelper.addAndGetPlaceholder(navArgs!!.type)}] and [${navArgTypes.second!!.preferredSimpleName}]\n"
             code += " **/\n"
             code += "${getGenNavArgsClassVisibility()} data class ${navGraph.name}NavArgs(\n"
             code += "${navArgumentBridgeCodeBuilder.innerNavArgsParametersCode("\tval ")}\n"
-            code += "\tval startRouteArgs: ${importableHelper.addAndGetPlaceholder(argTypes.second!!)}\n"
+            code += "\tval startRouteArgs: ${importableHelper.addAndGetPlaceholder(navArgTypes.second!!)}\n"
             code += ")\n\n"
             return code.toString()
         }
@@ -277,7 +271,7 @@ internal class SingleNavGraphWriter(
             return importableHelper.addAndGetPlaceholder(navHostNavGraphType)
         }
 
-        val (graphArgs, startRouteNavArgsName) = navArgTypes().let { argTypes ->
+        val (graphArgs, startRouteNavArgsName) = navArgTypes.let { argTypes ->
             argTypes.first?.let { importableHelper.addAndGetPlaceholder(it) } to argTypes.second?.let { importableHelper.addAndGetPlaceholder(it) }
         }
 
@@ -288,10 +282,6 @@ internal class SingleNavGraphWriter(
         } else {
             importableHelper.addAndGetPlaceholder(directionNavGraphType)
         }
-    }
-
-    private fun RawNavGraphTree.navArgTypes(): Pair<Importable?, Importable?> {
-        return (graphArgs ?: startRouteArgs?.type) to startRouteArgs?.type
     }
 
     private fun RawNavGraphTree.startRouteType(): String {

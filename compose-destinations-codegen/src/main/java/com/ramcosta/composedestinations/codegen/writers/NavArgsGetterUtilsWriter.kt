@@ -38,8 +38,8 @@ internal class NavArgsGettersWriter(
             .values
             .toList()
 
-        val navGraphsWithNavArgs = navGraphTrees.filter { it.graphArgs != null }
-            .associateBy { it.graphArgs }
+        val navGraphsWithNavArgs = navGraphTrees.filter { it.graphArgsType != null }
+            .associateBy { it.graphArgsType }
             .values
             .toList()
 
@@ -80,7 +80,7 @@ internal class NavArgsGettersWriter(
         }
 
         navGraphsWithNavArgs.forEachIndexed { idx, it ->
-            sb += "\t\t${importableHelper.addAndGetPlaceholder(it.graphArgs!!)}::class.java " +
+            sb += "\t\t${importableHelper.addAndGetPlaceholder(it.graphArgsType!!)}::class.java " +
                     "-> ${importableHelper.addAndGetPlaceholder(it.navGraphImportable)}.argsFrom(argsContainer) as T"
 
             if (idx < navGraphsWithNavArgs.lastIndex) {

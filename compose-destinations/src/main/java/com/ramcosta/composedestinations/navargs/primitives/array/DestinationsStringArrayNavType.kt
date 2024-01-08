@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.navargs.primitives.array
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.DestinationsStringNavType
@@ -49,6 +48,10 @@ object DestinationsStringArrayNavType : DestinationsNavType<Array<String>?>() {
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): Array<String>? {
-        return savedStateHandle.get<Array<String>?>(key)
+        return savedStateHandle[key]
+    }
+
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: Array<String>?) {
+        savedStateHandle[key] = value
     }
 }
