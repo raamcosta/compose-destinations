@@ -14,6 +14,7 @@ import com.ramcosta.composedestinations.codegen.commons.toTypeCode
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
+import com.ramcosta.composedestinations.codegen.model.DestinationResultSenderInfo
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
@@ -27,7 +28,8 @@ class InitialValidator(
 
     fun validate(
         navGraphs: List<RawNavGraphGenParams>,
-        destinations: List<DestinationGeneratingParams>
+        destinations: List<DestinationGeneratingParams>,
+        submoduleResultSenders: Map<String, DestinationResultSenderInfo>
     ) {
         validateNavGraphs(navGraphs)
 
@@ -51,7 +53,7 @@ class InitialValidator(
 
             destination.validateOpenResultRecipients()
 
-            destination.validateClosedResultRecipients(destinationsByName)
+            destination.validateClosedResultRecipients(submoduleResultSenders, destinationsByName)
 
             cleanRoutes.add(destination.baseRoute)
             composableNames.add(destination.composableName)
@@ -141,6 +143,7 @@ class InitialValidator(
     }
 
     private fun DestinationGeneratingParams.validateClosedResultRecipients(
+        submoduleResultSenders: Map<String, DestinationResultSenderInfo>,
         destinationsByName: Lazy<Map<String, DestinationGeneratingParams>>
     ) {
         val resultRecipientParams = parameters
@@ -155,30 +158,49 @@ class InitialValidator(
                 ?: throw IllegalDestinationsSetup(
                     "ResultRecipient second type argument must be a valid type with no '*' variance."
                 )
-
             validateResultType(resultType)
 
-            val resultOriginDestinationName = parameter.getFirstArgTypeSimpleName()
-            destinationResultOriginForAllResultTypes.add(resultOriginDestinationName)
+            val resultOriginQualifiedName = parameter.getFirstArgTypeQualifiedName()
 
-            val resultOriginDestinationParams =
-                destinationsByName.value[resultOriginDestinationName]
-                    ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin (type aliases are not allowed here).")
+            if (resultOriginQualifiedName != null) {
+                // qualified name means that this is a Destination which is already generated
+                // so a Destination that comes from a dependency module
+                destinationResultOriginForAllResultTypes.add(resultOriginQualifiedName)
+                val info = submoduleResultSenders[resultOriginQualifiedName]
 
-            resultOriginDestinationParams.parameters.firstOrNull {
-                it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME &&
-                        (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type == resultType
+                if (info == null || info.resultTypeQualifiedName != resultType.importable.qualifiedName || info.isResultTypeNullable != resultType.isNullable) {
+                    throw IllegalDestinationsSetup(
+                        "Composable correspondent to '${resultOriginQualifiedName}' must receive a 'ResultBackNavigator<${resultType.toTypeCode()}>'" +
+                                " parameter in order to be used as result originator for '${composableName}'"
+                    )
+                }
+
+            } else {
+                // no qualified name means that this might be a Destination which is still not generated
+                // so a Destination that we will generate ourselves during this ksp run
+
+                val resultOriginDestinationName = parameter.getFirstArgTypeSimpleName()
+                destinationResultOriginForAllResultTypes.add(resultOriginDestinationName)
+
+                val resultOriginDestinationParams =
+                    destinationsByName.value[resultOriginDestinationName]
+                        ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin (type aliases are not allowed here) for '$composableName'.")
+
+                resultOriginDestinationParams.parameters.firstOrNull {
+                    it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME &&
+                            (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type == resultType
+                }
+                    ?: throw IllegalDestinationsSetup(
+                        "Composable '${resultOriginDestinationParams.composableName}' must receive a ResultBackNavigator" +
+                                " of type '${resultType.toTypeCode()}' in order to be used as result originator for '${composableName}'"
+                    )
             }
-                ?: throw IllegalDestinationsSetup(
-                    "Composable '${resultOriginDestinationParams.composableName}' must receive a ResultBackNavigator" +
-                            " of type '${resultType.toTypeCode()}' in order to be used as result originator for '${composableName}'"
-                )
         }
 
         if (destinationResultOriginForAllResultTypes.size != resultRecipientParams.size) {
             throw IllegalDestinationsSetup(
                 "Composable '${composableName}': " +
-                        "has multiple ResultRecipients with the same Destination, only one recipient is allowed for a destination!"
+                        "has multiple ResultRecipients with the same Destination, only one recipient is allowed for a given destination!"
             )
         }
 
@@ -241,6 +263,12 @@ class InitialValidator(
 
         return (firstTypeArg as? TypeArgument.Typed)?.type?.importable?.simpleName
             ?: throw IllegalDestinationsSetup("ResultRecipient first type argument must be a Destination")
+    }
+
+    private fun Parameter.getFirstArgTypeQualifiedName(): String? {
+        val firstTypeArg = type.typeArguments.first()
+
+        return (firstTypeArg as? TypeArgument.Typed)?.type?.importable?.qualifiedName
     }
 
     private fun DestinationGeneratingParams.validateResultType(resultType: TypeInfo) {

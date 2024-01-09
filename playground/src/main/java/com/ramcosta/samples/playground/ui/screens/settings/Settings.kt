@@ -46,7 +46,7 @@ fun SettingsScreen(
     val context = LocalContext.current
     themeSettingsResultRecipient.onNavResult {
         println("result = $it")
-        Toast.makeText(context, "confirmed? = $it", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "confirmed? = $it", Toast.LENGTH_SHORT).show()
     }
 
     Box(

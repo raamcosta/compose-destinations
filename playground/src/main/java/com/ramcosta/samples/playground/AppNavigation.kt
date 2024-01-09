@@ -91,6 +91,7 @@ private fun ManualComposableCallsBuilder.greetingScreen(
             uiState = vm as GreetingUiState,
             test = "testing param from NavHost",
             resultRecipient = resultRecipient(),
+            featYResult = resultRecipient(),
         )
     }
 }
@@ -122,6 +123,7 @@ fun SampleAppAnimatedNavHostExample(
                 uiEvents = vm as GreetingUiEvents,
                 uiState = vm as GreetingUiState,
                 resultRecipient = resultRecipient(),
+                featYResult = resultRecipient(),
                 testProfileDeepLink = testProfileDeepLink,
                 test = "testing param from NavHost",
             )
