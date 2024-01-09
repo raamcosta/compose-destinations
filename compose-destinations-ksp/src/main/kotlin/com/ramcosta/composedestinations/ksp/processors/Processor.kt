@@ -22,6 +22,7 @@ import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATIO
 import com.ramcosta.composedestinations.codegen.commons.NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.ClassKind
+import com.ramcosta.composedestinations.codegen.model.DestinationResultSenderInfo
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
@@ -102,7 +103,16 @@ class Processor(
                     .map {
                         SubModuleInfo(
                             it.findArgumentValue<String>("moduleName"),
-                            it.findArgumentValue<String>("packageName")!!
+                            it.findArgumentValue<String>("packageName")!!,
+                            it.findArgumentValue<ArrayList<KSAnnotation>>(
+                                "typeResults"
+                            )?.map { typeResultAnnotation ->
+                                DestinationResultSenderInfo(
+                                    typeResultAnnotation.findArgumentValue<KSType>("destination")!!.declaration.qualifiedName!!.asString(),
+                                    typeResultAnnotation.findArgumentValue<KSType>("resultType")!!.declaration.qualifiedName!!.asString(),
+                                    typeResultAnnotation.findArgumentValue<Boolean>("isResultNullable")!!,
+                                )
+                            }.orEmpty()
                         )
                     }
             }.toList()

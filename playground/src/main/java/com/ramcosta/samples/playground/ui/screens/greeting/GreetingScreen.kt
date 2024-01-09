@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavHostParam
 import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXGraph
+import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureYHomeDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
@@ -55,10 +56,11 @@ fun GreetingScreen(
     @NavHostParam test: String,
     resultRecipient:
     ResultCena<Boolean>,
+    featYResult: ResultRecipient<FeatureYHomeDestination, Boolean>,
 ) {
     val context = LocalContext.current
     resultRecipient.onNavResult { result ->
-        Toast.makeText(context, "result? = $result", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "result? = $result", Toast.LENGTH_SHORT).show()
         println("go? $result")
         when (result) {
             is NavResult.Canceled -> println("canceled!!")
@@ -76,6 +78,10 @@ fun GreetingScreen(
                 )
             }
         }
+    }
+
+    featYResult.onNavResult { result ->
+        Toast.makeText(context, "featY result? = $result", Toast.LENGTH_SHORT).show()
     }
 
     GreetingScreenContent(uiState, uiEvents, navigator, testProfileDeepLink) {
@@ -131,6 +137,14 @@ private fun GreetingScreenContent(
                 }
             ) {
                 Text(text = stringResource(R.string.go_to_profile))
+            }
+
+            Button(
+                onClick = {
+                    navigator.navigate(FeatureYHomeDestination)
+                }
+            ) {
+                Text(text = "Go to submodule's FeatureY home screen")
             }
 
             Spacer(modifier = Modifier.height(8.dp))
