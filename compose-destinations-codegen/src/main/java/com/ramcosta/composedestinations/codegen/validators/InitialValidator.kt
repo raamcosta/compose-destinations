@@ -175,13 +175,16 @@ class InitialValidator(
         val destinationResultOriginForAllResultTypes = mutableSetOf<String>()
 
         resultRecipientParams.forEach { parameter ->
-            val resultOriginDestinationName = parameter.getFirstArgTypeSimpleName()
+            Logger.instance.info("validateClosedResultRecipients | checking param $composableName ${parameter.name}")
+
             val resultType = (parameter.type.typeArguments[1] as? TypeArgument.Typed)?.type
                 ?: throw IllegalDestinationsSetup(
                     "ResultRecipient second type argument must be a valid type with no '*' variance."
                 )
 
             validateResultType(resultType)
+
+            val resultOriginDestinationName = parameter.getFirstArgTypeSimpleName()
             destinationResultOriginForAllResultTypes.add(resultOriginDestinationName)
 
             val resultOriginDestinationParams =
@@ -235,14 +238,27 @@ class InitialValidator(
 
         if (firstTypeArg is TypeArgument.Error) {
             // Since the Destination is not yet generated, we are expecting this to happen
+            Logger.instance.info("getFirstArgTypeSimpleName | line error = \"${firstTypeArg.lineStr}\"")
             return firstTypeArg.lineStr
-                .replaceBefore("ResultRecipient<", "")
-                .removePrefix("ResultRecipient<")
+                .replaceBefore("ResultRecipient", "")
+                .removePrefix("ResultRecipient").also {
+                    Logger.instance.info("getFirstArgTypeSimpleName | result of removePrefix ResultRecipient = \"$it\"")
+                }
+                .replaceBefore("<", "")
+                .removePrefix("<").also {
+                    Logger.instance.info("getFirstArgTypeSimpleName | result of removePrefix < = \"$it\"")
+                }
                 .replaceAfter(">", "")
-                .removeSuffix(">")
-                .split(",")
+                .removeSuffix(">").also {
+                    Logger.instance.info("getFirstArgTypeSimpleName | result of removeSuffix > = \"$it\"")
+                }
+                .split(",").also {
+                    Logger.instance.info("getFirstArgTypeSimpleName | result of split = \"$it\"")
+                }
                 .first()
-                .trim()
+                .trim().also {
+                    Logger.instance.info("getFirstArgTypeSimpleName | Result of trim = \"$it\"")
+                }
         }
 
         return (firstTypeArg as? TypeArgument.Typed)?.type?.importable?.simpleName
