@@ -6,7 +6,7 @@ targetSdk = "34"
 
 kotlin = "1.9.21"
 dependencyCheckPluginVersion = "0.50.0"
-agp = "8.2.0"
+agp = "8.2.1"
 mavenPublishPluginVersion = "0.25.3"
 
 composeViewModel = "2.6.2"
@@ -15,7 +15,7 @@ activityCompose = "1.7.2"
 material = "1.9.0" #ProcessorProviderTests fail when trying to update this one
 lifecycleRuntimeKtx = "2.6.2"
 
-ksp = "1.9.21-1.0.15"
+ksp = "1.9.21-1.0.16"
 
 junit = "4.13.2"
 
