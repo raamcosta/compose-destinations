@@ -520,7 +520,7 @@ class KspToCodeGenDestinationsMapper(
         val fileLocation = location as? FileLocation ?: return "NonExistentLocation"
         return File(fileLocation.filePath)
             .readLines(fileLocation.lineNumber, fileLocation.lineNumber + 10)
-            .joinToString("")
+            .joinToString("\n")
     }
 
 

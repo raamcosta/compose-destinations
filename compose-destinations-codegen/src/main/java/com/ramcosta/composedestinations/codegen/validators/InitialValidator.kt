@@ -238,26 +238,30 @@ class InitialValidator(
 
         if (firstTypeArg is TypeArgument.Error) {
             // Since the Destination is not yet generated, we are expecting this to happen
-            Logger.instance.info("getFirstArgTypeSimpleName | line error = \"${firstTypeArg.lineStr}\"")
+            Logger.instance.info("getFirstArgTypeSimpleName | line error = \n```\n${firstTypeArg.lineStr}\n```")
             return firstTypeArg.lineStr
+                .replaceBefore(this.name, "")
+                .removePrefix(this.name).also {
+                    Logger.instance.info("getFirstArgTypeSimpleName | result of removePrefix ${this.name} = \n```\n$it\n```")
+                }
                 .replaceBefore("ResultRecipient", "")
                 .removePrefix("ResultRecipient").also {
-                    Logger.instance.info("getFirstArgTypeSimpleName | result of removePrefix ResultRecipient = \"$it\"")
+                    Logger.instance.info("getFirstArgTypeSimpleName | result of removePrefix ResultRecipient = \n```\n$it\n```")
                 }
                 .replaceBefore("<", "")
                 .removePrefix("<").also {
-                    Logger.instance.info("getFirstArgTypeSimpleName | result of removePrefix < = \"$it\"")
+                    Logger.instance.info("getFirstArgTypeSimpleName | result of removePrefix < = \n```\n$it\n```")
                 }
                 .replaceAfter(">", "")
                 .removeSuffix(">").also {
-                    Logger.instance.info("getFirstArgTypeSimpleName | result of removeSuffix > = \"$it\"")
+                    Logger.instance.info("getFirstArgTypeSimpleName | result of removeSuffix > = \n```\n$it\n```")
                 }
                 .split(",").also {
-                    Logger.instance.info("getFirstArgTypeSimpleName | result of split = \"$it\"")
+                    Logger.instance.info("getFirstArgTypeSimpleName | result of split = \n```\n$it\n```")
                 }
                 .first()
                 .trim().also {
-                    Logger.instance.info("getFirstArgTypeSimpleName | Result of trim = \"$it\"")
+                    Logger.instance.info("getFirstArgTypeSimpleName | Result of trim = \n```\n$it\n```")
                 }
         }
 
