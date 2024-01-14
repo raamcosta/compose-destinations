@@ -47,26 +47,6 @@ inline fun <reified T> KSAnnotation.findArgumentValue(name: String): T? {
     return arguments.find { it.name?.asString() == name }?.value as T?
 }
 
-fun File.readLineAndImports(lineNumber: Int): Pair<String, List<String>> {
-    val bufferedReader = BufferedReader(InputStreamReader(FileInputStream(this), Charsets.UTF_8))
-    return bufferedReader
-        .useLines { lines: Sequence<String> ->
-            val firstNLines = lines.take(lineNumber)
-
-            val iterator = firstNLines.iterator()
-            var line = iterator.next()
-            val importsList = mutableListOf<String>()
-            while (iterator.hasNext()) {
-                line = iterator.next()
-                if (line.startsWith("import")) {
-                    importsList.add(line.removePrefix("import "))
-                }
-            }
-
-            line to importsList
-        }
-}
-
 fun File.readLine(lineNumber: Int): String {
     val bufferedReader = BufferedReader(InputStreamReader(FileInputStream(this), Charsets.UTF_8))
     return bufferedReader
@@ -81,10 +61,27 @@ fun File.readLines(startLineNumber: Int, endLineNumber: Int): List<String> {
     val bufferedReader = BufferedReader(InputStreamReader(FileInputStream(this), Charsets.UTF_8))
     return bufferedReader
         .useLines { lines: Sequence<String> ->
-            lines
+            val linesList = lines
                 .take(endLineNumber)
                 .toList()
-                .takeLast(endLineNumber - (startLineNumber - 1))
+            linesList
+                .takeLast(linesList.size - (startLineNumber - 1))
+        }
+}
+
+fun File.readLinesAndImports(startLineNumber: Int, endLineNumber: Int): Pair<List<String>, List<String>> {
+    val bufferedReader = BufferedReader(InputStreamReader(FileInputStream(this), Charsets.UTF_8))
+    return bufferedReader
+        .useLines { lines: Sequence<String> ->
+            val linesList = lines
+                .take(endLineNumber)
+                .toList()
+
+            val linesRes = linesList.takeLast(linesList.size - (startLineNumber - 1))
+            val imports = linesList.filter { it.startsWith("import") }
+                .map { it.removePrefix("import ") }
+
+            linesRes to imports
         }
 }
 

@@ -58,6 +58,42 @@ class DefaultParameterValueReaderTest {
             expected = DefaultValue("\"multiple, words string\"")
         ),
         TestCase(
+            lineText = """
+                cena: Class<Any> = Any::class.java,
+            """,
+            argName = "cena",
+            argType = "Class",
+            expected = DefaultValue("Any::class.java")
+        ),
+        TestCase(
+            lineText = """
+                arg1: String = "multiple, words string",
+                arg2: String = "doesn't matter"
+            """,
+            argName = "arg1",
+            argType = "String",
+            expected = DefaultValue("\"multiple, words string\"")
+        ),
+        TestCase(
+            lineText = """
+                thingsWithNavTypeSerializer: Things? = null,
+                serializableExample: SerializableExample? = SerializableExample(),
+            """,
+            argName = "thingsWithNavTypeSerializer",
+            argType = "Things",
+            expected = DefaultValue("null")
+        ),
+        TestCase(
+            lineText = """
+                stuff3: ArrayList<Color>? = arrayListOf(),
+                stuff4: SerializableExampleWithNavTypeSerializer? = SerializableExampleWithNavTypeSerializer(),
+            """,
+            argName = "stuff3",
+            argType = "ArrayList",
+            imports = emptyList(),
+            expected = DefaultValue("arrayListOf()")
+        ),
+        TestCase(
             lineText = "arg1: String = \"multiple, \\\"words string\", arg2: String = \"doesn't matter\"",
             argName = "arg1",
             argType = "String",

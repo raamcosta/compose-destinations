@@ -10,6 +10,7 @@ import com.google.devtools.ksp.symbol.KSValueParameter
 import com.google.devtools.ksp.symbol.NonExistLocation
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.removeFromTo
+import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.DefaultValue
 import java.io.File
 
@@ -71,11 +72,19 @@ object DefaultParameterValueReader {
     ): DefaultValue {
 
         var result = auxText
-        if (!result.firstParenthesisIsClosing() && result.contains("(")) {
+        // ':' means its another parameter (I think.. I don't know what other meaning a ':' would have here..)
+        val indexOfNextParam = result.indexOfFirst { it == ':' }.takeIf { it != -1 }
+
+        if (result.firstParenthesisIsOpening() && // if first parenthesis is "(" then it is not closing list of function params
+            result.contains("(") && // we have a "(" and it's before a ")"
+            result.indexOf('(') < (indexOfNextParam ?: result.lastIndex) // "(" is before next param if it exists
+        ) {
+            if (indexOfNextParam != null) {
+                result = result.removeRange(indexOfNextParam, result.length)
+            }
             result = result.defaultValueCodeWithFunctionCalls()
         } else {
             val index = result.indexOfFirst { it == ' ' || it == ',' || it == '\n' || it == ')' }
-
             if (index != -1)
                 result = result.removeRange(index, result.length)
         }
@@ -92,7 +101,7 @@ object DefaultParameterValueReader {
         if (result.length - importableAux.length > 2) {
             //we detected a function call with args, we can't resolve this
             throw IllegalDestinationsSetup("Navigation arguments using function calls with parameters as their default value " +
-                "are not currently supported (near: '$auxText')")
+                    "are not currently supported (near: '$auxText')")
         }
 
         val importable = importableAux.split(".")[0]
@@ -130,11 +139,11 @@ object DefaultParameterValueReader {
     }
 }
 
-private fun String.firstParenthesisIsClosing(): Boolean {
+private fun String.firstParenthesisIsOpening(): Boolean {
     val indexOfFirstOpening = this.indexOfFirst { it == '(' }
     val indexOfFirstClosing = this.indexOfFirst { it == ')' }
 
-    return indexOfFirstClosing < indexOfFirstOpening
+    return indexOfFirstClosing >= indexOfFirstOpening
 }
 
 private fun String.defaultValueCodeWithFunctionCalls(): String {
@@ -191,8 +200,10 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
                 "Are you using navArgsDelegate with code from different module?")
     }
 
+    Logger.instance.info("getDefaultValue | name = ${name!!.asString()} type = $type")
     val fileLocation = location as FileLocation
-    val (line, imports) = File(fileLocation.filePath).readLineAndImports(fileLocation.lineNumber)
+    val (lines, imports) = File(fileLocation.filePath)
+        .readLinesAndImports(fileLocation.lineNumber, fileLocation.lineNumber + 10)
 
     return DefaultParameterValueReader.readDefaultValue(
         { pckg, name ->
@@ -204,12 +215,12 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
                     }
             }.getOrNull()
         },
-        line,
+        lines.joinToString("").also { Logger.instance.info("getDefaultValue | line = $it") },
         this.containingFile!!.packageName.asString(),
         imports,
         name!!.asString(),
         type.toString()
-    )
+    ).also { Logger.instance.info("getDefaultValue | Result = $it") }
 }
 
 class ResolvedSymbol(val isAccessible: Boolean)
