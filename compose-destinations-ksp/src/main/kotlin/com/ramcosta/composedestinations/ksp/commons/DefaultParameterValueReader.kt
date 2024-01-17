@@ -18,13 +18,15 @@ object DefaultParameterValueReader {
 
     fun readDefaultValue(
         resolver: (pckg: String, name: String) -> ResolvedSymbol?,
-        lineText: String,
+        srcCodeLines: List<String>,
         packageName: String,
         imports: List<String>,
         argName: String,
         argType: String,
     ): DefaultValue {
-        var auxText = lineText
+        var auxText = srcCodeLines.joinToString("") { it.trim() }
+
+        Logger.instance.info("getDefaultValue | src code line = $auxText")
 
         val anchors = arrayOf(
             argName,
@@ -81,10 +83,15 @@ object DefaultParameterValueReader {
         ) {
             if (indexOfNextParam != null) {
                 result = result.removeRange(indexOfNextParam, result.length)
+            } else {
+                val indexOfFinalClosingParenthesis = result.indexOfFinalClosingParenthesis()
+                if (indexOfFinalClosingParenthesis != null) {
+                    result = result.removeRange(indexOfFinalClosingParenthesis, result.length)
+                }
             }
             result = result.defaultValueCodeWithFunctionCalls()
         } else {
-            val index = result.indexOfFirst { it == ' ' || it == ',' || it == '\n' || it == ')' }
+            val index = result.indexOfFirst { it == ' ' || it == ',' || it == ')' }
             if (index != -1)
                 result = result.removeRange(index, result.length)
         }
@@ -146,6 +153,24 @@ private fun String.firstParenthesisIsOpening(): Boolean {
     return indexOfFirstClosing >= indexOfFirstOpening
 }
 
+private fun String.indexOfFinalClosingParenthesis(): Int? {
+    var closingsExpected = 0
+
+    for (i in this.indices) {
+        when (this[i]) {
+            '(' -> closingsExpected++
+
+            ')' -> if (closingsExpected > 0) {
+                closingsExpected--
+            } else {
+                return i
+            }
+        }
+    }
+
+    return null
+}
+
 private fun String.defaultValueCodeWithFunctionCalls(): String {
     var idx = 0
 
@@ -156,22 +181,14 @@ private fun String.defaultValueCodeWithFunctionCalls(): String {
         idx = this.indexOf(')', indexOfOpen)
 
         if (idx == -1) {
-            //TODO we can maybe support this in the future:
-
-            // arg: someMethod(
-            //    param1,
-            //    param2,
-            //)
-
-            throw IllegalDestinationsSetup("Navigation arguments with multiline function call as their default value" +
-                    "are not currently supported (near: '$this')")
+            error("unexpected: did not find a ')' for previous '('")
         }
     }
 
     if (idx < this.lastIndex) {
         idx++
         val textToConsider = this.removeRange(0, idx)
-        val indexFinish = textToConsider.indexOfFirst { it == ' ' || it == ',' || it == '\n' || it == ')' }
+        val indexFinish = textToConsider.indexOfLast { it == ',' }
         var idxFromRemove = idx
 
         if (indexFinish != -1) {
@@ -206,7 +223,7 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
         .readLinesAndImports(fileLocation.lineNumber, fileLocation.lineNumber + 10)
 
     return DefaultParameterValueReader.readDefaultValue(
-        { pckg, name ->
+        resolver = { pckg, name ->
             kotlin.runCatching {
                 resolver.getDeclarationsFromPackage(pckg)
                     .firstOrNull { it.simpleName.asString().contains(name) }
@@ -215,11 +232,11 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
                     }
             }.getOrNull()
         },
-        lines.joinToString("").also { Logger.instance.info("getDefaultValue | line = $it") },
-        this.containingFile!!.packageName.asString(),
-        imports,
-        name!!.asString(),
-        type.toString()
+        srcCodeLines = lines,
+        packageName = this.containingFile!!.packageName.asString(),
+        imports = imports,
+        argName = name!!.asString(),
+        argType = type.toString()
     ).also { Logger.instance.info("getDefaultValue | Result = $it") }
 }
 

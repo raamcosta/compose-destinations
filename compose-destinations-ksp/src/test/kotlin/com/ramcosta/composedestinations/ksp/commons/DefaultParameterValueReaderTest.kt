@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.ksp.commons
 
+import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.DefaultValue
 import org.junit.Test
 
@@ -15,50 +16,66 @@ class DefaultParameterValueReaderTest {
 
     private val casesToTest = arrayOf(
         TestCase(
-            lineText = "    arg1: String? = \"defaultArg\") {",
+            srcCodeText = "    arg1: String? = \"defaultArg\") {",
             argName = "arg1",
             argType = "String",
             expected = DefaultValue("\"defaultArg\"")
         ),
         TestCase(
-            lineText = "    arg1: String? = null,",
+            srcCodeText = """
+                myInfo: MyInfo? = MyInfo()) {
+                    val keyboardController = LocalSoftwareKeyboardController.current
+                    val focusManager = LocalFocusManager.current
+                    val context = LocalContext.current
+                    val view = LocalView.current    
+                    
+                    LaunchedEffect(Unit) {
+                            vm.method(myThing = thing1.thing2)
+                    }
+            """,
+            argName = "myInfo",
+            argType = "MyInfo",
+            expected = DefaultValue("MyInfo()")
+        ),
+        TestCase(
+            srcCodeText = "    arg1: String? = null,",
             argName = "arg1",
             argType = "String",
             expected = DefaultValue("null")
         ),
         TestCase(
-            lineText = "internal fun EditRitual(nav: RespawnNavigator, ritualId: Uuid? = null) = AnalyticsScreen(\"EditRitual\") {",
+            srcCodeText = "internal fun EditRitual(nav: RespawnNavigator, ritualId: Uuid? = null) = AnalyticsScreen(\"EditRitual\") {",
             argName = "ritualId",
             argType = "Uuid",
             imports = listOf("com.ramcosta.package.Uuid"),
             expected = DefaultValue("null", listOf())
         ),
         TestCase(
-            lineText = "    arg1: String? = \"defaultArg\"",
+            srcCodeText = "    arg1: String? = \"defaultArg\"",
             argName = "arg1",
             argType = "String",
             expected = DefaultValue("\"defaultArg\"")
         ),
         TestCase(
-            lineText = "    arg1: String? = \"defaultArg\",",
+            srcCodeText = "    arg1: String? = \"defaultArg\",",
             argName = "arg1",
             argType = "String",
             expected = DefaultValue("\"defaultArg\"")
         ),
         TestCase(
-            lineText = "arg1: String = \"multiple words string\",",
+            srcCodeText = "arg1: String = \"multiple words string\",",
             argName = "arg1",
             argType = "String",
             expected = DefaultValue("\"multiple words string\"")
         ),
         TestCase(
-            lineText = "arg1: String = \"multiple, words string\", arg2: String = \"doesn't matter\"",
+            srcCodeText = "arg1: String = \"multiple, words string\", arg2: String = \"doesn't matter\"",
             argName = "arg1",
             argType = "String",
             expected = DefaultValue("\"multiple, words string\"")
         ),
         TestCase(
-            lineText = """
+            srcCodeText = """
                 cena: Class<Any> = Any::class.java,
             """,
             argName = "cena",
@@ -66,7 +83,31 @@ class DefaultParameterValueReaderTest {
             expected = DefaultValue("Any::class.java")
         ),
         TestCase(
-            lineText = """
+            srcCodeText = """
+                val configuration: SearchConfiguration = SearchConfiguration(),
+                val appliedFilters: AppliedSearchFilters = AppliedSearchFilters(),
+            )
+            """,
+            argName = "configuration",
+            argType = "SearchConfiguration",
+            expected = DefaultValue("SearchConfiguration()")
+        ),
+        TestCase(
+            srcCodeText = """
+                val appliedFilters: AppliedSearchFilters = AppliedSearchFilters(),
+            )
+
+            @Preview
+            @Composable
+            private fun SearchScreenPreview(
+                @PreviewParameter(PoiListPreviewParameterProvider
+            """,
+            argName = "appliedFilters",
+            argType = "AppliedSearchFilters",
+            expected = DefaultValue("AppliedSearchFilters()")
+        ),
+        TestCase(
+            srcCodeText = """
                 arg1: String = "multiple, words string",
                 arg2: String = "doesn't matter"
             """,
@@ -75,7 +116,7 @@ class DefaultParameterValueReaderTest {
             expected = DefaultValue("\"multiple, words string\"")
         ),
         TestCase(
-            lineText = """
+            srcCodeText = """
                 thingsWithNavTypeSerializer: Things? = null,
                 serializableExample: SerializableExample? = SerializableExample(),
             """,
@@ -84,7 +125,7 @@ class DefaultParameterValueReaderTest {
             expected = DefaultValue("null")
         ),
         TestCase(
-            lineText = """
+            srcCodeText = """
                 stuff3: ArrayList<Color>? = arrayListOf(),
                 stuff4: SerializableExampleWithNavTypeSerializer? = SerializableExampleWithNavTypeSerializer(),
             """,
@@ -94,43 +135,43 @@ class DefaultParameterValueReaderTest {
             expected = DefaultValue("arrayListOf()")
         ),
         TestCase(
-            lineText = "arg1: String = \"multiple, \\\"words string\", arg2: String = \"doesn't matter\"",
+            srcCodeText = "arg1: String = \"multiple, \\\"words string\", arg2: String = \"doesn't matter\"",
             argName = "arg1",
             argType = "String",
             expected = DefaultValue("\"multiple, \\\"words string\"")
         ),
         TestCase(
-            lineText = "arg1: String = \"doesn't matter\", arg2: String = \"mul\\\"tiple words \\\"string\"",
+            srcCodeText = "arg1: String = \"doesn't matter\", arg2: String = \"mul\\\"tiple words \\\"string\"",
             argName = "arg2",
             argType = "String",
             expected = DefaultValue("\"mul\\\"tiple words \\\"string\"")
         ),
         TestCase(
-            lineText = "arg1: String = \"doesn't matter\", arg2: Int = 2, arg3: String = \"mul\\\"tiple words \\\"string\"",
+            srcCodeText = "arg1: String = \"doesn't matter\", arg2: Int = 2, arg3: String = \"mul\\\"tiple words \\\"string\"",
             argName = "arg3",
             argType = "String",
             expected = DefaultValue("\"mul\\\"tiple words \\\"string\"")
         ),
         TestCase(
-            lineText = "arg1: String = \"doesn't matter\", arg2: Int = 2, arg3: String = \"mul\\\"tiple words \\\"string\"",
+            srcCodeText = "arg1: String = \"doesn't matter\", arg2: Int = 2, arg3: String = \"mul\\\"tiple words \\\"string\"",
             argName = "arg2",
             argType = "Int",
             expected = DefaultValue("2")
         ),
         TestCase(
-            lineText = "arg1: Float = 123.0f",
+            srcCodeText = "arg1: Float = 123.0f",
             argName = "arg1",
             argType = "Float",
             expected = DefaultValue("123.0f")
         ),
         TestCase(
-            lineText = "arg1: Float = 123L",
+            srcCodeText = "arg1: Float = 123L",
             argName = "arg1",
             argType = "Float",
             expected = DefaultValue("123L")
         ),
         TestCase(
-            lineText = "arg1: Boolean = true",
+            srcCodeText = "arg1: Boolean = true",
             argName = "arg1",
             argType = "Boolean",
             expected = DefaultValue("true")
@@ -142,7 +183,7 @@ class DefaultParameterValueReaderTest {
 
         TestCase(
             isResolvable = samePackageResolver,
-            lineText = "arg1: String = defaultValue()",
+            srcCodeText = "arg1: String = defaultValue()",
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
@@ -150,7 +191,7 @@ class DefaultParameterValueReaderTest {
         ),
         TestCase(
             isResolvable = samePackageResolver,
-            lineText = "arg1: String = Stuff.defaultValue()",
+            srcCodeText = "arg1: String = Stuff.defaultValue()",
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
@@ -158,7 +199,7 @@ class DefaultParameterValueReaderTest {
         ),
         TestCase(
             isResolvable = samePackageResolver,
-            lineText = "arg1: String = Outer.Stuff.defaultValue()",
+            srcCodeText = "arg1: String = Outer.Stuff.defaultValue()",
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
@@ -166,7 +207,7 @@ class DefaultParameterValueReaderTest {
         ),
         TestCase(
             isResolvable = samePackageResolver,
-            lineText = "arg1: String = Stuff.defaultValue",
+            srcCodeText = "arg1: String = Stuff.defaultValue",
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
@@ -174,7 +215,7 @@ class DefaultParameterValueReaderTest {
         ),
         TestCase(
             isResolvable = samePackageResolver,
-            lineText = "arg1: String = defaultValue",
+            srcCodeText = "arg1: String = defaultValue",
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
@@ -182,7 +223,7 @@ class DefaultParameterValueReaderTest {
         ),
         TestCase(
             isResolvable = samePackageResolver,
-            lineText = "arg1: String = Stuff.asd().stuff()",
+            srcCodeText = "arg1: String = Stuff.asd().stuff()",
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
@@ -190,7 +231,7 @@ class DefaultParameterValueReaderTest {
         ),
         TestCase(
             isResolvable = samePackageResolver,
-            lineText = "arg1: String = Stuff.asd().stuff",
+            srcCodeText = "arg1: String = Stuff.asd().stuff",
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
@@ -202,35 +243,59 @@ class DefaultParameterValueReaderTest {
 
 
         TestCase(
-            lineText = "arg1: String = defaultValue()",
+            srcCodeText = "arg1: String = defaultValue()",
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.defaultValue"),
             expected = DefaultValue("defaultValue()", listOf("com.ramcosta.package.defaultValue"))
         ),
         TestCase(
-            lineText = "arg1: String = Outer.Stuff.defaultValue()",
+            srcCodeText = "arg1: String = Outer.Stuff.defaultValue()",
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.Outer"),
             expected = DefaultValue("Outer.Stuff.defaultValue()", listOf("com.ramcosta.package.Outer"))
         ),
         TestCase(
-            lineText = "arg1: String = defaultValue",
+            srcCodeText = "arg1: String = defaultValue",
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.defaultValue"),
             expected = DefaultValue("defaultValue", listOf("com.ramcosta.package.defaultValue"))
         ),
         TestCase(
-            lineText = "arg1: String = Stuff.asd().stuff()",
+            srcCodeText = "arg1: String = Stuff.asd().stuff()",
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.Stuff"),
             expected = DefaultValue("Stuff.asd().stuff()", listOf("com.ramcosta.package.Stuff"))
         ),
         TestCase(
-            lineText = "arg1: String = Stuff.asd().stuff",
+            srcCodeText = "arg1: String = Stuff.asd().stuff",
+            argName = "arg1",
+            argType = "String",
+            imports = listOf("com.ramcosta.package.Stuff"),
+            expected = DefaultValue("Stuff.asd().stuff", listOf("com.ramcosta.package.Stuff"))
+        ),
+        TestCase(
+            srcCodeText = """
+                arg1: String = Stuff
+                    .asd()
+                    .stuff
+            """,
+            argName = "arg1",
+            argType = "String",
+            imports = listOf("com.ramcosta.package.Stuff"),
+            expected = DefaultValue("Stuff.asd().stuff", listOf("com.ramcosta.package.Stuff"))
+        ),
+        TestCase(
+            srcCodeText = """
+                arg1: String = Stuff
+                    .asd()
+                    .stuff,
+                arg2: String = someMethod(),
+            )
+            """,
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.Stuff"),
@@ -238,7 +303,7 @@ class DefaultParameterValueReaderTest {
         ),
         TestCase(
             isResolvable = { pckg, _ -> if (pckg == "com.ramcosta.package") ResolvedSymbol(true) else null },
-            lineText = "arg1: String = Stuff.defaultValue",
+            srcCodeText = "arg1: String = Stuff.defaultValue",
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.*"),
@@ -248,15 +313,16 @@ class DefaultParameterValueReaderTest {
 
     @Test
     fun testCases() {
+        addLogger()
         casesToTest.forEachIndexed { idx, it ->
-            println("Testing case #$idx: ${it.lineText}")
+            println("Testing case #$idx: ${it.srcCodeText}")
             val result = objectUnderTest.readDefaultValue(
-                it.isResolvable,
-                it.lineText,
-                "com.ramcosta.composedestinations.ksp.commons",
-                it.imports,
-                it.argName,
-                it.argType
+                resolver = it.isResolvable,
+                srcCodeLines = it.srcCodeText.trimIndent().lines(),
+                packageName = "com.ramcosta.composedestinations.ksp.commons",
+                imports = it.imports,
+                argName = it.argName,
+                argType = it.argType
             )
 
             assert(result == it.expected) {
@@ -265,9 +331,34 @@ class DefaultParameterValueReaderTest {
         }
     }
 
+    private fun addLogger() {
+        Logger.instance = object : Logger {
+            override fun logging(message: String) {
+                println("logging - $message")
+            }
+
+            override fun info(message: String) {
+                println("info - $message")
+            }
+
+            override fun warn(message: String) {
+                println("warn - $message")
+            }
+
+            override fun error(message: String) {
+                println("error - $message")
+            }
+
+            override fun exception(e: Throwable) {
+                println("exception - ${e.stackTraceToString()}")
+            }
+
+        }
+    }
+
     class TestCase(
         val isResolvable: (String, String) -> ResolvedSymbol? = { _, _ -> null },
-        val lineText: String,
+        val srcCodeText: String,
         val argName: String,
         val argType: String,
         val imports: List<String> = emptyList(),
