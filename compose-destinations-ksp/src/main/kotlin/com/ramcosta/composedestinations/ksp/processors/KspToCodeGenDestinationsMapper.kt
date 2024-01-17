@@ -20,8 +20,8 @@ import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUA
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.rootNavGraphType
-import com.ramcosta.composedestinations.codegen.commons.snakeToCamelCase
 import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
+import com.ramcosta.composedestinations.codegen.commons.toValidClassName
 import com.ramcosta.composedestinations.codegen.model.ActivityDestinationParams
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
 import com.ramcosta.composedestinations.codegen.model.Importable
@@ -66,7 +66,7 @@ internal class KspToCodeGenDestinationsMapper(
 
         val cleanRoute = annotations.findOverridingArgumentValue { prepareRoute(composableName) }!!
         val isStart = annotations.findOverridingArgumentValue { findArgumentValue<Boolean>("start") }!!
-        val name = cleanRoute.replace("/", "_").snakeToCamelCase().replaceFirstChar { it.uppercase() } + GENERATED_DESTINATION_SUFFIX
+        val name = cleanRoute.toValidClassName() + GENERATED_DESTINATION_SUFFIX
 
         val navArgsDelegateTypeAndFile = annotations.getNavArgsDelegateType()
         if (navArgsDelegateTypeAndFile?.file != null) {

@@ -42,3 +42,20 @@ private val pattern = "_[a-z]".toRegex()
 fun String.snakeToCamelCase(): String {
     return replace(pattern) { it.value.last().uppercase() }
 }
+
+val lettersDigitsRegex = """[^a-zA-Z0-9]+""".toRegex()
+fun String.toValidClassName(): String {
+    return lettersDigitsRegex.split(this)
+        .filter { it.isNotBlank() }
+        .joinToString("") { it.replaceFirstChar { c -> c.uppercaseChar() } }
+        .foldIndexed(StringBuilder()) { index, acc, char ->
+            if (index > 0 && acc[index - 1].isDigit()) {
+                acc.append(char.uppercaseChar())
+            } else {
+                acc.append(char)
+            }
+        }.toString()
+        .let {
+            if (it.isNotEmpty() && it[0].isDigit()) "D$it" else it
+        }
+}
