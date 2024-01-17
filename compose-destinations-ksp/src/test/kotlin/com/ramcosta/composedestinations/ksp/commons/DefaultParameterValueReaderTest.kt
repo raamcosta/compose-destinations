@@ -93,6 +93,12 @@ class DefaultParameterValueReaderTest {
             expected = DefaultValue("SearchConfiguration()")
         ),
         TestCase(
+            srcCodeText = """val appliedFilters: AppliedSearchFilters = AppliedSearchFilters(),)@Preview@Composableprivate fun SearchScreenPreview(@PreviewParameter(PoiListPreviewParameterProvider::class, limit = 1) poiList: ImmutableList,) {OcmPreview {SearchScreenContent(poiCallbacks = PoiCallbacks(null, Origin.Deals, LocalFocusManager.current),""",
+            argName = "appliedFilters",
+            argType = "AppliedSearchFilters",
+            expected = DefaultValue("AppliedSearchFilters()")
+        ),
+        TestCase(
             srcCodeText = """
                 val appliedFilters: AppliedSearchFilters = AppliedSearchFilters(),
             )

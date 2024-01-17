@@ -74,6 +74,11 @@ object DefaultParameterValueReader {
     ): DefaultValue {
 
         var result = auxText
+        val indexOfFinalClosingParenthesis = result.indexOfFinalClosingParenthesis()
+        if (indexOfFinalClosingParenthesis != null) {
+            result = result.removeRange(indexOfFinalClosingParenthesis, result.length)
+        }
+
         // ':' means its another parameter (I think.. I don't know what other meaning a ':' would have here..)
         val indexOfNextParam = result.indexOfFirst { it == ':' }.takeIf { it != -1 }
 
@@ -83,13 +88,12 @@ object DefaultParameterValueReader {
         ) {
             if (indexOfNextParam != null) {
                 result = result.removeRange(indexOfNextParam, result.length)
-            } else {
-                val indexOfFinalClosingParenthesis = result.indexOfFinalClosingParenthesis()
-                if (indexOfFinalClosingParenthesis != null) {
-                    result = result.removeRange(indexOfFinalClosingParenthesis, result.length)
-                }
             }
-            result = result.defaultValueCodeWithFunctionCalls()
+
+            val commaIndex = result.indexOfLast { it == ',' }
+            if (commaIndex != -1) {
+                result = result.removeRange(commaIndex, result.length)
+            }
         } else {
             val index = result.indexOfFirst { it == ' ' || it == ',' || it == ')' }
             if (index != -1)
@@ -169,35 +173,6 @@ private fun String.indexOfFinalClosingParenthesis(): Int? {
     }
 
     return null
-}
-
-private fun String.defaultValueCodeWithFunctionCalls(): String {
-    var idx = 0
-
-    while (true) {
-        val indexOfOpen = this.indexOf('(', idx)
-        if (indexOfOpen == -1) break
-
-        idx = this.indexOf(')', indexOfOpen)
-
-        if (idx == -1) {
-            error("unexpected: did not find a ')' for previous '('")
-        }
-    }
-
-    if (idx < this.lastIndex) {
-        idx++
-        val textToConsider = this.removeRange(0, idx)
-        val indexFinish = textToConsider.indexOfLast { it == ',' }
-        var idxFromRemove = idx
-
-        if (indexFinish != -1) {
-            idxFromRemove += indexFinish
-            return this.removeRange(idxFromRemove, this.length)
-        }
-    }
-
-    return this
 }
 
 @OptIn(KspExperimental::class)
