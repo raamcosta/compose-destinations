@@ -11,10 +11,10 @@ import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCa
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
-import com.ramcosta.composedestinations.spec.TypedNavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.TypedNavGraphSpec
 import com.ramcosta.composedestinations.utils.NavGraphRegistry
 
 /**
@@ -85,7 +85,7 @@ fun DestinationsNavHost(
             navGraph = navGraph,
             navController = navController,
             dependenciesContainerBuilder = dependenciesContainerBuilder,
-            manualComposableCalls = ManualComposableCallsBuilder(engine.type, navGraph)
+            manualComposableCalls = ManualComposableCallsBuilder(engine.type)
                 .apply { manualComposableCallsBuilder() }
                 .build(),
         )
@@ -96,7 +96,7 @@ fun DestinationsNavHost(
 
 @Composable
 private fun HandleNavGraphRegistry(
-    navGraph: NavGraphSpec,
+    navGraph: NavHostGraphSpec,
     navController: NavHostController
 ) {
     NavGraphRegistry.addGraph(navController, navGraph)

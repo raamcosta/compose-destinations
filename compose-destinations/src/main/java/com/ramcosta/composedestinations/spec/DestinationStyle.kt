@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.spec
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
@@ -36,12 +35,11 @@ abstract class DestinationStyle {
     )
 
     /**
-     * No special animation or style.
      * This is the default style used in case none is specified for a given Destination.
      *
      * Its animations will be inherited from the ones set at the navigation graph level,
-     * using `@NavGraph(defaultTransitions = SomeClass::class)` (if the destination belongs to
-     * some nested graph) or the [com.ramcosta.composedestinations.DestinationsNavHost]'s
+     * using `@NavGraph(defaultTransitions = SomeClass::class)`, if the destination belongs to
+     * a graph defined this way, or the [com.ramcosta.composedestinations.DestinationsNavHost]'s
      * `defaultTransitions` parameter for the top level "NavHost Graph".
      */
     object Default : DestinationStyle() {
@@ -51,7 +49,6 @@ abstract class DestinationStyle {
             dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
             manualComposableCalls: ManualComposableCalls
         ) {
-            @SuppressLint("RestrictedApi")
             @Suppress("UNCHECKED_CAST")
             val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
 
@@ -66,46 +63,6 @@ abstract class DestinationStyle {
                     navBackStackEntry,
                     dependenciesContainerBuilder,
                     contentWrapper,
-                )
-            }
-        }
-    }
-
-    /**
-     * Marks the destination to be shown as a dialog.
-     *
-     * You can create implementations that define specific [DialogProperties]
-     * or you can use the default values with `style = DestinationStyle.Dialog::class`
-     */
-    abstract class Dialog : DestinationStyle() {
-        abstract val properties: DialogProperties
-
-        companion object Default : Dialog() {
-            override val properties = DialogProperties()
-        }
-
-        final override fun <T> NavGraphBuilder.addComposable(
-            destination: TypedDestinationSpec<T>,
-            navController: NavHostController,
-            dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
-            manualComposableCalls: ManualComposableCalls
-        ) {
-            @SuppressLint("RestrictedApi")
-            @Suppress("UNCHECKED_CAST")
-            val contentLambda = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
-
-            dialog(
-                destination.route,
-                destination.arguments,
-                destination.deepLinks,
-                properties
-            ) { navBackStackEntry ->
-                CallDialogComposable(
-                    destination,
-                    navController,
-                    navBackStackEntry,
-                    dependenciesContainerBuilder,
-                    contentLambda
                 )
             }
         }
@@ -163,9 +120,8 @@ abstract class DestinationStyle {
                 popEnterTransition = { popEnterTransition() },
                 popExitTransition = { popExitTransition() }
             ) { navBackStackEntry ->
-                @SuppressLint("RestrictedApi")
                 @Suppress("UNCHECKED_CAST")
-                val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
+                val contentWrapper = manualComposableCalls[destination.route] as? DestinationLambda<T>?
 
                 CallComposable(
                     destination,
@@ -173,6 +129,45 @@ abstract class DestinationStyle {
                     navBackStackEntry,
                     dependenciesContainerBuilder,
                     contentWrapper,
+                )
+            }
+        }
+    }
+
+    /**
+     * Marks the destination to be shown as a dialog.
+     *
+     * You can create implementations that define specific [DialogProperties]
+     * or you can use the default values with `style = DestinationStyle.Dialog::class`
+     */
+    abstract class Dialog : DestinationStyle() {
+        abstract val properties: DialogProperties
+
+        companion object Default : Dialog() {
+            override val properties = DialogProperties()
+        }
+
+        final override fun <T> NavGraphBuilder.addComposable(
+            destination: TypedDestinationSpec<T>,
+            navController: NavHostController,
+            dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
+            manualComposableCalls: ManualComposableCalls
+        ) {
+            @Suppress("UNCHECKED_CAST")
+            val contentLambda = manualComposableCalls[destination.route] as? DestinationLambda<T>?
+
+            dialog(
+                destination.route,
+                destination.arguments,
+                destination.deepLinks,
+                properties
+            ) { navBackStackEntry ->
+                CallDialogComposable(
+                    destination,
+                    navController,
+                    navBackStackEntry,
+                    dependenciesContainerBuilder,
+                    contentLambda
                 )
             }
         }

@@ -1,19 +1,14 @@
-@file:OptIn(InternalDestinationsApi::class)
-
 package com.ramcosta.composedestinations.manualcomposablecalls
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
-import com.ramcosta.composedestinations.dynamic.destination.DynamicDestinationSpec
+import com.ramcosta.composedestinations.dynamic.destination.originalDestination
 import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
-import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
-import com.ramcosta.composedestinations.utils.allDestinations
 
 /**
  * Registers [content] lambda as the responsible for calling
@@ -70,26 +65,17 @@ fun <T> ManualComposableCallsBuilder.dialogComposable(
 class ManualComposableCallsBuilder internal constructor(
     @InternalDestinationsApi
     val engineType: NavHostEngine.Type,
-    navGraph: NavGraphSpec
 ) {
 
     private val map: MutableMap<String, DestinationLambda<*>> = mutableMapOf()
-    private val dynamicDestinationsBySingletonDestination: Map<DestinationSpec, List<DynamicDestinationSpec<*>>> =
-        navGraph.allDestinations
-            .filterIsInstance<DynamicDestinationSpec<*>>()
-            .groupBy { it.originalDestination }
 
     internal fun build() = ManualComposableCalls(map)
 
     @InternalDestinationsApi
-    @SuppressLint("RestrictedApi")
     fun add(
         lambda: DestinationLambda<*>,
         destination: DestinationSpec,
     ) {
-        map[destination.baseRoute] = lambda
-        dynamicDestinationsBySingletonDestination[destination]?.forEach {
-            map[it.baseRoute] = lambda
-        }
+        map[destination.originalDestination.route] = lambda
     }
 }

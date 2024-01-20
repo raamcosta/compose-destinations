@@ -1,6 +1,7 @@
 package com.ramcosta.samples.playground.ui.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -13,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureYHomeDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.onResult
@@ -26,7 +29,8 @@ import com.ramcosta.samples.playground.ui.screens.destinations.OtherActivityDest
 @Destination
 @Composable
 fun AnimatedVisibilityScope.Feed(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    featYResult: ResultRecipient<FeatureYHomeDestination, Boolean>,
 ) {
     Log.d("Feed", "running? " + transition.isRunning)
 
@@ -57,6 +61,16 @@ fun AnimatedVisibilityScope.Feed(
             ) {
                 Text(
                     text = "Go to Other activity!"
+                )
+            }
+
+            Button(
+                onClick = {
+                    navigator.navigate(FeatureYHomeDestination)
+                }
+            ) {
+                Text(
+                    text = "Go to FeatureY!"
                 )
             }
         }

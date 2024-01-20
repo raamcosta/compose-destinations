@@ -22,5 +22,9 @@ interface DirectionDestinationSpec: TypedDestinationSpec<Unit>, Direction {
  */
 interface DirectionActivityDestinationSpec: ActivityDestinationSpec<Unit>, DirectionDestinationSpec {
 
-    override fun argsFrom(savedStateHandle: SavedStateHandle) = Unit
+    override fun argsFrom(savedStateHandle: SavedStateHandle) {
+        super<ActivityDestinationSpec>.argsFrom(savedStateHandle)
+    }
+
+    override fun argsFrom(bundle: Bundle?) = Unit
 }

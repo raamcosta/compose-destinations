@@ -55,10 +55,15 @@ annotation class ProfileNavGraph(
         val graphArg: String,
     )
 
-    @IncludeDestination(FeatureYHomeDestination::class)
+    @IncludeDestination(
+        FeatureYHomeDestination::class,
+    )
     @IncludeNavGraph(
-        FeatureXGraph::class,
-        deepLinks = [DeepLink(uriPattern = "https://cenas/$FULL_ROUTE_PLACEHOLDER"), DeepLink(uriPattern = "https://qweqwe/$FULL_ROUTE_PLACEHOLDER")],
+        graph = FeatureXGraph::class,
+        deepLinks = [
+            DeepLink(uriPattern = "https://cenas/$FULL_ROUTE_PLACEHOLDER"),
+            DeepLink(uriPattern = "https://qweqwe/$FULL_ROUTE_PLACEHOLDER")
+        ],
         defaultTransitions = NoTransitions::class
     )
     @IncludeNavGraph(FeatureYGraph::class)

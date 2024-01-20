@@ -1,9 +1,6 @@
-@file:OptIn(InternalDestinationsApi::class)
-
 package com.ramcosta.composedestinations.bottomsheet.manualcomposablecalls
 
 import androidx.compose.runtime.Composable
-import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
