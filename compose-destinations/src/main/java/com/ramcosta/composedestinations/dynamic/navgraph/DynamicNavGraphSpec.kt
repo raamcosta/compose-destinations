@@ -8,7 +8,6 @@ interface DynamicNavGraphSpec<NAV_ARGS, START_ROUTE_NAV_ARGS>: TypedNavGraphSpec
     val originalNavGraph: TypedNavGraphSpec<NAV_ARGS, START_ROUTE_NAV_ARGS>
 }
 
-@OptIn(InternalDestinationsApi::class)
 @PublishedApi
 internal val <NAV_ARGS, START_ROUTE_NAV_ARGS> TypedNavGraphSpec<NAV_ARGS, START_ROUTE_NAV_ARGS>.originalNavGraph
     get(): TypedNavGraphSpec<NAV_ARGS, START_ROUTE_NAV_ARGS> =

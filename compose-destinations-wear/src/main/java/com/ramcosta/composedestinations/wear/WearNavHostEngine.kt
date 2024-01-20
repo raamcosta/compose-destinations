@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.wear.compose.navigation.*
 import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
-import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
@@ -68,7 +67,6 @@ internal class WearNavHostEngine(
         with(defaultNavHostEngine) { navigation(navGraph, builder) }
     }
 
-    @OptIn(InternalDestinationsApi::class)
     override fun <T> NavGraphBuilder.composable(
         destination: TypedDestinationSpec<T>,
         navController: NavHostController,
@@ -105,7 +103,7 @@ internal class WearNavHostEngine(
     ) {
         @SuppressLint("RestrictedApi")
         @Suppress("UNCHECKED_CAST")
-        val contentLambda = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
+        val contentLambda = manualComposableCalls[destination.route] as? DestinationLambda<T>?
 
         composable(
             route = destination.route,

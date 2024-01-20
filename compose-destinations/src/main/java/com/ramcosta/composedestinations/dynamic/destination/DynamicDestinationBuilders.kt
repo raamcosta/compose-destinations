@@ -18,22 +18,26 @@ class DynamicDestinationBuilder<T>(
     var additionalDeepLinks: List<NavDeepLink>? = null
 
     fun build() : DynamicDestinationSpec<T> {
+        val finalStyle = this@DynamicDestinationBuilder.style
+        val finalAdditionalWrappers = additionalWrappers
+        val finalAdditionalDeepLinks = additionalDeepLinks
+
         return object: DynamicDestinationSpec<T>, TypedDestinationSpec<T> by originalDestinationSpec {
+
             override val originalDestination: TypedDestinationSpec<T> = originalDestinationSpec.originalDestination
 
             override val style: DestinationStyle
-                get() = this@DynamicDestinationBuilder.style ?: originalDestination.style
+                get() = finalStyle ?: originalDestination.style
 
             override val deepLinks: List<NavDeepLink>
-                get() = this@DynamicDestinationBuilder.additionalDeepLinks.orEmpty() + originalDestination.deepLinks
+                get() = finalAdditionalDeepLinks.orEmpty() + originalDestination.deepLinks
 
             @Composable
             override fun DestinationScope<T>.Content() {
-                val wrappers = additionalWrappers
-                if (wrappers == null) {
+                if (finalAdditionalWrappers == null) {
                     with(originalDestination) { Content() }
                 } else {
-                    Wrap(*wrappers) {
+                    Wrap(*finalAdditionalWrappers) {
                         with(originalDestination) { Content() }
                     }
                 }

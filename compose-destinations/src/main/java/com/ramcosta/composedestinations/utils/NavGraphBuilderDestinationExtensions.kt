@@ -1,4 +1,3 @@
-@file:OptIn(InternalDestinationsApi::class)
 package com.ramcosta.composedestinations.utils
 
 import androidx.compose.runtime.Composable
@@ -6,7 +5,6 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
-import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.scope.AnimatedNavGraphBuilderDestinationScope
 import com.ramcosta.composedestinations.scope.AnimatedNavGraphBuilderDestinationScopeImpl
 import com.ramcosta.composedestinations.scope.NavGraphBuilderDestinationScope

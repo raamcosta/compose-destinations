@@ -20,7 +20,6 @@ class DynamicNavGraphBuilder<NAV_ARGS, START_ROUTE_NAV_ARGS>(
             override val deepLinks: List<NavDeepLink>
                 get() = additionalDeepLinks.orEmpty() + originalNavGraph.deepLinks
 
-
             override val defaultTransitions: DestinationStyle.Animated?
                 get() = if (this@DynamicNavGraphBuilder.defaultTransitions != IncludeNavGraph.Companion.NoOverride) {
                     this@DynamicNavGraphBuilder.defaultTransitions
