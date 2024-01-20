@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.ResultRecipient
+import com.ramcosta.composedestinations.result.onResult
 import com.ramcosta.samples.playground.commons.requireTitle
 import com.ramcosta.samples.playground.ui.screens.destinations.FeedDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.OtherActivityDestination
@@ -27,6 +29,11 @@ fun AnimatedVisibilityScope.Feed(
     navigator: DestinationsNavigator
 ) {
     Log.d("Feed", "running? " + transition.isRunning)
+
+    val context = LocalContext.current
+    featYResult.onResult {
+        Toast.makeText(context, "featY result = $it", Toast.LENGTH_SHORT).show()
+    }
 
     Box(
         Modifier
