@@ -93,6 +93,26 @@ class DefaultParameterValueReaderTest {
             expected = DefaultValue("SearchConfiguration()")
         ),
         TestCase(
+            srcCodeText = """
+                val myProperty: Boolean = false
+                // This is an awesome (usually) property.
+            """,
+            argName = "myProperty",
+            argType = "Boolean",
+            expected = DefaultValue("false")
+        ),
+        TestCase(
+            srcCodeText = """
+                val myProperty: Boolean = false
+                /* This is an awesome (usually) 
+                *
+                * property. */
+            """,
+            argName = "myProperty",
+            argType = "Boolean",
+            expected = DefaultValue("false")
+        ),
+        TestCase(
             srcCodeText = """val appliedFilters: AppliedSearchFilters = AppliedSearchFilters(),)@Preview@Composableprivate fun SearchScreenPreview(@PreviewParameter(PoiListPreviewParameterProvider::class, limit = 1) poiList: ImmutableList,) {OcmPreview {SearchScreenContent(poiCallbacks = PoiCallbacks(null, Origin.Deals, LocalFocusManager.current),""",
             argName = "appliedFilters",
             argType = "AppliedSearchFilters",

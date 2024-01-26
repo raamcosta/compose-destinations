@@ -24,7 +24,12 @@ object DefaultParameterValueReader {
         argName: String,
         argType: String,
     ): DefaultValue {
-        var auxText = srcCodeLines.joinToString("") { it.trim() }
+        var auxText = srcCodeLines
+            .map {
+                it.removeLineComments()
+            }
+            .joinToString("") { it.trim() }
+            .removeMultilineComments()
 
         Logger.instance.info("getDefaultValue | src code line = $auxText")
 
@@ -46,9 +51,31 @@ object DefaultParameterValueReader {
         auxText = auxText.removeRange(0, index)
 
         return if (auxText.startsWith("\"")) {
+            if (auxText.contains("\"\"\"")) {
+                throw IllegalDestinationsSetup("Multiline string literals are not supported as navigation argument defaults (near: '$auxText'")
+            }
             DefaultValue(stringLiteralValue(auxText))
         } else {
             importedDefaultValue(resolver, auxText, packageName, imports)
+        }
+    }
+
+    private fun String.removeMultilineComments(): String {
+        val idxOfMultiLineComment = this.indexOf("/*")
+        return if (idxOfMultiLineComment != -1 && !this.isInsideString(idxOfMultiLineComment)) {
+            this.removeFromTo("/*", "*/")
+        } else {
+            this
+        }
+    }
+
+    private fun String.removeLineComments(): String {
+        val idxOfLineComment = this.indexOf("//")
+        return if (idxOfLineComment != -1 && !this.isInsideString(idxOfLineComment)) {
+            this.replaceAfter("//", "")
+                .removeSuffix("//")
+        } else {
+            this
         }
     }
 
@@ -148,6 +175,23 @@ object DefaultParameterValueReader {
 
         return DefaultValue(result, wholePackageImports)
     }
+}
+
+private fun String.isInsideString(idxToCheck: Int): Boolean {
+    var isInsideString = false
+
+    for (i in indices) {
+        when (this[i]) {
+            '"' -> isInsideString = !isInsideString
+            else -> {
+                if (i == idxToCheck) {
+                    return isInsideString
+                }
+            }
+        }
+    }
+
+    return isInsideString
 }
 
 private fun String.firstParenthesisIsOpening(): Boolean {
