@@ -109,7 +109,7 @@ Compose destinations is available via maven central.
 > **Note**: The version you chose for the KSP plugin depends on the Kotlin version your project uses. </br>
 You can check https://github.com/google/ksp/releases for the list of KSP versions, then pick the last release that matches your Kotlin version.
 Example:
-If you're using `1.8.20` Kotlin version, then the last KSP version is `1.8.20-1.0.10`.
+If you're using `1.9.22` Kotlin version, then the last KSP version is `1.9.22-1.0.17`.
 
 <details open>
   <summary>groovy - build.gradle(:module-name)</summary>
@@ -117,7 +117,7 @@ If you're using `1.8.20` Kotlin version, then the last KSP version is `1.8.20-1.
 ```gradle
 plugins {
     //...
-    id 'com.google.devtools.ksp' version '1.8.20-1.0.10' // Depends on your kotlin version
+    id 'com.google.devtools.ksp' version '1.9.22-1.0.17' // Depends on your kotlin version
 }
 ```
 </details>
@@ -128,7 +128,7 @@ plugins {
 ```gradle
 plugins {
     //...
-    id("com.google.devtools.ksp") version "1.8.20-1.0.10" // Depends on your kotlin version
+    id("com.google.devtools.ksp") version "1.9.22-1.0.17" // Depends on your kotlin version
 }
 ```
 </details>
@@ -154,6 +154,9 @@ Choose the one that matches your Compose version, considering this table:
  </tr>
  <tr>
   <td>Compose 1.5 (1.5.x)</td><td><img alt="Maven Central" src="https://img.shields.io/maven-metadata/v?versionPrefix=1.9&color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/io/github/raamcosta/compose-destinations/core/maven-metadata.xml&style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)"></td>
+ </tr>
+ <tr>
+  <td>Compose 1.6 (1.6.x)</td><td><img alt="Maven Central" src="https://img.shields.io/maven-metadata/v?versionPrefix=1.10&color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/io/github/raamcosta/compose-destinations/core/maven-metadata.xml&style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)"></td>
  </tr>
 </table>
 
