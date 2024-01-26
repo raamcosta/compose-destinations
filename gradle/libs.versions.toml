@@ -4,29 +4,29 @@ minSdk = "21"
 compileSdk = "34"
 targetSdk = "34"
 
-kotlin = "1.9.21"
-dependencyCheckPluginVersion = "0.50.0"
-agp = "8.2.1"
-mavenPublishPluginVersion = "0.25.3"
+kotlin = "1.9.22"
+dependencyCheckPluginVersion = "0.51.0"
+agp = "8.2.2"
+mavenPublishPluginVersion = "0.27.0"
 
-composeViewModel = "2.6.2"
+composeViewModel = "2.7.0"
 activityCompose = "1.7.2"
 
 material = "1.9.0" #ProcessorProviderTests fail when trying to update this one
-lifecycleRuntimeKtx = "2.6.2"
+lifecycleRuntimeKtx = "2.7.0"
 
-ksp = "1.9.21-1.0.16"
+ksp = "1.9.22-1.0.17"
 
 junit = "4.13.2"
 
-compose = "1.5.4"
-composeMaterial = "1.5.4"
-composeCompiler = "1.5.7"
+compose = "1.6.0"
+composeMaterial = "1.6.0"
+composeCompiler = "1.5.8"
 composeNavigation = "2.7.6"
-accompanist = "0.32.0"
+accompanist = "0.34.0"
 
 ktxSerialization = "1.6.2"
-mockk = "1.13.8"
+mockk = "1.13.9"
 
 compileTesting = "1.5.0"
 composeWear = "1.1.2"
