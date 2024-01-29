@@ -8,15 +8,15 @@ import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransit
 import com.ramcosta.composedestinations.animations.defaults.NoTransitions
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.ExternalDestination
+import com.ramcosta.composedestinations.annotation.ExternalNavGraph
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
-import com.ramcosta.composedestinations.annotation.IncludeDestination
-import com.ramcosta.composedestinations.annotation.IncludeNavGraph
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.NavHostGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
 import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXGraph
-import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureYHomeDestination
+import com.ramcosta.composedestinations.generated.featurey.destinations.PublicFeatureYSideScreenDestination
 import com.ramcosta.composedestinations.generated.featurey.navgraphs.FeatureYGraph
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
@@ -55,18 +55,32 @@ annotation class ProfileNavGraph(
         val graphArg: String,
     )
 
-    @IncludeDestination(
-        FeatureYHomeDestination::class,
-    )
-    @IncludeNavGraph(
-        graph = FeatureXGraph::class,
+//    @ExternalDestination(
+//        FeatureXHomeDestination::class,
+//        wrappers = [
+//            HidingScreenWrapper::class
+//        ]
+//    )
+//    @ExternalDestination(
+//        FeatureYHomeDestination::class,
+//        deepLinks = [
+//            DeepLink(uriPattern = "https://cenas/$FULL_ROUTE_PLACEHOLDER"),
+//            DeepLink(uriPattern = "https://qweqwe/$FULL_ROUTE_PLACEHOLDER")
+//        ],
+//        style = DestinationStyle.Animated.None::class,
+//        wrappers = [
+//            HidingScreenWrapper::class
+//        ]
+//    )
+    @ExternalDestination<PublicFeatureYSideScreenDestination>
+    @ExternalNavGraph<FeatureXGraph>(
         deepLinks = [
             DeepLink(uriPattern = "https://cenas/$FULL_ROUTE_PLACEHOLDER"),
             DeepLink(uriPattern = "https://qweqwe/$FULL_ROUTE_PLACEHOLDER")
         ],
         defaultTransitions = NoTransitions::class
     )
-    @IncludeNavGraph(FeatureYGraph::class)
+    @ExternalNavGraph<FeatureYGraph>
     companion object Includes
 }
 

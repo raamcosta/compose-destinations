@@ -1,6 +1,9 @@
 package com.ramcosta.composedestinations.codegen.model
 
-sealed interface IncludedRoute {
+sealed interface ExternalRoute {
+    fun canUseOriginal(): Boolean
+
+    val superType: TypeInfo
     val generatedType: Importable
     val navArgs: RawNavArgsClass?
     val requireOptInAnnotationTypes: List<Importable>
@@ -9,6 +12,7 @@ sealed interface IncludedRoute {
     val additionalDeepLinks: List<DeepLink>
 
     class Destination(
+        override val superType: TypeInfo,
         override val isStart: Boolean,
         override val generatedType: Importable,
         override val navArgs: RawNavArgsClass?,
@@ -16,16 +20,28 @@ sealed interface IncludedRoute {
         override val additionalDeepLinks: List<DeepLink>,
         val overriddenDestinationStyleType: DestinationStyleType?,
         val additionalComposableWrappers: List<Importable>
-    ) : IncludedRoute
+    ) : ExternalRoute {
+        override fun canUseOriginal(): Boolean {
+            return overriddenDestinationStyleType == null
+                    && additionalDeepLinks.isEmpty()
+                    && additionalComposableWrappers.isEmpty()
+        }
+    }
 
     class NavGraph(
+        override val superType: TypeInfo,
         override val isStart: Boolean,
         override val generatedType: Importable,
         override val navArgs: RawNavArgsClass?,
         override val additionalDeepLinks: List<DeepLink>,
         override val requireOptInAnnotationTypes: List<Importable>,
         val overriddenDefaultTransitions: OverrideDefaultTransitions,
-    ) : IncludedRoute {
+    ) : ExternalRoute {
+
+        override fun canUseOriginal(): Boolean {
+            return overriddenDefaultTransitions is OverrideDefaultTransitions.NoOverride
+                    && additionalDeepLinks.isEmpty()
+        }
 
         sealed interface OverrideDefaultTransitions {
             data object NoOverride: OverrideDefaultTransitions

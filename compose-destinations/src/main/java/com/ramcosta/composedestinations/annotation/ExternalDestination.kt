@@ -6,8 +6,8 @@ import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import kotlin.reflect.KClass
 
 @Repeatable
-annotation class IncludeDestination(
-    val destination: KClass<out DestinationSpec>,
+@Retention(AnnotationRetention.SOURCE)
+annotation class ExternalDestination<T: DestinationSpec>(
     val deepLinks: Array<DeepLink> = [],
     val style: KClass<out DestinationStyle> = Nothing::class,
     val wrappers: Array<KClass<out DestinationWrapper>> = [],

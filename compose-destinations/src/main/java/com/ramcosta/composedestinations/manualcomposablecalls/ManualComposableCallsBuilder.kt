@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.manualcomposablecalls
 
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
-import com.ramcosta.composedestinations.dynamic.destination.originalDestination
 import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
@@ -76,6 +75,6 @@ class ManualComposableCallsBuilder internal constructor(
         lambda: DestinationLambda<*>,
         destination: DestinationSpec,
     ) {
-        map[destination.originalDestination.route] = lambda
+        map[destination.route] = lambda
     }
 }

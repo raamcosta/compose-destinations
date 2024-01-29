@@ -12,8 +12,8 @@ import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_DEF
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
+import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.model.Importable
-import com.ramcosta.composedestinations.codegen.model.IncludedRoute
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 import com.ramcosta.composedestinations.ksp.commons.DestinationMappingUtils
@@ -26,6 +26,7 @@ import com.ramcosta.composedestinations.ksp.commons.isNothing
 import com.ramcosta.composedestinations.ksp.commons.toDeepLink
 import com.ramcosta.composedestinations.ksp.commons.toGenVisibility
 import com.ramcosta.composedestinations.ksp.commons.toImportable
+import com.ramcosta.composedestinations.ksp.commons.toType
 
 internal class KspToCodeGenNavGraphsMapper(
     private val resolver: Resolver,
@@ -85,12 +86,12 @@ internal class KspToCodeGenNavGraphsMapper(
             ?.map { it.toDeepLink() }
             .orEmpty()
 
-        val includedRoutes = declarations.firstOrNull {
+        val externalRoutes = declarations.firstOrNull {
             it is KSClassDeclaration && it.isCompanionObject
         }?.annotations?.mapNotNull {
             when (it.shortName.asString()) {
-                "IncludeDestination" -> it.getIncludedDestination()
-                "IncludeNavGraph" -> it.getIncludedNavGraph()
+                "ExternalDestination" -> it.getExternalDestination()
+                "ExternalNavGraph" -> it.getExternalNavGraph()
                 else -> null
             }
         }.orEmpty()
@@ -155,21 +156,21 @@ internal class KspToCodeGenNavGraphsMapper(
             deepLinks = deepLinks,
             navArgs = navArgs?.type,
             visibility = navGraphVisibility,
-            includedRoutes = includedRoutes.toList()
+            externalRoutes = externalRoutes.toList()
         )
     }
 
-    private fun KSAnnotation.getIncludedDestination(): IncludedRoute.Destination {
-        val destinationType = findArgumentValue<KSType>("destination")!!
+    private fun KSAnnotation.getExternalDestination(): ExternalRoute.Destination {
+        val destinationType = this.annotationType.resolve().arguments.first().type!!.resolve()
         val importable = destinationType.let {
             Importable(
                 it.declaration.simpleName.asString(),
-                it.declaration.qualifiedName!!.asString()
+                it.declaration.qualifiedName?.asString() ?: throw IllegalDestinationsSetup("Check ${this.location} for unresolved symbols.")
             )
         }
 
         val superType =
-            (destinationType.declaration as KSClassDeclaration).superTypes.first().resolve()
+            (destinationType.declaration as KSClassDeclaration).superTypes.take(2).last().resolve()
         val navArgs = if (superType.declaration.simpleName.asString() == "TypedDestinationSpec") {
             superType.arguments.first().type!!.resolve()
                 .getNavArgsDelegateType(resolver, navTypeSerializersByType)?.type
@@ -181,19 +182,20 @@ internal class KspToCodeGenNavGraphsMapper(
             ?.map { it.toDeepLink() }
             .orEmpty()
 
-        return IncludedRoute.Destination(
+        return ExternalRoute.Destination(
+            superType = superType.toType(location, resolver, navTypeSerializersByType)!!,
             isStart = findArgumentValue<Boolean>("start")!!,
             generatedType = importable,
             navArgs = navArgs,
             requireOptInAnnotationTypes = destinationType.declaration.findAllRequireOptInAnnotations(),
             additionalDeepLinks = deepLinks,
-            overriddenDestinationStyleType = destinationMappingUtils.getDestinationStyleType(this, "@IncludeDestination of ${importable.preferredSimpleName}", allowNothing = true),
+            overriddenDestinationStyleType = destinationMappingUtils.getDestinationStyleType(this, "@ExternalDestination of ${importable.preferredSimpleName}", allowNothing = true),
             additionalComposableWrappers = destinationMappingUtils.getDestinationWrappers(this)!!,
         )
     }
 
-    private fun KSAnnotation.getIncludedNavGraph(): IncludedRoute.NavGraph {
-        val graphType = findArgumentValue<KSType>("graph")!!
+    private fun KSAnnotation.getExternalNavGraph(): ExternalRoute.NavGraph {
+        val graphType = this.annotationType.resolve().arguments.first().type!!.resolve()
         val importable = graphType.let {
             Importable(
                 it.declaration.simpleName.asString(),
@@ -202,7 +204,9 @@ internal class KspToCodeGenNavGraphsMapper(
         }
 
         val superType =
-            (graphType.declaration as KSClassDeclaration).superTypes.first().resolve()
+            // these are generated files, a little optimization here is to take the second type right away
+            // the first will always be BaseRoute, and the second is the one we want since it contains the types needed
+            (graphType.declaration as KSClassDeclaration).superTypes.take(2).last().resolve()
 
         val navArgs =
             if (superType.declaration.simpleName.asString() == "TypedNavGraphSpec") {
@@ -221,16 +225,17 @@ internal class KspToCodeGenNavGraphsMapper(
             ?.takeIf { !it.isNothing }
             ?.toImportable()
 
-        return IncludedRoute.NavGraph(
+        return ExternalRoute.NavGraph(
+            superType = superType.toType(location, resolver, navTypeSerializersByType)!!,
             isStart = findArgumentValue<Boolean>("start")!!,
             generatedType = importable,
             navArgs = navArgs,
             requireOptInAnnotationTypes = graphType.declaration.findAllRequireOptInAnnotations(),
             additionalDeepLinks = deepLinks,
-            overriddenDefaultTransitions = if (navGraphDefaultTransitions?.qualifiedName == "com.ramcosta.composedestinations.annotation.IncludeNavGraph.Companion.NoOverride") {
-                IncludedRoute.NavGraph.OverrideDefaultTransitions.NoOverride
+            overriddenDefaultTransitions = if (navGraphDefaultTransitions?.qualifiedName == "com.ramcosta.composedestinations.annotation.ExternalNavGraph.Companion.NoOverride") {
+                ExternalRoute.NavGraph.OverrideDefaultTransitions.NoOverride
             } else {
-                IncludedRoute.NavGraph.OverrideDefaultTransitions.Override(navGraphDefaultTransitions)
+                ExternalRoute.NavGraph.OverrideDefaultTransitions.Override(navGraphDefaultTransitions)
             }
         )
     }

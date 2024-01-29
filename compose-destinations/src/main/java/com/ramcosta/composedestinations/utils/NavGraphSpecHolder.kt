@@ -13,7 +13,14 @@ internal object NavGraphRegistry {
 
     private val holderByTopLevelRoute = mutableMapOf<NavController, NavGraphSpecHolder>()
 
-    fun addGraph(navController: NavController, navGraph: NavGraphSpec) {
+    fun addGraph(navController: NavController, navGraph: NavHostGraphSpec) {
+        val routes = mutableSetOf<String>()
+        navGraph.allRoutes.forEach {
+            if (!routes.add(it.route)) {
+                error("Duplicate route found '${it.route}'. Routes must be unique!")
+            }
+        }
+
         if (holderByTopLevelRoute.containsKey(navController)) {
             return
         }

@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.animations.defaults
+package com.ramcosta.composedestinations.animations
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition

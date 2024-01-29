@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.spec
 
-import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
+import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 
 /**
  * Like [DirectionNavGraphSpec] but used specifically for top level navigation graphs (i.e they

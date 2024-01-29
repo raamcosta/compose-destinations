@@ -134,6 +134,7 @@ private fun GreetingScreenContent(
                     navigator.navigate(
                         FeatureXGraph("something", FeatureXHomeNavArgs("SOMETHING2"))
                     )
+//                    navigator.navigate(ProfileGraph("my graphArg", ProfileSettingsGraphNavArgs("my another graph arg", WithDefaultValueArgs(true))))
                 }
             ) {
                 Text(text = stringResource(R.string.go_to_profile))

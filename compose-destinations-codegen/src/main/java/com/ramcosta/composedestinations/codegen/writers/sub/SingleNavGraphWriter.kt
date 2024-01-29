@@ -16,13 +16,16 @@ import com.ramcosta.composedestinations.codegen.commons.savedStateHandleImportab
 import com.ramcosta.composedestinations.codegen.commons.setOfPublicStartParticipatingTypes
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.commons.startingDestinationName
+import com.ramcosta.composedestinations.codegen.commons.toTypeCode
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.model.Importable
-import com.ramcosta.composedestinations.codegen.model.IncludedRoute
 import com.ramcosta.composedestinations.codegen.model.NavGraphGenParams
 import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.model.Visibility
+import com.ramcosta.composedestinations.codegen.templates.INNER_IMPORTED_ROUTES
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ARGS_FROM
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ARGUMENTS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_DEEP_LINKS_PLACEHOLDER
@@ -75,6 +78,7 @@ internal class SingleNavGraphWriter(
             .replace(NAV_GRAPH_ARGS_FROM, navGraph.argsFromFunctions())
             .replace(NAV_GRAPH_ARGUMENTS_PLACEHOLDER, navGraph.navArgumentsCode())
             .replace(NAV_GRAPH_DEEP_LINKS_PLACEHOLDER, navGraph.deepLinksCode())
+            .replace(INNER_IMPORTED_ROUTES, navGraph.innerExternalRoutes())
             .replace(NAV_GRAPH_GEN_NAV_ARGS, navGraph.generatedNavArgsClass())
             .replace(NAV_GRAPH_VISIBILITY_PLACEHOLDER, navGraph.visibility.name.lowercase())
             .replace(
@@ -91,7 +95,7 @@ internal class SingleNavGraphWriter(
             )
             .replace(
                 NAV_GRAPH_DESTINATIONS,
-                navGraphDestinationsCode(navGraph.destinations, navGraph.importedDestinations)
+                navGraphDestinationsCode(navGraph.destinations, navGraph.externalDestinations)
             )
             .replace(
                 NAV_GRAPH_KDOC,
@@ -103,7 +107,7 @@ internal class SingleNavGraphWriter(
             )
             .replace(
                 NESTED_NAV_GRAPHS,
-                nestedNavGraphsCode(navGraph.nestedGraphs, navGraph.importedNavGraphs)
+                nestedNavGraphsCode(navGraph.nestedGraphs, navGraph.externalNavGraphs)
             )
             .replace(
                 NAV_GRAPH_DEFAULT_TRANSITIONS_TYPE,
@@ -298,10 +302,13 @@ internal class SingleNavGraphWriter(
 
     private fun navGraphDestinationsCode(
         destinations: List<CodeGenProcessedDestination>,
-        importedDestinations: List<IncludedRoute.Destination>,
+        externalDestinations: List<ExternalRoute.Destination>,
     ): String {
         val allDestinations = destinations.map { it.destinationImportable.simpleName } +
-                    importedDestinations.map { it.importedDestinationCode() }
+                    externalDestinations.map {
+                        if (it.canUseOriginal()) importableHelper.addAndGetPlaceholder(it.generatedType)
+                        else "External_${it.generatedType.preferredSimpleName}"
+                    }
 
         val code = StringBuilder()
         allDestinations.forEachIndexed { idx, it ->
@@ -327,14 +334,17 @@ internal class SingleNavGraphWriter(
 
     private fun nestedNavGraphsCode(
         nestedNavGraphs: List<NavGraphGenParams>,
-        importedNestedGraphs: List<IncludedRoute.NavGraph>
+        externalNestedGraphs: List<ExternalRoute.NavGraph>
     ): String {
-        if (nestedNavGraphs.isEmpty() && importedNestedGraphs.isEmpty()) {
+        if (nestedNavGraphs.isEmpty() && externalNestedGraphs.isEmpty()) {
             return ""
         }
 
         val allNestedGraphs = nestedNavGraphs.map { it.name } +
-                importedNestedGraphs.map { it.importedNavGraphCode() }
+                externalNestedGraphs.map {
+                    if (it.canUseOriginal()) importableHelper.addAndGetPlaceholder(it.generatedType)
+                    else "External_${it.generatedType.preferredSimpleName}"
+                }
 
         return """
 
@@ -347,70 +357,6 @@ internal class SingleNavGraphWriter(
             .replace("%s1", allNestedGraphs.joinToString(", \n\t\t"))
     }
 
-    private fun IncludedRoute.Destination.importedDestinationCode(): String {
-        if (additionalComposableWrappers.isEmpty() && overriddenDestinationStyleType == null && additionalDeepLinks.isEmpty()) {
-            return importableHelper.addAndGetPlaceholder(generatedType)
-        }
-
-        importableHelper.addPriorityQualifiedImport(Importable("with", "$CORE_PACKAGE_NAME.dynamic.destination.with"))
-
-
-        return StringBuilder().apply {
-            appendLine("${importableHelper.addAndGetPlaceholder(generatedType)}.with {")
-
-            if (overriddenDestinationStyleType != null) {
-                appendLine("\t\t\tstyle = ${overriddenDestinationStyleType.code(importableHelper)}")
-            }
-
-            if (additionalComposableWrappers.isNotEmpty()) {
-                appendLine("\t\t\tadditionalWrappers = arrayOf(${additionalComposableWrappers.joinToString(", ") { importableHelper.addAndGetPlaceholder(it) }})")
-            }
-
-            if (additionalDeepLinks.isNotEmpty()) {
-                val navArgumentBridgeCodeBuilder = NavArgumentBridgeCodeBuilder(
-                    importableHelper,
-                    navArgResolver,
-                    this@importedDestinationCode.navArgs?.parameters.orEmpty(),
-                    navGraph.name
-                )
-                appendLine("\t\t\tadditionalDeepLinks = ${navArgumentBridgeCodeBuilder.deepLinksDeclarationCode(additionalDeepLinks, listOfOnly = true, innerTabsCount = 4) {
-                    navArgumentBridgeCodeBuilder.constructRoute(false, it, "\${${importableHelper.addAndGetPlaceholder(generatedType)}.baseRoute}")
-                }}")
-            }
-            append("\t\t}")
-        }.toString()
-    }
-
-    private fun IncludedRoute.NavGraph.importedNavGraphCode(): String {
-        if (additionalDeepLinks.isEmpty() && overriddenDefaultTransitions is IncludedRoute.NavGraph.OverrideDefaultTransitions.NoOverride) {
-            return importableHelper.addAndGetPlaceholder(generatedType)
-        }
-
-        importableHelper.addPriorityQualifiedImport(Importable("with", "$CORE_PACKAGE_NAME.dynamic.navgraph.with"))
-
-        return StringBuilder().apply {
-            appendLine("${importableHelper.addAndGetPlaceholder(generatedType)}.with {")
-
-            if (overriddenDefaultTransitions is IncludedRoute.NavGraph.OverrideDefaultTransitions.Override) {
-                appendLine("\t\t\tdefaultTransitions = ${overriddenDefaultTransitions.importable?.let { importableHelper.addAndGetPlaceholder(it) } ?: "null"}")
-            }
-
-            if (additionalDeepLinks.isNotEmpty()) {
-                val navArgumentBridgeCodeBuilder = NavArgumentBridgeCodeBuilder(
-                    importableHelper,
-                    navArgResolver,
-                    this@importedNavGraphCode.navArgs?.parameters.orEmpty(),
-                    navGraph.name
-                )
-                appendLine("\t\t\tadditionalDeepLinks = ${navArgumentBridgeCodeBuilder.deepLinksDeclarationCode(additionalDeepLinks, listOfOnly = true, innerTabsCount = 4) {
-                    "\${${importableHelper.addAndGetPlaceholder(generatedType)}.route}"
-                }}")
-            }
-
-            append("\t\t}")
-        }.toString()
-    }
-
     private fun RawNavGraphTree.deepLinksCode(): String {
         return "\n" + navArgumentBridgeCodeBuilder.deepLinksDeclarationCode(deepLinks, fullRoutePlaceholderReplacement = ::navGraphFullRoutReplacement)
     }
@@ -418,6 +364,123 @@ internal class SingleNavGraphWriter(
     private fun navGraphFullRoutReplacement(@Suppress("UNUSED_PARAMETER") params: List<Parameter>): String {
         // For now we'll try just using the full route here, even if some args were removed from being not mandatory
         return "\$route"
+    }
+
+    private val externalRouteTemplate = StringBuilder()
+        .appendLine()
+        .append("\tprivate object External_@ROUTE_NAME@ : ExternalRoute(), @ROUTE_SUPER_TYPE@ by @IMPORTED_GEN_ROUTE_CLASS@ {")
+        .appendLine("@INSIDE_CODE@")
+        .append("\t}")
+        .toString()
+
+    private fun RawNavGraphTree.innerExternalRoutes(): String {
+        return externalRoutes.joinToString("\n") {
+            when (it) {
+                is ExternalRoute.Destination -> it.generatedExternaldDestinationCode()
+                is ExternalRoute.NavGraph -> it.generatedExternaldNavGraphCode()
+            }
+        }
+    }
+
+    private fun ExternalRoute.Destination.generatedExternaldDestinationCode(): String {
+        if (canUseOriginal()) {
+            return ""
+        }
+
+        val insideCode = StringBuilder().apply {
+            append("\n\n\t\toverride val original = ${importableHelper.addAndGetPlaceholder(generatedType)}")
+
+            if (overriddenDestinationStyleType != null) {
+                append("\n\n\t\toverride val style get() = ${overriddenDestinationStyleType.code(importableHelper)}")
+            }
+
+            if (additionalDeepLinks.isNotEmpty()) {
+                val navArgumentBridgeCodeBuilder = NavArgumentBridgeCodeBuilder(
+                    importableHelper,
+                    navArgResolver,
+                    navArgs?.parameters.orEmpty(),
+                    navGraph.name
+                )
+                append("\n\n\t\toverride val deepLinks get() = ${navArgumentBridgeCodeBuilder.deepLinksDeclarationCode(additionalDeepLinks, listOfOnly = true, innerTabsCount = 3) {
+                    navArgumentBridgeCodeBuilder.constructRoute(false, it, "\${${importableHelper.addAndGetPlaceholder(generatedType)}.baseRoute}")
+                }}")
+                append(" + ${importableHelper.addAndGetPlaceholder(generatedType)}.deepLinks")
+            }
+
+            if (additionalComposableWrappers.isNotEmpty()) {
+                importableHelper.add(Importable("Composable", "androidx.compose.runtime.Composable"))
+                importableHelper.add(Importable("Wrap", "$CORE_PACKAGE_NAME.wrapper.Wrap"))
+                importableHelper.add(Importable("DestinationScope", "$CORE_PACKAGE_NAME.scope.DestinationScope"))
+                append("\n\n")
+                appendLine("\t\t@Composable")
+                val typeArgImportable = superType.typeArguments.firstOrNull()?.let {
+                    (it as TypeArgument.Typed).type.importable
+                }
+                val typeArgCode = if (typeArgImportable == null) {
+                    "Unit"
+                } else {
+                    importableHelper.addAndGetPlaceholder(typeArgImportable)
+                }
+
+                appendLine("\t\toverride fun DestinationScope<$typeArgCode>.Content() {")
+                appendLine("\t\t\tWrap(${additionalComposableWrappers.joinToString(", ") { importableHelper.addAndGetPlaceholder(it) }}) {")
+                appendLine("\t\t\t\twith(${importableHelper.addAndGetPlaceholder(generatedType)}) { Content() }")
+                appendLine("\t\t\t}")
+                appendLine("\t\t}")
+            }
+        }
+
+        return externalRouteTemplate
+            .replace("@ROUTE_NAME@", generatedType.preferredSimpleName)
+            .replace("@ROUTE_SUPER_TYPE@", superType.toTypeCode(importableHelper))
+            .replace("@IMPORTED_GEN_ROUTE_CLASS@", importableHelper.addAndGetPlaceholder(generatedType))
+            .replace("@INSIDE_CODE@", insideCode.toString())
+    }
+
+    private fun ExternalRoute.NavGraph.generatedExternaldNavGraphCode(): String {
+        if (canUseOriginal()) {
+            return ""
+        }
+
+        val insideCode = StringBuilder().apply {
+            append("\n\n\t\toverride val original = ${importableHelper.addAndGetPlaceholder(generatedType)}")
+
+            if (additionalDeepLinks.isNotEmpty()) {
+                val navArgumentBridgeCodeBuilder = NavArgumentBridgeCodeBuilder(
+                    importableHelper,
+                    navArgResolver,
+                    navArgs?.parameters.orEmpty(),
+                    navGraph.name
+                )
+                append("\n\n\t\toverride val deepLinks get() = ")
+
+                append(
+                    "${
+                        navArgumentBridgeCodeBuilder.deepLinksDeclarationCode(
+                            deepLinks = additionalDeepLinks,
+                            listOfOnly = true,
+                            innerTabsCount = 3,
+                            fullRoutePlaceholderReplacement = {
+                                "\${${importableHelper.addAndGetPlaceholder(generatedType)}.route}"
+                            }
+                        )
+                    } + ${importableHelper.addAndGetPlaceholder(generatedType)}.deepLinks"
+                )
+            }
+
+            when (overriddenDefaultTransitions) {
+                is ExternalRoute.NavGraph.OverrideDefaultTransitions.NoOverride -> Unit
+                is ExternalRoute.NavGraph.OverrideDefaultTransitions.Override -> {
+                    append("\n\n\t\toverride val defaultTransitions get() = ${overriddenDefaultTransitions.importable?.let { importableHelper.addAndGetPlaceholder(it) } ?: "null"}")
+                }
+            }
+        }
+
+        return externalRouteTemplate
+            .replace("@ROUTE_NAME@", generatedType.preferredSimpleName)
+            .replace("@ROUTE_SUPER_TYPE@", superType.toTypeCode(importableHelper))
+            .replace("@IMPORTED_GEN_ROUTE_CLASS@", importableHelper.addAndGetPlaceholder(generatedType))
+            .replace("@INSIDE_CODE@", insideCode.toString())
     }
 }
 

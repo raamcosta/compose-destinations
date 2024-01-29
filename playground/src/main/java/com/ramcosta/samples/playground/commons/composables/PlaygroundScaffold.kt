@@ -57,9 +57,11 @@ fun PlaygroundScaffold(
 
 fun Collection<NavBackStackEntry>.print(prefix: String = "stack") {
     val stack = toMutableList()
-        .map { it.route() }
-        .filterIsInstance<DestinationSpec>()
-        .map { it.javaClass.simpleName + "@" + it.toString().split("@")[1] }
+        .map {
+            val route = it.route()
+            val args = runCatching { route.argsFrom(it) }.getOrNull()?.takeIf { it != Unit }?.let { "(args={$it})" } ?: ""
+            "$route$args"
+        }
         .toTypedArray().contentToString()
     println("$prefix = $stack")
 }

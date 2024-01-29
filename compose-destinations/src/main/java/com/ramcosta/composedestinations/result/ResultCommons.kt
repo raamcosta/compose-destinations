@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.ramcosta.composedestinations.dynamic.destination.originalDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.ExternalRoute
 
 @Composable
 @PublishedApi
@@ -20,7 +20,11 @@ internal fun <R> resultBackNavigator(
         ResultBackNavigatorImpl(
             navController = navController,
             navBackStackEntry = navBackStackEntry,
-            resultOriginType = destination.originalDestination.javaClass,
+            resultOriginType = if (destination is ExternalRoute) {
+                (destination.original as DestinationSpec).javaClass
+            } else {
+                destination.javaClass
+            },
             resultType = resultType
         )
     }

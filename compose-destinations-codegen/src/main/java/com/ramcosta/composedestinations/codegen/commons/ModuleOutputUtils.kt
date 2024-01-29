@@ -8,7 +8,7 @@ internal fun ImportableHelper.startingDestinationName(
 ): String {
     val startingRouteNames: List<String> = graphTree.destinations.filter { it.navGraphInfo.start }.map { addAndGetPlaceholder(it.destinationImportable) } +
             graphTree.nestedGraphs.filter { it.isParentStart == true }.map { addAndGetPlaceholder(it.navGraphImportable) } +
-            graphTree.includedStartRoute?.generatedType?.let { listOf(addAndGetPlaceholder(it)) }.orEmpty()
+            graphTree.externalStartRoute?.generatedType?.let { listOf(addAndGetPlaceholder(it)) }.orEmpty()
 
     if (startingRouteNames.isEmpty()) {
         throw IllegalDestinationsSetup(
