@@ -57,7 +57,7 @@ internal class NavGraphsPrettyKdocWriter(
 
         addNestedNavGraphs(navGraphTree, depth)
 
-        addIncludedNavGraphs(navGraphTree, depth)
+        addExternaldNavGraphs(navGraphTree, depth)
     }
 
     private fun StringBuilder.addDestinations(
@@ -73,10 +73,10 @@ internal class NavGraphsPrettyKdocWriter(
                     true
                 )
             } +
-                    navGraphTree.importedDestinations.map {
+                    navGraphTree.externalDestinations.map {
                         KdocRoute(
                             true,
-                            it.generatedType == navGraphTree.includedStartRoute?.generatedType,
+                            it.generatedType == navGraphTree.externalStartRoute?.generatedType,
                             it.generatedType,
                             true
                         )
@@ -116,28 +116,28 @@ internal class NavGraphsPrettyKdocWriter(
             }
     }
 
-    private fun StringBuilder.addIncludedNavGraphs(
+    private fun StringBuilder.addExternaldNavGraphs(
         navGraphTree: RawNavGraphTree,
         depth: Int
     ) {
-        if (navGraphTree.importedNavGraphs.isNotEmpty()) {
+        if (navGraphTree.externalNavGraphs.isNotEmpty()) {
             appendNewLines()
         }
 
-        navGraphTree.importedNavGraphs
-            .sortedBy { if (it == navGraphTree.includedStartRoute) 0 else 1 }
+        navGraphTree.externalNavGraphs
+            .sortedBy { if (it == navGraphTree.externalStartRoute) 0 else 1 }
             .forEachIndexed { idx, it ->
                 appendKdocRoute(
                     KdocRoute(
                         true,
-                        it == navGraphTree.includedStartRoute,
+                        it == navGraphTree.externalStartRoute,
                         it.generatedType,
                         false
                     ),
                     depth + 1
                 )
 
-                if (idx < navGraphTree.importedNavGraphs.lastIndex) {
+                if (idx < navGraphTree.externalNavGraphs.lastIndex) {
                     appendNewLines()
                 }
             }

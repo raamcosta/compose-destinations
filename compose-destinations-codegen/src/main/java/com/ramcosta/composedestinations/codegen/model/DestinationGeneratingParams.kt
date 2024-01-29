@@ -16,6 +16,7 @@ interface DestinationGeneratingParams {
     val destinationNavArgsClass: RawNavArgsClass?
     val activityDestinationParams: ActivityDestinationParams?
     val composableWrappers: List<Importable>
+    val isDetached: Boolean
 }
 
 data class RawDestinationGenParams(
@@ -33,5 +34,6 @@ data class RawDestinationGenParams(
     override val requireOptInAnnotationTypes: List<Importable>,
     override val destinationNavArgsClass: RawNavArgsClass?,
     override val activityDestinationParams: ActivityDestinationParams? = null,
-    override val composableWrappers: List<Importable>
+    override val composableWrappers: List<Importable>,
+    override val isDetached: Boolean
 ): DestinationGeneratingParams

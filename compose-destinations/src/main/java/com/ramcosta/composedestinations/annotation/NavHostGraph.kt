@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.annotation
 
-import com.ramcosta.composedestinations.animations.defaults.NavHostAnimatedDestinationStyle
+import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.animations.defaults.NoTransitions
 import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
 import kotlin.reflect.KClass

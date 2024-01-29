@@ -9,6 +9,7 @@ import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Modifier
 import com.ramcosta.composedestinations.codegen.commons.ACTIVITY_DESTINATION_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.ACTIVITY_DESTINATION_ANNOTATION_DEFAULT_NULL
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER
@@ -88,7 +89,8 @@ internal class KspToCodeGenDestinationsMapper(
             navGraphInfo = getNavGraphInfo().let { it.copy(start = it.start || isStart) },
             composableReceiverSimpleName = function.extensionReceiver?.toString(),
             requireOptInAnnotationTypes = function.findAllRequireOptInAnnotations(),
-            destinationNavArgsClass = navArgsDelegateTypeAndFile?.type
+            destinationNavArgsClass = navArgsDelegateTypeAndFile?.type,
+            isDetached = isDetachedRoute()
         )
     }
 
@@ -129,7 +131,8 @@ internal class KspToCodeGenDestinationsMapper(
                 dataUri = activityDestinationAnnotations.findOverridingArgumentValue { getNullableString("dataUri") },
                 dataPattern = activityDestinationAnnotations.findOverridingArgumentValue { getNullableString("dataPattern") }
             ),
-            composableWrappers = emptyList()
+            composableWrappers = emptyList(),
+            isDetached = annotations.any { it.annotationType.resolve().declaration.isDetachedRouteAnnotation() }
         )
     }
 
@@ -233,9 +236,18 @@ internal class KspToCodeGenDestinationsMapper(
 
     private fun DestinationAnnotationsPath.getNavGraphInfo() =
         function.annotations.findNavGraphAnnotation()
-            ?: annotations.flatMap { it.annotationType.resolve().declaration.annotations }
+            ?: annotationsOfAnnotationsResolved
                 .asSequence().findNavGraphAnnotation() ?: getDefaultNavGraphInfo()
 
+    private fun DestinationAnnotationsPath.isDetachedRoute(): Boolean {
+        val detachedRoute = (functionAnnotationsResolved.find { it.declaration.isDetachedRouteAnnotation() }
+            ?: annotationsOfAnnotationsResolved.find { it.shortName.asString() == "DetachedRoute" && it.annotationType.resolve().declaration.isDetachedRouteAnnotation() })
+        return detachedRoute != null
+    }
+
+    private fun KSDeclaration.isDetachedRouteAnnotation(): Boolean {
+        return qualifiedName?.asString() == "${CORE_PACKAGE_NAME}.annotation.DetachedRoute"
+    }
     private fun KSDeclaration.getNavGraphInfo(): NavGraphInfo? {
         if (modifiers.contains(Modifier.ANNOTATION) &&
             annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == qualifiedName?.asString() }) {

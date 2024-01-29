@@ -45,7 +45,13 @@ class CodeGenerator(
         navTypeSerializers: List<NavTypeSerializer>,
         submodules: List<SubModuleInfo>
     ) {
-        initialValidator.validate(navGraphs, destinations, submodules.flatMap { it.publicResultSenders }.associateBy { it.genDestinationQualifiedName })
+        initialValidator.validate(
+            navGraphs = navGraphs,
+            destinations = destinations,
+            submoduleResultSenders = submodules
+                .flatMap { it.publicResultSenders }
+                .associateBy { it.genDestinationQualifiedName }
+        )
 
         initConfigurationValues()
 

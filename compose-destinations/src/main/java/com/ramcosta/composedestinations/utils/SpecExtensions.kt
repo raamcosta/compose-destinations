@@ -10,7 +10,6 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 import com.ramcosta.composedestinations.spec.Route
-import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transform
@@ -151,13 +150,32 @@ fun NavGraphSpec.contains(destination: DestinationSpec): Boolean {
 /**
  * Returns all [DestinationSpec]s including those of nested graphs
  */
-val NavGraphSpec.allDestinations get(): List<DestinationSpec> {
-    val destinations = destinations.toMutableList()
+val NavGraphSpec.allDestinations get() = addAllDestinationsTo(mutableListOf())
+
+internal fun NavGraphSpec.addAllDestinationsTo(currentList: MutableList<DestinationSpec>): List<DestinationSpec> {
+    currentList.addAll(destinations)
 
     nestedNavGraphs.forEach {
-        destinations.addAll(it.allDestinations)
+        it.addAllDestinationsTo(currentList)
     }
+
     return destinations
+}
+
+/**
+ * Returns all [Route]s including those of nested graphs recursively
+ */
+val NavGraphSpec.allRoutes: List<Route> get() = addAllRoutesTo(mutableListOf())
+
+internal fun NavGraphSpec.addAllRoutesTo(currentList: MutableList<Route>): List<Route> {
+    currentList.addAll(destinations)
+    currentList.addAll(nestedNavGraphs)
+
+    nestedNavGraphs.forEach {
+        it.addAllRoutesTo(currentList)
+    }
+
+    return currentList
 }
 
 /**

@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.navigation
 
-import com.ramcosta.composedestinations.dynamic.destination.originalDestination
 import com.ramcosta.composedestinations.scope.DestinationScopeWithNoDependencies
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
@@ -50,7 +49,7 @@ inline fun <T> DependenciesContainerBuilder<T>.destination(
     destination: DestinationSpec,
     dependencyProvider: DependenciesContainerBuilder<T>.() -> Unit,
 ) {
-    if (this.destination.originalDestination.route == destination.originalDestination.route) {
+    if (this.destination.route == destination.route) {
         dependencyProvider()
     }
 }
