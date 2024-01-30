@@ -6,7 +6,7 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 internal fun ImportableHelper.startingDestinationName(
     graphTree: RawNavGraphTree
 ): String {
-    val startingRouteNames: List<String> = graphTree.destinations.filter { it.navGraphInfo.start }.map { addAndGetPlaceholder(it.destinationImportable) } +
+    val startingRouteNames: List<String> = graphTree.destinations.filter { it.isParentStart }.map { addAndGetPlaceholder(it.destinationImportable) } +
             graphTree.nestedGraphs.filter { it.isParentStart == true }.map { addAndGetPlaceholder(it.navGraphImportable) } +
             graphTree.externalStartRoute?.generatedType?.let { listOf(addAndGetPlaceholder(it)) }.orEmpty()
 

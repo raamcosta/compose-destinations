@@ -1,7 +1,11 @@
 package com.ramcosta.samples.playground.ui.screens.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.Button
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
@@ -12,15 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
+import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.samples.playground.commons.SettingsNavGraph
 import com.ramcosta.samples.playground.commons.requireTitle
 import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
 import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 
-@SettingsNavGraph
-@Destination(style = DestinationStyleBottomSheet::class)
+@Destination<SettingsNavGraph>(style = DestinationStyleBottomSheet::class)
 @Composable
 fun ColumnScope.ThemeSettings(
     viewModel: SettingsViewModel,

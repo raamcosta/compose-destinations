@@ -1,8 +1,7 @@
 package com.ramcosta.playground.featurey
 
 import com.ramcosta.composedestinations.annotation.NavGraph
+import com.ramcosta.composedestinations.annotation.NoParent
 
-@NavGraph
-internal annotation class FeatureYNavGraph(
-    val start: Boolean = false
-)
+@NavGraph<NoParent>
+internal annotation class FeatureYNavGraph

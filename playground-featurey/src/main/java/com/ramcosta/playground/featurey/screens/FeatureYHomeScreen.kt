@@ -14,8 +14,7 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.playground.featurey.FeatureYNavGraph
 
-@FeatureYNavGraph(start = true)
-@Destination
+@Destination<FeatureYNavGraph>(start = true)
 @Composable
 internal fun FeatureYHome(
     navigator: DestinationsNavigator,

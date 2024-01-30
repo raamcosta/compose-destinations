@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavHostParam
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXGraph
 import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureYHomeDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -41,7 +42,7 @@ import kotlinx.coroutines.launch
 
 typealias ResultCena<T> = ResultRecipient<GoToProfileConfirmationDestination, T>
 
-@Destination(
+@Destination<RootNavGraph>(
     start = true,
     style = GreetingTransitions::class
 )

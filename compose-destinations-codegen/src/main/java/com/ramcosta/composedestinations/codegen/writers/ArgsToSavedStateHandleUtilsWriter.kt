@@ -24,7 +24,13 @@ internal class ArgsToSavedStateHandleUtilsWriter(
     customNavTypeByType: Map<Type, CustomNavType>,
 ) {
 
-    private val importableHelper = ImportableHelper(argsToSavedStateHandleTemplate.imports)
+    private val importableHelper = ImportableHelper(
+        argsToSavedStateHandleTemplate.imports + if (customNavTypeByType.isEmpty()) {
+            emptySet()
+        } else {
+            setOfImportable("$codeGenBasePackageName.navtype.*")
+        }
+    )
     private val navArgsResolver = NavArgResolver(
         customNavTypeByType,
         importableHelper

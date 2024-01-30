@@ -25,8 +25,9 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class ActivityDestination(
+annotation class ActivityDestination<T: Annotation>(
     val route: String = Destination.COMPOSABLE_NAME,
+    val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
     val activityClass: KClass<out Activity> = Nothing::class,

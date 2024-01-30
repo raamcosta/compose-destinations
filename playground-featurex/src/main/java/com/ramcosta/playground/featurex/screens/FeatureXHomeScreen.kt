@@ -17,8 +17,8 @@ data class FeatureXHomeNavArgs(
     val something2: String
 )
 
-@FeatureXNavGraph(start = true)
-@Destination(
+@Destination<FeatureXNavGraph>(
+    start = true,
     navArgs = FeatureXHomeNavArgs::class,
     wrappers = [FeatureXWrapper::class]
 )

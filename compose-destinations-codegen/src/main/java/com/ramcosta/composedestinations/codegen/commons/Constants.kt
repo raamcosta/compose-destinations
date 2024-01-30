@@ -24,7 +24,6 @@ val rootNavGraphType = Importable(
 )
 val rootNavGraphGenParams = RawNavGraphGenParams(
     annotationType = rootNavGraphType,
-    default = true,
     isNavHostGraph = true,
     defaultTransitions = Importable(
         "NoTransitions",

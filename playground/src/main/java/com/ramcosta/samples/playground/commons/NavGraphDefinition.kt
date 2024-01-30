@@ -1,8 +1,16 @@
 package com.ramcosta.samples.playground.commons
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransitions
 import com.ramcosta.composedestinations.animations.defaults.NoTransitions
@@ -21,6 +29,8 @@ import com.ramcosta.composedestinations.generated.featurey.navgraphs.FeatureYGra
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.WithDefaultValueArgs
+import com.ramcosta.samples.playground.ui.screens.destinations.ProfileSettingsProfileSettingsScreenDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.RootProfileSettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileGraph
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraph
 import kotlin.reflect.KClass
@@ -32,46 +42,23 @@ import kotlin.reflect.KClass
  which case we would call those instead of the ones from DestinationStyle.
 */
 
-@RootNavGraph
-@NavGraph(
+@NavGraph<RootNavGraph>(
     defaultTransitions = DefaultFadingTransitions::class
 )
-annotation class SettingsNavGraph(
-    val start: Boolean = false
-)
+annotation class SettingsNavGraph
 
-@RootNavGraph
-@NavGraph(
+@NavGraph<RootNavGraph>(
     navArgs = ProfileNavGraph.NavArgs::class,
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
     visibility = CodeGenVisibility.PUBLIC
 )
-annotation class ProfileNavGraph(
-    val start: Boolean = false
-) {
+annotation class ProfileNavGraph {
     data class NavArgs(
         val graphArg: String,
     )
 
-//    @ExternalDestination(
-//        FeatureXHomeDestination::class,
-//        wrappers = [
-//            HidingScreenWrapper::class
-//        ]
-//    )
-//    @ExternalDestination(
-//        FeatureYHomeDestination::class,
-//        deepLinks = [
-//            DeepLink(uriPattern = "https://cenas/$FULL_ROUTE_PLACEHOLDER"),
-//            DeepLink(uriPattern = "https://qweqwe/$FULL_ROUTE_PLACEHOLDER")
-//        ],
-//        style = DestinationStyle.Animated.None::class,
-//        wrappers = [
-//            HidingScreenWrapper::class
-//        ]
-//    )
     @ExternalDestination<PublicFeatureYSideScreenDestination>
     @ExternalNavGraph<FeatureXGraph>(
         deepLinks = [
@@ -87,107 +74,58 @@ annotation class ProfileNavGraph(
 @NavHostGraph(
     visibility = CodeGenVisibility.INTERNAL
 )
-annotation class MyTopLevelNavGraph(
-    val start: Boolean = false
-)
+annotation class MyTopLevelNavGraph
 
-@MyTopLevelNavGraph(start = true)
-@Destination
+@Destination<MyTopLevelNavGraph>(start = true)
 @Composable
 fun Asd() {
     Text("Asd")
 }
 
-@ProfileNavGraph(start = true)
-@NavGraph(
+@NavGraph<ProfileNavGraph>(
+    start = true,
     navArgs = ProfileSettingsNavGraph.NavArgs::class,
-//    visibility = CodeGenVisibility.INTERNAL
 )
-annotation class ProfileSettingsNavGraph(
-    val start: Boolean = false
-) {
+annotation class ProfileSettingsNavGraph {
     data class NavArgs(
         val anotherGraphArg: String
     )
 }
 
-//@NavGraph(
-//    defaultTransitions = NoTransitions::class,
-//    navArgs = TestNavGraphNavArgs::class
-//)
-//annotation class TestNavGraph(
-//    val start: Boolean = false
-//)
-//
-//data class TestNavGraphNavArgs(
-//    val testNavGraphArg: String
-//)
-//
-//@TestNavGraph(start = true)
-//@Destination
-//internal fun TestTestScreen() {
-//    Text("TEST")
-//}
-
-
 @Repeatable
-@Destination(
+@Destination<RootNavGraph>(
     visibility = CodeGenVisibility.INTERNAL
 )
-annotation class InternalDestination(
+annotation class InternalDestination<T: Annotation>(
     val route: String = Destination.COMPOSABLE_NAME,
+    val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
     val style: KClass<out DestinationStyle> = DestinationStyle.Default::class,
     val wrappers: Array<KClass<out DestinationWrapper>> = [],
 )
 
-//@ProfileNavGraph
-//@InternalDestination
-//annotation class ProfileDestination(
-//    val navArgs: KClass<*> = Nothing::class
-//)
-//
-//@ProfileSettingsNavGraph(start = true)
-//@InternalDestination
-//annotation class ProfileSettingsDestination(
-//    val route: String = Destination.COMPOSABLE_NAME,
-//    val navArgs: KClass<*> = Nothing::class
-//)
-
-@ProfileSettingsNavGraph
-@Destination
-annotation class ProfileSettingsDestination(
-    val start: Boolean = false,
-    val navArgs: KClass<*> = Nothing::class,
-)
-
-@ProfileSettingsDestination(start = true, navArgs = WithDefaultValueArgs::class)
-@Destination(route = "settings/profile_settings_screen", navArgs = WithDefaultValueArgs::class)
+@InternalDestination<SettingsNavGraph>
+@Destination<RootNavGraph>
 @Composable
-fun ProfileSettingsScreen(
-//    vm: SettingsViewModel,
-    args: WithDefaultValueArgs,
-    navBackStackEntry: NavBackStackEntry
-) = Column {
-//    Text("VM toggle ON? ${vm.isToggleOn}")
-    Text("$args")
-//    Text("${navBackStackEntry.navArgs<ProfileNavGraph.NavArgs>()}")
-    Text("${kotlin.runCatching { ProfileGraph.argsFrom(navBackStackEntry) }}")
-    Text("${kotlin.runCatching { ProfileSettingsGraph.argsFrom(navBackStackEntry) } }")
+fun StatsScreen() {
+    Text("StatsScreen")
 }
 
-//@ProfileSettingsNavGraph(start = true)
-//@InternalDestination(navArgs = WithDefaultValueArgs::class)
-//@Composable
-//fun ProfileSettingsScreenZZZ(
-////    vm: SettingsViewModel,
-//    args: WithDefaultValueArgs,
-//    navBackStackEntry: NavBackStackEntry
-//) = Column {
-////    Text("VM toggle ON? ${vm.isToggleOn}")
-//    Text("$args")
-////    Text("${navBackStackEntry.navArgs<ProfileNavGraph.NavArgs>()}")
-//    Text("${kotlin.runCatching { ProfileGraph.argsFrom(navBackStackEntry) }}")
-//    Text("${kotlin.runCatching { ProfileSettingsGraph.argsFrom(navBackStackEntry) } }")
-//}
+@Destination<ProfileSettingsNavGraph>(start = true, navArgs = WithDefaultValueArgs::class)
+@Destination<RootNavGraph>(navArgs = WithDefaultValueArgs::class)
+@Composable
+fun ProfileSettingsScreen(
+    args: WithDefaultValueArgs,
+    navBackStackEntry: NavBackStackEntry
+) = Column(verticalArrangement = Arrangement.Absolute.spacedBy(2.dp)) {
+    Text("$args")
+    Spacer(modifier = Modifier.fillMaxWidth().height(1.dp).border(1.dp, Color.Black))
+    Text("${kotlin.runCatching { ProfileGraph.argsFrom(navBackStackEntry) }}")
+    Spacer(modifier = Modifier.fillMaxWidth().height(1.dp).border(1.dp, Color.Black))
+    Text("${kotlin.runCatching { ProfileSettingsGraph.argsFrom(navBackStackEntry) } }")
+    Spacer(modifier = Modifier.fillMaxWidth().height(1.dp).border(1.dp, Color.Black))
+    Text("${kotlin.runCatching { RootProfileSettingsScreenDestination.argsFrom(navBackStackEntry) } }")
+    Spacer(modifier = Modifier.fillMaxWidth().height(1.dp).border(1.dp, Color.Black))
+    Text("${kotlin.runCatching { ProfileSettingsProfileSettingsScreenDestination.argsFrom(navBackStackEntry) } }")
+}

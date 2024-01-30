@@ -32,8 +32,8 @@ import com.ramcosta.samples.playground.ui.screens.styles.SettingsTransitions
 
 const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 
-@SettingsNavGraph(start = true)
-@Destination(
+@Destination<SettingsNavGraph>(
+    start = true,
     deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],
     style = SettingsTransitions::class
 )

@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureYHomeDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
@@ -26,7 +27,7 @@ import com.ramcosta.samples.playground.ui.screens.destinations.FeedDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.OtherActivityDestination
 
 @OptIn(ExperimentalAnimationApi::class)
-@Destination
+@Destination<RootNavGraph>
 @Composable
 fun AnimatedVisibilityScope.Feed(
     navigator: DestinationsNavigator,

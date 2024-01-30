@@ -68,7 +68,7 @@ internal class NavGraphsPrettyKdocWriter(
             navGraphTree.destinations.map {
                 KdocRoute(
                     false,
-                    it.navGraphInfo.start,
+                    it.isParentStart,
                     Importable(it.composableName, it.composableQualifiedName),
                     true
                 )

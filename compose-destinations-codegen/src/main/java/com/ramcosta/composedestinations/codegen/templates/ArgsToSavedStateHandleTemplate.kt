@@ -17,7 +17,6 @@ val argsToSavedStateHandleTemplate = FileTemplate(
         "$CORE_PACKAGE_NAME.navargs.primitives.*",
         "$CORE_PACKAGE_NAME.navargs.primitives.array.*",
         "$CORE_PACKAGE_NAME.navargs.primitives.arraylist.*",
-        "$codeGenBasePackageName.navtype.*"
     ),
     sourceCode = """
 $ALL_ARGS_SAVED_STATE_HANDLE_FUNCTIONS_PLACEHOLDER

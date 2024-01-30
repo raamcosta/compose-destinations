@@ -9,14 +9,14 @@ interface DestinationGeneratingParams {
     val baseRoute: String
     val parameters: List<Parameter>
     val deepLinks: List<DeepLink>
-    val navGraphInfo: NavGraphInfo
+    val navGraphInfo: NavGraphInfo?
     val destinationStyleType: DestinationStyleType
     val composableReceiverSimpleName: String?
     val requireOptInAnnotationTypes: List<Importable>
     val destinationNavArgsClass: RawNavArgsClass?
     val activityDestinationParams: ActivityDestinationParams?
     val composableWrappers: List<Importable>
-    val isDetached: Boolean
+    val isParentStart: Boolean
 }
 
 data class RawDestinationGenParams(
@@ -28,12 +28,12 @@ data class RawDestinationGenParams(
     override val baseRoute: String,
     override val parameters: List<Parameter>,
     override val deepLinks: List<DeepLink>,
-    override val navGraphInfo: NavGraphInfo,
+    override val navGraphInfo: NavGraphInfo?,
     override val destinationStyleType: DestinationStyleType,
     override val composableReceiverSimpleName: String?,
     override val requireOptInAnnotationTypes: List<Importable>,
     override val destinationNavArgsClass: RawNavArgsClass?,
     override val activityDestinationParams: ActivityDestinationParams? = null,
     override val composableWrappers: List<Importable>,
-    override val isDetached: Boolean
+    override val isParentStart: Boolean,
 ): DestinationGeneratingParams

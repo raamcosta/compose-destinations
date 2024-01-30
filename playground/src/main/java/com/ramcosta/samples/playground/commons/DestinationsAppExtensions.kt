@@ -10,39 +10,27 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.spec.DestinationSpec
-import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.samples.playground.R
 import com.ramcosta.samples.playground.ui.screens.destinations.FeedDestination
-import com.ramcosta.samples.playground.ui.screens.destinations.GoToProfileConfirmationDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
-import com.ramcosta.samples.playground.ui.screens.destinations.TestScreen3Destination
 import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
 
 @Composable
-fun DirectionDestinationSpec.DrawerContent(
+fun DestinationSpec.DrawerContent(
     isSelected: Boolean,
-    onDestinationClick: (DirectionDestinationSpec) -> Unit
+    onDestinationClick: (DestinationSpec) -> Unit
 ) {
-    when (this) {
-        FeedDestination,
-        GreetingScreenDestination -> {
-            Text(
-                text = stringResource(id = requireTitle),
-                modifier = Modifier
-                    .padding(8.dp)
-                    .clickable {
-                        onDestinationClick(this)
-                    },
-                fontWeight = if (isSelected) FontWeight.Bold else null
-            )
-        }
-        GoToProfileConfirmationDestination,
-        SettingsScreenDestination,
-        ThemeSettingsDestination,
-        TestScreen3Destination -> Unit
-    }
+    Text(
+        text = title?.let { stringResource(id = it) } ?: this.toString(),
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable {
+                onDestinationClick(this)
+            },
+        fontWeight = if (isSelected) FontWeight.Bold else null
+    )
 }
 
 @get:StringRes
