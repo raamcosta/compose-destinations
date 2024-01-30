@@ -17,13 +17,12 @@ data class OtherActivityNavArgs(
     val color: Color
 )
 
-@SettingsNavGraph
-@ActivityDestination(
+@ActivityDestination<SettingsNavGraph>(
     navArgs = OtherActivityNavArgs::class,
 )
-annotation class OtherActivityDestiantion
+annotation class OtherActivityDestinantion
 
-@OtherActivityDestiantion
+@OtherActivityDestinantion
 class OtherActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

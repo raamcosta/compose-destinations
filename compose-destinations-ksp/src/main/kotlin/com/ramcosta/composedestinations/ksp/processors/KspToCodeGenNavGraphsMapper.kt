@@ -9,9 +9,7 @@ import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_R
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_DEFAULT_NAME
-import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
-import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
@@ -26,6 +24,7 @@ import com.ramcosta.composedestinations.ksp.commons.isNothing
 import com.ramcosta.composedestinations.ksp.commons.toDeepLink
 import com.ramcosta.composedestinations.ksp.commons.toGenVisibility
 import com.ramcosta.composedestinations.ksp.commons.toImportable
+import com.ramcosta.composedestinations.ksp.commons.toNavGraphParentInfo
 import com.ramcosta.composedestinations.ksp.commons.toType
 
 internal class KspToCodeGenNavGraphsMapper(
@@ -48,16 +47,6 @@ internal class KspToCodeGenNavGraphsMapper(
             throw IllegalDestinationsSetup("Classes annotated with `@NavGraph` must be annotation classes!")
         }
 
-        primaryConstructor?.parameters?.firstOrNull {
-            it.name?.asString() == "start" &&
-                    it.type.toString() == "Boolean" &&
-                    it.hasDefault
-        }
-            ?: throw IllegalDestinationsSetup(
-                "Classes annotated with `@NavGraph` must contain " +
-                        "a single parameter like: `val start: Boolean = false`!"
-            )
-
         val navGraphAnnotation = if (isNavHostGraph) {
             annotations.first {
                 it.shortName.asString() == NAV_HOST_GRAPH_ANNOTATION
@@ -70,8 +59,6 @@ internal class KspToCodeGenNavGraphsMapper(
 
         val navGraphAnnotationNameArg = navGraphAnnotation
             .findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT)
-        val navGraphAnnotationDefaultArg = navGraphAnnotation
-            .findArgumentValue<Boolean>("default")!!
         val navGraphVisibility = navGraphAnnotation
             .findArgumentValue<KSType>("visibility")!!
             .toGenVisibility()
@@ -106,36 +93,21 @@ internal class KspToCodeGenNavGraphsMapper(
             )
         }
 
-        var parentGraphAnnotationResolved: KSType? = null
-        val parentGraphAnnotation = annotations.firstOrNull { annotationOfAnnotation ->
-            if (annotationOfAnnotation.shortName.asString() == NAV_GRAPH_ANNOTATION) return@firstOrNull false
-
-            val resolved = annotationOfAnnotation.annotationType.resolve()
-            resolved.declaration.annotations.any {
-                val annotationShortName = it.shortName.asString()
-                if (annotationShortName != NAV_GRAPH_ANNOTATION && annotationShortName != NAV_HOST_GRAPH_ANNOTATION) {
-                    return@any false
-                }
-
-                val annotationQualifiedName =
-                    it.annotationType.resolve().declaration.qualifiedName?.asString()
-                annotationQualifiedName == NAV_GRAPH_ANNOTATION_QUALIFIED
-                        || annotationQualifiedName == NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
-            }.also {
-                if (it) parentGraphAnnotationResolved = resolved
+        val parent = if (isNavHostGraph) {
+            null
+        } else {
+            navGraphAnnotation.annotationType.resolve().arguments.firstOrNull()?.type?.resolve()?.let {
+                it.toNavGraphParentInfo(
+                    errorLocationHint = "NavGraph ${simpleName.asString()}",
+                    annotationType = "@NavGraph"
+                )?.graphType
             }
         }
 
-        val isParentStart = parentGraphAnnotation?.arguments?.first()?.value as? Boolean?
-        val parent = parentGraphAnnotationResolved?.let {
-            Importable(
-                it.declaration.simpleName.asString(),
-                it.declaration.qualifiedName!!.asString()
-            )
-        }
-
-        if (isNavHostGraph && parent != null) {
-            throw IllegalDestinationsSetup("NavHostGraph's cannot have a parent navigation graph! (${simpleName.asString()}, parent = ${parent.simpleName})")
+        val isParentStart = if (parent != null) {
+            navGraphAnnotation.findArgumentValue<Boolean>("start")!!
+        } else {
+            null
         }
 
         containingFile?.let { mutableKSFileSourceMapper[it.filePath] = containingFile }
@@ -144,7 +116,6 @@ internal class KspToCodeGenNavGraphsMapper(
         return RawNavGraphGenParams(
             sourceIds = listOfNotNull(containingFile?.filePath, navArgs?.file?.filePath),
             routeOverride = if (navGraphAnnotationNameArg == NAV_GRAPH_ANNOTATION_DEFAULT_NAME) null else navGraphAnnotationNameArg,
-            default = navGraphAnnotationDefaultArg,
             isNavHostGraph = isNavHostGraph,
             defaultTransitions = navGraphDefaultTransitions,
             annotationType = Importable(

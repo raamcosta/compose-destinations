@@ -18,8 +18,7 @@ internal data class InternalSerializableArg(
     val someValue: String
 )
 
-@FeatureXNavGraph
-@Destination(
+@Destination<FeatureXNavGraph>(
     navArgs = InternalArgs::class,
     visibility = CodeGenVisibility.INTERNAL
 )

@@ -26,8 +26,7 @@ import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.samples.playground.commons.ProfileNavGraph
 import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
 
-@ProfileNavGraph
-@Destination(
+@Destination<ProfileNavGraph>(
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],

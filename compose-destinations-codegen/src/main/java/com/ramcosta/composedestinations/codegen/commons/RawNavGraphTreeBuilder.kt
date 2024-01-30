@@ -65,11 +65,11 @@ internal fun makeNavGraphTrees(
     navGraphs: List<RawNavGraphGenParams>,
     generatedDestinations: List<CodeGenProcessedDestination>
 ): List<RawNavGraphTree> {
-    val navGraphsByType = navGraphs.associateBy { it.annotationType }
+    val navGraphsByType = (navGraphs + rootNavGraphGenParams).associateBy { it.annotationType }
 
     val destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<CodeGenProcessedDestination>> =
-        generatedDestinations.filter { !it.isDetached }.groupBy { destination ->
-            navGraphsByType[destination.navGraphInfo.graphType] ?: navGraphs.find { it.default } ?: rootNavGraphGenParams
+        generatedDestinations.filter { it.navGraphInfo != null }.groupBy { destination ->
+            navGraphsByType[destination.navGraphInfo!!.graphType]!!
         }
 
     val rawNavGraphGenByParent: Map<Importable?, List<RawNavGraphGenParams>> =
@@ -113,7 +113,7 @@ internal fun RawNavGraphGenParams.makeGraphTree(
 }
 
 private fun RawNavGraphTree.addStartRouteTreeToParticipantsOfPublicAPIs() {
-    val startDestination = destinations.firstOrNull { it.navGraphInfo.start }
+    val startDestination = destinations.firstOrNull { it.isParentStart }
     val startNestedGraph = nestedGraphs.firstOrNull { it.isParentStart == true }
 
     if (externalStartRoute != null) {
@@ -223,7 +223,7 @@ private fun RawNavGraphGenParams.calculateStartRouteNavArgsTree(
         )
     }
 
-    val startDestination = destinations.find { it.navGraphInfo.start }
+    val startDestination = destinations.find { it.isParentStart }
     if (startDestination != null) {
         return StartRouteArgsTree(
             navArgsClass = startDestination.navArgsClass,

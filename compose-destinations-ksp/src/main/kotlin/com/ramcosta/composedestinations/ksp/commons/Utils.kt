@@ -20,11 +20,17 @@ import com.google.devtools.ksp.symbol.KSValueParameter
 import com.google.devtools.ksp.symbol.Location
 import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.symbol.Variance
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION
+import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
+import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
+import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_PARAM_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.model.DeepLink
 import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.RawNavArgsClass
@@ -300,6 +306,48 @@ fun KSType.toType(
         isNullable = isMarkedNullable,
         hasCustomTypeSerializer = navTypeSerializersByType[importable] != null,
     )
+}
+
+
+fun KSType.toNavGraphParentInfo(
+    errorLocationHint: String,
+    annotationType: String
+): NavGraphInfo? {
+    val isNoParent = isNoParent()
+    if (isNoParent) {
+        return null
+    }
+    val isNavGraphAnnotation = isNavGraphAnnotation()
+    val isNavHostGraphAnnotation = isNavHostGraphAnnotation()
+    if (!isNavGraphAnnotation && !isNavHostGraphAnnotation) {
+        throw IllegalDestinationsSetup("Type argument of annotation $annotationType needs to be \"NoParent\" or an annotation class which is itself annotated with \"@NavGraph\" or \"@NavHostGraph\".Check $errorLocationHint.")
+    }
+
+    return NavGraphInfo(
+        isNavHostGraphAnnotation,
+        Importable(
+            declaration.simpleName.asString(),
+            declaration.qualifiedName!!.asString()
+        )
+    )
+}
+
+private fun KSType.isNavGraphAnnotation(): Boolean {
+    return declaration.annotations.any { annotationOfAnnotation ->
+        annotationOfAnnotation.shortName.asString() == NAV_GRAPH_ANNOTATION
+                && annotationOfAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_GRAPH_ANNOTATION_QUALIFIED
+    }
+}
+
+private fun KSType.isNavHostGraphAnnotation(): Boolean {
+    return declaration.annotations.any { annotationOfAnnotation ->
+        annotationOfAnnotation.shortName.asString() == NAV_HOST_GRAPH_ANNOTATION
+                && annotationOfAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
+    }
+}
+
+private fun KSType.isNoParent(): Boolean {
+    return declaration.qualifiedName?.asString() == "$CORE_PACKAGE_NAME.annotation.NoParent"
 }
 
 private fun KSType.argumentTypes(location: Location, resolver: Resolver, navTypeSerializersByType: Map<Importable, NavTypeSerializer>): List<TypeArgument> {

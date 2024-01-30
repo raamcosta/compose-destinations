@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
 import com.ramcosta.composedestinations.navargs.NavTypeSerializer
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
@@ -28,8 +29,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
-@SettingsNavGraph
-@Destination
+@Destination<SettingsNavGraph>
 annotation class HidingScreenDestination(
     val wrappers: Array<KClass<out DestinationWrapper>> = [DrawerOpeningWrapper::class],
     val navArgs: KClass<*> = Nothing::class,
@@ -53,7 +53,7 @@ fun AnotherTestScreen() {
     Text("ANOTHER TEST")
 }
 
-@Destination
+@Destination<RootNavGraph>
 @Composable
 fun TestScreen(
     id: Long = 0,
@@ -123,7 +123,7 @@ class ColorTypeSerializer : DestinationsNavTypeSerializer<Color> {
 
 // Just to test generation of multiple similar destinations
 @Suppress("UNUSED_PARAMETER")
-@Destination
+@Destination<RootNavGraph>
 @Composable
 fun TestScreen2(
     id: Long = 0,
@@ -136,7 +136,7 @@ fun TestScreen2(
 ) {
 }
 
-@Destination(
+@Destination<RootNavGraph>(
     deepLinks = [DeepLink(uriPattern = "something://$FULL_ROUTE_PLACEHOLDER")]
 )
 @Composable

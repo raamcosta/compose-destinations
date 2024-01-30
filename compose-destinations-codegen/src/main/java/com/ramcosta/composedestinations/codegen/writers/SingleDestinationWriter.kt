@@ -63,7 +63,7 @@ internal class SingleDestinationWriter(
     )
 
     init {
-        if (destination.navGraphInfo.start && destination.navGraphInfo.isNavHostGraph && destination.navArgs.any { it.isMandatory }) {
+        if (destination.isParentStart && destination.navGraphInfo?.isNavHostGraph == true && destination.navArgs.any { it.isMandatory }) {
             throw IllegalDestinationsSetup("\"'${destination.composableName}' composable: Start destinations of NavHostGraphs cannot have mandatory navigation arguments!")
         }
 

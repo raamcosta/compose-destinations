@@ -1,9 +1,12 @@
 package com.ramcosta.destinations.sample.tasks.presentation.list
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
@@ -18,8 +21,7 @@ import com.ramcosta.composedestinations.generated.destinations.TaskScreenDestina
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
 
-@RootNavGraph(start = true)
-@Destination
+@Destination<RootNavGraph>(start = true)
 @Composable
 fun TaskListScreen(
     navigator: DestinationsNavigator,

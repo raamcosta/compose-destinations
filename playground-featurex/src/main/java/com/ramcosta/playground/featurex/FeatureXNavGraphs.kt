@@ -1,14 +1,12 @@
 package com.ramcosta.playground.featurex
 
 import com.ramcosta.composedestinations.annotation.NavGraph
+import com.ramcosta.composedestinations.annotation.NoParent
 
-@NavGraph(
+@NavGraph<NoParent>(
     navArgs = FeatureXNavArgs::class,
-    default = true
 )
-internal annotation class FeatureXNavGraph(
-    val start: Boolean = false
-)
+internal annotation class FeatureXNavGraph
 
 data class FeatureXNavArgs(
     val something: String

@@ -26,8 +26,7 @@ internal data class InternalSerializableArg(
     val someValue: String
 )
 
-@FeatureYNavGraph
-@Destination(
+@Destination<FeatureYNavGraph>(
     navArgs = InternalArgs::class,
     visibility = CodeGenVisibility.INTERNAL
 )

@@ -33,10 +33,10 @@ import kotlin.reflect.KClass
  * @param visibility [CodeGenVisibility] of the corresponding generated Destination object.
  * Useful to control what the current module exposes to other modules. By default, it is public.
  */
+@Repeatable
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.SOURCE)
-@Repeatable
-annotation class Destination(
+annotation class Destination<T: Annotation>(
     val route: String = COMPOSABLE_NAME,
     val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
