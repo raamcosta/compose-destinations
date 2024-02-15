@@ -19,11 +19,11 @@ ksp = "1.9.22-1.0.17"
 
 junit = "4.13.2"
 
-compose = "1.6.1"
-composeMaterial = "1.6.1"
-composeCompiler = "1.5.8"
-composeNavigation = "2.7.7"
-accompanist = "0.34.0"
+compose = "1.7.0-alpha02"
+composeMaterial = "1.7.0-alpha02"
+composeCompiler = "1.5.9"
+composeNavigation = "2.8.0-alpha02"
+accompanist = "0.35.0-alpha"
 
 ktxSerialization = "1.6.2"
 mockk = "1.13.9"
