@@ -10,7 +10,7 @@ agp = "8.2.2"
 mavenPublishPluginVersion = "0.27.0"
 
 composeViewModel = "2.7.0"
-activityCompose = "1.7.2"
+activityCompose = "1.8.2"
 
 material = "1.9.0" #ProcessorProviderTests fail when trying to update this one
 lifecycleRuntimeKtx = "2.7.0"
