@@ -1,6 +1,9 @@
 package com.ramcosta.composedestinations.spec
 
+import android.os.Bundle
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.scope.DestinationScope
 
 
@@ -33,4 +36,28 @@ interface TypedDestinationSpec<T> : TypedRoute<T> {
      */
     @Composable
     fun DestinationScope<T>.Content()
+
+    /**
+     * Method that returns the navigation arguments class of this Composable
+     * for the [bundle] when the destination gets navigated to.
+     */
+    override fun argsFrom(bundle: Bundle?) : T
+
+    /**
+     * Method that returns the navigation arguments class of this Composable
+     * for the [savedStateHandle]. This is useful when the [SavedStateHandle]
+     * is created with the navigation arguments, for example, inside the
+     * ViewModel.
+     *
+     * If you're manually creating the ViewModel, use the `AbstractSavedStateViewModelFactory`
+     * and pass the [NavBackStackEntry.arguments] as the second constructor parameter.
+     * If you're using something like Hilt, then that is done for you out of the box.
+     */
+    override fun argsFrom(savedStateHandle: SavedStateHandle) : T
+
+    /**
+     * Method that returns the navigation arguments class of this Composable
+     * for the [navBackStackEntry] when the destination gets navigated to.
+     */
+    override fun argsFrom(navBackStackEntry: NavBackStackEntry) : T = argsFrom(navBackStackEntry.arguments)
 }

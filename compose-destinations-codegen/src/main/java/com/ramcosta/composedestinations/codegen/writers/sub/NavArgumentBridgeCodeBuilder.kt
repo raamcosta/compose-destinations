@@ -35,21 +35,28 @@ class NavArgumentBridgeCodeBuilder(
 
     fun argsFromFunctions(
         navArgsType: String,
-        additionalArgLine: (String) -> String? = { null }
+        additionalArgLine: (String) -> String? = { null },
+        defaultIfArgNotPresent: ((Parameter) -> String)? = null
     ): String {
         if (navArgs.isEmpty()) {
             return ""
         }
 
-        return argsFromNavBackStackEntry(navArgsType, additionalArgLine) + "\n" + argsFromSavedStateHandle(navArgsType, additionalArgLine)
+        return argsFromNavBackStackEntry(navArgsType, additionalArgLine, defaultIfArgNotPresent) +
+                "\n" +
+                argsFromSavedStateHandle(navArgsType,  additionalArgLine, defaultIfArgNotPresent)
     }
 
-    private fun argsFromNavBackStackEntry(argsType: String, additionalArgLine: (String) -> String?): String {
+    private fun argsFromNavBackStackEntry(
+        argsType: String,
+        additionalArgLine: (String) -> String?,
+        defaultIfArgNotPresent: ((Parameter) -> String)?
+    ): String {
         val code = StringBuilder()
         code += """
                 
            |override fun argsFrom(bundle: ${bundleImportable.getCodePlaceHolder()}?): $argsType {
-           |    return ${argsType}(%s2
+           |    return ${argsType.removeSuffix("?")}(%s2
            |    )
            |}
             """.trimMargin()
@@ -57,7 +64,7 @@ class NavArgumentBridgeCodeBuilder(
         val arguments = StringBuilder()
         navArgs.forEach {
             arguments += "\n\t\t${it.name} = "
-            arguments += navArgResolver.resolve(errorLocationPrefix, it)
+            arguments += navArgResolver.resolve(errorLocationPrefix, it, defaultIfArgNotPresent)
             arguments += ","
         }
 
@@ -71,14 +78,18 @@ class NavArgumentBridgeCodeBuilder(
             .prependIndent("\t")
     }
 
-    private fun argsFromSavedStateHandle(argsType: String, additionalArgLine: (String) -> String?): String {
+    private fun argsFromSavedStateHandle(
+        argsType: String,
+        additionalArgLine: (String) -> String?,
+        defaultIfArgNotPresent: ((Parameter) -> String)?
+    ): String {
         val savedStateHandlePlaceholder = savedStateHandleImportable.getCodePlaceHolder()
 
         val code = StringBuilder()
         code += """
                 
            |override fun argsFrom(savedStateHandle: $savedStateHandlePlaceholder): $argsType {
-           |    return ${argsType}(%s2
+           |    return ${argsType.removeSuffix("?")}(%s2
            |    )
            |}
             """.trimMargin()
@@ -86,7 +97,7 @@ class NavArgumentBridgeCodeBuilder(
         val arguments = StringBuilder()
         navArgs.forEach {
             arguments += "\n\t\t${it.name} = "
-            arguments += navArgResolver.resolveFromSavedStateHandle(errorLocationPrefix, it)
+            arguments += navArgResolver.resolveFromSavedStateHandle(errorLocationPrefix, it, defaultIfArgNotPresent)
             arguments += ","
         }
 

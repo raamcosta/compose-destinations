@@ -1,14 +1,28 @@
 package com.ramcosta.composedestinations.codegen.commons
 
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 
-internal fun ImportableHelper.startingDestinationName(
+internal data class StartRouteInfo(val isDestination: Boolean, val name: String)
+
+internal fun ImportableHelper.startingRouteInfo(
     graphTree: RawNavGraphTree
-): String {
-    val startingRouteNames: List<String> = graphTree.destinations.filter { it.isParentStart }.map { addAndGetPlaceholder(it.destinationImportable) } +
-            graphTree.nestedGraphs.filter { it.isParentStart == true }.map { addAndGetPlaceholder(it.navGraphImportable) } +
-            graphTree.externalStartRoute?.generatedType?.let { listOf(addAndGetPlaceholder(it)) }.orEmpty()
+): StartRouteInfo {
+    val startDestinations = graphTree.destinations.filter { it.isParentStart }
+        .map { StartRouteInfo(true, addAndGetPlaceholder(it.destinationImportable)) }
+    val startNavGraphs = graphTree.nestedGraphs.filter { it.isParentStart == true }
+        .map { StartRouteInfo(false, addAndGetPlaceholder(it.navGraphImportable)) }
+    val startExternalRoutes = graphTree.externalStartRoute?.generatedType?.let {
+        listOf(
+            StartRouteInfo(
+                (graphTree.externalStartRoute is ExternalRoute.Destination),
+                addAndGetPlaceholder(it)
+            )
+        )
+    }.orEmpty()
+
+    val startingRouteNames: List<StartRouteInfo> = startDestinations + startNavGraphs + startExternalRoutes
 
     if (startingRouteNames.isEmpty()) {
         throw IllegalDestinationsSetup(

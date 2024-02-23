@@ -1,15 +1,12 @@
 package com.ramcosta.samples.playground.commons
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransitions
@@ -31,8 +28,9 @@ import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.WithDefaultValueArgs
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileSettingsProfileSettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.RootProfileSettingsScreenDestination
-import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileGraph
-import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraph
+import com.ramcosta.samples.playground.ui.screens.navGraphArgs
+import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileGraphNavArgs
+import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraphNavArgs
 import kotlin.reflect.KClass
 
 /*
@@ -118,14 +116,14 @@ fun StatsScreen() {
 fun ProfileSettingsScreen(
     args: WithDefaultValueArgs,
     navBackStackEntry: NavBackStackEntry
-) = Column(verticalArrangement = Arrangement.Absolute.spacedBy(2.dp)) {
+) = Column(verticalArrangement = Arrangement.Absolute.spacedBy(6.dp)) {
     Text("$args")
-    Spacer(modifier = Modifier.fillMaxWidth().height(1.dp).border(1.dp, Color.Black))
-    Text("${kotlin.runCatching { ProfileGraph.argsFrom(navBackStackEntry) }}")
-    Spacer(modifier = Modifier.fillMaxWidth().height(1.dp).border(1.dp, Color.Black))
-    Text("${kotlin.runCatching { ProfileSettingsGraph.argsFrom(navBackStackEntry) } }")
-    Spacer(modifier = Modifier.fillMaxWidth().height(1.dp).border(1.dp, Color.Black))
-    Text("${kotlin.runCatching { RootProfileSettingsScreenDestination.argsFrom(navBackStackEntry) } }")
-    Spacer(modifier = Modifier.fillMaxWidth().height(1.dp).border(1.dp, Color.Black))
-    Text("${kotlin.runCatching { ProfileSettingsProfileSettingsScreenDestination.argsFrom(navBackStackEntry) } }")
+    Divider(modifier = Modifier.fillMaxWidth())
+    Text("${navBackStackEntry.navGraphArgs<ProfileGraphNavArgs>()}")
+    Divider(modifier = Modifier.fillMaxWidth())
+    Text("${navBackStackEntry.navGraphArgs<ProfileSettingsGraphNavArgs>()}")
+    Divider(modifier = Modifier.fillMaxWidth())
+    Text("${RootProfileSettingsScreenDestination.argsFrom(navBackStackEntry)}")
+    Divider(modifier = Modifier.fillMaxWidth())
+    Text("${ProfileSettingsProfileSettingsScreenDestination.argsFrom(navBackStackEntry)}")
 }
