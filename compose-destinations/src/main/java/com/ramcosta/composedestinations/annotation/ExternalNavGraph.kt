@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.annotation
 
+import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import kotlin.reflect.KClass

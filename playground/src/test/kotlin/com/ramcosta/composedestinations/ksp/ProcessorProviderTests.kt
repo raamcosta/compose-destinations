@@ -26,7 +26,7 @@ class ProcessorProviderTests {
           package test
 
           import com.ramcosta.composedestinations.annotation.Destination
-          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.composedestinations.annotation.RootGraph
 
           @RootNavGraph(start = true)
           @Destination(route = "test1")
@@ -79,7 +79,7 @@ class ProcessorProviderTests {
           package com.ramcosta.composedestinations.example
 
           import com.ramcosta.composedestinations.annotation.Destination
-          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.composedestinations.annotation.RootGraph
 
           data class NotSerializable(
             val color: String
@@ -115,7 +115,7 @@ class ProcessorProviderTests {
 
           import com.ramcosta.composedestinations.annotation.Destination
           import kotlinx.serialization.Serializable
-          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.composedestinations.annotation.RootGraph
 
           @Serializable
           data class IsSerializable(
@@ -157,7 +157,7 @@ class ProcessorProviderTests {
           package com.ramcosta.composedestinations.example
 
           import com.ramcosta.composedestinations.annotation.Destination
-          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.composedestinations.annotation.RootGraph
 
           data class NotSerializable(
             val color: String
@@ -194,7 +194,7 @@ class ProcessorProviderTests {
           package com.ramcosta.composedestinations.example
 
           import com.ramcosta.composedestinations.annotation.Destination
-          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.composedestinations.annotation.RootGraph
           import kotlinx.serialization.Serializable
 
           @Serializable
@@ -239,7 +239,7 @@ class ProcessorProviderTests {
           package com.ramcosta.composedestinations.example
 
           import com.ramcosta.composedestinations.annotation.Destination
-          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.composedestinations.annotation.RootGraph
           import kotlinx.serialization.Serializable
 
           data class IsSerializable(
@@ -283,7 +283,7 @@ class ProcessorProviderTests {
           package com.ramcosta.composedestinations.example
 
           import com.ramcosta.composedestinations.annotation.Destination
-          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.composedestinations.annotation.RootGraph
 
           typealias Aliased = String
 
@@ -322,7 +322,7 @@ class ProcessorProviderTests {
           package com.ramcosta.composedestinations.example
 
           import com.ramcosta.composedestinations.annotation.Destination
-          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.composedestinations.annotation.RootGraph
 
           typealias Aliased = String
           typealias AliasedSecond = Aliased
@@ -362,7 +362,7 @@ class ProcessorProviderTests {
           package com.ramcosta.composedestinations.example
 
           import com.ramcosta.composedestinations.annotation.Destination
-          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.composedestinations.annotation.RootGraph
           import com.ramcosta.playground.core.BlogPostArgs
 
           @RootNavGraph(start = true)
@@ -397,7 +397,7 @@ class ProcessorProviderTests {
           package com.ramcosta.composedestinations.example
 
           import com.ramcosta.composedestinations.annotation.Destination
-          import com.ramcosta.composedestinations.annotation.RootNavGraph
+          import com.ramcosta.composedestinations.annotation.RootGraph
           import com.ramcosta.playground.core.WithDefaultValueArgs
 
           @RootNavGraph(start = true)

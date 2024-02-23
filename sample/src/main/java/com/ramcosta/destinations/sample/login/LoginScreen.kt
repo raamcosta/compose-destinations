@@ -17,17 +17,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.LoginScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.startDestination
 import com.ramcosta.destinations.sample.MainViewModel
 import com.ramcosta.destinations.sample.core.viewmodel.activityViewModel
 
-@Destination<RootNavGraph>
+@Destination<RootGraph>
 @Composable
 fun LoginScreen(
     vm: MainViewModel = activityViewModel(),

@@ -1,7 +1,8 @@
 package com.ramcosta.composedestinations.annotation
 
 import android.app.Activity
-import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
+import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
+import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import kotlin.reflect.KClass
 
 /**

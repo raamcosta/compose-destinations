@@ -19,9 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.NavHostParam
-import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.annotation.parameters.NavHostParam
+import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXNavGraph
 import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureYHomeDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 
 typealias ResultCena<T> = ResultRecipient<GoToProfileConfirmationDestination, T>
 
-@Destination<RootNavGraph>(
+@Destination<RootGraph>(
     start = true,
     style = GreetingTransitions::class
 )
@@ -133,7 +133,7 @@ private fun GreetingScreenContent(
 //                    navigator.navigate(GoToProfileConfirmationDestination)
 //                    navigator.navigate(FeatureXHomeDestination("SOMETHING"))
                     navigator.navigate(
-                        FeatureXGraph("something", FeatureXHomeNavArgs("SOMETHING2"))
+                        FeatureXNavGraph("something", FeatureXHomeNavArgs("SOMETHING2"))
                     )
 //                    navigator.navigate(ProfileGraph("my graphArg", ProfileSettingsGraphNavArgs("my another graph arg", WithDefaultValueArgs(true))))
                 }

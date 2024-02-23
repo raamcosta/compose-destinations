@@ -16,10 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
 
-@Destination<RootNavGraph>(navArgs = StepScreenNavArgs::class)
+@Destination<RootGraph>(navArgs = StepScreenNavArgs::class)
 @Composable
 fun StepScreen(
     viewModel: StepDetailsViewModel = viewModel()

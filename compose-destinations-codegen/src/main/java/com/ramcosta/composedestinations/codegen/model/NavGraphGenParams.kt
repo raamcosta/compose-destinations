@@ -49,6 +49,9 @@ data class RawNavGraphGenParams(
     }
 
     override val baseRoute: String by lazy(LazyThreadSafetyMode.NONE) {
-        routeOverride ?: name.replace("(?i)graph".toRegex(), "").toSnakeCase()
+        routeOverride ?: name
+            .replace("(?i)navgraph".toRegex(), "")
+            .replace("(?i)graph".toRegex(), "")
+            .toSnakeCase()
     }
 }

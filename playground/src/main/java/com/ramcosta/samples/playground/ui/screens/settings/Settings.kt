@@ -14,25 +14,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.ramcosta.composedestinations.result.EmptyResultRecipient
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.playground.core.WithDefaultValueArgs
-import com.ramcosta.samples.playground.commons.SettingsNavGraph
+import com.ramcosta.samples.playground.commons.SettingsGraph
 import com.ramcosta.samples.playground.commons.requireTitle
 import com.ramcosta.samples.playground.ui.screens.NavGraphs
 import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
-import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraphNavArgs
+import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsNavGraphArgs
 import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.playground.ui.screens.styles.SettingsTransitions
 
 const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 
-@Destination<SettingsNavGraph>(
+@Destination<SettingsGraph>(
     start = true,
     deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],
     style = SettingsTransitions::class
@@ -70,7 +70,7 @@ fun SettingsScreen(
                     navigator.navigate(
                         NavGraphs.profile(
                             graphArg = "graph arg",
-                            startRouteArgs = ProfileSettingsGraphNavArgs(
+                            startRouteArgs = ProfileSettingsNavGraphArgs(
                                 anotherGraphArg = "another graph arg",
                                 startRouteArgs = WithDefaultValueArgs(false)
                             )

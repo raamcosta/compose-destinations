@@ -2,7 +2,7 @@ package com.ramcosta.composedestinations.annotation
 
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.animations.defaults.NoTransitions
-import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
+import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
 import kotlin.reflect.KClass
 
 /**
@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
  * nav graph (aka it doesn't have a parent).
  * These are used to pass to [com.ramcosta.composedestinations.DestinationsNavHost] call.
  *
- * [RootNavGraph] is one such graph that can be used out of the box.
+ * [RootGraph] is one such graph that can be used out of the box.
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 annotation class NavHostGraph(
@@ -20,10 +20,8 @@ annotation class NavHostGraph(
 )
 
 /**
- * Navigation graph annotation that will, by default, correspond to all Destinations that // TODO not true anymore
- * don't specify a navigation graph.
- * If you're using it (i.e, you're not defining your own "NavGraph" annotation with `default = true`),
- * then you must annotate the start destination (or nav graph) with `@RootNavGraph(start = true)`. // TODO RACOSTA not needed anymore, since we can use start = true in Destination itself
+ * Out the box [NavHostGraph] that can be used in destinations or graphs if there
+ * isn't a need to specify one of the parameters of [NavHostGraph].
  */
 @NavHostGraph
-annotation class RootNavGraph
+annotation class RootGraph

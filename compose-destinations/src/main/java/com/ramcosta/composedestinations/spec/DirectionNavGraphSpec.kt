@@ -4,7 +4,8 @@ import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 
 /**
- * TODO RACOSTA
+ * [TypedNavGraphSpec] that does not contain any navigation arguments.
+ * It itself is a [Direction]
  */
 interface DirectionNavGraphSpec: TypedNavGraphSpec<Unit, Unit>, Direction {
 

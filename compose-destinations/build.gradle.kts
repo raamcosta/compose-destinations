@@ -50,11 +50,10 @@ android {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.freeCompilerArgs += listOf(
         "-opt-in=kotlin.RequiresOptIn",
-        "-opt-in=com.ramcosta.composedestinations.annotation.InternalDestinationsApi"
+        "-opt-in=com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi"
     )
 }
 
 dependencies {
     api(libs.compose.navigation)
-    // TODO RACOSTA check lintPublish for rules like adding start: Boolean = false to NavGraphs
 }

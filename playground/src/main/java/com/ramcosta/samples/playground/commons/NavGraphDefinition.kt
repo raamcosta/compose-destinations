@@ -11,26 +11,26 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransitions
 import com.ramcosta.composedestinations.animations.defaults.NoTransitions
-import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.ExternalDestination
 import com.ramcosta.composedestinations.annotation.ExternalNavGraph
-import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.NavHostGraph
-import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
-import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
+import com.ramcosta.composedestinations.annotation.parameters.DeepLink
+import com.ramcosta.composedestinations.annotation.parameters.FULL_ROUTE_PLACEHOLDER
+import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXNavGraph
 import com.ramcosta.composedestinations.generated.featurey.destinations.PublicFeatureYSideScreenDestination
-import com.ramcosta.composedestinations.generated.featurey.navgraphs.FeatureYGraph
+import com.ramcosta.composedestinations.generated.featurey.navgraphs.FeatureYNavGraph
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.WithDefaultValueArgs
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileSettingsProfileSettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.RootProfileSettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.navGraphArgs
-import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileGraphNavArgs
-import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsGraphNavArgs
+import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileNavGraphArgs
+import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsNavGraphArgs
 import kotlin.reflect.KClass
 
 /*
@@ -40,58 +40,58 @@ import kotlin.reflect.KClass
  which case we would call those instead of the ones from DestinationStyle.
 */
 
-@NavGraph<RootNavGraph>(
+@NavGraph<RootGraph>(
     defaultTransitions = DefaultFadingTransitions::class
 )
-annotation class SettingsNavGraph
+annotation class SettingsGraph
 
-@NavGraph<RootNavGraph>(
-    navArgs = ProfileNavGraph.NavArgs::class,
+@NavGraph<RootGraph>(
+    navArgs = ProfileGraph.NavArgs::class,
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
     visibility = CodeGenVisibility.PUBLIC
 )
-annotation class ProfileNavGraph {
+annotation class ProfileGraph {
     data class NavArgs(
         val graphArg: String,
     )
 
     @ExternalDestination<PublicFeatureYSideScreenDestination>
-    @ExternalNavGraph<FeatureXGraph>(
+    @ExternalNavGraph<FeatureXNavGraph>(
         deepLinks = [
             DeepLink(uriPattern = "https://cenas/$FULL_ROUTE_PLACEHOLDER"),
             DeepLink(uriPattern = "https://qweqwe/$FULL_ROUTE_PLACEHOLDER")
         ],
         defaultTransitions = NoTransitions::class
     )
-    @ExternalNavGraph<FeatureYGraph>
+    @ExternalNavGraph<FeatureYNavGraph>
     companion object Includes
 }
 
 @NavHostGraph(
     visibility = CodeGenVisibility.INTERNAL
 )
-annotation class MyTopLevelNavGraph
+annotation class MyTopLevelGraph
 
-@Destination<MyTopLevelNavGraph>(start = true)
+@Destination<MyTopLevelGraph>(start = true)
 @Composable
 fun Asd() {
     Text("Asd")
 }
 
-@NavGraph<ProfileNavGraph>(
+@NavGraph<ProfileGraph>(
     start = true,
-    navArgs = ProfileSettingsNavGraph.NavArgs::class,
+    navArgs = ProfileSettingsGraph.NavArgs::class,
 )
-annotation class ProfileSettingsNavGraph {
+annotation class ProfileSettingsGraph {
     data class NavArgs(
         val anotherGraphArg: String
     )
 }
 
 @Repeatable
-@Destination<RootNavGraph>(
+@Destination<RootGraph>(
     visibility = CodeGenVisibility.INTERNAL
 )
 annotation class InternalDestination<T: Annotation>(
@@ -103,15 +103,15 @@ annotation class InternalDestination<T: Annotation>(
     val wrappers: Array<KClass<out DestinationWrapper>> = [],
 )
 
-@InternalDestination<SettingsNavGraph>
-@Destination<RootNavGraph>
+@InternalDestination<SettingsGraph>
+@Destination<RootGraph>
 @Composable
 fun StatsScreen() {
     Text("StatsScreen")
 }
 
-@Destination<ProfileSettingsNavGraph>(start = true, navArgs = WithDefaultValueArgs::class)
-@Destination<RootNavGraph>(navArgs = WithDefaultValueArgs::class)
+@Destination<ProfileSettingsGraph>(start = true, navArgs = WithDefaultValueArgs::class)
+@Destination<RootGraph>(navArgs = WithDefaultValueArgs::class)
 @Composable
 fun ProfileSettingsScreen(
     args: WithDefaultValueArgs,
@@ -119,9 +119,9 @@ fun ProfileSettingsScreen(
 ) = Column(verticalArrangement = Arrangement.Absolute.spacedBy(6.dp)) {
     Text("$args")
     Divider(modifier = Modifier.fillMaxWidth())
-    Text("${navBackStackEntry.navGraphArgs<ProfileGraphNavArgs>()}")
+    Text("${navBackStackEntry.navGraphArgs<ProfileNavGraphArgs>()}")
     Divider(modifier = Modifier.fillMaxWidth())
-    Text("${navBackStackEntry.navGraphArgs<ProfileSettingsGraphNavArgs>()}")
+    Text("${navBackStackEntry.navGraphArgs<ProfileSettingsNavGraphArgs>()}")
     Divider(modifier = Modifier.fillMaxWidth())
     Text("${RootProfileSettingsScreenDestination.argsFrom(navBackStackEntry)}")
     Divider(modifier = Modifier.fillMaxWidth())

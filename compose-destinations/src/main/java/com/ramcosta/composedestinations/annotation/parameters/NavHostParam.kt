@@ -1,4 +1,4 @@
-package com.ramcosta.composedestinations.annotation
+package com.ramcosta.composedestinations.annotation.parameters
 
 /**
  * Annotation that can be used in arguments of Destination Composable

@@ -1,7 +1,7 @@
-package com.ramcosta.composedestinations.annotation
+package com.ramcosta.composedestinations.annotation.parameters
 
 /**
- * Can be used in [Destination] to describe a deep link
+ * Can be used in [com.ramcosta.composedestinations.annotation.Destination] to describe a deep link
  * connection to that destination.
  */
 @Retention(AnnotationRetention.SOURCE)
@@ -14,7 +14,7 @@ annotation class DeepLink(
 /**
  * Can be used in the suffix part of the [DeepLink.uriPattern]
  * to signal code generation to replace this with the full
- * route of the [Destination] that contains arguments.
+ * route of the [com.ramcosta.composedestinations.annotation.Destination] that contains arguments.
  *
  * Example:
  *

@@ -18,12 +18,12 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.result.ResultBackNavigator
-import com.ramcosta.samples.playground.commons.SettingsNavGraph
+import com.ramcosta.samples.playground.commons.SettingsGraph
 import com.ramcosta.samples.playground.commons.requireTitle
 import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
 import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 
-@Destination<SettingsNavGraph>(style = DestinationStyleBottomSheet::class)
+@Destination<SettingsGraph>(style = DestinationStyleBottomSheet::class)
 @Composable
 fun ColumnScope.ThemeSettings(
     viewModel: SettingsViewModel,

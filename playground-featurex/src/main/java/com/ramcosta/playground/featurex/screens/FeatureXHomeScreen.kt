@@ -8,16 +8,15 @@ import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.featurex.destinations.FeatureXHomeDestination
 import com.ramcosta.composedestinations.generated.featurex.destinations.InternalArgsScreenDestination
-import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXGraph
+import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.playground.featurex.FeatureXNavGraph
 import com.ramcosta.playground.featurex.FeatureXWrapper
 
 data class FeatureXHomeNavArgs(
     val something2: String
 )
 
-@Destination<FeatureXNavGraph>(
+@Destination<com.ramcosta.playground.featurex.FeatureXGraph>(
     start = true,
     navArgs = FeatureXHomeNavArgs::class,
     wrappers = [FeatureXWrapper::class]
@@ -30,7 +29,7 @@ internal fun FeatureXHome(
     Column {
         Text("FeatureX Home screen args = ${FeatureXHomeDestination.argsFrom(navBackStackEntry)}")
 
-        Text("FeatureX Graph args = ${runCatching { FeatureXGraph.argsFrom(navBackStackEntry) }.getOrElse { "Navigated directly to start destination, nav graph specific args are not available." }}")
+        Text("FeatureX Graph args = ${runCatching { FeatureXNavGraph.argsFrom(navBackStackEntry) }.getOrElse { "Navigated directly to start destination, nav graph specific args are not available." }}")
 
         Button(
             onClick = {

@@ -170,7 +170,9 @@ internal class KspToCodeGenNavGraphsMapper(
         val importable = graphType.let {
             Importable(
                 it.declaration.simpleName.asString(),
-                it.declaration.qualifiedName!!.asString()
+                it.declaration.qualifiedName?.asString() ?: throw IllegalDestinationsSetup(
+                    "${it.declaration.simpleName.asString()} symbol, check ${this.shortName.asString()}"
+                )
             )
         }
 

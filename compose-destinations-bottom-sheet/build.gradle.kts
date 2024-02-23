@@ -46,7 +46,7 @@ android {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.freeCompilerArgs += listOf(
         "-opt-in=kotlin.RequiresOptIn",
-        "-opt-in=com.ramcosta.composedestinations.annotation.InternalDestinationsApi"
+        "-opt-in=com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi"
     )
 }
 
