@@ -12,14 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.style.TextAlign
-import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.annotation.parameters.DeepLink
+import com.ramcosta.composedestinations.annotation.parameters.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
 import com.ramcosta.composedestinations.navargs.NavTypeSerializer
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
-import com.ramcosta.samples.playground.commons.SettingsNavGraph
+import com.ramcosta.samples.playground.commons.SettingsGraph
 import com.ramcosta.samples.playground.ui.screens.profile.ProfileScreenNavArgs
 import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
 import com.ramcosta.samples.playground.ui.screens.profile.Stuff
@@ -29,7 +29,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
-@Destination<SettingsNavGraph>
+@Destination<SettingsGraph>
 annotation class HidingScreenDestination(
     val wrappers: Array<KClass<out DestinationWrapper>> = [DrawerOpeningWrapper::class],
     val navArgs: KClass<*> = Nothing::class,
@@ -53,7 +53,7 @@ fun AnotherTestScreen() {
     Text("ANOTHER TEST")
 }
 
-@Destination<RootNavGraph>
+@Destination<RootGraph>
 @Composable
 fun TestScreen(
     id: Long = 0,
@@ -123,7 +123,7 @@ class ColorTypeSerializer : DestinationsNavTypeSerializer<Color> {
 
 // Just to test generation of multiple similar destinations
 @Suppress("UNUSED_PARAMETER")
-@Destination<RootNavGraph>
+@Destination<RootGraph>
 @Composable
 fun TestScreen2(
     id: Long = 0,
@@ -136,7 +136,7 @@ fun TestScreen2(
 ) {
 }
 
-@Destination<RootNavGraph>(
+@Destination<RootGraph>(
     deepLinks = [DeepLink(uriPattern = "something://$FULL_ROUTE_PLACEHOLDER")]
 )
 @Composable

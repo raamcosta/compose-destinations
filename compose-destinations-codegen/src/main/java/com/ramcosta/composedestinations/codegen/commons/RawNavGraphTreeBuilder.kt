@@ -24,8 +24,8 @@ internal data class RawNavGraphTree(
     )
 
     val genNavArgsType = Importable(
-        "${name}NavArgs",
-        "$navGraphsPackageName.${name}NavArgs"
+        "${name}Args",
+        "$navGraphsPackageName.${name}Args"
     )
 
     val graphArgsType: Importable? = if (navArgs?.parameters.isNullOrEmpty()) {

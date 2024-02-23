@@ -15,12 +15,12 @@ const val DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$DES
 const val NAV_GRAPH_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$NAV_GRAPH_ANNOTATION"
 const val NAV_HOST_GRAPH_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$NAV_HOST_GRAPH_ANNOTATION"
 const val ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$ACTIVITY_DESTINATION_ANNOTATION"
-const val NAV_HOST_PARAM_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.NavHostParam"
+const val NAV_HOST_PARAM_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.parameters.NavHostParam"
 const val NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.navargs.$NAV_TYPE_SERIALIZER_ANNOTATION"
 
 val rootNavGraphType = Importable(
-    "RootNavGraph",
-    "$CORE_PACKAGE_NAME.annotation.RootNavGraph"
+    "RootGraph",
+    "$CORE_PACKAGE_NAME.annotation.RootGraph"
 )
 val rootNavGraphGenParams = RawNavGraphGenParams(
     annotationType = rootNavGraphType,

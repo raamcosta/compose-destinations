@@ -6,7 +6,7 @@ import com.ramcosta.composedestinations.annotation.NoParent
 @NavGraph<NoParent>(
     navArgs = FeatureXNavArgs::class,
 )
-internal annotation class FeatureXNavGraph
+internal annotation class FeatureXGraph
 
 data class FeatureXNavArgs(
     val something: String

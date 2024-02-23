@@ -140,7 +140,7 @@ internal class SingleNavGraphWriter(
                 importableHelper = importableHelper,
                 sourceCode = file,
                 fileOptIns = setOf(
-                    Importable("InternalDestinationsApi", "com.ramcosta.composedestinations.annotation.InternalDestinationsApi")
+                    Importable("InternalDestinationsApi", "com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi")
                 )
             )
     }
@@ -234,7 +234,7 @@ internal class SingleNavGraphWriter(
             code += "/**\n"
             code += " * Generated to have args containing both [${importableHelper.addAndGetPlaceholder(navArgs!!.type)}] and [${navArgTypes.second!!.preferredSimpleName}]\n"
             code += " **/\n"
-            code += "${getGenNavArgsClassVisibility()} data class ${navGraph.name}NavArgs(\n"
+            code += "${getGenNavArgsClassVisibility()} data class ${navGraph.name}Args(\n"
             code += "${navArgumentBridgeCodeBuilder.innerNavArgsParametersCode("\tval ")}\n"
             code += "\tval startRouteArgs: ${importableHelper.addAndGetPlaceholder(navArgTypes.second!!)}\n"
             code += ")\n\n"

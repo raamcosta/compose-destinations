@@ -3,8 +3,8 @@ package com.ramcosta.playground.featurex.screens
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
-import com.ramcosta.playground.featurex.FeatureXNavGraph
+import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
+import com.ramcosta.playground.featurex.FeatureXGraph
 import kotlinx.serialization.Serializable
 
 
@@ -18,7 +18,7 @@ internal data class InternalSerializableArg(
     val someValue: String
 )
 
-@Destination<FeatureXNavGraph>(
+@Destination<FeatureXGraph>(
     navArgs = InternalArgs::class,
     visibility = CodeGenVisibility.INTERNAL
 )

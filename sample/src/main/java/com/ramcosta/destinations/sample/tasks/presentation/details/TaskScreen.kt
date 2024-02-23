@@ -26,14 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.AddStepDialogDestination
 import com.ramcosta.composedestinations.generated.destinations.StepScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
 import com.ramcosta.destinations.sample.tasks.domain.Step
 
-@Destination<RootNavGraph>(navArgs = TaskScreenNavArgs::class)
+@Destination<RootGraph>(navArgs = TaskScreenNavArgs::class)
 @Composable
 fun TaskScreen(
     navArgs: TaskScreenNavArgs,

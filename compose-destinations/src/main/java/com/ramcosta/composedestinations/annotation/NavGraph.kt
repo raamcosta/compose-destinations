@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.annotation
 
-import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
+import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
+import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import kotlin.reflect.KClass
 
@@ -11,14 +12,10 @@ import kotlin.reflect.KClass
  *
  * Example:
  * ```
- * @RootNavGraph // sets SettingsNavGraph as a nested nav graph of RootNavGraph
- * @NavGraph // marks SettingsNavGraph as a NavGraph annotation
- * annotation class SettingsNavGraph(
- *     val start: Boolean = false //TODO RACOSTA
- * )
+ * @NavGraph<RootNavGraph> // marks SettingsNavGraph as a NavGraph annotation and RootNavGraph as parent
+ * annotation class SettingsNavGraph
  *
- * @SettingsNavGraph(start = true)
- * @Destination
+ * @Destination<SettingsNavGraph>(start = true)
  * @Composable
  * fun SettingsScreen() { /*...*/ }
  * ```
@@ -26,19 +23,17 @@ import kotlin.reflect.KClass
  * The above annotation class defines a Navigation graph of name "settings" and a
  * "Settings destination" that will belong to it (and it will be its start destination).
  *
- * You can include another NavGraph annotation for the parent Navigation graph, if this
- * is to be a nested navigation graph.
- * In the above example, since "SettingsNavGraph" is annotated with "RootNavGraph",
- * "settings" will be a nested navigation graph of "root". You can also
- * do, for example, `@RootNavGraph(start = true)` if "settings" is should be the start of "root".
+ * In the above example, since "SettingsNavGraph" is annotated with "@NavGraph<RootNavGraph>",
+ * "settings" will be a nested navigation graph of "root". You could also
+ * do `"@NavGraph<RootNavGraph>(start = true)` if "settings" should be the start of "root".
  *
- * If you don't include the annotation of a parent navigation graph, then this will
- * be a top level navigation graph (ideal to pass to a `DestinationsNavHost` call).
- *
- * Annotation classes annotated with this *MUST* have a single parameter named "start"
- * with a default value of "false". This is enforced at compile time by the KSP task.
- *
- * @param start TODO RACOSTA
+ * @param T type of the parent navigation graph the destination should belong to. Should be an
+ * annotation annotated with [NavGraph] or [NavHostGraph], such as [RootGraph].
+ * @param route unique id name of the nav graph used to register it in the `DestinationsNavHost`.
+ * By default the name of the annotation class will be used removing "NavGraph" (case insensitive)
+ * and changing it to snake case.
+ * @param start whether this navigation graph will be the start of its parent navigation graph,
+ * false by default.
  * @param navArgs class with a primary constructor where all navigation arguments specific
  * to this navigation graph are to be defined. Note that these nav arguments will be available on
  * the start destination by using `argsFrom` function of the generated Navigation graph.
@@ -49,19 +44,16 @@ import kotlin.reflect.KClass
  * use when entering/leaving the screen. These animations will only be used on destinations
  * that do not set any specific style with [com.ramcosta.composedestinations.annotation.Destination.style]
  * parameter.
- * @param route unique id name of the nav graph used to register it in the `DestinationsNavHost`.
- * By default the name of the annotation class will be used removing "NavGraph" (case insensitive)
- * and changing it to snake case.
  * @param visibility [CodeGenVisibility] of the corresponding generated NavGraph object.
  * Useful to control what the current module exposes to other modules. By default, it is public.
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 annotation class NavGraph<T: Annotation>(
+    val route: String = ANNOTATION_NAME,
     val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
     val deepLinks: Array<DeepLink> = [],
     val defaultTransitions: KClass<out DestinationStyle.Animated> = Nothing::class,
-    val route: String = ANNOTATION_NAME,
     val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
 ) {
     companion object {
@@ -70,7 +62,9 @@ annotation class NavGraph<T: Annotation>(
 }
 
 /**
- * TODO RACOSTA
+ * Marks the [Destination] or [NavGraph] as not having any parent navigation graph.
+ * This will make the destination / nav graph not usable unless it is imported by
+ * [ExternalDestination] or [ExternalNavGraph], typically from a another module.
  */
 @Retention(AnnotationRetention.SOURCE)
 annotation class NoParent

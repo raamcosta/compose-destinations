@@ -36,14 +36,11 @@ class InitialValidator(
         val destinationsByName = lazy { destinations.associateBy { it.name } }
         val navGraphRoutes = navGraphs.map { it.baseRoute }
         val cleanRoutes = mutableListOf<String>()
-        val composableNames = mutableListOf<String>()
 
         destinations.forEach { destination ->
             destination.checkNavArgTypes()
 
             destination.validateRoute(cleanRoutes, navGraphRoutes)
-
-            destination.validateComposableName(composableNames)
 
             destination.validateReceiverColumnScope()
 
@@ -56,7 +53,6 @@ class InitialValidator(
             destination.validateClosedResultRecipients(submoduleResultSenders, destinationsByName)
 
             cleanRoutes.add(destination.baseRoute)
-            composableNames.add(destination.composableName)
         }
     }
 
@@ -109,15 +105,6 @@ class InitialValidator(
                             "Only destinations with a DestinationStyleBottomSheet style may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
                 )
             }
-        }
-    }
-
-    private fun DestinationGeneratingParams.validateComposableName(
-        currentKnownComposableNames: List<String>,
-    ) {
-        if (currentKnownComposableNames.contains(composableName)) {
-            // TODO RACOSTA
-//            throw IllegalDestinationsSetup("Destination composable names must be unique: found multiple named '${composableName}'")
         }
     }
 

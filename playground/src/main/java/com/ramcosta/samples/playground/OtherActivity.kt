@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import com.ramcosta.composedestinations.annotation.ActivityDestination
-import com.ramcosta.samples.playground.commons.SettingsNavGraph
+import com.ramcosta.samples.playground.commons.SettingsGraph
 import com.ramcosta.samples.playground.ui.screens.destinations.OtherActivityDestination
 
 data class OtherActivityNavArgs(
@@ -17,7 +17,7 @@ data class OtherActivityNavArgs(
     val color: Color
 )
 
-@ActivityDestination<SettingsNavGraph>(
+@ActivityDestination<SettingsGraph>(
     navArgs = OtherActivityNavArgs::class,
 )
 annotation class OtherActivityDestinantion

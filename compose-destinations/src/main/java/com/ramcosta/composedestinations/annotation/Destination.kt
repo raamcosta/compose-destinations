@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.annotation
 
-import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
+import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
+import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import kotlin.reflect.KClass
@@ -16,8 +17,11 @@ import kotlin.reflect.KClass
  * If used this way, it will carry over its values, allowing for easy single place
  * where you define Wrappers or DeepLinks for example.
  *
+ * @param T type of the parent navigation graph the destination should belong to. Should be an
+ * annotation annotated with [NavGraph] or [NavHostGraph], such as [RootGraph].
  * @param route main route of this destination (by default, the name of the Composable function)
- * @param start TODO RACOSTA
+ * @param start whether this destination will be the start of its parent navigation graph,
+ * false by default.
  * @param navArgs class with a primary constructor where all navigation arguments are
  * to be defined. Useful when the arguments are not needed in this Composable or to simplify
  * the Composable function signature when it has a lot of navigation arguments (which should be rare).

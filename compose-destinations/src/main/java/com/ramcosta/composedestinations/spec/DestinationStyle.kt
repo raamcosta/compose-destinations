@@ -13,7 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.activity
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
-import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
+import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder

@@ -4,4 +4,4 @@ import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.NoParent
 
 @NavGraph<NoParent>
-internal annotation class FeatureYNavGraph
+internal annotation class FeatureYGraph

@@ -6,10 +6,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
 
-@Destination<RootNavGraph>
+@Destination<RootGraph>
 @Composable
 fun AccountScreen(
     vm: AccountViewModel = viewModel(),

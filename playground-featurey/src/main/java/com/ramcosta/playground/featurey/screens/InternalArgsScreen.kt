@@ -10,9 +10,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.paramtypes.CodeGenVisibility
+import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
 import com.ramcosta.composedestinations.result.ResultBackNavigator
-import com.ramcosta.playground.featurey.FeatureYNavGraph
+import com.ramcosta.playground.featurey.FeatureYGraph
 import kotlinx.serialization.Serializable
 
 
@@ -26,7 +26,7 @@ internal data class InternalSerializableArg(
     val someValue: String
 )
 
-@Destination<FeatureYNavGraph>(
+@Destination<FeatureYGraph>(
     navArgs = InternalArgs::class,
     visibility = CodeGenVisibility.INTERNAL
 )

@@ -14,11 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.samples.playground.ui.screens.styles.AppDialog
 
-@Destination<RootNavGraph>(style = AppDialog::class)
+@Destination<RootGraph>(style = AppDialog::class)
 @Composable
 fun GoToProfileConfirmation(
     resultNavigator: ResultBackNavigator<Boolean>

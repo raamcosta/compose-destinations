@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.manualcomposablecalls
 
 import androidx.compose.runtime.Composable
-import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
+import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
 import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
