@@ -18,21 +18,25 @@ class NavArgResolver(
 
     fun resolve(
         errorLocationPrefix: String,
-        parameter: Parameter
+        parameter: Parameter,
+        defaultIfArgNotPresent: ((Parameter) -> String)? = null
     ) = internalResolve(
         argGetter = parameter.type.toNavBackStackEntryArgGetter(
             errorLocationPrefix,
             parameter.name
         ),
         parameter = parameter,
+        defaultIfArgNotPresent = defaultIfArgNotPresent,
     )
 
     fun resolveFromSavedStateHandle(
         errorLocationPrefix: String,
         parameter: Parameter,
+        defaultIfArgNotPresent: ((Parameter) -> String)? = null
     ) = internalResolve(
         argGetter = parameter.type.toSavedStateHandleArgGetter(errorLocationPrefix, parameter.name),
         parameter = parameter,
+        defaultIfArgNotPresent = defaultIfArgNotPresent,
     )
 
     fun resolveToSavedStateHandle(parameter: Parameter) = parameter.type.toSavedStateHandleArgPutter(parameter.name)
@@ -50,8 +54,9 @@ class NavArgResolver(
     private fun internalResolve(
         argGetter: String,
         parameter: Parameter,
+        defaultIfArgNotPresent: ((Parameter) -> String)?
     ): String {
-        return argGetter + defaultCodeIfArgNotPresent(parameter)
+        return argGetter + if (defaultIfArgNotPresent != null) defaultIfArgNotPresent(parameter) else defaultCodeIfArgNotPresent(parameter)
     }
 
     private fun TypeInfo.toSavedStateHandleArgGetter(

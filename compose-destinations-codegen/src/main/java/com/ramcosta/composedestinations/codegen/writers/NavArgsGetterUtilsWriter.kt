@@ -3,10 +3,20 @@ package com.ramcosta.composedestinations.codegen.writers
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.commons.removeFromTo
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.templates.DESTINATION_ARGS_METHODS_SECTION_END
+import com.ramcosta.composedestinations.codegen.templates.DESTINATION_ARGS_METHODS_SECTION_START
+import com.ramcosta.composedestinations.codegen.templates.INLINE_DESTINATION_ARGS_METHODS_SECTION_END
+import com.ramcosta.composedestinations.codegen.templates.INLINE_DESTINATION_ARGS_METHODS_SECTION_START
+import com.ramcosta.composedestinations.codegen.templates.INLINE_NAV_GRAPH_ARGS_METHODS_SECTION_END
+import com.ramcosta.composedestinations.codegen.templates.INLINE_NAV_GRAPH_ARGS_METHODS_SECTION_START
 import com.ramcosta.composedestinations.codegen.templates.NAV_ARGS_METHOD_WHEN_CASES
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ARGS_METHODS_SECTION_END
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ARGS_METHODS_SECTION_START
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ARGS_METHOD_WHEN_CASES
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.navArgsGettersTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
@@ -23,7 +33,9 @@ internal class NavArgsGettersWriter(
         generatedDestinations: List<CodeGenProcessedDestination>,
         navGraphTrees: List<RawNavGraphTree>
     ) {
-        if (generatedDestinations.all { it.navArgsClass == null }) {
+        val noDestinationsWithArgs = generatedDestinations.all { it.navArgsClass == null }
+        val noGraphsWithArgs = navGraphTrees.all { it.graphArgsType == null }
+        if (noDestinationsWithArgs && noGraphsWithArgs) {
             return
         }
 
@@ -47,7 +59,29 @@ internal class NavArgsGettersWriter(
             packageStatement = navArgsGettersTemplate.packageStatement,
             importableHelper = importableHelper,
             sourceCode = navArgsGettersTemplate.sourceCode
-                .replace(NAV_ARGS_METHOD_WHEN_CASES, navArgsMethodWhenCases(destinationsWithNavArgs, navGraphsWithNavArgs))
+                .run {
+                    if (noDestinationsWithArgs) {
+                        removeFromTo(INLINE_DESTINATION_ARGS_METHODS_SECTION_START, INLINE_DESTINATION_ARGS_METHODS_SECTION_END)
+                            .removeFromTo(DESTINATION_ARGS_METHODS_SECTION_START, DESTINATION_ARGS_METHODS_SECTION_END)
+                    } else {
+                        replace(INLINE_DESTINATION_ARGS_METHODS_SECTION_START, "")
+                            .replace(INLINE_DESTINATION_ARGS_METHODS_SECTION_END, "")
+                            .replace(DESTINATION_ARGS_METHODS_SECTION_START, "")
+                            .replace(DESTINATION_ARGS_METHODS_SECTION_END, "")
+                            .replace(NAV_ARGS_METHOD_WHEN_CASES, navArgsMethodWhenCases(destinationsWithNavArgs))
+                    }
+                }.run {
+                    if (noGraphsWithArgs) {
+                        removeFromTo(INLINE_NAV_GRAPH_ARGS_METHODS_SECTION_START, INLINE_NAV_GRAPH_ARGS_METHODS_SECTION_END)
+                            .removeFromTo(NAV_GRAPH_ARGS_METHODS_SECTION_START, NAV_GRAPH_ARGS_METHODS_SECTION_END)
+                    } else {
+                        replace(INLINE_NAV_GRAPH_ARGS_METHODS_SECTION_START, "")
+                            .replace(INLINE_NAV_GRAPH_ARGS_METHODS_SECTION_END, "")
+                            .replace(NAV_GRAPH_ARGS_METHODS_SECTION_START, "")
+                            .replace(NAV_GRAPH_ARGS_METHODS_SECTION_END, "")
+                            .replace(NAV_GRAPH_ARGS_METHOD_WHEN_CASES, navGraphArgsMethodWhenCases(navGraphsWithNavArgs))
+                    }
+                }
                 .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(destinationsWithNavArgs, navGraphsWithNavArgs))
         )
     }
@@ -66,22 +100,29 @@ internal class NavArgsGettersWriter(
 
     private fun navArgsMethodWhenCases(
         destinationsWithNavArgs: List<CodeGenProcessedDestination>,
-        navGraphsWithNavArgs: List<RawNavGraphTree>
     ): String {
         val sb = StringBuilder()
 
         destinationsWithNavArgs.forEachIndexed { idx, it ->
             sb += "\t\t${importableHelper.addAndGetPlaceholder(it.navArgsClass!!.type)}::class.java " +
-                    "-> ${importableHelper.addAndGetPlaceholder(it.destinationImportable)}.argsFrom(argsContainer) as T"
+                    "-> ${importableHelper.addAndGetPlaceholder(it.destinationImportable)}"
 
-            if (navGraphsWithNavArgs.isNotEmpty() || idx < destinationsWithNavArgs.lastIndex) {
+            if (idx < destinationsWithNavArgs.lastIndex) {
                 sb += "\n"
             }
         }
 
+        return sb.toString()
+    }
+
+    private fun navGraphArgsMethodWhenCases(
+        navGraphsWithNavArgs: List<RawNavGraphTree>,
+    ): String {
+        val sb = StringBuilder()
+
         navGraphsWithNavArgs.forEachIndexed { idx, it ->
             sb += "\t\t${importableHelper.addAndGetPlaceholder(it.graphArgsType!!)}::class.java " +
-                    "-> ${importableHelper.addAndGetPlaceholder(it.navGraphImportable)}.argsFrom(argsContainer) as T"
+                    "-> ${importableHelper.addAndGetPlaceholder(it.navGraphImportable)}"
 
             if (idx < navGraphsWithNavArgs.lastIndex) {
                 sb += "\n"

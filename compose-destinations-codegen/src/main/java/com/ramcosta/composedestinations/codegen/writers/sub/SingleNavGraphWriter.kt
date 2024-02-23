@@ -15,7 +15,7 @@ import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.savedStateHandleImportable
 import com.ramcosta.composedestinations.codegen.commons.setOfPublicStartParticipatingTypes
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
-import com.ramcosta.composedestinations.codegen.commons.startingDestinationName
+import com.ramcosta.composedestinations.codegen.commons.startingRouteInfo
 import com.ramcosta.composedestinations.codegen.commons.toTypeCode
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
@@ -38,8 +38,8 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_KDOC
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_NAME_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_START_ROUTE_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_START_TYPED_ROUTE_TYPE
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_TYPE
-import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_TYPED_ROUTE_TYPE
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_VISIBILITY_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NESTED_NAV_GRAPHS
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
@@ -70,12 +70,13 @@ internal class SingleNavGraphWriter(
     )
 
     fun write() {
+        val startRouteInfo = importableHelper.startingRouteInfo(navGraph)
         val file = moduleNavGraphTemplate.sourceCode
             .replace(USER_NAV_GRAPH_ANNOTATION, importableHelper.addAndGetPlaceholder(navGraph.annotationType))
             .replace(NAV_GRAPH_NAME_PLACEHOLDER, navGraph.name)
             .replace(NAV_GRAPH_ROUTE_PLACEHOLDER, navGraph.graphRouteCode())
             .replace(NAV_GRAPH_INVOKE_FUNCTION, navGraph.graphInvokeFunction())
-            .replace(NAV_GRAPH_ARGS_FROM, navGraph.argsFromFunctions())
+            .replace(NAV_GRAPH_ARGS_FROM, navGraph.argsFromFunctions(startRouteInfo.isDestination))
             .replace(NAV_GRAPH_ARGUMENTS_PLACEHOLDER, navGraph.navArgumentsCode())
             .replace(NAV_GRAPH_DEEP_LINKS_PLACEHOLDER, navGraph.deepLinksCode())
             .replace(INNER_IMPORTED_ROUTES, navGraph.innerExternalRoutes())
@@ -86,12 +87,12 @@ internal class SingleNavGraphWriter(
                 navGraph.graphSuperType()
             )
             .replace(
-                NAV_GRAPH_TYPED_ROUTE_TYPE,
-                navGraph.startRouteType()
+                NAV_GRAPH_START_TYPED_ROUTE_TYPE,
+                navGraph.startRouteType(startRouteInfo.isDestination)
             )
             .replace(
                 NAV_GRAPH_START_ROUTE_PLACEHOLDER,
-                importableHelper.startingDestinationName(navGraph)
+                startRouteInfo.name
             )
             .replace(
                 NAV_GRAPH_DESTINATIONS,
@@ -195,16 +196,16 @@ internal class SingleNavGraphWriter(
         }
     }
 
-    private fun RawNavGraphTree.argsFromFunctions(): String {
+    private fun RawNavGraphTree.argsFromFunctions(isStartRouteDestination: Boolean): String {
         if (usesSameArgsAsStartRoute()) {
             val startRouteArgsTypePlaceHolder = importableHelper.addAndGetPlaceholder(navArgTypes.second!!)
             return """
             |
-            |    override fun argsFrom(bundle: ${importableHelper.addAndGetPlaceholder(bundleImportable)}?): $startRouteArgsTypePlaceHolder {
+            |    override fun argsFrom(bundle: ${importableHelper.addAndGetPlaceholder(bundleImportable)}?): $startRouteArgsTypePlaceHolder? {
             |        return startRoute.argsFrom(bundle)
             |    }
             |
-            |    override fun argsFrom(savedStateHandle: ${importableHelper.addAndGetPlaceholder(savedStateHandleImportable)}): $startRouteArgsTypePlaceHolder {
+            |    override fun argsFrom(savedStateHandle: ${importableHelper.addAndGetPlaceholder(savedStateHandleImportable)}): $startRouteArgsTypePlaceHolder? {
             |        return startRoute.argsFrom(savedStateHandle)
             |    }    
             """.trimMargin()
@@ -212,12 +213,19 @@ internal class SingleNavGraphWriter(
 
         val navArgsType = navArgTypes.first?.let { importableHelper.addAndGetPlaceholder(it) } ?: "Unit"
         val startRouteArgsLine: (String) -> String? = if (navArgTypes.second != null) {
-            { "\n\t\tstartRouteArgs = startRoute.argsFrom($it)," }
+            val startRouteArgsSuffix = if(isStartRouteDestination) {
+                ""
+            } else {
+                " ?: return null"
+            }
+            { "\n\t\tstartRouteArgs = startRoute.argsFrom($it)$startRouteArgsSuffix," }
         } else {
             { null }
         }
 
-        return navArgumentBridgeCodeBuilder.argsFromFunctions(navArgsType, startRouteArgsLine)
+        return navArgumentBridgeCodeBuilder.argsFromFunctions("$navArgsType?", startRouteArgsLine) {
+            " ?: return null"
+        }
     }
 
     private fun RawNavGraphTree.generatedNavArgsClass(): String {
@@ -288,15 +296,19 @@ internal class SingleNavGraphWriter(
         }
     }
 
-    private fun RawNavGraphTree.startRouteType(): String {
+    private fun RawNavGraphTree.startRouteType(isDestination: Boolean): String {
         if (isNavHostGraph) {
-            return "Unit"
+            return "TypedRoute<Unit>"
         }
 
         return if (startRouteArgs != null) {
-            importableHelper.addAndGetPlaceholder(startRouteArgs.type)
+            if (isDestination) {
+                "TypedDestinationSpec<${importableHelper.addAndGetPlaceholder(startRouteArgs.type)}>"
+            } else {
+                "TypedNavGraphSpec<${importableHelper.addAndGetPlaceholder(startRouteArgs.type)}, *>"
+            }
         } else {
-            "Unit"
+            "TypedRoute<Unit>"
         }
     }
 

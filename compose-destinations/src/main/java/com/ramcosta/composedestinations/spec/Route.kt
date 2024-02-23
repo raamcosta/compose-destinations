@@ -53,7 +53,7 @@ sealed interface TypedRoute<NAV_ARGS> {
      * Method that returns the navigation arguments class of this Composable
      * for the [bundle] when the destination gets navigated to.
      */
-    fun argsFrom(bundle: Bundle?) : NAV_ARGS
+    fun argsFrom(bundle: Bundle?) : NAV_ARGS?
 
     /**
      * Method that returns the navigation arguments class of this Composable
@@ -65,11 +65,11 @@ sealed interface TypedRoute<NAV_ARGS> {
      * and pass the [NavBackStackEntry.arguments] as the second constructor parameter.
      * If you're using something like Hilt, then that is done for you out of the box.
      */
-    fun argsFrom(savedStateHandle: SavedStateHandle) : NAV_ARGS
+    fun argsFrom(savedStateHandle: SavedStateHandle) : NAV_ARGS?
 
     /**
      * Method that returns the navigation arguments class of this Composable
      * for the [navBackStackEntry] when the destination gets navigated to.
      */
-    fun argsFrom(navBackStackEntry: NavBackStackEntry) : NAV_ARGS = argsFrom(navBackStackEntry.arguments)
+    fun argsFrom(navBackStackEntry: NavBackStackEntry) : NAV_ARGS? = argsFrom(navBackStackEntry.arguments)
 }
