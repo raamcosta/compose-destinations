@@ -14,6 +14,7 @@ class KspCodeOutputStreamMaker(
     override fun makeFile(
         name: String,
         packageName: String,
+        extensionName: String,
         vararg sourceIds: String
     ): OutputStream {
 
@@ -30,7 +31,8 @@ class KspCodeOutputStreamMaker(
         return codeGenerator.createNewFile(
             dependencies = dependencies,
             fileName = name,
-            packageName = packageName
+            packageName = packageName,
+            extensionName = extensionName
         )
     }
 }
