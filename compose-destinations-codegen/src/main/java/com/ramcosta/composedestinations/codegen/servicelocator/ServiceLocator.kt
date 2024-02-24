@@ -11,19 +11,21 @@ import com.ramcosta.composedestinations.codegen.writers.ArgsToSavedStateHandleUt
 import com.ramcosta.composedestinations.codegen.writers.CustomNavTypesWriter
 import com.ramcosta.composedestinations.codegen.writers.DefaultKtxSerializableNavTypeSerializerWriter
 import com.ramcosta.composedestinations.codegen.writers.DestinationsWriter
+import com.ramcosta.composedestinations.codegen.writers.MermaidGraphWriter
 import com.ramcosta.composedestinations.codegen.writers.ModuleOutputWriter
+import com.ramcosta.composedestinations.codegen.writers.ModuleRegistryWriter
 import com.ramcosta.composedestinations.codegen.writers.NavArgsGettersWriter
 import com.ramcosta.composedestinations.codegen.writers.sub.DestinationsModeWriter
 import com.ramcosta.composedestinations.codegen.writers.sub.NavGraphsSingleObjectWriter
 import com.ramcosta.composedestinations.codegen.writers.sub.SingleNavGraphWriter
 
-internal interface ServiceLocatorAccessor {
+internal interface ServiceLocator {
     val codeGenerator: CodeOutputStreamMaker
     val isBottomSheetDependencyPresent: Boolean
     val codeGenConfig: CodeGenConfig
 }
 
-internal fun ServiceLocatorAccessor.moduleOutputWriter(
+internal fun ServiceLocator.moduleOutputWriter(
     customNavTypeByType: Map<Type, CustomNavType>,
     submodules: List<SubModuleInfo>
 ) = ModuleOutputWriter(
@@ -32,14 +34,24 @@ internal fun ServiceLocatorAccessor.moduleOutputWriter(
     navGraphsSingleObjectWriter(customNavTypeByType),
     navArgsGetters,
     argsToSavedStateHandle(customNavTypeByType),
+    mermaidGraphWriter,
     submodules
 )
 
-internal val ServiceLocatorAccessor.customNavTypeWriter get() = CustomNavTypesWriter(
+internal val ServiceLocator.moduleRegistryWriter get() = ModuleRegistryWriter(
+    codeGenConfig,
     codeGenerator,
 )
 
-internal fun ServiceLocatorAccessor.destinationsWriter(
+internal val ServiceLocator.mermaidGraphWriter get() = MermaidGraphWriter(
+    codeGenerator
+)
+
+internal val ServiceLocator.customNavTypeWriter get() = CustomNavTypesWriter(
+    codeGenerator,
+)
+
+internal fun ServiceLocator.destinationsWriter(
     customNavTypeByType: Map<Type, CustomNavType>
 ) = DestinationsWriter(
     codeGenConfig,
@@ -48,11 +60,11 @@ internal fun ServiceLocatorAccessor.destinationsWriter(
     customNavTypeByType
 )
 
-internal val ServiceLocatorAccessor.destinationsListModeWriter get() = DestinationsModeWriter(
+internal val ServiceLocator.destinationsListModeWriter get() = DestinationsModeWriter(
     codeGenerator,
 )
 
-internal fun ServiceLocatorAccessor.navGraphsSingleObjectWriter(
+internal fun ServiceLocator.navGraphsSingleObjectWriter(
     customNavTypeByType: Map<Type, CustomNavType>
 ) = NavGraphsSingleObjectWriter(
     codeGenerator,
@@ -60,24 +72,24 @@ internal fun ServiceLocatorAccessor.navGraphsSingleObjectWriter(
     ::SingleNavGraphWriter
 )
 
-internal val ServiceLocatorAccessor.destinationWithNavArgsMapper get() = DestinationWithNavArgsMapper()
+internal val ServiceLocator.destinationWithNavArgsMapper get() = DestinationWithNavArgsMapper()
 
-internal val ServiceLocatorAccessor.initialValidator get() = InitialValidator(
+internal val ServiceLocator.initialValidator get() = InitialValidator(
     codeGenConfig,
     isBottomSheetDependencyPresent
 )
 
-internal val ServiceLocatorAccessor.defaultKtxSerializableNavTypeSerializerWriter get() =
+internal val ServiceLocator.defaultKtxSerializableNavTypeSerializerWriter get() =
     DefaultKtxSerializableNavTypeSerializerWriter(
         codeGenerator,
     )
 
-internal val ServiceLocatorAccessor.navArgsGetters get() =
+internal val ServiceLocator.navArgsGetters get() =
     NavArgsGettersWriter(
         codeGenerator,
     )
 
-internal fun ServiceLocatorAccessor.argsToSavedStateHandle(
+internal fun ServiceLocator.argsToSavedStateHandle(
     customNavTypeByType: Map<Type, CustomNavType>
 ) = ArgsToSavedStateHandleUtilsWriter(
     codeGenerator,
