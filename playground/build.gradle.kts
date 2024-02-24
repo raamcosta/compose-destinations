@@ -86,8 +86,8 @@ dependencies {
     implementation(project(mapOf("path" to ":playground-featurey")))
     ksp(project(":compose-destinations-ksp"))
 
-    debugImplementation("androidx.compose.ui:ui-tooling:1.4.3")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.4.3")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.6.2")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.6.2")
 
     implementation(libs.androidMaterial)
 
