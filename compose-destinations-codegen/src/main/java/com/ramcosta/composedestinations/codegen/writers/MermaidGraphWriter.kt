@@ -38,6 +38,7 @@ internal class MermaidGraphWriter(
                 appendLine("%%{init: {'theme':'base', 'themeVariables': { 'primaryTextColor': '#fff' }}%%")
                 appendLine("graph TD")
                 appendGraphTreeLinks(tree)
+                appendLine()
                 appendLine("classDef destination fill:#5383EC,stroke:#ffffff;")
                 appendLine("class ${tree.destinationIds().joinToString(",")} destination;")
                 appendLine("classDef navgraph fill:#63BC76,stroke:#ffffff;")
@@ -83,7 +84,7 @@ internal class MermaidGraphWriter(
 
     private fun String.link(end: String, isStart: Boolean = false): String {
         val link = if (isStart) {
-            """-- "🏁 start" ---"""
+            """-- "start" ---"""
         } else {
             "---"
         }
@@ -92,7 +93,7 @@ internal class MermaidGraphWriter(
 
     private fun RawNavGraphTree.destinationIds(): List<String> {
         return destinations.map { it.baseRoute } +
-                externalDestinations.map { it.generatedType.simpleName.removeSuffix("Destination").toSnakeCase() } +
+                externalDestinations.map { it.generatedType.simpleName.toSnakeCase() } +
                 nestedGraphs.flatMap { it.destinationIds() }
     }
 
@@ -116,27 +117,35 @@ internal class MermaidGraphWriter(
         val id = baseRoute
         val visualName = annotationType.simpleName
 
-        return """$id(["🗺️ $visualName"])"""
+        return """$id(["$visualName"])"""
     }
 
     private fun CodeGenProcessedDestination.node(): String {
         val id = baseRoute
         val visualName = composableName
 
-        return """$id("📍 $visualName")"""
+        return """$id("$visualName")"""
     }
 
     private fun ExternalRoute.NavGraph.node(): String {
-        val visualName = generatedType.simpleName
-        val id = visualName.toSnakeCase()
+        val id = generatedType.simpleName.toSnakeCase()
+        val visualName = generatedType.simpleName.run {
+            if (endsWith("NavGraph")) {
+                removeSuffix("NavGraph") + "Graph"
+            } else if (endsWith("Graph")) {
+                removeSuffix("Graph") + "NavGraph"
+            } else {
+                this
+            }
+        }
 
-        return """$id(["🗺️ $visualName 🧩"])"""
+        return """$id(["$visualName 🧩"])"""
     }
 
     private fun ExternalRoute.Destination.node(): String {
+        val id = generatedType.simpleName.toSnakeCase()
         val visualName = generatedType.simpleName.removeSuffix("Destination")
-        val id = visualName.toSnakeCase()
 
-        return """$id("📍 $visualName 🧩")"""
+        return """$id("$visualName 🧩")"""
     }
 }
