@@ -1,9 +1,14 @@
 package com.ramcosta.samples.playground
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
@@ -17,6 +22,7 @@ import com.ramcosta.composedestinations.navigation.destination
 import com.ramcosta.composedestinations.navigation.navGraph
 import com.ramcosta.composedestinations.scope.resultBackNavigator
 import com.ramcosta.composedestinations.scope.resultRecipient
+import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.utils.composable
 import com.ramcosta.composedestinations.utils.dialogComposable
 import com.ramcosta.samples.playground.commons.DrawerController
@@ -72,6 +78,13 @@ fun AppNavigation(
             }
         }
     ) {
+        ProfileScreenDestination animateWith object: DestinationStyle.Animated() {
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
+                fadeIn(tween(5000))
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
+                fadeOut(tween(2000))
+        }
+
         greetingScreen(testProfileDeepLink, drawerController)
     }
 }

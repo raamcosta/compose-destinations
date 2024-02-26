@@ -1,6 +1,10 @@
 package com.ramcosta.composedestinations.manualcomposablecalls
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
 import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
@@ -48,7 +52,7 @@ fun <T> ManualComposableCallsBuilder.dialogComposable(
     content: @Composable DestinationScope<T>.() -> Unit
 ) {
     if (engineType != NavHostEngine.Type.DEFAULT) {
-        error("'composable' can only be called with a 'NavHostEngine'")
+        error("'dialogComposable' can only be called with a 'NavHostEngine'")
     }
 
     if (destination.style !is DestinationStyle.Dialog) {
@@ -61,15 +65,64 @@ fun <T> ManualComposableCallsBuilder.dialogComposable(
     )
 }
 
-class ManualComposableCallsBuilder internal constructor(
-    @InternalDestinationsApi
-    val engineType: NavHostEngine.Type,
-) {
+class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi val engineType: NavHostEngine.Type) {
+
+    /**
+     * Overrides the style of [this] [DestinationSpec] at runtime to [animation].
+     * You should prefer to use the Destination annotation `style` unless there's a specific
+     * reason to use this.
+     */
+    infix fun DestinationSpec.animateWith(animation: DestinationStyle.Animated) {
+        if (style !is DestinationStyle.Default && style !is DestinationStyle.Animated) {
+            error("'animateWith' can only be called for a destination of style 'Default' or 'Animated'")
+        }
+        add(this, animation)
+    }
+
+    /**
+     * Overrides the style of [this] [DestinationSpec] at runtime to use [enterTransition],
+     * [exitTransition], [popEnterTransition] and [popExitTransition].
+     * You should prefer to use the Destination annotation `style` unless there's a specific
+     * reason to use this.
+     */
+    fun DestinationSpec.animateWith(
+        enterTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = null,
+        exitTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = null,
+        popEnterTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? =
+            enterTransition,
+        popExitTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? =
+            exitTransition,
+    ) {
+        this animateWith object : DestinationStyle.Animated() {
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
+                enterTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
+                exitTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition() =
+                popEnterTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition() =
+                popExitTransition?.invoke(this)
+        }
+    }
 
     private val map: MutableMap<String, DestinationLambda<*>> = mutableMapOf()
+    private val animations: MutableMap<String, DestinationStyle.Animated> = mutableMapOf()
 
-    internal fun build() = ManualComposableCalls(map)
+    internal fun add(
+        destination: DestinationSpec,
+        animation: DestinationStyle.Animated,
+    ) {
+        animations[destination.route] = animation
+    }
 
+    // can be internal once bottom sheet functionality is built in
     @InternalDestinationsApi
     fun add(
         lambda: DestinationLambda<*>,
@@ -77,4 +130,6 @@ class ManualComposableCallsBuilder internal constructor(
     ) {
         map[destination.route] = lambda
     }
+
+    internal fun build() = ManualComposableCalls(map, animations)
 }
