@@ -51,22 +51,7 @@ internal class MermaidGraphWriter(
             packageName = "$codeGenBasePackageName.mermaid",
             extensionName = "html",
         ).use {
-            it +=
-                """
-                |<!DOCTYPE html>
-                |<html lang="en">
-                |<head>
-                |    <meta charset="UTF-8">
-                |    <title>$title</title>
-                |</head>
-                |<body>
-                |<pre class="mermaid">
-                |$mermaidGraph
-                |</pre>
-                |<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';</script>
-                |</body>
-                |</html>
-                """.trimMargin()
+            it += html(title, mermaidGraph)
         }
     }
 
@@ -74,8 +59,8 @@ internal class MermaidGraphWriter(
         val graphNode = tree.node()
         val startRoute = requireNotNull(
             tree.destinations.find { it.isParentStart }
-            ?: tree.nestedGraphs.find { it.isParentStart == true }
-            ?: tree.externalStartRoute
+                ?: tree.nestedGraphs.find { it.isParentStart == true }
+                ?: tree.externalStartRoute
         )
 
         appendLine(graphNode.link(startRoute.startRouteNode(), true))
@@ -169,4 +154,57 @@ internal class MermaidGraphWriter(
 
         return """$id("$visualName 🧩")"""
     }
+
+    private fun html(title: String, mermaidGraph: String) =
+        """
+        |<!DOCTYPE html>
+        |<html lang="en">
+        |<head>
+        |    <meta charset="UTF-8">
+        |    <title>$title</title>
+        |</head>
+        |<body>
+        |<pre id='scene' class="mermaid">
+        |$mermaidGraph
+        |</pre>
+        |<script src='https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js'></script>
+        |<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';</script>
+        |<script>
+        |var element = document.getElementById('scene')
+        |var pz = panzoom(element, {
+        |  minZoom: 0.1
+        |});
+        |
+        |function reset(e) {
+        |   pz.moveTo(0, 0); 
+        |   pz.zoomAbs(0, 0, 1);
+        |}
+        |
+        |function zoomIn(e) {
+        |   pz.smoothZoom(0, 0, 1.25);
+        |}
+        |
+        |function zoomOut(e) {
+        |   pz.smoothZoom(0, 0, 0.75);
+        |}
+        |
+        |document.addEventListener('keydown', function(event) {
+        |    const keycode = event.keyCode;
+        |    const key = event.key;
+        |    
+        |    switch(keycode) {
+        |        case 82: // R key
+        |            reset(event);
+        |            break;
+        |        case 187: // + key
+        |            zoomIn(event);
+        |            break;
+        |        case 189: // - key
+        |            zoomOut(event);
+        |            break;
+        |    }
+        |});
+        |</script>
+        |</body>
+        |</html>""".trimMargin()
 }
