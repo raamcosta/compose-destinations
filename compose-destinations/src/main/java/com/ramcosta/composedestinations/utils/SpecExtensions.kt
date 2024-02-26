@@ -98,7 +98,7 @@ fun NavController.currentDestinationAsState(): State<DestinationSpec?> {
  * or [com.ramcosta.composedestinations.spec.DestinationSpec]) is currently somewhere in the back stack.
  */
 fun NavController.isRouteOnBackStack(route: Route): Boolean {
-    return runCatching { getBackStackEntry(route.route) }.isSuccess
+    return runCatching { getBackStackEntry(route) }.isSuccess
 }
 
 /**
@@ -114,12 +114,23 @@ fun NavController.isRouteOnBackStackAsState(route: Route): State<Boolean> {
 }
 
 /**
+ * Like [androidx.navigation.NavController.getBackStackEntry] but uses a
+ * [Route] instead of a route string.
+ */
+fun NavController.getBackStackEntry(
+    route: Route
+): NavBackStackEntry {
+    return getBackStackEntry(route.route)
+}
+
+/**
  * If this [Route] is a [DestinationSpec], returns it
  *
  * If this [Route] is a [NavGraphSpec], returns its
  * start [DestinationSpec].
  */
 val Route.startDestination get(): DestinationSpec {
+    @Suppress("RecursivePropertyAccessor") // expected here
     return when (this) {
         is DestinationSpec -> this
         is NavGraphSpec -> startRoute.startDestination

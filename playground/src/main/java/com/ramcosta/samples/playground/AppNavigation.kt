@@ -25,6 +25,7 @@ import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.utils.composable
 import com.ramcosta.composedestinations.utils.dialogComposable
+import com.ramcosta.composedestinations.utils.getBackStackEntry
 import com.ramcosta.samples.playground.commons.DrawerController
 import com.ramcosta.samples.playground.di.viewModel
 import com.ramcosta.samples.playground.ui.screens.Feed
@@ -71,7 +72,7 @@ fun AppNavigation(
 
             navGraph(NavGraphs.settings) {
                 val parentEntry = remember(navBackStackEntry) {
-                    navController.getBackStackEntry(NavGraphs.settings.route)
+                    navController.getBackStackEntry(NavGraphs.settings)
                 }
 
                 dependency(viewModel<SettingsViewModel>(parentEntry))
