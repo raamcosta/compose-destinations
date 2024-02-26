@@ -21,12 +21,10 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.annotation.parameters.NavHostParam
-import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXNavGraph
 import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureYHomeDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
-import com.ramcosta.playground.featurex.screens.FeatureXHomeNavArgs
 import com.ramcosta.samples.playground.R
 import com.ramcosta.samples.playground.commons.DrawerController
 import com.ramcosta.samples.playground.ui.screens.OtherThings
@@ -130,11 +128,11 @@ private fun GreetingScreenContent(
 
             Button(
                 onClick = {
-//                    navigator.navigate(GoToProfileConfirmationDestination)
+                    navigator.navigate(GoToProfileConfirmationDestination)
 //                    navigator.navigate(FeatureXHomeDestination("SOMETHING"))
-                    navigator.navigate(
-                        FeatureXNavGraph("something", FeatureXHomeNavArgs("SOMETHING2"))
-                    )
+//                    navigator.navigate(
+//                        FeatureXNavGraph("something", FeatureXHomeNavArgs("SOMETHING2"))
+//                    )
 //                    navigator.navigate(ProfileGraph("my graphArg", ProfileSettingsGraphNavArgs("my another graph arg", WithDefaultValueArgs(true))))
                 }
             ) {

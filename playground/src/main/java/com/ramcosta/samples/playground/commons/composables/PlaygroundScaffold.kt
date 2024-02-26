@@ -7,9 +7,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.plusAssign
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -22,7 +23,6 @@ import com.ramcosta.composedestinations.utils.startDestination
 import com.ramcosta.samples.playground.ui.screens.*
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
-@SuppressLint("RestrictedApi")
 @Composable
 fun PlaygroundScaffold(
     navController: NavHostController,
@@ -36,7 +36,7 @@ fun PlaygroundScaffold(
         ?: NavGraphs.root.startDestination
 
     //Just for me to debug, ignore this line
-    navController.currentBackStack.collectAsState().value.print()
+    LogBackStack(navController)
 
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
@@ -52,6 +52,16 @@ fun PlaygroundScaffold(
             drawerContent = { drawerContent(destination) },
             content = content
         )
+    }
+}
+
+@SuppressLint("RestrictedApi")
+@Composable
+fun LogBackStack(navController: NavController) {
+    LaunchedEffect(navController) {
+        navController.currentBackStack.collect {
+            it.print()
+        }
     }
 }
 

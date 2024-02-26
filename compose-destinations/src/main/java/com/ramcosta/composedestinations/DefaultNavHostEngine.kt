@@ -101,7 +101,7 @@ internal class DefaultNavHostEngine(
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
-    ) = with(destination.style) {
+    ) = with(manualComposableCalls.manualAnimation(destination.route) ?: destination.style) {
         addComposable(destination, navController, dependenciesContainerBuilder, manualComposableCalls)
     }
 }

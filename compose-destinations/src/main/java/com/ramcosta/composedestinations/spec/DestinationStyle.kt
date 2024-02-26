@@ -50,7 +50,7 @@ abstract class DestinationStyle {
             manualComposableCalls: ManualComposableCalls
         ) {
             @Suppress("UNCHECKED_CAST")
-            val contentWrapper = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
+            val contentWrapper = manualComposableCalls[destination.route] as? DestinationLambda<T>?
 
             composable(
                 route = destination.route,
