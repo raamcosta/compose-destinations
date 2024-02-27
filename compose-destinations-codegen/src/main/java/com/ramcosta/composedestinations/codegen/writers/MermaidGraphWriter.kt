@@ -34,21 +34,8 @@ internal class MermaidGraphWriter(
             appendLine("graph TD")
             appendGraphTreeLinks(tree)
             appendLine()
-
-            tree.findAllExternalNavGraphs().forEach { externalGraph ->
-                val moduleRegistryFilePath = submodules.first { externalGraph.generatedType.simpleName in it.topLevelGraphs }
-                    .moduleRegistryFilePath
-                val splits = moduleRegistryFilePath.split("/")
-                val buildIndex = splits.indexOf("build")
-                val kotlinIndex = splits.indexOf("kotlin")
-                val pathWithoutUserDirs = splits.drop(buildIndex - 1) // keep module folder
-                    .dropLast(splits.size - kotlinIndex) // drop after kotlin folder (included)
-                    .joinToString("/")
-
-                val path = "/$pathWithoutUserDirs/resources/${DEFAULT_GEN_PACKAGE_NAME.replace(".", "/")}/mermaid/${externalGraph.generatedType.simpleName}.html"
-                appendLine("click ${externalGraph.mermaidId} \"$path\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
-            }
-
+            appendExternalNavGraphClicks(tree, submodules)
+            appendLine()
             val destinationIds = tree.destinationIds()
             if (destinationIds.isNotEmpty()) {
                 appendLine("classDef destination fill:#5383EC,stroke:#ffffff;")
@@ -74,6 +61,31 @@ internal class MermaidGraphWriter(
             extensionName = "html",
         ).use {
             it += html(title, mermaidGraph)
+        }
+    }
+
+    private fun StringBuilder.appendExternalNavGraphClicks(
+        tree: RawNavGraphTree,
+        submodules: List<SubModuleInfo>
+    ) {
+        tree.findAllExternalNavGraphs().forEach { externalGraph ->
+            val moduleRegistryFilePath =
+                submodules.first { externalGraph.generatedType.simpleName in it.topLevelGraphs }
+                    .moduleRegistryFilePath
+            val splits = moduleRegistryFilePath.split("/")
+            val buildIndex = splits.indexOf("build")
+            val kotlinIndex = splits.indexOf("kotlin")
+            val pathWithoutUserDirs = splits.drop(buildIndex - 1) // keep module folder
+                .dropLast(splits.size - kotlinIndex) // drop after kotlin folder (included)
+                .joinToString("/")
+
+            val path = "/$pathWithoutUserDirs/resources/${
+                DEFAULT_GEN_PACKAGE_NAME.replace(
+                    ".",
+                    "/"
+                )
+            }/mermaid/${externalGraph.generatedType.simpleName}.html"
+            appendLine("click ${externalGraph.mermaidId} \"$path\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
         }
     }
 
@@ -198,7 +210,7 @@ internal class MermaidGraphWriter(
         |<script>
         |var element = document.getElementById('scene')
         |var pz = panzoom(element, {
-        |  minZoom: 0.1
+        |  minZoom: 0.5
         |});
         |
         |function reset(e) {
