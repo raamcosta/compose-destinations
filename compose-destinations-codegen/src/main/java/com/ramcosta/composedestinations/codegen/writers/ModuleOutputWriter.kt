@@ -16,6 +16,7 @@ internal class ModuleOutputWriter(
     private val navArgsGetters: NavArgsGettersWriter,
     private val argsToSavedStateHandleUtilsWriter: ArgsToSavedStateHandleUtilsWriter,
     private val mermaidGraphWriter: MermaidGraphWriter,
+    private val moduleRegistryWriter: ModuleRegistryWriter,
     private val submodules: List<SubModuleInfo>
 ) {
 
@@ -30,12 +31,16 @@ internal class ModuleOutputWriter(
             val flattenedNavGraphTrees = graphTrees.flatten()
             navArgsGetters.write(destinations, flattenedNavGraphTrees)
             argsToSavedStateHandleUtilsWriter.write(submodules, destinations, flattenedNavGraphTrees)
-            mermaidGraphWriter.write(graphTrees)
+            mermaidGraphWriter.write(submodules, graphTrees)
+
+            moduleRegistryWriter.write(destinations, graphTrees)
         } else {
             // We fallback to just generate a list of all destinations
             destinationsListModeWriter.write(destinations)
             navArgsGetters.write(destinations, emptyList())
             argsToSavedStateHandleUtilsWriter.write(submodules, destinations, emptyList())
+
+            moduleRegistryWriter.write(destinations, emptyList())
         }
     }
 

@@ -19,10 +19,10 @@ import com.ramcosta.composedestinations.codegen.servicelocator.destinationWithNa
 import com.ramcosta.composedestinations.codegen.servicelocator.destinationsWriter
 import com.ramcosta.composedestinations.codegen.servicelocator.initialValidator
 import com.ramcosta.composedestinations.codegen.servicelocator.moduleOutputWriter
-import com.ramcosta.composedestinations.codegen.servicelocator.moduleRegistryWriter
+import com.ramcosta.composedestinations.codegen.writers.ModuleRegistryWriter
 import java.util.Locale
 
-private const val DEFAULT_GEN_PACKAGE_NAME = "com.ramcosta.composedestinations.generated"
+internal const val DEFAULT_GEN_PACKAGE_NAME = "com.ramcosta.composedestinations.generated"
 internal lateinit var codeGenBasePackageName: String
 internal lateinit var moduleName: String
 
@@ -59,8 +59,6 @@ class CodeGenerator(
         if (shouldWriteKtxSerializableNavTypeSerializer(processedDestinations)) {
             defaultKtxSerializableNavTypeSerializerWriter.write()
         }
-
-        moduleRegistryWriter.write(processedDestinations)
     }
 
     private fun initConfigurationValues() {
@@ -92,6 +90,16 @@ class CodeGenerator(
                             !isSerializable
                 }
             }
+        }
+    }
+
+    companion object {
+        fun generateModuleRegistryPathInfo(
+            codeGenerator: CodeOutputStreamMaker,
+            moduleRegistryPath: String,
+            moduleRegistryId: String
+        ) {
+            ModuleRegistryWriter.generateModuleRegistryPathInfo(codeGenerator, moduleRegistryPath, moduleRegistryId)
         }
     }
 }

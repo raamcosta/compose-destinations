@@ -8,6 +8,7 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Modifier
@@ -52,6 +53,23 @@ class Processor(
             !navGraphAnnotations.iterator().hasNext() &&
             !navHostGraphAnnotations.iterator().hasNext()
         ) {
+            val moduleRegistryFile: KSFile = resolver.getNewFiles()
+                .firstOrNull { it.fileName == "_ModuleRegistry.kt" }
+                ?: return emptyList()
+            val moduleRegistryId = moduleRegistryFile
+                .declarations.first {
+                    it.simpleName.asString().startsWith("_ModuleRegistry_")
+                }.simpleName.asString().removePrefix("_ModuleRegistry_")
+
+
+            CodeGenerator.generateModuleRegistryPathInfo(
+                KspCodeOutputStreamMaker(
+                    codeGenerator,
+                    MutableKSFileSourceMapper()
+                ),
+                moduleRegistryFile.filePath,
+                moduleRegistryId
+            )
             return emptyList()
         }
 
@@ -92,19 +110,39 @@ class Processor(
     }
 
     @OptIn(KspExperimental::class)
-    private fun Resolver.getSubModuleInfos() =
-        getDeclarationsFromPackage(
+    private fun Resolver.getSubModuleInfos(): List<SubModuleInfo> {
+        val moduleRegistryDeclarations = getDeclarationsFromPackage(
             "_generated._ramcosta._composedestinations._moduleregistry"
         )
+        val pathInfos: Map<String, String> = moduleRegistryDeclarations.filter {
+            it.simpleName.asString().startsWith("_PathInfo_ModuleRegistry_")
+        }.mapNotNull {
+            val pathInfoAnnotation = it.annotations
+                .firstOrNull { it.shortName.asString().startsWith("_Annotation_PathInfo_") }
+            val pathInfo = pathInfoAnnotation
+                ?.findArgumentValue<String>("path")
+                ?: return@mapNotNull null
+
+            val moduleRegistryId = pathInfoAnnotation
+                .findArgumentValue<String>("moduleRegistryId")
+                ?: return@mapNotNull null
+
+            moduleRegistryId to pathInfo
+        }.associate { it }
+
+        return moduleRegistryDeclarations
             .filter { it.simpleName.asString().startsWith("_ModuleRegistry_") }
             .flatMap { pckgDeclaration ->
+                val moduleRegistryId = pckgDeclaration.simpleName.asString().removePrefix("_ModuleRegistry_")
                 pckgDeclaration.annotations
                     .filter { it.shortName.asString().startsWith("_Info_") }
                     .map {
                         SubModuleInfo(
-                            it.findArgumentValue<String>("moduleName"),
-                            it.findArgumentValue<String>("packageName")!!,
-                            it.findArgumentValue<ArrayList<KSAnnotation>>(
+                            name = it.findArgumentValue<String>("moduleName"),
+                            genPackageName = it.findArgumentValue<String>("packageName")!!,
+                            moduleRegistryFilePath = pathInfos[moduleRegistryId]!!,
+                            topLevelGraphs = it.findArgumentValue<ArrayList<String>>("topLevelGraphs")!!,
+                            publicResultSenders = it.findArgumentValue<ArrayList<KSAnnotation>>(
                                 "typeResults"
                             )?.map { typeResultAnnotation ->
                                 DestinationResultSenderInfo(
@@ -116,6 +154,7 @@ class Processor(
                         )
                     }
             }.toList()
+    }
 
     private class DestinationAnnotationsPath {
         var annotations: Sequence<KSAnnotation> = emptySequence()

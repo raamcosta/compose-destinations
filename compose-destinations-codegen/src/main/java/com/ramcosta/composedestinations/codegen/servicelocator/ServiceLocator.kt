@@ -35,6 +35,7 @@ internal fun ServiceLocator.moduleOutputWriter(
     navArgsGetters,
     argsToSavedStateHandle(customNavTypeByType),
     mermaidGraphWriter,
+    moduleRegistryWriter,
     submodules
 )
 
