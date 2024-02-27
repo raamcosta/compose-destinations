@@ -75,16 +75,11 @@ internal class MermaidGraphWriter(
             val splits = moduleRegistryFilePath.split("/")
             val buildIndex = splits.indexOf("build")
             val kotlinIndex = splits.indexOf("kotlin")
-            val pathWithoutUserDirs = splits.drop(buildIndex - 1) // keep module folder
+            val pathWithoutUserDirs = splits.drop(buildIndex - 2) // keep module & project folder
                 .dropLast(splits.size - kotlinIndex) // drop after kotlin folder (included)
                 .joinToString("/")
 
-            val path = "/$pathWithoutUserDirs/resources/${
-                DEFAULT_GEN_PACKAGE_NAME.replace(
-                    ".",
-                    "/"
-                )
-            }/mermaid/${externalGraph.generatedType.simpleName}.html"
+            val path = "/$pathWithoutUserDirs/resources/${DEFAULT_GEN_PACKAGE_NAME.replace(".", "/")}/mermaid/${externalGraph.generatedType.simpleName}.html"
             appendLine("click ${externalGraph.mermaidId} \"$path\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
         }
     }

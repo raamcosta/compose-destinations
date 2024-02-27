@@ -7,7 +7,7 @@ plugins {
 
 android {
 
-    namespace = "com.ramcosta.playground.featurey"
+    namespace = "com.ramcosta.playground.sub.featurey"
     compileSdk = libs.versions.compileSdk.get().toIntOrNull()
 
     defaultConfig {
@@ -43,7 +43,7 @@ android {
     }
 
     ksp {
-        arg("compose-destinations.moduleName", "featureY")
+        arg("compose-destinations.moduleName", "subFeatureY")
     }
 }
 
@@ -57,7 +57,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
 
-    implementation(project(mapOf("path" to ":playground-sub-featurey")))
     implementation(project(mapOf("path" to ":compose-destinations")))
     ksp(project(":compose-destinations-ksp"))
 
