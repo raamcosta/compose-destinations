@@ -33,10 +33,16 @@ internal class MermaidGraphWriter(
             appendLine("graph TD")
             appendGraphTreeLinks(tree)
             appendLine()
-            appendLine("classDef destination fill:#5383EC,stroke:#ffffff;")
-            appendLine("class ${tree.destinationIds().joinToString(",")} destination;")
-            appendLine("classDef navgraph fill:#63BC76,stroke:#ffffff;")
-            appendLine("class ${tree.navGraphIds().joinToString(",")} navgraph;")
+            val destinationIds = tree.destinationIds()
+            if (destinationIds.isNotEmpty()) {
+                appendLine("classDef destination fill:#5383EC,stroke:#ffffff;")
+                appendLine("class ${destinationIds.joinToString(",")} destination;")
+            }
+            val navGraphIds = tree.navGraphIds()
+            if (navGraphIds.isNotEmpty()) {
+                appendLine("classDef navgraph fill:#63BC76,stroke:#ffffff;")
+                appendLine("class ${navGraphIds.joinToString(",")} navgraph;")
+            }
         }.toString()
 
         codeGenerator.makeFile(
