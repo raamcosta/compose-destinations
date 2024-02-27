@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.codegen.writers
 
-import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.DEFAULT_GEN_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.snakeToCamelCase
@@ -9,19 +9,20 @@ import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.model.NavGraphGenParams
+import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
 import java.util.Locale
 
 internal class MermaidGraphWriter(
     private val codeGenerator: CodeOutputStreamMaker
 ) {
 
-    fun write(graphTrees: List<RawNavGraphTree>) {
+    fun write(submodules: List<SubModuleInfo>, graphTrees: List<RawNavGraphTree>) {
         graphTrees.forEach {
-            writeMermaidGraph(it)
+            writeMermaidGraph(submodules, it)
         }
     }
 
-    private fun writeMermaidGraph(tree: RawNavGraphTree) {
+    private fun writeMermaidGraph(submodules: List<SubModuleInfo>, tree: RawNavGraphTree) {
         val title = tree.rawNavGraphGenParams.baseRoute
             .snakeToCamelCase()
             .replaceFirstChar { it.titlecase(Locale.ROOT) } + " Navigation Graph"
@@ -33,6 +34,21 @@ internal class MermaidGraphWriter(
             appendLine("graph TD")
             appendGraphTreeLinks(tree)
             appendLine()
+
+            tree.findAllExternalNavGraphs().forEach { externalGraph ->
+                val moduleRegistryFilePath = submodules.first { externalGraph.generatedType.simpleName in it.topLevelGraphs }
+                    .moduleRegistryFilePath
+                val splits = moduleRegistryFilePath.split("/")
+                val buildIndex = splits.indexOf("build")
+                val kotlinIndex = splits.indexOf("kotlin")
+                val pathWithoutUserDirs = splits.drop(buildIndex - 1) // keep module folder
+                    .dropLast(splits.size - kotlinIndex) // drop after kotlin folder (included)
+                    .joinToString("/")
+
+                val path = "/$pathWithoutUserDirs/resources/${DEFAULT_GEN_PACKAGE_NAME.replace(".", "/")}/mermaid/${externalGraph.generatedType.simpleName}.html"
+                appendLine("click ${externalGraph.mermaidId} \"$path\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
+            }
+
             val destinationIds = tree.destinationIds()
             if (destinationIds.isNotEmpty()) {
                 appendLine("classDef destination fill:#5383EC,stroke:#ffffff;")
@@ -47,14 +63,14 @@ internal class MermaidGraphWriter(
 
         codeGenerator.makeFile(
             name = tree.rawNavGraphGenParams.name,
-            packageName = "$codeGenBasePackageName.mermaid",
+            packageName = "$DEFAULT_GEN_PACKAGE_NAME.mermaid",
             extensionName = "mmd",
         ).use {
             it += mermaidGraph
         }
         codeGenerator.makeFile(
             name = tree.rawNavGraphGenParams.name,
-            packageName = "$codeGenBasePackageName.mermaid",
+            packageName = "$DEFAULT_GEN_PACKAGE_NAME.mermaid",
             extensionName = "html",
         ).use {
             it += html(title, mermaidGraph)
@@ -104,14 +120,14 @@ internal class MermaidGraphWriter(
     }
 
     private fun RawNavGraphTree.destinationIds(): List<String> {
-        return destinations.map { it.baseRoute } +
-                externalDestinations.map { it.generatedType.simpleName.toSnakeCase() } +
+        return destinations.map { it.mermaidId } +
+                externalDestinations.map { it.mermaidId } +
                 nestedGraphs.flatMap { it.destinationIds() }
     }
 
     private fun RawNavGraphTree.navGraphIds(): List<String> {
-        return (nestedGraphs + this).map { it.baseRoute } +
-                externalNavGraphs.map { it.generatedType.simpleName.toSnakeCase() } +
+        return (nestedGraphs + this).map { it.mermaidId } +
+                externalNavGraphs.map { it.mermaidId } +
                 nestedGraphs.flatMap { it.navGraphIds() }
     }
 
@@ -126,39 +142,43 @@ internal class MermaidGraphWriter(
     }
 
     private fun NavGraphGenParams.node(): String {
-        val id = baseRoute
-        val visualName = annotationType.simpleName
-
-        return """$id(["$visualName"])"""
+        return """$mermaidId(["$mermaidVisualName"])"""
     }
 
     private fun CodeGenProcessedDestination.node(): String {
-        val id = baseRoute
-        val visualName = composableName
-
-        return """$id("$visualName")"""
+        return """$mermaidId("$mermaidVisualName")"""
     }
 
     private fun ExternalRoute.NavGraph.node(): String {
-        val id = generatedType.simpleName.toSnakeCase()
-        val visualName = generatedType.simpleName.run {
-            if (endsWith("NavGraph")) {
-                removeSuffix("NavGraph") + "Graph"
-            } else if (endsWith("Graph")) {
-                removeSuffix("Graph") + "NavGraph"
-            } else {
-                this
-            }
-        }
-
-        return """$id(["$visualName 🧩"])"""
+        return """$mermaidId(["$mermaidVisualName 🧩"])"""
     }
 
     private fun ExternalRoute.Destination.node(): String {
-        val id = generatedType.simpleName.toSnakeCase()
-        val visualName = generatedType.simpleName.removeSuffix("Destination")
+        return """$mermaidId("$mermaidVisualName 🧩")"""
+    }
 
-        return """$id("$visualName 🧩")"""
+    private val ExternalRoute.NavGraph.mermaidId get() = generatedType.simpleName.toSnakeCase().replace("graph", "g")
+    private val ExternalRoute.NavGraph.mermaidVisualName get() = generatedType.simpleName.run {
+        if (endsWith("NavGraph")) {
+            removeSuffix("NavGraph") + "Graph"
+        } else if (endsWith("Graph")) {
+            removeSuffix("Graph") + "NavGraph"
+        } else {
+            this
+        }
+    }
+
+    private val ExternalRoute.Destination.mermaidId get() = generatedType.simpleName.toSnakeCase().replace("graph", "g")
+    private val ExternalRoute.Destination.mermaidVisualName get() = generatedType.simpleName.removeSuffix("Destination")
+
+    private val CodeGenProcessedDestination.mermaidId get() = baseRoute.replace("graph", "g")
+    private val CodeGenProcessedDestination.mermaidVisualName get() = composableName
+
+    private val NavGraphGenParams.mermaidId get() = baseRoute.replace("graph", "g")
+    private val NavGraphGenParams.mermaidVisualName get() = annotationType.simpleName
+
+    private fun RawNavGraphTree.findAllExternalNavGraphs(): List<ExternalRoute.NavGraph> {
+        return externalNavGraphs + nestedGraphs.flatMap { it.externalNavGraphs }
     }
 
     private fun html(title: String, mermaidGraph: String) =
