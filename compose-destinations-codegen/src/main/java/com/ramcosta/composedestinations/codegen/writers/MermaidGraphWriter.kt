@@ -55,7 +55,7 @@ internal class MermaidGraphWriter(
             File(codeGenConfig.mermaidGraph, "${tree.rawNavGraphGenParams.name}.mmd")
                 .writeText(
                     mermaidGraph
-                        .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, null))
+                        .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, null, "mmd"))
                 )
         } else {
             codeGenerator.makeFile(
@@ -64,7 +64,7 @@ internal class MermaidGraphWriter(
                 extensionName = "mmd",
             ).use {
                 it += mermaidGraph
-                    .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, submodules))
+                    .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, submodules, "mmd"))
             }
         }
 
@@ -72,7 +72,7 @@ internal class MermaidGraphWriter(
         if (codeGenConfig.htmlMermaidGraph != null) {
             File(codeGenConfig.htmlMermaidGraph, "${tree.rawNavGraphGenParams.name}.html")
                 .writeText(
-                    htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, null))
+                    htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, null, "html"))
                 )
         } else {
             codeGenerator.makeFile(
@@ -80,14 +80,15 @@ internal class MermaidGraphWriter(
                 packageName = "$DEFAULT_GEN_PACKAGE_NAME.mermaid",
                 extensionName = "html",
             ).use {
-                it += htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, submodules))
+                it += htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, submodules, "html"))
             }
         }
     }
 
     private fun externalNavGraphClicks(
         tree: RawNavGraphTree,
-        submodules: List<SubModuleInfo>?
+        submodules: List<SubModuleInfo>?,
+        fileExtension: String
     ): String {
         val sb = StringBuilder()
         tree.findAllExternalNavGraphs().forEach { externalGraph ->
@@ -102,10 +103,10 @@ internal class MermaidGraphWriter(
                     .dropLast(splits.size - kotlinIndex) // drop after kotlin folder (included)
                     .joinToString("/")
 
-                val path = "/$pathWithoutUserDirs/resources/${DEFAULT_GEN_PACKAGE_NAME.replace(".", "/")}/mermaid/${externalGraph.generatedType.simpleName}.html"
+                val path = "/$pathWithoutUserDirs/resources/${DEFAULT_GEN_PACKAGE_NAME.replace(".", "/")}/mermaid/${externalGraph.generatedType.simpleName}.$fileExtension"
                 sb.appendLine("click ${externalGraph.mermaidId} \"$path\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
             } else {
-                sb.appendLine("click ${externalGraph.mermaidId} \"${externalGraph.generatedType.simpleName}.html\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
+                sb.appendLine("click ${externalGraph.mermaidId} \"${externalGraph.generatedType.simpleName}.$fileExtension\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
             }
         }
 
