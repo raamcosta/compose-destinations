@@ -15,16 +15,23 @@ class ConfigParser(
         private const val GEN_NAV_GRAPHS = "$PREFIX.generateNavGraphs"
         private const val GEN_PACKAGE_NAME = "$PREFIX.codeGenPackageName"
         private const val MODULE_NAME = "$PREFIX.moduleName"
+
+        private const val MERMAID_GRAPH = "$PREFIX.mermaidGraph"
+        private const val HTML_MERMAID_GRAPH = "$PREFIX.htmlMermaidGraph"
     }
 
     fun parse(): CodeGenConfig {
         val packageName = options[GEN_PACKAGE_NAME]?.trim()?.removeSuffix(".")
         val moduleName = options[MODULE_NAME]?.trim()?.filter { it.isLetter() }
+        val htmlMermaidGraph = options[HTML_MERMAID_GRAPH]?.trim()
+        val mermaidGraph = options[MERMAID_GRAPH]?.trim()
 
         return CodeGenConfig(
             moduleName = moduleName,
             generateNavGraphs = parseBoolean(GEN_NAV_GRAPHS) ?: true,
             packageName = packageName,
+            mermaidGraph = mermaidGraph,
+            htmlMermaidGraph = htmlMermaidGraph,
         )
     }
 

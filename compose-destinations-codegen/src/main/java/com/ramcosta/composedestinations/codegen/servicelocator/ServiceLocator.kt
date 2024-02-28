@@ -45,6 +45,7 @@ internal val ServiceLocator.moduleRegistryWriter get() = ModuleRegistryWriter(
 )
 
 internal val ServiceLocator.mermaidGraphWriter get() = MermaidGraphWriter(
+    codeGenConfig,
     codeGenerator
 )
 

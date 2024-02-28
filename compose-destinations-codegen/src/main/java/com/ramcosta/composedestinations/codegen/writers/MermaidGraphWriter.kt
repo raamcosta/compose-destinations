@@ -6,13 +6,16 @@ import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.snakeToCamelCase
 import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
+import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.model.NavGraphGenParams
 import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
+import java.io.File
 import java.util.Locale
 
 internal class MermaidGraphWriter(
+    private val codeGenConfig: CodeGenConfig,
     private val codeGenerator: CodeOutputStreamMaker
 ) {
 
@@ -34,7 +37,7 @@ internal class MermaidGraphWriter(
             appendLine("graph TD")
             appendGraphTreeLinks(tree)
             appendLine()
-            appendExternalNavGraphClicks(tree, submodules)
+            append("@clicksPlaceholder@")
             appendLine()
             val destinationIds = tree.destinationIds()
             if (destinationIds.isNotEmpty()) {
@@ -48,40 +51,65 @@ internal class MermaidGraphWriter(
             }
         }.toString()
 
-        codeGenerator.makeFile(
-            name = tree.rawNavGraphGenParams.name,
-            packageName = "$DEFAULT_GEN_PACKAGE_NAME.mermaid",
-            extensionName = "mmd",
-        ).use {
-            it += mermaidGraph
+        if (codeGenConfig.mermaidGraph != null) {
+            File(codeGenConfig.mermaidGraph, "${tree.rawNavGraphGenParams.name}.mmd")
+                .writeText(
+                    mermaidGraph
+                        .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, null))
+                )
+        } else {
+            codeGenerator.makeFile(
+                name = tree.rawNavGraphGenParams.name,
+                packageName = "$DEFAULT_GEN_PACKAGE_NAME.mermaid",
+                extensionName = "mmd",
+            ).use {
+                it += mermaidGraph
+                    .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, submodules))
+            }
         }
-        codeGenerator.makeFile(
-            name = tree.rawNavGraphGenParams.name,
-            packageName = "$DEFAULT_GEN_PACKAGE_NAME.mermaid",
-            extensionName = "html",
-        ).use {
-            it += html(title, mermaidGraph)
+
+        val htmlMermaid = html(title, mermaidGraph)
+        if (codeGenConfig.htmlMermaidGraph != null) {
+            File(codeGenConfig.htmlMermaidGraph, "${tree.rawNavGraphGenParams.name}.html")
+                .writeText(
+                    htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, null))
+                )
+        } else {
+            codeGenerator.makeFile(
+                name = tree.rawNavGraphGenParams.name,
+                packageName = "$DEFAULT_GEN_PACKAGE_NAME.mermaid",
+                extensionName = "html",
+            ).use {
+                it += htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, submodules))
+            }
         }
     }
 
-    private fun StringBuilder.appendExternalNavGraphClicks(
+    private fun externalNavGraphClicks(
         tree: RawNavGraphTree,
-        submodules: List<SubModuleInfo>
-    ) {
+        submodules: List<SubModuleInfo>?
+    ): String {
+        val sb = StringBuilder()
         tree.findAllExternalNavGraphs().forEach { externalGraph ->
-            val moduleRegistryFilePath =
-                submodules.first { externalGraph.generatedType.simpleName in it.topLevelGraphs }
-                    .moduleRegistryFilePath
-            val splits = moduleRegistryFilePath.split("/")
-            val buildIndex = splits.indexOf("build")
-            val kotlinIndex = splits.indexOf("kotlin")
-            val pathWithoutUserDirs = splits.drop(buildIndex - 2) // keep module & project folder
-                .dropLast(splits.size - kotlinIndex) // drop after kotlin folder (included)
-                .joinToString("/")
+            if (submodules != null) {
+                val moduleRegistryFilePath =
+                    submodules.first { externalGraph.generatedType.simpleName in it.topLevelGraphs }
+                        .moduleRegistryFilePath
+                val splits = moduleRegistryFilePath.split("/")
+                val buildIndex = splits.indexOf("build")
+                val kotlinIndex = splits.indexOf("kotlin")
+                val pathWithoutUserDirs = splits.drop(buildIndex - 2) // keep module & project folder
+                    .dropLast(splits.size - kotlinIndex) // drop after kotlin folder (included)
+                    .joinToString("/")
 
-            val path = "/$pathWithoutUserDirs/resources/${DEFAULT_GEN_PACKAGE_NAME.replace(".", "/")}/mermaid/${externalGraph.generatedType.simpleName}.html"
-            appendLine("click ${externalGraph.mermaidId} \"$path\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
+                val path = "/$pathWithoutUserDirs/resources/${DEFAULT_GEN_PACKAGE_NAME.replace(".", "/")}/mermaid/${externalGraph.generatedType.simpleName}.html"
+                sb.appendLine("click ${externalGraph.mermaidId} \"$path\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
+            } else {
+                sb.appendLine("click ${externalGraph.mermaidId} \"${externalGraph.generatedType.simpleName}.html\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
+            }
         }
+
+        return sb.toString()
     }
 
     private fun StringBuilder.appendGraphTreeLinks(tree: RawNavGraphTree) {

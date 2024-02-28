@@ -67,6 +67,8 @@ android {
 
 //        // If you want to manually create the nav graphs, use this:
 //        arg("compose-destinations.generateNavGraphs", "false")
+        arg("compose-destinations.htmlMermaidGraph", "$rootDir/docs")
+        arg("compose-destinations.mermaidGraph", "$rootDir/docs")
 
         // To change the package name where the generated files will be placed
         arg("compose-destinations.codeGenPackageName", "com.ramcosta.samples.playground.ui.screens")
