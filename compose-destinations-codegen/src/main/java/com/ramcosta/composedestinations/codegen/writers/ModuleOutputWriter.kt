@@ -24,24 +24,23 @@ internal class ModuleOutputWriter(
         navGraphs: List<RawNavGraphGenParams>,
         destinations: List<CodeGenProcessedDestination>
     ) {
-        if (codeGenConfig.generateNavGraphs) {
+        val navGraphTrees = if (codeGenConfig.generateNavGraphs && navGraphs.isNotEmpty()) {
             val graphTrees = makeNavGraphTrees(navGraphs, destinations)
             navGraphsSingleObjectWriter.write(graphTrees, destinations)
-
-            val flattenedNavGraphTrees = graphTrees.flatten()
-            navArgsGetters.write(destinations, flattenedNavGraphTrees)
-            argsToSavedStateHandleUtilsWriter.write(submodules, destinations, flattenedNavGraphTrees)
             mermaidGraphWriter.write(submodules, graphTrees)
 
-            moduleRegistryWriter.write(destinations, graphTrees)
+            graphTrees
         } else {
-            // We fallback to just generate a list of all destinations
             destinationsListModeWriter.write(destinations)
-            navArgsGetters.write(destinations, emptyList())
-            argsToSavedStateHandleUtilsWriter.write(submodules, destinations, emptyList())
 
-            moduleRegistryWriter.write(destinations, emptyList())
+            emptyList()
         }
+
+        val flattenedNavGraphTrees = navGraphTrees.flatten()
+        navArgsGetters.write(destinations, flattenedNavGraphTrees)
+        argsToSavedStateHandleUtilsWriter.write(submodules, destinations, flattenedNavGraphTrees)
+
+        moduleRegistryWriter.write(destinations, navGraphTrees)
     }
 
     private fun List<RawNavGraphTree>.flatten(): List<RawNavGraphTree> {

@@ -14,3 +14,8 @@ annotation class ExternalDestination<T: DestinationSpec>(
     val wrappers: Array<KClass<out DestinationWrapper>> = [],
     val start: Boolean = false,
 )
+
+@Retention(AnnotationRetention.BINARY)
+annotation class GeneratedCodeExternalDestinations(
+    val destinations: Array<KClass<out DestinationSpec>>
+)

@@ -23,6 +23,7 @@ import com.ramcosta.composedestinations.annotation.parameters.FULL_ROUTE_PLACEHO
 import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXNavGraph
 import com.ramcosta.composedestinations.generated.featurey.destinations.PublicFeatureYSideScreenDestination
 import com.ramcosta.composedestinations.generated.featurey.navgraphs.FeatureYNavGraph
+import com.ramcosta.composedestinations.generated.featurez.FeatureZModuleDestinations
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.WithDefaultValueArgs
@@ -57,6 +58,7 @@ annotation class ProfileGraph {
         val graphArg: String,
     )
 
+    @ExternalDestination<FeatureZModuleDestinations>
     @ExternalDestination<PublicFeatureYSideScreenDestination>
     @ExternalNavGraph<FeatureXNavGraph>(
         deepLinks = [

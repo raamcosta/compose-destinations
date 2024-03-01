@@ -60,11 +60,3 @@ annotation class NavGraph<T: Annotation>(
         internal const val ANNOTATION_NAME = "@ramcosta.destinations.annotation-navgraph-route@"
     }
 }
-
-/**
- * Marks the [Destination] or [NavGraph] as not having any parent navigation graph.
- * This will make the destination / nav graph not usable unless it is imported by
- * [ExternalDestination] or [ExternalNavGraph], typically from a another module.
- */
-@Retention(AnnotationRetention.SOURCE)
-annotation class NoParent

@@ -20,6 +20,7 @@ import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
+import com.ramcosta.composedestinations.codegen.model.Visibility
 
 class InitialValidator(
     private val codeGenConfig: CodeGenConfig,
@@ -38,6 +39,8 @@ class InitialValidator(
         val cleanRoutes = mutableListOf<String>()
 
         destinations.forEach { destination ->
+            destination.checkVisibilityToNavGraph()
+
             destination.checkNavArgTypes()
 
             destination.validateRoute(cleanRoutes, navGraphRoutes)
@@ -265,6 +268,14 @@ class InitialValidator(
         if (resultType.importable.qualifiedName !in primitives && !resultType.isSerializable && !resultType.isParcelable) {
             throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: " +
                     "Result types must be one of: ${listOf("String", "Long", "Boolean", "Float", "Int", "Parcelable", "java.io.Serializable").joinToString(", ")}")
+        }
+    }
+
+    private fun DestinationGeneratingParams.checkVisibilityToNavGraph() {
+        if (navGraphInfo == null && visibility != Visibility.PUBLIC) {
+            throw IllegalDestinationsSetup(
+                "$composableName has visibility $visibility but it's using 'ExternalModuleGraph'. In order for it to be included in an external module graph, it has to be public!"
+            )
         }
     }
 }

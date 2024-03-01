@@ -86,6 +86,7 @@ dependencies {
     implementation(project(mapOf("path" to ":playground-core")))
     implementation(project(mapOf("path" to ":playground-featurex")))
     implementation(project(mapOf("path" to ":playground-featurey")))
+    implementation(project(mapOf("path" to ":playground-featurez")))
     ksp(project(":compose-destinations-ksp"))
 
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.2")

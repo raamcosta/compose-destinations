@@ -6,19 +6,20 @@ import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.moduleName
-import com.ramcosta.composedestinations.codegen.templates.MODULE_DESTINATIONS_LIST_NAME_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.MODULE_DESTINATIONS_CLASS_NAME_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.MODULE_DESTINATIONS_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.MODULE_EXTERNAL_DESTINATIONS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.moduleDestinationTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
-import java.util.Locale
 
 internal class DestinationsModeWriter(
     private val codeGenerator: CodeOutputStreamMaker,
 ) {
 
     private val importableHelper = ImportableHelper(moduleDestinationTemplate.imports)
+    private val className = "${moduleName}ModuleDestinations"
 
     fun write(generatedDestinations: List<CodeGenProcessedDestination>) {
         if (generatedDestinations.isEmpty()) {
@@ -27,7 +28,7 @@ internal class DestinationsModeWriter(
 
         codeGenerator.makeFile(
             packageName = codeGenBasePackageName,
-            name = "${moduleName}Destinations",
+            name = className,
             sourceIds = sourceIds(generatedDestinations).toTypedArray()
         )
             .writeSourceFile(
@@ -35,19 +36,22 @@ internal class DestinationsModeWriter(
                 importableHelper = importableHelper,
                 sourceCode = moduleDestinationTemplate.sourceCode
                     .replace(MODULE_DESTINATIONS_PLACEHOLDER, moduleDestinationsCode(generatedDestinations))
-                    .replace(MODULE_DESTINATIONS_LIST_NAME_PLACEHOLDER, listName())
+                    .replace(MODULE_DESTINATIONS_CLASS_NAME_PLACEHOLDER, className)
+                    .replace(MODULE_EXTERNAL_DESTINATIONS_PLACEHOLDER, externalDestinationAnnotations(generatedDestinations))
                     .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, requireOptInAnnotations(generatedDestinations))
             )
     }
 
-    private fun listName(): String {
-        return "${moduleName.replaceFirstChar { it.lowercase(Locale.US) }}${if (moduleName.isEmpty()) "d" else "D"}estinations"
+    private fun externalDestinationAnnotations(generatedDestinations: List<CodeGenProcessedDestination>): String {
+        return "\t@GeneratedCodeExternalDestinations([\n" + generatedDestinations.joinToString("\n") {
+            "\t\t${importableHelper.addAndGetPlaceholder(it.destinationImportable)}::class,"
+        } + "\n\t])"
     }
 
     private fun moduleDestinationsCode(generatedDestinations: List<CodeGenProcessedDestination>): String {
         val code = StringBuilder()
         generatedDestinations.forEachIndexed { idx, it ->
-            code += "\t${it.destinationImportable.simpleName}"
+            code += "\t\t${it.destinationImportable.simpleName}"
 
             if (idx != generatedDestinations.lastIndex) {
                 code += ",\n"

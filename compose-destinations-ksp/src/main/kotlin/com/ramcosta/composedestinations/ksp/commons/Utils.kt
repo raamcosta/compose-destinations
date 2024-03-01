@@ -320,7 +320,7 @@ fun KSType.toNavGraphParentInfo(
     val isNavGraphAnnotation = isNavGraphAnnotation()
     val isNavHostGraphAnnotation = isNavHostGraphAnnotation()
     if (!isNavGraphAnnotation && !isNavHostGraphAnnotation) {
-        throw IllegalDestinationsSetup("Type argument of annotation $annotationType needs to be \"NoParent\" or an annotation class which is itself annotated with \"@NavGraph\" or \"@NavHostGraph\".Check $errorLocationHint.")
+        throw IllegalDestinationsSetup("Type argument of annotation $annotationType needs to be \"ExternalModuleGraph\" or an annotation class which is itself annotated with \"@NavGraph\" or \"@NavHostGraph\".Check $errorLocationHint.")
     }
 
     return NavGraphInfo(
@@ -347,7 +347,7 @@ private fun KSType.isNavHostGraphAnnotation(): Boolean {
 }
 
 private fun KSType.isNoParent(): Boolean {
-    return declaration.qualifiedName?.asString() == "$CORE_PACKAGE_NAME.annotation.NoParent"
+    return declaration.qualifiedName?.asString() == "$CORE_PACKAGE_NAME.annotation.ExternalModuleGraph"
 }
 
 private fun KSType.argumentTypes(location: Location, resolver: Resolver, navTypeSerializersByType: Map<Importable, NavTypeSerializer>): List<TypeArgument> {

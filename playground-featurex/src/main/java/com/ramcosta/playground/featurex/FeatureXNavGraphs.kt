@@ -1,9 +1,9 @@
 package com.ramcosta.playground.featurex
 
+import com.ramcosta.composedestinations.annotation.ExternalModuleGraph
 import com.ramcosta.composedestinations.annotation.NavGraph
-import com.ramcosta.composedestinations.annotation.NoParent
 
-@NavGraph<NoParent>(
+@NavGraph<ExternalModuleGraph>(
     navArgs = FeatureXNavArgs::class,
 )
 internal annotation class FeatureXGraph

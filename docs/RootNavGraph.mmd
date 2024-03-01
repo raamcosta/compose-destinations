@@ -20,6 +20,9 @@ settings(["SettingsGraph"]) --- theme_settings("ThemeSettings")
 settings(["SettingsGraph"]) --- other_activity("OtherActivity")
 profile(["ProfileGraph"]) -- "start" --- profile_settings(["ProfileSettingsGraph"])
 profile(["ProfileGraph"]) --- profile_screen("ProfileScreen")
+profile(["ProfileGraph"]) --- feature_z_home_destination("FeatureZHome 🧩")
+profile(["ProfileGraph"]) --- feature_z_second_screen_destination("FeatureZSecondScreen 🧩")
+profile(["ProfileGraph"]) --- public_feature_z_side_screen_destination("PublicFeatureZSideScreen 🧩")
 profile(["ProfileGraph"]) --- public_feature_y_side_screen_destination("PublicFeatureYSideScreen 🧩")
 profile(["ProfileGraph"]) --- feature_x_nav_g(["FeatureXGraph 🧩"])
 profile(["ProfileGraph"]) --- feature_y_nav_g(["FeatureYGraph 🧩"])
@@ -29,6 +32,6 @@ click feature_x_nav_g "FeatureXNavGraph.mmd" "See FeatureXGraph details" _blank
 click feature_y_nav_g "FeatureYNavGraph.mmd" "See FeatureYGraph details" _blank
 
 classDef destination fill:#5383EC,stroke:#ffffff;
-class root/stats_screen,root/profile_settings_screen,feed,go_to_profile_confirmation,test_screen,test_screen2,test_screen3,greeting_screen,settings/stats_screen,another_test_screen,settings_screen,theme_settings,other_activity,profile_screen,public_feature_y_side_screen_destination,profile_settings/profile_settings_screen destination;
+class root/stats_screen,root/profile_settings_screen,feed,go_to_profile_confirmation,test_screen,test_screen2,test_screen3,greeting_screen,settings/stats_screen,another_test_screen,settings_screen,theme_settings,other_activity,profile_screen,feature_z_home_destination,feature_z_second_screen_destination,public_feature_z_side_screen_destination,public_feature_y_side_screen_destination,profile_settings/profile_settings_screen destination;
 classDef navgraph fill:#63BC76,stroke:#ffffff;
 class settings,profile,root,settings,profile_settings,profile,feature_x_nav_g,feature_y_nav_g,profile_settings navgraph;

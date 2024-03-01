@@ -1,4 +1,4 @@
-package com.ramcosta.playground.featurey.screens
+package com.ramcosta.playground.featurez.screens
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,6 +14,6 @@ data class SomeArgsInHere(
     navArgs = SomeArgsInHere::class
 )
 @Composable
-fun PublicFeatureYSideScreen() {
+fun PublicFeatureZSideScreen() {
     Text("PublicFeatureYSideScreen")
 }
