@@ -2,8 +2,8 @@ package com.ramcosta.composedestinations.annotation.parameters
 
 /**
  * Annotation that can be used in arguments of Destination Composable
- * functions to signal Compose Destinations to not consider it as a
- * navigation argument.
+ * functions to signal Compose Destinations to not consider them as
+ * navigation arguments.
  * By default, all arguments with types Compose Destinations allows
  * you to pass as a navigation argument are considered navigation
  * arguments. So use this if you have an argument with such type

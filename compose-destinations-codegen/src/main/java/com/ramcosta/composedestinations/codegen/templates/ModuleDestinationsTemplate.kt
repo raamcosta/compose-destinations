@@ -14,7 +14,7 @@ val moduleDestinationTemplate = FileTemplate(
     imports = setOfImportable(
         "$CORE_PACKAGE_NAME.spec.*",
         "${codeGenBasePackageName}.destinations.*",
-        "$CORE_PACKAGE_NAME.annotation.GeneratedCodeExternalDestinations"
+        "$CORE_PACKAGE_NAME.annotation.internal.GeneratedCodeExternalDestinations"
     ),
     sourceCode = """
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public data object $MODULE_DESTINATIONS_CLASS_NAME_PLACEHOLDER : ModuleDestinationsContainer {
