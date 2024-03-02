@@ -16,7 +16,7 @@ typealias Route = TypedRoute<*>
  * All [TypedDestinationSpec] and [TypedNavGraphSpec] are
  * [TypedRoute].
  *
- * [TypedRoute] instances are not suited to navigate
+ * [TypedRoute] instances are not suitable to be navigated
  * to unless they're also [Direction].
  */
 sealed interface TypedRoute<NAV_ARGS> {

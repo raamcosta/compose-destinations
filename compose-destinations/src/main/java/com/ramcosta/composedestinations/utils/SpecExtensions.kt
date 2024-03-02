@@ -6,7 +6,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import com.ramcosta.composedestinations.navigation.getBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 import com.ramcosta.composedestinations.spec.Route
@@ -102,6 +104,13 @@ fun NavController.isRouteOnBackStack(route: Route): Boolean {
 }
 
 /**
+ * Checks if a given [Direction] is currently somewhere in the back stack.
+ */
+fun NavController.isDirectionOnBackStack(direction: Direction): Boolean {
+    return runCatching { getBackStackEntry(direction) }.isSuccess
+}
+
+/**
  * Same as [isRouteOnBackStack] but provides a [State] which you can use to make sure
  * your Composables get recomposed when this changes.
  */
@@ -114,13 +123,15 @@ fun NavController.isRouteOnBackStackAsState(route: Route): State<Boolean> {
 }
 
 /**
- * Like [androidx.navigation.NavController.getBackStackEntry] but uses a
- * [Route] instead of a route string.
+ * Same as [isDirectionOnBackStack] but provides a [State] which you can use to make sure
+ * your Composables get recomposed when this changes.
  */
-fun NavController.getBackStackEntry(
-    route: Route
-): NavBackStackEntry {
-    return getBackStackEntry(route.route)
+@Composable
+fun NavController.isDirectionOnBackStackAsState(direction: Direction): State<Boolean> {
+    val mappedFlow = remember(currentBackStackEntryFlow) {
+        currentBackStackEntryFlow.map { isDirectionOnBackStack(direction) }
+    }
+    return mappedFlow.collectAsState(initial = isDirectionOnBackStack(direction))
 }
 
 /**

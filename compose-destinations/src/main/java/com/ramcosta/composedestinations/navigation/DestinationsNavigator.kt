@@ -129,6 +129,23 @@ interface DestinationsNavigator {
     }
 
     /**
+     * Takes in a [Direction].
+     * If there are multiple entries in the back stack for the same [DestinationSpec]
+     * or [NavGraphSpec], then specifying the arguments (which is what [Direction] allows)
+     * means a specific entry for the given arguments is the one targeted.
+     *
+     * @see [NavController.popBackStack]
+     */
+    @MainThread
+    fun popBackStack(
+        direction: Direction,
+        inclusive: Boolean,
+        saveState: Boolean = false,
+    ): Boolean {
+        return popBackStack(direction.route, inclusive, saveState)
+    }
+
+    /**
      * @see [NavController.popBackStack]
      */
     @MainThread
@@ -143,6 +160,17 @@ interface DestinationsNavigator {
      */
     @MainThread
     fun clearBackStack(route: Route): Boolean = clearBackStack(route.route)
+
+    /**
+     * Takes in a [Direction].
+     * If there are multiple entries in the back stack for the same [DestinationSpec]
+     * or [NavGraphSpec], then specifying the arguments (which is what [Direction] allows)
+     * means a specific entry for the given arguments is the one targeted.
+     *
+     * @see [NavController.clearBackStack]
+     */
+    @MainThread
+    fun clearBackStack(direction: Direction): Boolean = clearBackStack(direction.route)
 
     /**
      * @see [NavController.clearBackStack]
