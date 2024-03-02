@@ -20,15 +20,17 @@ import com.ramcosta.composedestinations.spec.*
 @Composable
 fun rememberWearNavHostEngine(
     state: SwipeDismissableNavHostState = rememberSwipeDismissableNavHostState(),
+    userSwipeEnabled: Boolean = true
 ): NavHostEngine {
     val defaultNavHostEngine = rememberNavHostEngine()
 
-    return remember {
-        WearNavHostEngine(defaultNavHostEngine, state)
+    return remember(userSwipeEnabled, defaultNavHostEngine, state) {
+        WearNavHostEngine(userSwipeEnabled, defaultNavHostEngine, state)
     }
 }
 
 internal class WearNavHostEngine(
+    private val userSwipeEnabled: Boolean,
     private val defaultNavHostEngine: NavHostEngine,
     private val state: SwipeDismissableNavHostState,
 ) : NavHostEngine {
@@ -56,6 +58,7 @@ internal class WearNavHostEngine(
             modifier = modifier,
             route = route,
             state = state,
+            userSwipeEnabled = userSwipeEnabled,
             builder = builder
         )
     }

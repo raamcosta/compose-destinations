@@ -12,6 +12,7 @@ import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.RouteOrDirection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transform
@@ -96,10 +97,10 @@ fun NavController.currentDestinationAsState(): State<DestinationSpec?> {
 }
 
 /**
- * Checks if a given [Route] (which is either [com.ramcosta.composedestinations.spec.NavGraphSpec]
+ * Checks if a given [Route] (which is either [com.ramcosta.composedestinations.spec.NavGraphSpec] or [Direction]
  * or [com.ramcosta.composedestinations.spec.DestinationSpec]) is currently somewhere in the back stack.
  */
-fun NavController.isRouteOnBackStack(route: Route): Boolean {
+fun NavController.isRouteOnBackStack(route: RouteOrDirection): Boolean {
     return runCatching { getBackStackEntry(route) }.isSuccess
 }
 
@@ -115,23 +116,11 @@ fun NavController.isDirectionOnBackStack(direction: Direction): Boolean {
  * your Composables get recomposed when this changes.
  */
 @Composable
-fun NavController.isRouteOnBackStackAsState(route: Route): State<Boolean> {
+fun NavController.isRouteOnBackStackAsState(route: RouteOrDirection): State<Boolean> {
     val mappedFlow = remember(currentBackStackEntryFlow) {
         currentBackStackEntryFlow.map { isRouteOnBackStack(route) }
     }
     return mappedFlow.collectAsState(initial = isRouteOnBackStack(route))
-}
-
-/**
- * Same as [isDirectionOnBackStack] but provides a [State] which you can use to make sure
- * your Composables get recomposed when this changes.
- */
-@Composable
-fun NavController.isDirectionOnBackStackAsState(direction: Direction): State<Boolean> {
-    val mappedFlow = remember(currentBackStackEntryFlow) {
-        currentBackStackEntryFlow.map { isDirectionOnBackStack(direction) }
-    }
-    return mappedFlow.collectAsState(initial = isDirectionOnBackStack(direction))
 }
 
 /**

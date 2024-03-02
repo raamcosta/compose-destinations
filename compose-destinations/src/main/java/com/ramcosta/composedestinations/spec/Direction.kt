@@ -4,16 +4,16 @@ package com.ramcosta.composedestinations.spec
  * Interface for all classes that contain a route
  * that is ready to be used in navigation.
  *
- * [NavGraphSpec] are [Direction]s since they can
- * be navigated to and don't require arguments.
- *
- * Generated [TypedDestinationSpec] are [Direction] if they don't
- * have any navigation argument. If they do, you can
+ * Generated [TypedDestinationSpec] and [TypedNavGraphSpec] are [Direction]
+ * if they don't have any navigation argument. If they do, you can
  * call the invoke function passing the arguments to get a [Direction].
  */
-interface Direction {
+interface Direction: RouteOrDirection {
 
-    val route: String
+    /**
+     * Route with nav arguments filled in.
+     */
+    override val route: String
 }
 
 /**

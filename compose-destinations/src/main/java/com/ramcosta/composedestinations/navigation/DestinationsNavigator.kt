@@ -9,7 +9,7 @@ import androidx.navigation.Navigator
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.NavGraphSpec
-import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.RouteOrDirection
 
 /**
  * Contract for a navigator of [DestinationSpec].
@@ -121,28 +121,11 @@ interface DestinationsNavigator {
      */
     @MainThread
     fun popBackStack(
-        route: Route,
+        route: RouteOrDirection,
         inclusive: Boolean,
         saveState: Boolean = false,
     ): Boolean {
         return popBackStack(route.route, inclusive, saveState)
-    }
-
-    /**
-     * Takes in a [Direction].
-     * If there are multiple entries in the back stack for the same [DestinationSpec]
-     * or [NavGraphSpec], then specifying the arguments (which is what [Direction] allows)
-     * means a specific entry for the given arguments is the one targeted.
-     *
-     * @see [NavController.popBackStack]
-     */
-    @MainThread
-    fun popBackStack(
-        direction: Direction,
-        inclusive: Boolean,
-        saveState: Boolean = false,
-    ): Boolean {
-        return popBackStack(direction.route, inclusive, saveState)
     }
 
     /**
@@ -159,18 +142,7 @@ interface DestinationsNavigator {
      * @see [NavController.clearBackStack]
      */
     @MainThread
-    fun clearBackStack(route: Route): Boolean = clearBackStack(route.route)
-
-    /**
-     * Takes in a [Direction].
-     * If there are multiple entries in the back stack for the same [DestinationSpec]
-     * or [NavGraphSpec], then specifying the arguments (which is what [Direction] allows)
-     * means a specific entry for the given arguments is the one targeted.
-     *
-     * @see [NavController.clearBackStack]
-     */
-    @MainThread
-    fun clearBackStack(direction: Direction): Boolean = clearBackStack(direction.route)
+    fun clearBackStack(route: RouteOrDirection): Boolean = clearBackStack(route.route)
 
     /**
      * @see [NavController.clearBackStack]

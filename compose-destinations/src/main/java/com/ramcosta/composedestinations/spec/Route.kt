@@ -19,12 +19,13 @@ typealias Route = TypedRoute<*>
  * [TypedRoute] instances are not suitable to be navigated
  * to unless they're also [Direction].
  */
-sealed interface TypedRoute<NAV_ARGS> {
+sealed interface TypedRoute<NAV_ARGS>: RouteOrDirection {
 
     /**
-     * Full route that will be added to the navigation graph
+     * Full route pattern that will be added to the navigation graph.
+     * Navigation arguments are not filled in.
      */
-    val route: String
+    override val route: String
 
     /**
      * Prefix of the route - basically [route] without argument info.

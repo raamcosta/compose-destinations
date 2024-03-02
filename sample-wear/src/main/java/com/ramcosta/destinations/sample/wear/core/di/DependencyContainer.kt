@@ -1,11 +1,11 @@
 package com.ramcosta.destinations.sample.wear.core.di
 
 import androidx.lifecycle.SavedStateHandle
+import com.ramcosta.composedestinations.generated.navArgs
 import com.ramcosta.destinations.sample.wear.MainActivity
 import com.ramcosta.destinations.sample.wear.MainViewModel
 import com.ramcosta.destinations.sample.wear.account.AccountViewModel
 import com.ramcosta.destinations.sample.wear.login.data.LoginStateRepository
-import com.ramcosta.destinations.sample.wear.navArgs
 import com.ramcosta.destinations.sample.wear.tasks.data.StepsRepository
 import com.ramcosta.destinations.sample.wear.tasks.data.TasksRepository
 import com.ramcosta.destinations.sample.wear.tasks.presentation.details.StepDetailsViewModel

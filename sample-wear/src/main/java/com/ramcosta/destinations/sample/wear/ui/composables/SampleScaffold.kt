@@ -5,9 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.TimeText
 import com.ramcosta.composedestinations.spec.Route
-import com.ramcosta.destinations.sample.wear.appCurrentDestinationAsState
+import com.ramcosta.composedestinations.utils.currentDestinationAsState
+import com.ramcosta.composedestinations.utils.startDestination
 import com.ramcosta.destinations.sample.wear.shouldShowScaffoldElements
-import com.ramcosta.destinations.sample.wear.startAppDestination
 
 @Composable
 fun SampleScaffold(
@@ -15,8 +15,8 @@ fun SampleScaffold(
     navController: NavHostController,
     content: @Composable () -> Unit,
 ) {
-    val destination = navController.appCurrentDestinationAsState().value
-        ?: startRoute.startAppDestination
+    val destination = navController.currentDestinationAsState().value
+        ?: startRoute.startDestination
 
     Scaffold(
         timeText = {

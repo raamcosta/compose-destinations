@@ -1,20 +1,32 @@
 package com.ramcosta.destinations.sample.wear.tasks.presentation.details
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.wear.compose.material.*
+import androidx.wear.compose.material.Button
+import androidx.wear.compose.material.CircularProgressIndicator
+import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.ListHeader
+import androidx.wear.compose.material.MaterialTheme
+import androidx.wear.compose.material.ScalingLazyColumn
+import androidx.wear.compose.material.SplitToggleChip
+import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.ToggleChip
+import androidx.wear.compose.material.ToggleChipDefaults
+import androidx.wear.compose.material.items
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.AddStepScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.StepScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.destinations.sample.wear.core.viewmodel.viewModel
-import com.ramcosta.destinations.sample.wear.destinations.AddStepScreenDestination
-import com.ramcosta.destinations.sample.wear.destinations.StepScreenDestination
 import com.ramcosta.destinations.sample.wear.tasks.domain.Step
 
-@Destination(navArgs = TaskScreenNavArgs::class)
+@Destination<RootGraph>(navArgs = TaskScreenNavArgs::class)
 @Composable
 fun TaskScreen(
     navArgs: TaskScreenNavArgs,

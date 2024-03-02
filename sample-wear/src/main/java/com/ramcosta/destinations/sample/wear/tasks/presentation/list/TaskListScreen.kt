@@ -1,6 +1,7 @@
 package com.ramcosta.destinations.sample.wear.tasks.presentation.list
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
@@ -15,15 +16,14 @@ import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.items
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.AccountScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.AddTaskScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TaskScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.destinations.sample.wear.core.viewmodel.viewModel
-import com.ramcosta.destinations.sample.wear.destinations.AccountScreenDestination
-import com.ramcosta.destinations.sample.wear.destinations.AddTaskScreenDestination
-import com.ramcosta.destinations.sample.wear.destinations.SettingsScreenDestination
-import com.ramcosta.destinations.sample.wear.destinations.TaskScreenDestination
 
-@RootGraph(start = true)
-@Destination
+@Destination<RootGraph>(start = true)
 @Composable
 fun TaskListScreen(
     navigator: DestinationsNavigator,

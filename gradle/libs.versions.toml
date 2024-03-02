@@ -25,11 +25,11 @@ composeCompiler = "1.5.10"
 composeNavigation = "2.7.7"
 accompanist = "0.34.0"
 
-ktxSerialization = "1.6.2"
+ktxSerialization = "1.6.3"
 mockk = "1.13.9"
 
 compileTesting = "1.5.0"
-composeWear = "1.1.2"
+composeWear = "1.3.0"
 
 [plugins]
 dependencyCheckPlugin = { id = "com.github.ben-manes.versions", version.ref = "dependencyCheckPluginVersion" }

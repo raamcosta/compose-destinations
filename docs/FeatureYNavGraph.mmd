@@ -5,11 +5,12 @@ title: FeatureY Navigation Graph
 graph TD
 feature_y(["FeatureYGraph"]) -- "start" --- feature_y_home("FeatureYHome")
 feature_y(["FeatureYGraph"]) --- feature_y_internal_args_screen("FeatureYInternalArgsScreen")
+feature_y(["FeatureYGraph"]) --- sub_feature_y_public_side_screen_destination("SubFeatureYPublicSideScreen 🧩")
 feature_y(["FeatureYGraph"]) --- sub_feature_y_nav_g(["SubFeatureYGraph 🧩"])
 
 click sub_feature_y_nav_g "SubFeatureYNavGraph.mmd" "See SubFeatureYGraph details" _blank
 
 classDef destination fill:#5383EC,stroke:#ffffff;
-class feature_y_home,feature_y_internal_args_screen destination;
+class feature_y_home,feature_y_internal_args_screen,sub_feature_y_public_side_screen_destination destination;
 classDef navgraph fill:#63BC76,stroke:#ffffff;
 class feature_y,sub_feature_y_nav_g navgraph;
