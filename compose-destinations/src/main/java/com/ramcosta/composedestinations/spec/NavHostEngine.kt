@@ -2,7 +2,10 @@ package com.ramcosta.composedestinations.spec
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.*
+import androidx.navigation.NavDestination
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.Navigator
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
@@ -31,7 +34,7 @@ interface NavHostEngine {
     }
 
     /**
-     * Engine type between [Type.DEFAULT] or [Type.ANIMATED]
+     * Engine type between [Type.DEFAULT] or [Type.WEAR]
      */
     val type: Type
 
@@ -61,6 +64,7 @@ interface NavHostEngine {
      */
     fun NavGraphBuilder.navigation(
         navGraph: NavGraphSpec,
+        manualComposableCalls: ManualComposableCalls,
         builder: NavGraphBuilder.() -> Unit
     )
 

@@ -144,7 +144,7 @@ private fun NavGraphBuilder.addNestedNavGraphs(
 ): Unit = with(engine) {
 
     nestedNavGraphs.forEach { nestedGraph ->
-        navigation(nestedGraph) {
+        navigation(nestedGraph, manualComposableCalls) {
             addNavGraphDestinations(
                 engine = engine,
                 navGraph = nestedGraph,

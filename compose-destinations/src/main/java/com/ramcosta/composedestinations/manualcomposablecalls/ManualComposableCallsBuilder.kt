@@ -10,7 +10,9 @@ import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
@@ -68,6 +70,51 @@ fun <T> ManualComposableCallsBuilder.dialogComposable(
 class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi val engineType: NavHostEngine.Type) {
 
     /**
+     * Overrides the default animations of [this] [NavGraphSpec] at runtime to [animation].
+     * You should prefer to use the NavGraph annotation `defaultTransitions` unless there's a specific
+     * reason to use this.
+     */
+    infix fun NavGraphSpec.animateWith(animation: DestinationStyle.Animated) {
+        if (this is NavHostGraphSpec) {
+            error("'animateWith' cannot be called for NavHostGraphs. Use DestinationsNavHost's 'defaultTransitions' for the same effect!")
+        }
+        add(route, animation)
+    }
+
+    /**
+     * Overrides the default animations of [this] [NavGraphSpec] at runtime to use [enterTransition],
+     * [exitTransition], [popEnterTransition] and [popExitTransition].
+     * You should prefer to use the NavGraph annotation `defaultTransitions` unless there's a specific
+     * reason to use this.
+     */
+    fun NavGraphSpec.animateWith(
+        enterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? =
+            null,
+        exitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? =
+            null,
+        popEnterTransition: (
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?
+        )? = enterTransition,
+        popExitTransition: (
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?
+        )? = exitTransition,
+    ) {
+        this animateWith object: DestinationStyle.Animated() {
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? =
+                enterTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? =
+                exitTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? =
+                popEnterTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? =
+                popExitTransition?.invoke(this)
+        }
+    }
+
+    /**
      * Overrides the style of [this] [DestinationSpec] at runtime to [animation].
      * You should prefer to use the Destination annotation `style` unless there's a specific
      * reason to use this.
@@ -76,7 +123,7 @@ class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi
         if (style !is DestinationStyle.Default && style !is DestinationStyle.Animated) {
             error("'animateWith' can only be called for a destination of style 'Default' or 'Animated'")
         }
-        add(this, animation)
+        add(route, animation)
     }
 
     /**
@@ -116,10 +163,10 @@ class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi
     private val animations: MutableMap<String, DestinationStyle.Animated> = mutableMapOf()
 
     internal fun add(
-        destination: DestinationSpec,
+        route: String,
         animation: DestinationStyle.Animated,
     ) {
-        animations[destination.route] = animation
+        animations[route] = animation
     }
 
     // can be internal once bottom sheet functionality is built in

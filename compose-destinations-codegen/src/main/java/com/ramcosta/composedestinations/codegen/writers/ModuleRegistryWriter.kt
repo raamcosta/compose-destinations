@@ -22,19 +22,21 @@ internal class ModuleRegistryWriter(
 ) {
     fun write(
         destinations: List<CodeGenProcessedDestination>,
-        graphTrees: List<RawNavGraphTree>,
+        graphTrees: List<RawNavGraphTree>
+    ) {
+        val resultBackTypesByDestination: List<Pair<CodeGenProcessedDestination, TypeInfo>> =
+            destinations.mapNotNull { destination ->
+                if (destination.visibility != Visibility.PUBLIC) return@mapNotNull null
 
-        ) {
-        val resultBackTypesByDestination: List<Pair<CodeGenProcessedDestination, TypeInfo>> = destinations.mapNotNull { destination ->
-            if (destination.visibility != Visibility.PUBLIC) return@mapNotNull null
+                destination.parameters.firstOrNull { it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME }
+                    ?.let {
+                        val type =
+                            (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type
+                                ?: return@mapNotNull null
 
-            destination.parameters.firstOrNull { it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME }?.let {
-                val type = (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type
-                    ?: return@mapNotNull null
-
-                destination to type
+                        destination to type
+                    }
             }
-        }
 
         val registryId = moduleName.ifEmpty { UUID.randomUUID().toString().replace("-", "_") }
         val importableHelper = ImportableHelper(
@@ -80,7 +82,11 @@ internal class ModuleRegistryWriter(
                     resultBackTypesByDestination.joinToString(",\n") { (destination, type) ->
                         """
                         |       _Destination_Result_Info_$registryId(
-                        |           destination = ${importableHelper.addAndGetPlaceholder(destination.destinationImportable)}::class,
+                        |           destination = ${
+                            importableHelper.addAndGetPlaceholder(
+                                destination.destinationImportable
+                            )
+                        }::class,
                         |           resultType = ${importableHelper.addAndGetPlaceholder(type.importable)}::class,
                         |           isResultNullable = ${type.isNullable}
                         |       )

@@ -26,7 +26,7 @@ import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 @Composable
 fun rememberNavHostEngine(
     navHostContentAlignment: Alignment = Alignment.Center,
-): NavHostEngine = remember {
+): NavHostEngine = remember(navHostContentAlignment) {
     DefaultNavHostEngine(
         navHostContentAlignment = navHostContentAlignment,
     )
@@ -68,9 +68,11 @@ internal class DefaultNavHostEngine(
 
     override fun NavGraphBuilder.navigation(
         navGraph: NavGraphSpec,
+        manualComposableCalls: ManualComposableCalls,
         builder: NavGraphBuilder.() -> Unit
     ) {
-        val transitions = navGraph.defaultTransitions
+        val transitions = manualComposableCalls.manualAnimation(navGraph.route)
+            ?: navGraph.defaultTransitions
         if (transitions != null) {
             with(transitions) {
                 navigation(

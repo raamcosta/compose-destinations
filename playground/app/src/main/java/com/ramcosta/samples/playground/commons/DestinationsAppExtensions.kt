@@ -33,6 +33,7 @@ fun DestinationSpec.DrawerContent(
     )
 }
 
+// TODO Don't do this, since we no longer create sealed Destination, it doesn't work very well
 @get:StringRes
 val DestinationSpec.requireTitle
     get(): Int {

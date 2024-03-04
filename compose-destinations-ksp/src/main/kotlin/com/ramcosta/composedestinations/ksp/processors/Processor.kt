@@ -53,23 +53,7 @@ class Processor(
             !navGraphAnnotations.iterator().hasNext() &&
             !navHostGraphAnnotations.iterator().hasNext()
         ) {
-            val moduleRegistryFile: KSFile = resolver.getNewFiles()
-                .firstOrNull { it.fileName == "_ModuleRegistry.kt" }
-                ?: return emptyList()
-            val moduleRegistryId = moduleRegistryFile
-                .declarations.first {
-                    it.simpleName.asString().startsWith("_ModuleRegistry_")
-                }.simpleName.asString().removePrefix("_ModuleRegistry_")
-
-
-            CodeGenerator.generateModuleRegistryPathInfo(
-                KspCodeOutputStreamMaker(
-                    codeGenerator,
-                    MutableKSFileSourceMapper()
-                ),
-                moduleRegistryFile.filePath,
-                moduleRegistryId
-            )
+            generateModuleRegistryPathInfo(resolver)
             return emptyList()
         }
 
@@ -107,6 +91,26 @@ class Processor(
         )
 
         return emptyList()
+    }
+
+    private fun generateModuleRegistryPathInfo(resolver: Resolver) {
+        val moduleRegistryFile: KSFile = resolver.getNewFiles()
+            .firstOrNull { it.fileName == "_ModuleRegistry.kt" }
+            ?: return
+        val moduleRegistryId = moduleRegistryFile
+            .declarations.first {
+                it.simpleName.asString().startsWith("_ModuleRegistry_")
+            }.simpleName.asString().removePrefix("_ModuleRegistry_")
+
+
+        CodeGenerator.generateModuleRegistryPathInfo(
+            KspCodeOutputStreamMaker(
+                codeGenerator,
+                MutableKSFileSourceMapper()
+            ),
+            moduleRegistryFile.filePath,
+            moduleRegistryId
+        )
     }
 
     @OptIn(KspExperimental::class)

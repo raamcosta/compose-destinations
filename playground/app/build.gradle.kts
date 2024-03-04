@@ -60,10 +60,6 @@ android {
 //        // Module name.
 //        // It will be used as the generated sealed Destinations prefix
 //        arg("compose-destinations.moduleName", "featureX")
-        // TODO RACOSTA
-        // - Visualisation of nav graph even more important!
-        // - Removing default RootGraph annotation and allow start = true for trivial cases?! 🤔
-        //      - means we could take configs like the codegen package name or module name there?
 
 //        // If you want to manually create the nav graphs, use this:
 //        arg("compose-destinations.generateNavGraphs", "false")

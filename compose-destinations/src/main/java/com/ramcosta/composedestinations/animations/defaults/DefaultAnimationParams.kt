@@ -9,6 +9,9 @@ import androidx.compose.animation.fadeOut
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 
+/**
+ * Disables all animations for this NavHost by default.
+ */
 object NoTransitions : NavHostAnimatedDestinationStyle() {
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition {
         return EnterTransition.None
@@ -19,6 +22,9 @@ object NoTransitions : NavHostAnimatedDestinationStyle() {
     }
 }
 
+/**
+ * Uses default fading animations for this NavHost by default.
+ */
 object DefaultFadingTransitions: NavHostAnimatedDestinationStyle() {
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition {
         return fadeIn(animationSpec = tween(700))

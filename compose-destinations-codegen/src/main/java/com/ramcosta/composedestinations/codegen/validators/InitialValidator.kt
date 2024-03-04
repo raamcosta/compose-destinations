@@ -4,6 +4,7 @@ import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOP
 import com.ramcosta.composedestinations.codegen.commons.BOTTOM_SHEET_DEPENDENCY
 import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_SIMPLE_NAME
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
 import com.ramcosta.composedestinations.codegen.commons.OPEN_RESULT_RECIPIENT_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.RESULT_RECIPIENT_QUALIFIED_NAME
@@ -96,7 +97,7 @@ class InitialValidator(
     private fun DestinationGeneratingParams.validateReceiverColumnScope() {
         if (composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME) {
             if (!isBottomSheetDependencyPresent) {
-                throw IllegalDestinationsSetup(
+                throw MissingRequiredDependency(
                     "'${composableName}' composable: " +
                             "You need to include $BOTTOM_SHEET_DEPENDENCY dependency to use a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
                 )

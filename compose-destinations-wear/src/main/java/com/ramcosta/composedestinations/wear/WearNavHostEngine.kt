@@ -4,15 +4,28 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.*
-import androidx.wear.compose.navigation.*
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.Navigator
+import androidx.wear.compose.navigation.SwipeDismissableNavHost
+import androidx.wear.compose.navigation.SwipeDismissableNavHostState
+import androidx.wear.compose.navigation.WearNavigator
+import androidx.wear.compose.navigation.composable
+import androidx.wear.compose.navigation.rememberSwipeDismissableNavHostState
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.scope.DestinationScopeImpl
-import com.ramcosta.composedestinations.spec.*
+import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Returns the [WearNavHostEngine] to be used with Wear OS apps.
@@ -65,9 +78,10 @@ internal class WearNavHostEngine(
 
     override fun NavGraphBuilder.navigation(
         navGraph: NavGraphSpec,
+        manualComposableCalls: ManualComposableCalls,
         builder: NavGraphBuilder.() -> Unit
     ) {
-        with(defaultNavHostEngine) { navigation(navGraph, builder) }
+        with(defaultNavHostEngine) { navigation(navGraph, manualComposableCalls, builder) }
     }
 
     override fun <T> NavGraphBuilder.composable(

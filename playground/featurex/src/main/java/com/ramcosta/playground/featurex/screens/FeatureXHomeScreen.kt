@@ -10,13 +10,14 @@ import com.ramcosta.composedestinations.generated.featurex.destinations.FeatureX
 import com.ramcosta.composedestinations.generated.featurex.destinations.InternalArgsScreenDestination
 import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.playground.featurex.FeatureXGraph
 import com.ramcosta.playground.featurex.FeatureXWrapper
 
 data class FeatureXHomeNavArgs(
     val something2: String
 )
 
-@Destination<com.ramcosta.playground.featurex.FeatureXGraph>(
+@Destination<FeatureXGraph>(
     start = true,
     navArgs = FeatureXHomeNavArgs::class,
     wrappers = [FeatureXWrapper::class]

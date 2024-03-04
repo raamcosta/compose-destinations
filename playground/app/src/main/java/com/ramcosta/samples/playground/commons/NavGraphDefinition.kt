@@ -34,13 +34,6 @@ import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileNavGraphArgs
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsNavGraphArgs
 import kotlin.reflect.KClass
 
-/*
- TODO RACOSTA:
- - Enable multiple destinations in the same Composable - possibility to belong to multiple graphs as well
- - Runtime animations that could depend on some app logic or state - maybe with manual composable calls, also accept animations to be set, in
- which case we would call those instead of the ones from DestinationStyle.
-*/
-
 @NavGraph<RootGraph>(
     defaultTransitions = DefaultFadingTransitions::class
 )
