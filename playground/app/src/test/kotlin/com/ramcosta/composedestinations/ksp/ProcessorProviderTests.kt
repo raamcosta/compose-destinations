@@ -28,11 +28,10 @@ class ProcessorProviderTests {
           import com.ramcosta.composedestinations.annotation.Destination
           import com.ramcosta.composedestinations.annotation.RootGraph
 
-          @RootNavGraph(start = true)
-          @Destination(route = "test1")
+          @Destination<RootGraph>(start = true)
           fun TestScreen1() {}
 
-          @Destination(route = "test2")
+          @Destination<RootGraph>
           fun TestScreen2() {}
           """.trimIndent()
             )
@@ -56,18 +55,19 @@ class ProcessorProviderTests {
           package test
 
           import com.ramcosta.composedestinations.annotation.Destination
+          import com.ramcosta.composedestinations.annotation.RootGraph
 
-          @Destination(route = "test1")
+          @Destination<RootGraph>
           fun TestScreen1() {}
 
-          @Destination(route = "test2")
+          @Destination<RootGraph>
           fun TestScreen2() {}
           """.trimIndent()
             )
         )
 
-        assertEquals(result.exitCode, KotlinCompilation.ExitCode.COMPILATION_ERROR)
-        assertTrue(result.messages.contains("com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup: Use argument `start = true` in the @Destination annotation of the 'root' nav graph's start destination!"))
+        assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
+        assertTrue(result.messages.contains("IllegalDestinationsSetup: NavGraph 'RootGraph' doesn't have any start route. Use corresponding annotation with `start = true` in the Destination or nested NavGraph you want to be the start of this graph!"))
     }
 
     @Test
@@ -89,11 +89,10 @@ class ProcessorProviderTests {
             val arg: NotSerializable
           )
 
-          @RootNavGraph(start = true)
-          @Destination(route = "test1")
+          @Destination<RootGraph>(start = true)
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgs = TestArgs::class)
+          @Destination<RootGraph>(navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -126,11 +125,10 @@ class ProcessorProviderTests {
             val arg: IsSerializable
           )
 
-          @RootNavGraph(start = true)
-          @Destination(route = "test1")
+          @Destination<RootGraph>(start = true)
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgs = TestArgs::class)
+          @Destination<RootGraph>(navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -169,11 +167,10 @@ class ProcessorProviderTests {
             val arg: Aliased
           )
 
-          @RootNavGraph(start = true)
-          @Destination(route = "test1")
+          @Destination<RootGraph>(start = true)
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgs = TestArgs::class)
+          @Destination<RootGraph>(navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -208,11 +205,10 @@ class ProcessorProviderTests {
             val arg: Aliased
           )
 
-          @RootNavGraph(start = true)
-          @Destination(route = "test1")
+          @Destination<RootGraph>(start = true)
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgs = TestArgs::class)
+          @Destination<RootGraph>(navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -252,12 +248,11 @@ class ProcessorProviderTests {
             val arg: Aliased
           )
 
-          @RootNavGraph(start = true)
-          @Destination(route = "test1")
+          @Destination<RootGraph>(start = true)
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgs = TestArgs::class)
-          fun TestScreen2(
+          @Destination<RootGraph>(navArgs = TestArgs::class)
+          fun TestScreen2<RootGraph>(
             navArgs: TestArgs
           ) {}
           """.trimIndent()
@@ -291,12 +286,11 @@ class ProcessorProviderTests {
             val arg: Aliased
           )
 
-          @RootNavGraph(start = true)
-          @Destination(route = "test1")
+          @Destination<RootGraph>(start = true)
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgs = TestArgs::class)
-          fun TestScreen2(
+          @Destination<RootGraph>(navArgs = TestArgs::class)
+          fun TestScreen2<RootGraph>(
             navArgs: TestArgs
           ) {}
           """.trimIndent()
@@ -331,11 +325,10 @@ class ProcessorProviderTests {
             val arg: AliasedSecond
           )
 
-          @RootNavGraph(start = true)
-          @Destination(route = "test1")
+          @Destination<RootGraph>(start = true)
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgs = TestArgs::class)
+          @Destination<RootGraph>(navArgs = TestArgs::class)
           fun TestScreen2(
             navArgs: TestArgs
           ) {}
@@ -365,11 +358,10 @@ class ProcessorProviderTests {
           import com.ramcosta.composedestinations.annotation.RootGraph
           import com.ramcosta.playground.core.BlogPostArgs
 
-          @RootNavGraph(start = true)
-          @Destination(route = "test1")
+          @Destination<RootGraph>(start = true)
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgs = BlogPostArgs::class)
+          @Destination<RootGraph>(navArgs = BlogPostArgs::class)
           fun TestScreen2(
             navArgs: BlogPostArgs
           ) {}
@@ -398,23 +390,20 @@ class ProcessorProviderTests {
 
           import com.ramcosta.composedestinations.annotation.Destination
           import com.ramcosta.composedestinations.annotation.RootGraph
-          import com.ramcosta.playground.core.WithDefaultValueArgs
+          import com.ramcosta.playground.core.TestWithDefaultValueArgs
 
-          @RootNavGraph(start = true)
-          @Destination(route = "test1")
+          @Destination<RootGraph>(start = true)
           fun TestScreen1() {}
 
-          @Destination(route = "test2", navArgs = WithDefaultValueArgs::class)
-          fun TestScreen2(
-            navArgs: WithDefaultValueArgs
-          ) {}
+          @Destination<RootGraph>(navArgs = TestWithDefaultValueArgs::class)
+          fun TestScreen2() {}
           """.trimIndent()
             )
         )
 
         val result = compilation.compile()
 
-        assertEquals(result.exitCode, KotlinCompilation.ExitCode.COMPILATION_ERROR)
+        assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         assertTrue(result.messages.contains("com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup: Cannot detect default value for navigation argument 'isCreate'"))
     }
 

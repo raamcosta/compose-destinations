@@ -15,4 +15,4 @@
 .cxx
 local.properties
 /secring.gpg
-/docs/*.html
+/playground/docs/*.html

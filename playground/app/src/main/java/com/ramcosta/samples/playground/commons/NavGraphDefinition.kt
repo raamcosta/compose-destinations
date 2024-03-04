@@ -26,7 +26,7 @@ import com.ramcosta.composedestinations.generated.featurey.navgraphs.FeatureYNav
 import com.ramcosta.composedestinations.generated.featurez.FeatureZModuleDestinations
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
-import com.ramcosta.playground.core.WithDefaultValueArgs
+import com.ramcosta.playground.core.ArgsFromAnotherModule
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileSettingsProfileSettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.RootProfileSettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.navGraphArgs
@@ -112,11 +112,11 @@ fun StatsScreen() {
     Text("StatsScreen")
 }
 
-@Destination<ProfileSettingsGraph>(start = true, navArgs = WithDefaultValueArgs::class)
-@Destination<RootGraph>(navArgs = WithDefaultValueArgs::class)
+@Destination<ProfileSettingsGraph>(start = true, navArgs = ArgsFromAnotherModule::class)
+@Destination<RootGraph>(navArgs = ArgsFromAnotherModule::class)
 @Composable
 fun ProfileSettingsScreen(
-    args: WithDefaultValueArgs,
+    args: ArgsFromAnotherModule,
     navBackStackEntry: NavBackStackEntry
 ) = Column(verticalArrangement = Arrangement.Absolute.spacedBy(6.dp)) {
     Text("$args")

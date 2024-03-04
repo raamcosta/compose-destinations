@@ -44,8 +44,8 @@ android {
 
     ksp {
         arg("compose-destinations.moduleName", "featureY")
-        arg("compose-destinations.htmlMermaidGraph", "$rootDir/docs")
-        arg("compose-destinations.mermaidGraph", "$rootDir/docs")
+        arg("compose-destinations.htmlMermaidGraph", "$rootDir/playground/docs")
+        arg("compose-destinations.mermaidGraph", "$rootDir/playground/docs")
     }
 }
 
