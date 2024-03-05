@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="compose-destinations.ComposeDestinations.playground">
+        <State />
+      </entry>
       <entry key="playground">
         <State />
       </entry>
