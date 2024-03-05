@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.navargs.primitives.arraylist
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
@@ -38,7 +37,7 @@ class DestinationsEnumArrayListNavType<E : Enum<*>>(
 
     override fun serializeValue(value: ArrayList<E>?): String {
         if (value == null) return ENCODED_NULL
-        return value.joinToString(",") { it.name }
+        return "[${value.joinToString(",") { it.name }}]"
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<E>? {
