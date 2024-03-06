@@ -4,14 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
-import androidx.wear.compose.material.rememberSwipeToDismissBoxState
-import androidx.wear.compose.navigation.rememberSwipeDismissableNavHostState
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.LoginScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.wear.rememberWearNavHostEngine
 import com.ramcosta.destinations.sample.wear.core.viewmodel.activityViewModel
-import com.ramcosta.destinations.sample.wear.destinations.Destination
-import com.ramcosta.destinations.sample.wear.destinations.LoginScreenDestination
 import com.ramcosta.destinations.sample.wear.ui.composables.SampleScaffold
 
 @Composable
@@ -41,14 +41,14 @@ fun SampleApp() {
     }
 }
 
-val Destination.shouldShowScaffoldElements get() = this !is LoginScreenDestination
+val DestinationSpec.shouldShowScaffoldElements get() = this !is LoginScreenDestination
 
 @Composable
 private fun ShowLoginWhenLoggedOut(
     vm: MainViewModel,
     navController: NavHostController
 ) {
-    val currentDestination by navController.appCurrentDestinationAsState()
+    val currentDestination by navController.currentDestinationAsState()
     val isLoggedIn by vm.isLoggedInFlow.collectAsState()
 
     if (!isLoggedIn && currentDestination != LoginScreenDestination) {

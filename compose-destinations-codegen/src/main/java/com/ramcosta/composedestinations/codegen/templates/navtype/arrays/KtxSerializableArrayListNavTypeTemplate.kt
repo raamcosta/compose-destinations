@@ -65,6 +65,10 @@ $NAV_TYPE_VISIBILITY class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
         return savedStateHandle.get<ArrayList<ParcelableByteArrayList>?>(key)?.toTypeArrayList()
     }
+    
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>?) {
+        savedStateHandle[key] = value?.toBundleArrayList()
+    }
 
     private fun ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>.toBundleArrayList() =
         mapTo(ArrayList()) { ParcelableByteArrayList(serializer.toByteArray(it)) }

@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.navargs.primitives
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 
 @Suppress("UNCHECKED_CAST")
@@ -30,7 +29,11 @@ class DestinationsEnumNavType<E : Enum<*>>(
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): E? {
-        return savedStateHandle.get<E?>(key)
+        return savedStateHandle[key]
+    }
+
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: E?) {
+        savedStateHandle[key] = value
     }
 
 }

@@ -1,37 +1,34 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.model.CustomNavType
+import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 
-class DestinationsWriter(
+internal class DestinationsWriter(
     private val codeGenConfig: CodeGenConfig,
     private val codeGenerator: CodeOutputStreamMaker,
-    private val core: Core,
+    private val isBottomSheetDependencyPresent: Boolean,
     private val customNavTypeByType: Map<Type, CustomNavType>,
 ) {
 
     fun write(
-        destinations: List<DestinationGeneratingParamsWithNavArgs>,
-    ): List<GeneratedDestination> {
-        val generatedFiles = mutableListOf<GeneratedDestination>()
+        destinations: List<CodeGenProcessedDestination>,
+    ) {
 
         destinations.forEach { destination ->
             val importableHelper = ImportableHelper()
-            val generatedDestination = SingleDestinationWriter(
+            SingleDestinationWriter(
                 codeGenConfig,
                 codeGenerator,
-                core,
+                isBottomSheetDependencyPresent,
                 NavArgResolver(customNavTypeByType, importableHelper),
                 destination,
-                customNavTypeByType,
                 importableHelper
             ).write()
-
-            generatedFiles.add(generatedDestination)
         }
-
-        return generatedFiles
     }
 }

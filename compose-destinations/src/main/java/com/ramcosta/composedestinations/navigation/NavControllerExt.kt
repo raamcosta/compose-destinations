@@ -1,11 +1,13 @@
 package com.ramcosta.composedestinations.navigation
 
 import androidx.annotation.MainThread
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.PopUpToBuilder
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.RouteOrDirection
 
 /**
  * Like [NavController.navigate], but uses [Direction] instead of a String route.
@@ -18,45 +20,40 @@ fun NavController.navigate(
 }
 
 /**
- * Like [NavOptionsBuilder.popUpTo] but uses [Route] instead of a String route, making it
- * clear what kind of route we need to use and making it more "Compose Destinations friendly".
+ * Like [NavOptionsBuilder.popUpTo] but uses [Route] or [Direction] instead of a String route,
+ * it more "Compose Destinations friendly".
  */
-fun NavOptionsBuilder.popUpTo(route: Route, popUpToBuilder: PopUpToBuilder.() -> Unit = {}) {
+fun NavOptionsBuilder.popUpTo(
+    route: RouteOrDirection,
+    popUpToBuilder: PopUpToBuilder.() -> Unit = {}
+) {
     popUpTo(route.route, popUpToBuilder)
 }
 
 /**
- * Like [NavController.popBackStack] but uses [Route] instead of a String route, making it clear
- * what kind of route we need to use and making it more "Compose Destinations friendly".
+ * Like [NavController.popBackStack] but [Route] or [Direction] instead of a String route, making
+ * it more "Compose Destinations friendly".
  */
 @MainThread
 fun NavController.popBackStack(
-    route: Route,
+    route: RouteOrDirection,
     inclusive: Boolean,
     saveState: Boolean = false
 ): Boolean = popBackStack(route.route, inclusive, saveState)
 
 /**
- * Like [NavController.clearBackStack] but uses [Route] instead of a String route, making it clear
- * what kind of route we need to use and making it more "Compose Destinations friendly".
+ * Like [NavController.clearBackStack] but [Route] or [Direction] instead of a String route, making
+ * it more "Compose Destinations friendly".
  */
 @MainThread
-fun NavController.clearBackStack(route: Route): Boolean = clearBackStack(route.route)
-
-// region deprecated APIs
+fun NavController.clearBackStack(route: RouteOrDirection): Boolean = clearBackStack(route.route)
 
 /**
- * Like [NavController.navigate], but uses [Direction] instead of a String route.
+ * Like [androidx.navigation.NavController.getBackStackEntry] but uses a
+ * [Route] or [Direction] instead of a route string.
  */
-@Deprecated(
-    message = "Api will be removed! Use `navigate` extension method instead.",
-    replaceWith = ReplaceWith("navigate(direction, navOptionsBuilder)")
-)
-fun NavController.navigateTo(
-    direction: Direction,
-    navOptionsBuilder: NavOptionsBuilder.() -> Unit = {}
-) {
-    navigate(direction.route, navOptionsBuilder)
+fun NavController.getBackStackEntry(
+    route: RouteOrDirection
+): NavBackStackEntry {
+    return getBackStackEntry(route.route)
 }
-
-// endregion

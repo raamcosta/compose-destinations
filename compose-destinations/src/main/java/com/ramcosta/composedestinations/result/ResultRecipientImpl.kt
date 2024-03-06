@@ -14,7 +14,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
-internal class ResultRecipientImpl<D : DestinationSpec<*>, R>(
+internal class ResultRecipientImpl<D : DestinationSpec, R>(
     private val navBackStackEntry: NavBackStackEntry,
     resultOriginType: Class<D>,
     resultType: Class<R>,
@@ -74,37 +74,5 @@ internal class ResultRecipientImpl<D : DestinationSpec<*>, R>(
     private fun hasAnyResult(): Boolean {
         return navBackStackEntry.savedStateHandle.contains(canceledKey) ||
                 navBackStackEntry.savedStateHandle.contains(resultKey)
-    }
-
-    @Suppress("OVERRIDE_DEPRECATION", "OverridingDeprecatedMember")
-    @Composable
-    override fun onResult(listener: (R) -> Unit) {
-        val currentListener by rememberUpdatedState(listener)
-
-        DisposableEffect(key1 = Unit) {
-            val observer = object : LifecycleEventObserver {
-                override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                    when (event) {
-                        Lifecycle.Event.ON_RESUME -> {
-                            if (navBackStackEntry.savedStateHandle.contains(resultKey)) {
-                                currentListener(navBackStackEntry.savedStateHandle.remove<R>(resultKey) as R)
-                            }
-                        }
-
-                        Lifecycle.Event.ON_DESTROY -> {
-                            navBackStackEntry.lifecycle.removeObserver(this)
-                        }
-
-                        else -> Unit
-                    }
-                }
-            }
-
-            navBackStackEntry.lifecycle.addObserver(observer)
-
-            onDispose {
-                navBackStackEntry.lifecycle.removeObserver(observer)
-            }
-        }
     }
 }

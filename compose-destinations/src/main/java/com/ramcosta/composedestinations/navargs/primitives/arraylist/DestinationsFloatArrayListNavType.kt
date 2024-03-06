@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.navargs.primitives.arraylist
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
@@ -11,7 +10,7 @@ import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 object DestinationsFloatArrayListNavType : DestinationsNavType<ArrayList<Float>?>() {
 
     override fun put(bundle: Bundle, key: String, value: ArrayList<Float>?) {
-        bundle.putFloatArray(key, value?.let { list -> FloatArray(list.size) { list[it] } })
+        bundle.putFloatArray(key, value.toArray())
     }
 
     override fun get(bundle: Bundle, key: String): ArrayList<Float>? {
@@ -40,6 +39,14 @@ object DestinationsFloatArrayListNavType : DestinationsNavType<ArrayList<Float>?
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<Float>? {
         return savedStateHandle.get<FloatArray?>(key).toArrayList()
+    }
+
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: ArrayList<Float>?) {
+        savedStateHandle[key] = value.toArray()
+    }
+
+    private fun ArrayList<Float>?.toArray(): FloatArray? {
+        return this?.let { list -> FloatArray(list.size) { list[it] } }
     }
 
     private fun FloatArray?.toArrayList(): ArrayList<Float>? {

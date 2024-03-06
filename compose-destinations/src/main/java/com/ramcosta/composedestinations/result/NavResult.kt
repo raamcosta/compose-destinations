@@ -10,7 +10,7 @@ package com.ramcosta.composedestinations.result
  * otherwise the value set will be wrapped in [Value].
  */
 sealed interface NavResult<out R> {
-    object Canceled: NavResult<Nothing>
+    data object Canceled: NavResult<Nothing>
     data class Value<R>(val value: R): NavResult<R>
 }
 

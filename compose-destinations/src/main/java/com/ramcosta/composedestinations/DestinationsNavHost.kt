@@ -5,13 +5,16 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.TypedNavGraphSpec
 import com.ramcosta.composedestinations.utils.NavGraphRegistry
 
 /**
@@ -34,11 +37,12 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
  * @param startRoute the start destination of the NavHost. By default, we'll use the `startDestination`
  * of the [navGraph]. This makes it possible to override that default on runtime.
  *
- * @param engine [NavHostEngine] to use. If you are not using animation features
- * (which need "io.github.raamcosta.compose-destinations:animations-core" dependency), you don't
+ * @param defaultTransitions default enter/exit transition animations for all destinations.
+ * By default it's [navGraph]'s [TypedNavGraphSpec.defaultTransitions].
+ *
+ * @param engine [NavHostEngine] to use. If you are not targeting wear
+ * (which need "io.github.raamcosta.compose-destinations:wear" dependency), you don't
  * need to explicitly pass in anything, since the default engine will be used.
- * If using animation features, then you should pass the [NavHostEngine] returned by
- * `rememberAnimatedNavHostEngine` function.
  *
  * @param navController [NavHostController] that can be used to navigate between this NavHost's destinations.
  * If you need this outside the scope of this function, you should get it from [androidx.navigation.compose.rememberNavController]
@@ -58,9 +62,10 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
  */
 @Composable
 fun DestinationsNavHost(
-    navGraph: NavGraphSpec,
+    navGraph: NavHostGraphSpec,
     modifier: Modifier = Modifier,
     startRoute: Route = navGraph.startRoute,
+    defaultTransitions: NavHostAnimatedDestinationStyle = navGraph.defaultTransitions,
     engine: NavHostEngine = rememberNavHostEngine(),
     navController: NavHostController = engine.rememberNavController(),
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit = {},
@@ -71,6 +76,7 @@ fun DestinationsNavHost(
     engine.NavHost(
         modifier = modifier,
         route = navGraph.route,
+        defaultTransitions = defaultTransitions,
         startRoute = startRoute,
         navController = navController,
     ) {
@@ -79,7 +85,7 @@ fun DestinationsNavHost(
             navGraph = navGraph,
             navController = navController,
             dependenciesContainerBuilder = dependenciesContainerBuilder,
-            manualComposableCalls = ManualComposableCallsBuilder(engine.type, navGraph)
+            manualComposableCalls = ManualComposableCallsBuilder(engine.type)
                 .apply { manualComposableCallsBuilder() }
                 .build(),
         )
@@ -90,7 +96,7 @@ fun DestinationsNavHost(
 
 @Composable
 private fun HandleNavGraphRegistry(
-    navGraph: NavGraphSpec,
+    navGraph: NavHostGraphSpec,
     navController: NavHostController
 ) {
     NavGraphRegistry.addGraph(navController, navGraph)
@@ -111,7 +117,7 @@ private fun NavGraphBuilder.addNavGraphDestinations(
     manualComposableCalls: ManualComposableCalls,
 ): Unit = with(engine) {
 
-    navGraph.destinationsByRoute.values.forEach { destination ->
+    navGraph.destinations.forEach { destination ->
         composable(
             destination,
             navController,
@@ -138,7 +144,7 @@ private fun NavGraphBuilder.addNestedNavGraphs(
 ): Unit = with(engine) {
 
     nestedNavGraphs.forEach { nestedGraph ->
-        navigation(nestedGraph) {
+        navigation(nestedGraph, manualComposableCalls) {
             addNavGraphDestinations(
                 engine = engine,
                 navGraph = nestedGraph,

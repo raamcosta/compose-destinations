@@ -12,6 +12,7 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.resultBackNavigator
 import com.ramcosta.composedestinations.result.resultRecipient
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 @Immutable
 interface NavGraphBuilderDestinationScope<T> {
@@ -19,7 +20,7 @@ interface NavGraphBuilderDestinationScope<T> {
     /**
      * [DestinationSpec] related to this scope
      */
-    val destination: DestinationSpec<T>
+    val destination: TypedDestinationSpec<T>
 
     /**
      * [NavBackStackEntry] of the current destination
@@ -52,13 +53,12 @@ inline fun <reified R> NavGraphBuilderDestinationScope<*>.resultBackNavigator(
  * Returns a well typed [ResultRecipient] for this [NavGraphBuilderDestinationScope]
  */
 @Composable
-inline fun <reified D : DestinationSpec<*>, reified R> NavGraphBuilderDestinationScope<*>.resultRecipient(): ResultRecipient<D, R> =
+inline fun <reified D : DestinationSpec, reified R> NavGraphBuilderDestinationScope<*>.resultRecipient(): ResultRecipient<D, R> =
     resultRecipient(navBackStackEntry, D::class.java, R::class.java)
 
 /**
- * Like [NavGraphBuilderDestinationScope] but also [ColumnScope] so that
- * if you're using the "animations-core" you can use this Scope as a receiver
- * of your Bottom Sheet styled Composable
+ * Like [NavGraphBuilderDestinationScope] but also [AnimatedVisibilityScope] so that
+ * you can use this Scope as a receiver of your Animated and Default styled Composable
  */
 @Immutable
 interface AnimatedNavGraphBuilderDestinationScope<T> : NavGraphBuilderDestinationScope<T>,
@@ -66,7 +66,7 @@ interface AnimatedNavGraphBuilderDestinationScope<T> : NavGraphBuilderDestinatio
 
 /**
  * Like [NavGraphBuilderDestinationScope] but also [ColumnScope] so that
- * if you're using the "animations-core" you can use this Scope as a receiver
+ * if you're using the "bottom-sheet" dependency you can use this Scope as a receiver
  * of your Bottom Sheet styled Composable
  */
 @Immutable

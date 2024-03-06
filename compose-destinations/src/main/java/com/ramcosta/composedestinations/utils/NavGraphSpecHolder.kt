@@ -4,6 +4,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.NavHostGraphSpec
 
 /**
  * Register with a [NavGraphSpecHolder] for each top level route passed in in a `DestinationsNavHost`.
@@ -12,7 +13,14 @@ internal object NavGraphRegistry {
 
     private val holderByTopLevelRoute = mutableMapOf<NavController, NavGraphSpecHolder>()
 
-    fun addGraph(navController: NavController, navGraph: NavGraphSpec) {
+    fun addGraph(navController: NavController, navGraph: NavHostGraphSpec) {
+        val routes = mutableSetOf<String>()
+        navGraph.allRoutes.forEach {
+            if (!routes.add(it.route)) {
+                error("Duplicate route found '${it.route}'. Routes must be unique!")
+            }
+        }
+
         if (holderByTopLevelRoute.containsKey(navController)) {
             return
         }
@@ -72,8 +80,8 @@ internal class NavGraphSpecHolder {
         }
     }
 
-    fun topLevelNavGraph(navController: NavController): NavGraphSpec? {
-        return navGraphSpecsByRoute[navController.graph.route!!]
+    fun topLevelNavGraph(navController: NavController): NavHostGraphSpec? {
+        return navGraphSpecsByRoute[navController.graph.route!!] as NavHostGraphSpec?
     }
 
     fun parentNavGraph(navBackStackEntry: NavBackStackEntry): NavGraphSpec? {

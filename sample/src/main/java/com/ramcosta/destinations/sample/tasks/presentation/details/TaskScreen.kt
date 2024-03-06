@@ -1,10 +1,22 @@
 package com.ramcosta.destinations.sample.tasks.presentation.details
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
@@ -14,13 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.AddStepDialogDestination
+import com.ramcosta.composedestinations.generated.destinations.StepScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
-import com.ramcosta.destinations.sample.destinations.AddStepDialogDestination
-import com.ramcosta.destinations.sample.destinations.StepScreenDestination
 import com.ramcosta.destinations.sample.tasks.domain.Step
 
-@Destination(navArgsDelegate = TaskScreenNavArgs::class)
+@Destination<RootGraph>(navArgs = TaskScreenNavArgs::class)
 @Composable
 fun TaskScreen(
     navArgs: TaskScreenNavArgs,

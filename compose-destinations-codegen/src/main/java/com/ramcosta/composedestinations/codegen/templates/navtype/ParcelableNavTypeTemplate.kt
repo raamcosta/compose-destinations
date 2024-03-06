@@ -51,6 +51,10 @@ $NAV_TYPE_VISIBILITY class $NAV_TYPE_CLASS_SIMPLE_NAME(
     override fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
         return savedStateHandle.get(key)
     }
+    
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: $CLASS_SIMPLE_NAME_CAMEL_CASE?) {
+        savedStateHandle[key] = value
+    }
 }
 """.trimIndent()
 )

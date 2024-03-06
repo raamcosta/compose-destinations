@@ -13,10 +13,10 @@ import androidx.navigation.plusAssign
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.Route
-import com.ramcosta.destinations.sample.appCurrentDestinationAsState
-import com.ramcosta.destinations.sample.destinations.Destination
-import com.ramcosta.destinations.sample.startAppDestination
+import com.ramcosta.composedestinations.utils.currentDestinationAsState
+import com.ramcosta.composedestinations.utils.startDestination
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 @SuppressLint("RestrictedApi")
@@ -24,12 +24,12 @@ import com.ramcosta.destinations.sample.startAppDestination
 fun SampleScaffold(
     startRoute: Route,
     navController: NavHostController,
-    topBar: @Composable (Destination, NavBackStackEntry?) -> Unit,
-    bottomBar: @Composable (Destination) -> Unit,
+    topBar: @Composable (DestinationSpec, NavBackStackEntry?) -> Unit,
+    bottomBar: @Composable (DestinationSpec) -> Unit,
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    val destination = navController.appCurrentDestinationAsState().value
-        ?: startRoute.startAppDestination
+    val destination = navController.currentDestinationAsState().value
+        ?: startRoute.startDestination
     val navBackStackEntry = navController.currentBackStackEntry
 
     // 👇 only for debugging, you shouldn't use currentBackStack API as it is restricted by annotation

@@ -1,9 +1,10 @@
 package com.ramcosta.composedestinations.codegen.validators
 
 import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.BOTTOM_SHEET_DEPENDENCY
 import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_SIMPLE_NAME
-import com.ramcosta.composedestinations.codegen.commons.CORE_ANIMATIONS_DEPENDENCY
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
 import com.ramcosta.composedestinations.codegen.commons.OPEN_RESULT_RECIPIENT_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.RESULT_RECIPIENT_QUALIFIED_NAME
@@ -13,39 +14,37 @@ import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayList
 import com.ramcosta.composedestinations.codegen.commons.toTypeCode
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
-import com.ramcosta.composedestinations.codegen.model.CodeGenMode
-import com.ramcosta.composedestinations.codegen.model.Core
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
+import com.ramcosta.composedestinations.codegen.model.DestinationResultSenderInfo
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
-import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
+import com.ramcosta.composedestinations.codegen.model.Visibility
 
 class InitialValidator(
     private val codeGenConfig: CodeGenConfig,
-    private val core: Core
+    private val isBottomSheetDependencyPresent: Boolean
 ) {
 
     fun validate(
         navGraphs: List<RawNavGraphGenParams>,
-        destinations: List<DestinationGeneratingParams>
+        destinations: List<DestinationGeneratingParams>,
+        submoduleResultSenders: Map<String, DestinationResultSenderInfo>
     ) {
         validateNavGraphs(navGraphs)
 
         val destinationsByName = lazy { destinations.associateBy { it.name } }
+        val navGraphRoutes = navGraphs.map { it.baseRoute }
         val cleanRoutes = mutableListOf<String>()
-        val composableNames = mutableListOf<String>()
 
         destinations.forEach { destination ->
+            destination.checkVisibilityToNavGraph()
+
             destination.checkNavArgTypes()
 
-            destination.checkLegacyNavGraphInfo()
-
-            destination.validateRoute(currentKnownRoutes = cleanRoutes)
-
-            destination.validateComposableName(currentKnownComposableNames = composableNames)
+            destination.validateRoute(cleanRoutes, navGraphRoutes)
 
             destination.validateReceiverColumnScope()
 
@@ -55,22 +54,14 @@ class InitialValidator(
 
             destination.validateOpenResultRecipients()
 
-            destination.validateClosedResultRecipients(destinationsByName)
+            destination.validateClosedResultRecipients(submoduleResultSenders, destinationsByName)
 
-            cleanRoutes.add(destination.cleanRoute)
-            composableNames.add(destination.composableName)
-        }
-
-        if (destinations.any { it.navGraphInfo is NavGraphInfo.AnnotatedSource } &&
-                destinations.any { it.navGraphInfo is NavGraphInfo.Legacy && !it.navGraphInfo.isDefault  }) {
-            // User is using both ways to set navgraphs, fail the build
-            throw IllegalDestinationsSetup("Cannot use both the deprecated way to set navgraphs and the new one.\n" +
-                    "Please migrate all your Destinations to use the new @NavGraph annotations instead!")
+            cleanRoutes.add(destination.baseRoute)
         }
     }
 
     private fun validateNavGraphs(navGraphs: List<RawNavGraphGenParams>) {
-        val navGraphsByRoute: Map<String, List<RawNavGraphGenParams>> = navGraphs.groupBy { it.route }
+        val navGraphsByRoute: Map<String, List<RawNavGraphGenParams>> = navGraphs.groupBy { it.baseRoute }
         navGraphsByRoute.forEach {
             if (it.value.size > 1) {
                 throw IllegalDestinationsSetup(
@@ -80,44 +71,15 @@ class InitialValidator(
                 )
             }
         }
-
-        val defaultNavGraphs = navGraphs.filter { it.default }
-        if (defaultNavGraphs.size > 1) {
-            throw IllegalDestinationsSetup(
-                "${defaultNavGraphs.joinToString(",")} are" +
-                        " marked as the default nav graph. Only one nav graph can be the default one!"
-            )
-        }
     }
 
     private fun DestinationGeneratingParams.warnIgnoredAnnotationArguments() {
-        if (codeGenConfig.mode == CodeGenMode.Destinations
-            || (codeGenConfig.mode is CodeGenMode.SingleModule && !codeGenConfig.mode.generateNavGraphs)) {
+        if (!codeGenConfig.generateNavGraphs) {
 
-            when (val info = navGraphInfo) {
-                is NavGraphInfo.Legacy -> {
-                    if (info.navGraphRoute != "root") {
-                        Logger.instance.warn(
-                            "'${composableName}' composable: a navGraph was set but it will be ignored. " +
-                                    "Reason: nav graphs generation was disabled by ksp gradle configuration."
-                        )
-                    }
-
-                    if (info.start) {
-                        Logger.instance.warn(
-                            "'${composableName}' composable: destination was set as the start destination but that will be ignored. " +
-                                    "Reason: nav graphs generation was disabled by ksp gradle configuration."
-                        )
-                    }
-                }
-
-                is NavGraphInfo.AnnotatedSource -> {
-                    Logger.instance.warn(
-                        "'${composableName}' composable: is annotated with a `NavGraph` annotation, but it will be ignored." +
-                                "Reason: nav graphs generation was disabled by ksp gradle configuration."
-                    )
-                }
-            }
+            Logger.instance.warn(
+                "'${composableName}' composable: is annotated with a `NavGraph` annotation, but it will be ignored." +
+                        "Reason: nav graphs generation was disabled by ksp gradle configuration."
+            )
         }
     }
 
@@ -134,10 +96,10 @@ class InitialValidator(
 
     private fun DestinationGeneratingParams.validateReceiverColumnScope() {
         if (composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME) {
-            if (core != Core.ANIMATIONS) {
-                throw IllegalDestinationsSetup(
+            if (!isBottomSheetDependencyPresent) {
+                throw MissingRequiredDependency(
                     "'${composableName}' composable: " +
-                            "You need to include $CORE_ANIMATIONS_DEPENDENCY dependency to use a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
+                            "You need to include $BOTTOM_SHEET_DEPENDENCY dependency to use a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
                 )
             }
 
@@ -150,23 +112,21 @@ class InitialValidator(
         }
     }
 
-    private fun DestinationGeneratingParams.validateComposableName(
-        currentKnownComposableNames: List<String>,
-    ) {
-        if (currentKnownComposableNames.contains(composableName)) {
-            throw IllegalDestinationsSetup("Destination composable names must be unique: found multiple named '${composableName}'")
-        }
-    }
-
     private fun DestinationGeneratingParams.validateRoute(
         currentKnownRoutes: List<String>,
+        navGraphRoutes: List<String>
     ) {
-        if (currentKnownRoutes.contains(cleanRoute)) {
-            throw IllegalDestinationsSetup("Multiple Destinations with '${cleanRoute}' as their route name")
+        if (currentKnownRoutes.contains(baseRoute)) {
+            throw IllegalDestinationsSetup("Multiple Destinations with '${baseRoute}' as their route name")
+        }
+
+        if (navGraphRoutes.contains(baseRoute)) {
+            throw IllegalDestinationsSetup("There is a NavGraph with same base route as destination '$composableName'")
         }
     }
 
     private fun DestinationGeneratingParams.validateClosedResultRecipients(
+        submoduleResultSenders: Map<String, DestinationResultSenderInfo>,
         destinationsByName: Lazy<Map<String, DestinationGeneratingParams>>
     ) {
         val resultRecipientParams = parameters
@@ -181,30 +141,49 @@ class InitialValidator(
                 ?: throw IllegalDestinationsSetup(
                     "ResultRecipient second type argument must be a valid type with no '*' variance."
                 )
-
             validateResultType(resultType)
 
-            val resultOriginDestinationName = parameter.getFirstArgTypeSimpleName()
-            destinationResultOriginForAllResultTypes.add(resultOriginDestinationName)
+            val resultOriginQualifiedName = parameter.getFirstArgTypeQualifiedName()
 
-            val resultOriginDestinationParams =
-                destinationsByName.value[resultOriginDestinationName]
-                    ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin (type aliases are not allowed here).")
+            if (resultOriginQualifiedName != null) {
+                // qualified name means that this is a Destination which is already generated
+                // so a Destination that comes from a dependency module
+                destinationResultOriginForAllResultTypes.add(resultOriginQualifiedName)
+                val info = submoduleResultSenders[resultOriginQualifiedName]
 
-            resultOriginDestinationParams.parameters.firstOrNull {
-                it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME &&
-                        (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type == resultType
+                if (info == null || info.resultTypeQualifiedName != resultType.importable.qualifiedName || info.isResultTypeNullable != resultType.isNullable) {
+                    throw IllegalDestinationsSetup(
+                        "Composable correspondent to '${resultOriginQualifiedName}' must receive a 'ResultBackNavigator<${resultType.toTypeCode()}>'" +
+                                " parameter in order to be used as result originator for '${composableName}'"
+                    )
+                }
+
+            } else {
+                // no qualified name means that this might be a Destination which is still not generated
+                // so a Destination that we will generate ourselves during this ksp run
+
+                val resultOriginDestinationName = parameter.getFirstArgTypeSimpleName()
+                destinationResultOriginForAllResultTypes.add(resultOriginDestinationName)
+
+                val resultOriginDestinationParams =
+                    destinationsByName.value[resultOriginDestinationName]
+                        ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin (type aliases are not allowed here) for '$composableName'.")
+
+                resultOriginDestinationParams.parameters.firstOrNull {
+                    it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME &&
+                            (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type == resultType
+                }
+                    ?: throw IllegalDestinationsSetup(
+                        "Composable '${resultOriginDestinationParams.composableName}' must receive a ResultBackNavigator" +
+                                " of type '${resultType.toTypeCode()}' in order to be used as result originator for '${composableName}'"
+                    )
             }
-                ?: throw IllegalDestinationsSetup(
-                    "Composable '${resultOriginDestinationParams.composableName}' must receive a ResultBackNavigator" +
-                            " of type '${resultType.toTypeCode()}' in order to be used as result originator for '${composableName}'"
-                )
         }
 
         if (destinationResultOriginForAllResultTypes.size != resultRecipientParams.size) {
             throw IllegalDestinationsSetup(
                 "Composable '${composableName}': " +
-                        "has multiple ResultRecipients with the same Destination, only one recipient is allowed for a destination!"
+                        "has multiple ResultRecipients with the same Destination, only one recipient is allowed for a given destination!"
             )
         }
 
@@ -269,6 +248,12 @@ class InitialValidator(
             ?: throw IllegalDestinationsSetup("ResultRecipient first type argument must be a Destination")
     }
 
+    private fun Parameter.getFirstArgTypeQualifiedName(): String? {
+        val firstTypeArg = type.typeArguments.first()
+
+        return (firstTypeArg as? TypeArgument.Typed)?.type?.importable?.qualifiedName
+    }
+
     private fun DestinationGeneratingParams.validateResultType(resultType: TypeInfo) {
         if (resultType.typeArguments.isNotEmpty()) {
             throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: Result types cannot have type arguments!")
@@ -283,32 +268,23 @@ class InitialValidator(
         )
         if (resultType.importable.qualifiedName !in primitives && !resultType.isSerializable && !resultType.isParcelable) {
             throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: " +
-                    "Result types must be one of: ${listOf("String", "Long", "Boolean", "Float", "Int", "Parcelable", "Serializable").joinToString(", ")}")
+                    "Result types must be one of: ${listOf("String", "Long", "Boolean", "Float", "Int", "Parcelable", "java.io.Serializable").joinToString(", ")}")
         }
     }
 
-    private fun DestinationGeneratingParams.checkLegacyNavGraphInfo() {
-        if (navGraphInfo !is NavGraphInfo.Legacy || navGraphInfo.isDefault) return
-
-        val navGraphRoute = (navGraphInfo as NavGraphInfo.Legacy).navGraphRoute
-        val isStart = (navGraphInfo as NavGraphInfo.Legacy).start
-
-        if (navGraphRoute == "root") {
-            // user didn't change navGraph, so he changed start to true, so:
-            Logger.instance.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.\n" +
-                    "Use '@RootNavGraph(start = true)' instead.")
-        } else {
-            Logger.instance.warn("Composable $composableName: Usage of `start` and `navGraph` parameters of @Destination is deprecated.\n" +
-                "Use '@MyNavGraph${if (isStart) "(start = true)" else ""}' instead, replacing \"My\" with the nav graph name " +
-                    "(Read about nav graph annotations in documentation website under the nav graph definition section).")
+    private fun DestinationGeneratingParams.checkVisibilityToNavGraph() {
+        if (navGraphInfo == null && visibility != Visibility.PUBLIC) {
+            throw IllegalDestinationsSetup(
+                "$composableName has visibility $visibility but it's using 'ExternalModuleGraph'. In order for it to be included in an external module graph, it has to be public!"
+            )
         }
     }
 }
 
 private fun DestinationGeneratingParams.checkNavArgTypes() {
-    val navArgsDelegate = navArgsDelegateType
+    val navArgsDelegate = destinationNavArgsClass
     if (navArgsDelegate != null) {
-        navArgsDelegate.navArgs.validateArrayTypeArgs()
+        navArgsDelegate.parameters.validateArrayTypeArgs()
     } else {
         parameters.validateArrayTypeArgs()
     }

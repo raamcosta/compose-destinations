@@ -48,7 +48,7 @@ interface DestinationWrapper {
     )
 }
 
-// region used by generated code
+//region used by generated code
 
 /**
  * Function which will call [DestinationWrapper]'s Wrap method.
@@ -75,7 +75,11 @@ fun DestinationScope<*>.Wrap(
     vararg wrappers: DestinationWrapper,
     content: @Composable () -> Unit
 ) {
-    WrapRecursively(wrappers, 0, content)
+    if (wrappers.isEmpty()) {
+        content()
+    } else {
+        WrapRecursively(wrappers, 0, content)
+    }
 }
 
 @Composable
@@ -95,4 +99,4 @@ private fun DestinationScope<*>.WrapRecursively(
     }
 }
 
-// endregion
+//endregion

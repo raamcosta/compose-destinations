@@ -1,20 +1,53 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.firstTypeArg
+import com.ramcosta.composedestinations.codegen.commons.isArray
+import com.ramcosta.composedestinations.codegen.commons.isArrayList
+import com.ramcosta.composedestinations.codegen.commons.isArrayOrArrayList
+import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayListTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.isCustomTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.commons.sanitizePackageName
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.model.*
-import com.ramcosta.composedestinations.codegen.templates.*
+import com.ramcosta.composedestinations.codegen.model.ClassKind
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.model.CustomNavType
+import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
+import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
-import com.ramcosta.composedestinations.codegen.templates.navtype.*
-import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.*
+import com.ramcosta.composedestinations.codegen.templates.navtype.CLASS_SIMPLE_NAME_CAMEL_CASE
+import com.ramcosta.composedestinations.codegen.templates.navtype.DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE
+import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_CLASS_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_VISIBILITY
+import com.ramcosta.composedestinations.codegen.templates.navtype.PARSE_VALUE_CAST_TO_CLASS
+import com.ramcosta.composedestinations.codegen.templates.navtype.SERIALIZER_SIMPLE_CLASS_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.ARRAY_CUSTOM_NAV_TYPE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.NAV_TYPE_INITIALIZATION_CODE
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.TYPE_ARG_CLASS_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.customTypeArrayListNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.customTypeArrayNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.ktxSerializableArrayListNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.ktxSerializableArrayNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.parcelableArrayListNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.parcelableArrayNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.serializableArrayListNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.serializableArrayNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.customTypeSerializerNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.ktxSerializableNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.parcelableNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.serializableNavTypeTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import java.io.OutputStream
-import java.util.*
+import java.util.Locale
 
-class CustomNavTypesWriter(
+internal class CustomNavTypesWriter(
     private val codeGenerator: CodeOutputStreamMaker,
 ) {
     private val typesForNavTypeName: MutableMap<Type, CustomNavType> = mutableMapOf()
@@ -28,7 +61,7 @@ class CustomNavTypesWriter(
     )
 
     fun write(
-        destinations: List<DestinationGeneratingParamsWithNavArgs>,
+        destinations: List<CodeGenProcessedDestination>,
         navTypeSerializers: List<NavTypeSerializer>,
     ): Map<Type, CustomNavType> {
         val serializersByType: Map<Importable, NavTypeSerializer> =

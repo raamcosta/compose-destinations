@@ -5,12 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavBackStackEntry
-import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
-import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.scope.DestinationScope
 
-interface ActivityDestinationSpec<T> : DestinationSpec<T> {
+interface ActivityDestinationSpec<T> : TypedDestinationSpec<T> {
 
     /**
      * See [androidx.navigation.ActivityNavigator.Destination.targetPackage]
@@ -44,16 +41,12 @@ interface ActivityDestinationSpec<T> : DestinationSpec<T> {
      */
     fun argsFrom(intent: Intent): T = argsFrom(intent.extras)
 
-    @OptIn(InternalDestinationsApi::class)
     override val style: DestinationStyle
         get() = DestinationStyle.Activity
 
     // region inherited that will never be used for activity destinations
     // ideally, we should have an additional level in the hierarchy, but at the point we are
     // this is just easier and safer
-    override fun argsFrom(navBackStackEntry: NavBackStackEntry): T =
-        error("unexpected error: calling NavBackStackEntry based argsFrom method on ActivityDestination!")
-
     override fun argsFrom(savedStateHandle: SavedStateHandle): T =
         error("unexpected error: calling SavedStateHandle based argsFrom method on ActivityDestination!")
 

@@ -5,6 +5,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Scope where a destination screen will be called in.
@@ -17,7 +18,7 @@ interface DestinationScopeWithNoDependencies<T> {
     /**
      * [DestinationSpec] related to this scope
      */
-    val destination: DestinationSpec<T>
+    val destination: TypedDestinationSpec<T>
 
     /**
      * [NavBackStackEntry] of the current destination

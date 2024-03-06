@@ -1,0 +1,13 @@
+---
+title: FeatureX Navigation Graph
+---
+%%{init: {'theme':'base', 'themeVariables': { 'primaryTextColor': '#fff' }}%%
+graph TD
+feature_x(["FeatureXGraph"]) -- "start" --- feature_x_home("FeatureXHome")
+feature_x(["FeatureXGraph"]) --- internal_args_screen("InternalArgsScreen")
+
+
+classDef destination fill:#5383EC,stroke:#ffffff;
+class feature_x_home,internal_args_screen destination;
+classDef navgraph fill:#63BC76,stroke:#ffffff;
+class feature_x navgraph;

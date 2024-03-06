@@ -7,6 +7,7 @@ interface CodeOutputStreamMaker {
     fun makeFile(
         name: String,
         packageName: String,
+        extensionName: String = "kt",
         vararg sourceIds: String,
     ): OutputStream
 }

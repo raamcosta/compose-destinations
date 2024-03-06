@@ -1,16 +1,16 @@
 package com.ramcosta.composedestinations.codegen.commons
 
 import com.ramcosta.composedestinations.codegen.facades.Logger
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
-import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
 
-class DestinationWithNavArgsMapper {
+internal class DestinationWithNavArgsMapper {
 
-    fun map(destinations: List<DestinationGeneratingParams>): List<DestinationGeneratingParamsWithNavArgs> {
+    fun map(destinations: List<DestinationGeneratingParams>): List<CodeGenProcessedDestination> {
         return destinations.map {
-            DestinationGeneratingParamsWithNavArgs(
+            CodeGenProcessedDestination(
                 it.getNavArgs(),
                 it
             )
@@ -18,11 +18,11 @@ class DestinationWithNavArgsMapper {
     }
 
     private fun DestinationGeneratingParams.getNavArgs(): List<Parameter> {
-        val navArgsDelegateTypeLocal = navArgsDelegateType
+        val navArgsDelegateTypeLocal = destinationNavArgsClass
         return if (navArgsDelegateTypeLocal == null) {
             parameters.filter { it.isNavArg() }
         } else {
-            val nonNavArg = navArgsDelegateTypeLocal.navArgs.firstOrNull { !it.isNavArg() }
+            val nonNavArg = navArgsDelegateTypeLocal.parameters.firstOrNull { !it.isNavArg() }
             if (nonNavArg != null) {
                 if (!nonNavArg.type.isCoreOrCustomNavArgType() &&
                     nonNavArg.type.valueClassInnerInfo != null && // is value class
@@ -37,13 +37,13 @@ class DestinationWithNavArgsMapper {
                         "'$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types. (check argument '${nonNavArg.name}')")
             }
 
-            val navArgInFuncParams = parameters.firstOrNull { it.isNavArg() && it.type.value.importable != navArgsDelegateType?.type }
+            val navArgInFuncParams = parameters.firstOrNull { it.isNavArg() && it.type.value.importable != navArgsDelegateTypeLocal.type }
             if (navArgInFuncParams != null) {
                 throw IllegalDestinationsSetup("Composable '${composableName}': annotated " +
                         "function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class. (check argument '${navArgInFuncParams.name})'")
             }
 
-            navArgsDelegateTypeLocal.navArgs
+            navArgsDelegateTypeLocal.parameters
         }
     }
 

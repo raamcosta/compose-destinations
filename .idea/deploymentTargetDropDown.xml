@@ -8,6 +8,9 @@
       <entry key="playground">
         <State />
       </entry>
+      <entry key="playground.app">
+        <State />
+      </entry>
       <entry key="sample">
         <State>
           <targetSelectedWithDropDown>
@@ -32,12 +35,12 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$USER_HOME$/.android/avd/Pixel_3a_API_33_arm64-v8a.avd" />
+                  <value value="$USER_HOME$/.android/avd/Wear_OS_Large_Round_API_30.avd" />
                 </Key>
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2023-12-27T23:09:04.073758Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-03-02T14:22:30.393998Z" />
         </State>
       </entry>
     </value>

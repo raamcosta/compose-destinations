@@ -29,7 +29,7 @@ ktxSerialization = "1.6.3"
 mockk = "1.13.9"
 
 compileTesting = "1.5.0"
-composeWear = "1.1.2"
+composeWear = "1.3.0"
 
 [plugins]
 dependencyCheckPlugin = { id = "com.github.ben-manes.versions", version.ref = "dependencyCheckPluginVersion" }

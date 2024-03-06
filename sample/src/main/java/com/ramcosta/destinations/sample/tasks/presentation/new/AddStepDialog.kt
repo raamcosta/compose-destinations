@@ -3,6 +3,7 @@ package com.ramcosta.destinations.sample.tasks.presentation.new
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
@@ -12,9 +13,9 @@ data class AddStepDialogNavArgs(
     val taskId: Int
 )
 
-@Destination(
+@Destination<RootGraph>(
     style = DestinationStyle.Dialog::class,
-    navArgsDelegate = AddStepDialogNavArgs::class
+    navArgs = AddStepDialogNavArgs::class
 )
 @Composable
 fun AddStepDialog(

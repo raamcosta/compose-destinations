@@ -4,15 +4,28 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.*
-import androidx.wear.compose.navigation.*
-import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.Navigator
+import androidx.wear.compose.navigation.SwipeDismissableNavHost
+import androidx.wear.compose.navigation.SwipeDismissableNavHostState
+import androidx.wear.compose.navigation.WearNavigator
+import androidx.wear.compose.navigation.composable
+import androidx.wear.compose.navigation.rememberSwipeDismissableNavHostState
+import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.scope.DestinationScopeImpl
-import com.ramcosta.composedestinations.spec.*
+import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Returns the [WearNavHostEngine] to be used with Wear OS apps.
@@ -20,15 +33,17 @@ import com.ramcosta.composedestinations.spec.*
 @Composable
 fun rememberWearNavHostEngine(
     state: SwipeDismissableNavHostState = rememberSwipeDismissableNavHostState(),
+    userSwipeEnabled: Boolean = true
 ): NavHostEngine {
     val defaultNavHostEngine = rememberNavHostEngine()
 
-    return remember {
-        WearNavHostEngine(defaultNavHostEngine, state)
+    return remember(userSwipeEnabled, defaultNavHostEngine, state) {
+        WearNavHostEngine(userSwipeEnabled, defaultNavHostEngine, state)
     }
 }
 
 internal class WearNavHostEngine(
+    private val userSwipeEnabled: Boolean,
     private val defaultNavHostEngine: NavHostEngine,
     private val state: SwipeDismissableNavHostState,
 ) : NavHostEngine {
@@ -46,8 +61,9 @@ internal class WearNavHostEngine(
         modifier: Modifier,
         route: String,
         startRoute: Route,
+        defaultTransitions: NavHostAnimatedDestinationStyle,
         navController: NavHostController,
-        builder: NavGraphBuilder.() -> Unit
+        builder: NavGraphBuilder.() -> Unit,
     ) {
         SwipeDismissableNavHost(
             navController = navController,
@@ -55,26 +71,26 @@ internal class WearNavHostEngine(
             modifier = modifier,
             route = route,
             state = state,
+            userSwipeEnabled = userSwipeEnabled,
             builder = builder
         )
     }
 
     override fun NavGraphBuilder.navigation(
         navGraph: NavGraphSpec,
+        manualComposableCalls: ManualComposableCalls,
         builder: NavGraphBuilder.() -> Unit
     ) {
-        with(defaultNavHostEngine) { navigation(navGraph, builder) }
+        with(defaultNavHostEngine) { navigation(navGraph, manualComposableCalls, builder) }
     }
 
-    @OptIn(InternalDestinationsApi::class)
     override fun <T> NavGraphBuilder.composable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     ) {
         when (destination.style) {
-            is DestinationStyle.Runtime,
             is DestinationStyle.Default -> {
                 addComposable(
                     destination,
@@ -97,14 +113,14 @@ internal class WearNavHostEngine(
     }
 
     private fun <T> NavGraphBuilder.addComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     ) {
         @SuppressLint("RestrictedApi")
         @Suppress("UNCHECKED_CAST")
-        val contentLambda = manualComposableCalls[destination.baseRoute] as? DestinationLambda<T>?
+        val contentLambda = manualComposableCalls[destination.route] as? DestinationLambda<T>?
 
         composable(
             route = destination.route,
@@ -122,7 +138,7 @@ internal class WearNavHostEngine(
     }
 
     internal class WearDestinationScope<T>(
-        override val destination: DestinationSpec<T>,
+        override val destination: TypedDestinationSpec<T>,
         override val navBackStackEntry: NavBackStackEntry,
         override val navController: NavController,
         override val dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
@@ -130,7 +146,7 @@ internal class WearNavHostEngine(
 
     @Composable
     private fun <T> CallComposable(
-        destination: DestinationSpec<T>,
+        destination: TypedDestinationSpec<T>,
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,

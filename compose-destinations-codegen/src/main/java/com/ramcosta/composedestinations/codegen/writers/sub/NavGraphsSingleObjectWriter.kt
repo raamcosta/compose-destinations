@@ -1,111 +1,96 @@
 package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.GENERATED_NAV_GRAPHS_OBJECT
+import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
+import com.ramcosta.composedestinations.codegen.commons.navGraphFieldName
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.model.*
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.model.CustomNavType
+import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.moduleName
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPHS_PRETTY_KDOC_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 import com.ramcosta.composedestinations.codegen.templates.navGraphsObjectTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
+import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 
-class NavGraphsSingleObjectWriter(
+internal class NavGraphsSingleObjectWriter(
     private val codeGenerator: CodeOutputStreamMaker,
-    private val codeGenConfig: CodeGenConfig,
+    private val customNavTypeByType: Map<Type, CustomNavType>,
+    private val singleNavGraphWriter: (
+        CodeOutputStreamMaker,
+        ImportableHelper,
+        RawNavGraphTree,
+        NavArgResolver
+    ) -> SingleNavGraphWriter,
 ) {
 
     private val importableHelper = ImportableHelper(navGraphsObjectTemplate.imports)
 
+    private fun navGraphWriter(rawNavGraphTree: RawNavGraphTree) = singleNavGraphWriter(
+        codeGenerator,
+        importableHelper,
+        rawNavGraphTree,
+        NavArgResolver(customNavTypeByType, importableHelper)
+    )
+
     fun write(
-        navGraphs: List<RawNavGraphGenParams>,
-        generatedDestinations: List<GeneratedDestination>
-    ): List<NavGraphGeneratingParams> {
-        val defaultNavGraph = navGraphs.find { it.default }
-        val navGraphsByType = navGraphs.associateBy { it.type }
+        graphTrees: List<RawNavGraphTree>,
+        generatedDestinations: List<CodeGenProcessedDestination>
+    ) {
+        val flattenGraphs = graphTrees.flatten()
+        checkUniquenessOnNavGraphFieldNames(flattenGraphs)
 
-        val destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<GeneratedDestination>> =
-            generatedDestinations.groupBy {
-                if (it.navGraphInfo.isDefault) {
-                    defaultNavGraph ?: rootNavGraphGenParams
-                } else {
-                    val info = it.navGraphInfo as NavGraphInfo.AnnotatedSource
-                    navGraphsByType[info.graphType] ?: rootNavGraphGenParams
-                }
-            }
+        graphTrees.forEach { writeNavGraphTreeRecursively(it) }
 
-        val allNavGraphs = navGraphs + rootNavGraphGenParams
-        val allNavGraphsByParentType = allNavGraphs.groupBy { it.parent }
+        writeFile(generatedDestinations, graphTrees, flattenGraphs)
+    }
 
-        val relevantNavGraphs = allNavGraphs.filter {
-            it.isNotEmptyRecursively(destinationsByNavGraphParams, allNavGraphsByParentType)
+    private fun writeNavGraphTreeRecursively(
+        graphTree: RawNavGraphTree
+    ) {
+        graphTree.nestedGraphs.forEach {
+            writeNavGraphTreeRecursively(it)
         }
-        val relevantNavGraphsByParentType = relevantNavGraphs.groupBy { it.parent }
-
-        val orderedNavGraphGenParams = relevantNavGraphs
-            .sortedByDescending {
-                it.distanceToRoot(
-                    navGraphsByType.toMutableMap().apply {
-                        this[rootNavGraphGenParams.type] = rootNavGraphGenParams
-                    }
-                )
-            }
-            .map { rawGraph ->
-
-                val destinations = destinationsByNavGraphParams[rawGraph].orEmpty()
-                val nestedNavGraphs = relevantNavGraphsByParentType[rawGraph.type].orEmpty()
-
-                NavGraphGeneratingParamsImpl(
-                    rawParams = rawGraph,
-                    route = rawGraph.route,
-                    destinations = destinations,
-                    startRouteFieldName = startingRoute(codeGenConfig, rawGraph.name, destinations, nestedNavGraphs),
-                    nestedNavGraphRoutes = nestedNavGraphs.map { it.route },
-                    requireOptInAnnotationTypes = destinations.requireOptInAnnotationClassTypes()
-                        .apply {
-                            nestedNavGraphs.forEach {
-                                addAll(destinationsByNavGraphParams[it].orEmpty().requireOptInAnnotationClassTypes())
-                            }
-                        },
-                )
-            }
-
-        checkUniquenessOnNavGraphFieldNames(orderedNavGraphGenParams)
-
-        writeFile(generatedDestinations, orderedNavGraphGenParams)
-
-        return orderedNavGraphGenParams
+        navGraphWriter(graphTree).write()
     }
 
     private fun writeFile(
-        generatedDestinations: List<GeneratedDestination>,
-        orderedNavGraphGenParams: List<NavGraphGeneratingParams>
+        generatedDestinations: List<CodeGenProcessedDestination>,
+        topLevelGraphs: List<RawNavGraphTree>,
+        flattenGraphs: List<RawNavGraphTree>
     ) {
         codeGenerator.makeFile(
             packageName = codeGenBasePackageName,
-            name = GENERATED_NAV_GRAPHS_OBJECT,
-            sourceIds = sourceIds(generatedDestinations).toTypedArray()
+            name = "$moduleName$GENERATED_NAV_GRAPHS_OBJECT",
+            sourceIds = sourceIds(generatedDestinations, flattenGraphs).toTypedArray()
         ).writeSourceFile(
             packageStatement = navGraphsObjectTemplate.packageStatement,
             importableHelper = importableHelper,
             sourceCode = navGraphsObjectTemplate.sourceCode
-                .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(orderedNavGraphGenParams))
-
+                .replace(NAV_GRAPHS_PRETTY_KDOC_PLACEHOLDER, NavGraphsPrettyKdocWriter(importableHelper, topLevelGraphs).write())
+                .replace(NAV_GRAPHS_PLACEHOLDER, navGraphsDeclaration(flattenGraphs))
+                .let {
+                    if (generatedDestinations.isEmpty()) {
+                        importableHelper.remove(setOfImportable("${codeGenBasePackageName}.destinations.*"))
+                    }
+                    it
+                }
         )
     }
 
-    private fun RawNavGraphGenParams.isNotEmptyRecursively(
-        destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<GeneratedDestination>>,
-        navGraphsByParentType: Map<Importable?, List<RawNavGraphGenParams>>
-    ): Boolean {
-        val dest = destinationsByNavGraphParams[this].orEmpty()
-        val nested = navGraphsByParentType[this.type].orEmpty()
-
-        return dest.isNotEmpty() || nested.any {
-            it.isNotEmptyRecursively(destinationsByNavGraphParams, navGraphsByParentType)
-        }
+    private fun List<RawNavGraphTree>.flatten(): List<RawNavGraphTree> {
+        return this + flatMap { it.nestedGraphs.flatten() }
     }
 
-    private fun navGraphsDeclaration(navGraphsParams: List<NavGraphGeneratingParams>): String {
+    private fun navGraphsDeclaration(navGraphsParams: List<RawNavGraphTree>): String {
         val navGraphsDeclaration = StringBuilder()
 
         navGraphsParams.forEachIndexed { idx, navGraphParams ->
@@ -119,14 +104,14 @@ class NavGraphsSingleObjectWriter(
         return navGraphsDeclaration.toString()
     }
 
-    private fun checkUniquenessOnNavGraphFieldNames(navGraphsParams: List<NavGraphGeneratingParamsImpl>) {
-        val nonUniqueFieldNames = navGraphsParams.groupBy { navGraphFieldName(it.route) }
+    private fun checkUniquenessOnNavGraphFieldNames(navGraphsParams: List<RawNavGraphTree>) {
+        val nonUniqueFieldNames = navGraphsParams.groupBy { navGraphFieldName(it.rawNavGraphGenParams.baseRoute) }
             .filter {
                 it.value.size > 1
             }.flatMap {
                 it.value
             }.map {
-                it.rawParams.type.simpleName
+                it.rawNavGraphGenParams.annotationType.simpleName
             }
 
         if (nonUniqueFieldNames.isNotEmpty()) {
@@ -138,57 +123,18 @@ class NavGraphsSingleObjectWriter(
     }
 
     private fun navGraphDeclaration(
-        navGraphParams: NavGraphGeneratingParams
-    ): String = with(navGraphParams) {
-
-        val destinationsAnchor = "[DESTINATIONS]"
-        val nestedGraphsAnchor = "[NESTED_GRAPHS]"
+        navGraph: RawNavGraphTree
+    ): String {
         val requireOptInAnnotationsAnchor = "[REQUIRE_OPT_IN_ANNOTATIONS_ANCHOR]"
 
         return """
-       |    ${requireOptInAnnotationsAnchor}public val ${navGraphFieldName(route)}: NavGraph = $GENERATED_NAV_GRAPH(
-       |        route = "$route",
-       |        startRoute = ${startRouteFieldName},
-       |        destinations = listOf(
-       |            $destinationsAnchor
-       |        )${if (nestedNavGraphRoutes.isEmpty()) "" else ",\n|\t\t$nestedGraphsAnchor"}
-       |    )
+       |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(navGraph.rawNavGraphGenParams.baseRoute)} = ${navGraph.rawNavGraphGenParams.name}
         """.trimMargin()
-            .replace(destinationsAnchor, destinationsInsideList(destinations))
-            .replace(nestedGraphsAnchor, nestedGraphsList(nestedNavGraphRoutes))
             .replace(
                 requireOptInAnnotationsAnchor,
-                requireOptInAnnotations(requireOptInAnnotationTypes)
+                requireOptInAnnotations(navGraph.requireOptInAnnotationTypes)
             )
 
-    }
-
-    private fun destinationsInsideList(destinations: List<GeneratedDestination>): String {
-        val code = StringBuilder()
-        destinations.forEachIndexed { i, it ->
-            code += it.simpleName
-
-            if (i != destinations.lastIndex)
-                code += ",\n\t\t\t"
-        }
-
-        return code.toString()
-    }
-
-    private fun nestedGraphsList(navGraphRoutes: List<String>): String {
-        val code = StringBuilder()
-        navGraphRoutes.forEachIndexed { i, it ->
-            if (i == 0) {
-                code += "nestedNavGraphs = listOf(\n\t\t\t"
-            }
-            code += navGraphFieldName(it)
-
-            code += if (i != navGraphRoutes.lastIndex)
-                ",\n\t\t\t"
-            else "\n\t\t)"
-        }
-
-        return code.toString()
     }
 
     private fun requireOptInAnnotations(navGraphRequireOptInImportables: Set<Importable>): String {
@@ -199,30 +145,5 @@ class NavGraphsSingleObjectWriter(
         }
 
         return code.toString()
-    }
-
-    private fun List<GeneratedDestination>.requireOptInAnnotationClassTypes(): MutableSet<Importable> {
-        val requireOptInClassTypes = flatMapTo(mutableSetOf()) { generatedDest ->
-            generatedDest.requireOptInAnnotationTypes
-        }
-        return requireOptInClassTypes
-    }
-
-    private fun RawNavGraphGenParams.distanceToRoot(
-        navGraphsByType: Map<Importable, RawNavGraphGenParams>
-    ): Int {
-        var distance = 0
-        var parent: RawNavGraphGenParams? = parent?.let { navGraphsByType[it]!! }
-
-        while (true) {
-            if (parent == null) {
-                break
-            }
-            parent = parent.parent?.let { navGraphsByType[it]!! }
-
-            distance++
-        }
-
-        return distance
     }
 }

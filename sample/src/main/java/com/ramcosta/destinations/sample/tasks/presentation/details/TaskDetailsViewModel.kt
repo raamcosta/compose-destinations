@@ -3,7 +3,7 @@ package com.ramcosta.destinations.sample.tasks.presentation.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ramcosta.destinations.sample.navArgs
+import com.ramcosta.composedestinations.generated.navArgs
 import com.ramcosta.destinations.sample.tasks.data.StepsRepository
 import com.ramcosta.destinations.sample.tasks.data.TasksRepository
 import com.ramcosta.destinations.sample.tasks.domain.Step

@@ -1,9 +1,12 @@
 package com.ramcosta.destinations.sample.tasks.presentation.list
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
@@ -12,14 +15,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.AddTaskDialogDestination
+import com.ramcosta.composedestinations.generated.destinations.TaskScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
-import com.ramcosta.destinations.sample.destinations.AddTaskDialogDestination
-import com.ramcosta.destinations.sample.destinations.TaskScreenDestination
 
-@RootNavGraph(start = true)
-@Destination
+@Destination<RootGraph>(start = true)
 @Composable
 fun TaskListScreen(
     navigator: DestinationsNavigator,

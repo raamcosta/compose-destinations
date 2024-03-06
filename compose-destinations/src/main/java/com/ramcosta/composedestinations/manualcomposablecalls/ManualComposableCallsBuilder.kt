@@ -1,18 +1,19 @@
-@file:OptIn(InternalDestinationsApi::class)
-
 package com.ramcosta.composedestinations.manualcomposablecalls
 
-import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
-import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
-import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
+import androidx.navigation.NavBackStackEntry
+import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
 import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
-import com.ramcosta.composedestinations.utils.allDestinations
+import com.ramcosta.composedestinations.spec.NavHostGraphSpec
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
  * Registers [content] lambda as the responsible for calling
@@ -23,7 +24,7 @@ import com.ramcosta.composedestinations.utils.allDestinations
  * arguments, the back stack entry and navigators.
  */
 fun <T> ManualComposableCallsBuilder.composable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable AnimatedDestinationScope<T>.() -> Unit
 ) {
     if (engineType != NavHostEngine.Type.DEFAULT) {
@@ -49,11 +50,11 @@ fun <T> ManualComposableCallsBuilder.composable(
  * arguments, the back stack entry and navigators.
  */
 fun <T> ManualComposableCallsBuilder.dialogComposable(
-    destination: DestinationSpec<T>,
+    destination: TypedDestinationSpec<T>,
     content: @Composable DestinationScope<T>.() -> Unit
 ) {
     if (engineType != NavHostEngine.Type.DEFAULT) {
-        error("'composable' can only be called with a 'NavHostEngine'")
+        error("'dialogComposable' can only be called with a 'NavHostEngine'")
     }
 
     if (destination.style !is DestinationStyle.Dialog) {
@@ -66,29 +67,116 @@ fun <T> ManualComposableCallsBuilder.dialogComposable(
     )
 }
 
-class ManualComposableCallsBuilder internal constructor(
-    @InternalDestinationsApi
-    val engineType: NavHostEngine.Type,
-    navGraph: NavGraphSpec
-) {
+class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi val engineType: NavHostEngine.Type) {
 
-    private val map: MutableMap<String, DestinationLambda<*>> = mutableMapOf()
-    private val dynamicDestinationsBySingletonDestination: Map<DestinationSpec<*>, List<DynamicDestinationSpec<*>>> =
-        navGraph.allDestinations
-            .filterIsInstance<DynamicDestinationSpec<*>>()
-            .groupBy { it.originalDestination }
+    /**
+     * Overrides the default animations of [this] [NavGraphSpec] at runtime to [animation].
+     * You should prefer to use the NavGraph annotation `defaultTransitions` unless there's a specific
+     * reason to use this.
+     */
+    infix fun NavGraphSpec.animateWith(animation: DestinationStyle.Animated) {
+        if (this is NavHostGraphSpec) {
+            error("'animateWith' cannot be called for NavHostGraphs. Use DestinationsNavHost's 'defaultTransitions' for the same effect!")
+        }
+        add(route, animation)
+    }
 
-    internal fun build() = ManualComposableCalls(map)
-
-    @InternalDestinationsApi
-    @SuppressLint("RestrictedApi")
-    fun add(
-        lambda: DestinationLambda<*>,
-        destination: DestinationSpec<*>,
+    /**
+     * Overrides the default animations of [this] [NavGraphSpec] at runtime to use [enterTransition],
+     * [exitTransition], [popEnterTransition] and [popExitTransition].
+     * You should prefer to use the NavGraph annotation `defaultTransitions` unless there's a specific
+     * reason to use this.
+     */
+    fun NavGraphSpec.animateWith(
+        enterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? =
+            null,
+        exitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? =
+            null,
+        popEnterTransition: (
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?
+        )? = enterTransition,
+        popExitTransition: (
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?
+        )? = exitTransition,
     ) {
-        map[destination.baseRoute] = lambda
-        dynamicDestinationsBySingletonDestination[destination]?.forEach {
-            map[it.baseRoute] = lambda
+        this animateWith object: DestinationStyle.Animated() {
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? =
+                enterTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? =
+                exitTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? =
+                popEnterTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? =
+                popExitTransition?.invoke(this)
         }
     }
+
+    /**
+     * Overrides the style of [this] [DestinationSpec] at runtime to [animation].
+     * You should prefer to use the Destination annotation `style` unless there's a specific
+     * reason to use this.
+     */
+    infix fun DestinationSpec.animateWith(animation: DestinationStyle.Animated) {
+        if (style !is DestinationStyle.Default && style !is DestinationStyle.Animated) {
+            error("'animateWith' can only be called for a destination of style 'Default' or 'Animated'")
+        }
+        add(route, animation)
+    }
+
+    /**
+     * Overrides the style of [this] [DestinationSpec] at runtime to use [enterTransition],
+     * [exitTransition], [popEnterTransition] and [popExitTransition].
+     * You should prefer to use the Destination annotation `style` unless there's a specific
+     * reason to use this.
+     */
+    fun DestinationSpec.animateWith(
+        enterTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = null,
+        exitTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = null,
+        popEnterTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? =
+            enterTransition,
+        popExitTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? =
+            exitTransition,
+    ) {
+        this animateWith object : DestinationStyle.Animated() {
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
+                enterTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
+                exitTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition() =
+                popEnterTransition?.invoke(this)
+
+            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition() =
+                popExitTransition?.invoke(this)
+        }
+    }
+
+    private val map: MutableMap<String, DestinationLambda<*>> = mutableMapOf()
+    private val animations: MutableMap<String, DestinationStyle.Animated> = mutableMapOf()
+
+    internal fun add(
+        route: String,
+        animation: DestinationStyle.Animated,
+    ) {
+        animations[route] = animation
+    }
+
+    // can be internal once bottom sheet functionality is built in
+    @InternalDestinationsApi
+    fun add(
+        lambda: DestinationLambda<*>,
+        destination: DestinationSpec,
+    ) {
+        map[destination.route] = lambda
+    }
+
+    internal fun build() = ManualComposableCalls(map, animations)
 }

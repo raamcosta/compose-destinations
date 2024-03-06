@@ -4,10 +4,10 @@ import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 
 /**
- * [DestinationSpec] that does not contain any navigation arguments.
+ * [TypedDestinationSpec] that does not contain any navigation arguments.
  * It itself is a [Direction]
  */
-interface DirectionDestinationSpec: DestinationSpec<Unit>, Direction {
+interface DirectionDestinationSpec: TypedDestinationSpec<Unit>, Direction {
 
     override fun invoke(navArgs: Unit): Direction = this
 
@@ -22,5 +22,9 @@ interface DirectionDestinationSpec: DestinationSpec<Unit>, Direction {
  */
 interface DirectionActivityDestinationSpec: ActivityDestinationSpec<Unit>, DirectionDestinationSpec {
 
-    override fun argsFrom(savedStateHandle: SavedStateHandle) = Unit
+    override fun argsFrom(savedStateHandle: SavedStateHandle) {
+        super<ActivityDestinationSpec>.argsFrom(savedStateHandle)
+    }
+
+    override fun argsFrom(bundle: Bundle?) = Unit
 }

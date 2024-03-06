@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.result
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
+import androidx.compose.runtime.remember
 
 /**
  * Recipient where you can install a listener to be notified of results (of type [R])
@@ -37,4 +38,44 @@ interface OpenResultRecipient<R> {
      */
     @Composable
     fun onNavResult(listener: @DisallowComposableCalls (NavResult<R>) -> Unit)
+}
+
+/**
+ * Like [OpenResultRecipient.onNavResult] but using a different API that may feel
+ * better in some cases.
+ *
+ * If you don't need to do anything when the result sender screen is cancelled
+ * without any value, you can:
+ * ```
+ *     screenResult.onResult { resultValue ->
+ *         println("got result $resultValue")
+ *     }
+ * ```
+ *
+ * Otherwise:
+ * ```
+ *     screenResult.onResult(
+ *         onValue = { resultValue ->
+ *             println("got result $resultValue")
+ *         },
+ *         onCancelled = {
+ *             println("did not get result")
+ *         }
+ *    )
+ * ```
+ */
+@Composable
+fun <R> OpenResultRecipient<R>.onResult(
+    onCancelled: () -> Unit = {},
+    onValue: (R) -> Unit,
+) {
+    val lambda: (NavResult<R>) -> Unit = remember(onValue, onCancelled) {
+        {
+            when (it) {
+                NavResult.Canceled -> onCancelled()
+                is NavResult.Value -> onValue(it.value)
+            }
+        }
+    }
+    onNavResult(lambda)
 }

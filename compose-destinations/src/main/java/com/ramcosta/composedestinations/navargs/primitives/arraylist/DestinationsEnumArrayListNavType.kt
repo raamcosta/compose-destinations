@@ -41,7 +41,10 @@ class DestinationsEnumArrayListNavType<E : Enum<*>>(
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<E>? {
-        return savedStateHandle.get<ArrayList<E>?>(key)
+        return savedStateHandle[key]
     }
 
+    override fun put(savedStateHandle: SavedStateHandle, key: String, value: ArrayList<E>?) {
+        savedStateHandle[key] = value
+    }
 }

@@ -8,6 +8,7 @@ import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 //region anchors
 const val DESTINATION_NAME = "[DESTINATION_NAME]"
 const val BASE_ROUTE = "[ROUTE_ID]"
+const val USER_COMPOSABLE_DESTINATION = "[USER_COMPOSABLE_DESTINATION]"
 const val COMPOSED_ROUTE = "[COMPOSED_ROUTE]"
 const val NAV_ARGUMENTS = "[NAV_ARGUMENTS]"
 const val DEEP_LINKS = "[DEEP_LINKS]"
@@ -25,34 +26,27 @@ const val ACTIVITY_DESTINATION_FIELDS = "[ACTIVITY_DESTINATION_FIELDS]"
 val destinationTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName.destinations",
     imports = setOfImportable(
-        "androidx.annotation.RestrictTo",
         "androidx.compose.runtime.Composable",
         "androidx.navigation.NavBackStackEntry",
         "androidx.navigation.NavHostController",
         "androidx.navigation.NavType",
-        "androidx.navigation.navArgument",
-        "androidx.navigation.NamedNavArgument",
-        "androidx.navigation.NavDeepLink",
         "$CORE_PACKAGE_NAME.scope.DestinationScope",
         "$CORE_PACKAGE_NAME.navigation.DestinationDependenciesContainer",
         "$CORE_PACKAGE_NAME.navigation.DependenciesContainerBuilder",
-        "$CORE_PACKAGE_NAME.spec.DestinationSpec",
-        "$CORE_PACKAGE_NAME.spec.DestinationStyle",
-        "$CORE_PACKAGE_NAME.spec.Direction",
-        "$CORE_PACKAGE_NAME.spec.DirectionDestinationSpec",
-        "$CORE_PACKAGE_NAME.spec.NavGraphSpec",
-        "$CORE_PACKAGE_NAME.spec.Route",
+        "$CORE_PACKAGE_NAME.spec.*",
     ),
     sourceCode = """
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}${DESTINATION_VISIBILITY_PLACEHOLDER} object $DESTINATION_NAME : $SUPERTYPE {
+$NAV_ARGS_DATA_CLASS/**
+ * Generated from [$USER_COMPOSABLE_DESTINATION] 
+ */
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}${DESTINATION_VISIBILITY_PLACEHOLDER} data object $DESTINATION_NAME : BaseRoute(), $SUPERTYPE {
     $ARGS_TO_DIRECTION_METHOD
-    @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override val baseRoute: String = "$BASE_ROUTE"
 
     override val route: String = $COMPOSED_ROUTE
     $NAV_ARGUMENTS$DEEP_LINKS$DESTINATION_STYLE
 $CONTENT_FUNCTION_CODE
-    $ACTIVITY_DESTINATION_FIELDS$ARGS_FROM_METHODS$NAV_ARGS_DATA_CLASS
+    $ACTIVITY_DESTINATION_FIELDS$ARGS_FROM_METHODS
 }
 """.trimIndent()
 )

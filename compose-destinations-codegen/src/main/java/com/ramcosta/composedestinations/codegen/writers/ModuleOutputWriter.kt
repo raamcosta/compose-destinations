@@ -1,53 +1,49 @@
 package com.ramcosta.composedestinations.codegen.writers
 
-import com.ramcosta.composedestinations.codegen.model.*
-import com.ramcosta.composedestinations.codegen.writers.sub.*
+import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
+import com.ramcosta.composedestinations.codegen.commons.makeNavGraphTrees
+import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
+import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
+import com.ramcosta.composedestinations.codegen.writers.sub.DestinationsModeWriter
+import com.ramcosta.composedestinations.codegen.writers.sub.NavGraphsSingleObjectWriter
 
-class ModuleOutputWriter(
+internal class ModuleOutputWriter(
     private val codeGenConfig: CodeGenConfig,
-    private val navGraphsModeWriter: NavGraphsModeWriter,
-    private val legacyNavGraphsModeWriter: LegacyNavGraphsModeWriter,
     private val destinationsListModeWriter: DestinationsModeWriter,
     private val navGraphsSingleObjectWriter: NavGraphsSingleObjectWriter,
-    private val legacyNavGraphsSingleObjectWriter: LegacyNavGraphsSingleObjectWriter,
-    private val singleModuleExtensionsWriter: SingleModuleExtensionsWriter
+    private val navArgsGetters: NavArgsGettersWriter,
+    private val argsToSavedStateHandleUtilsWriter: ArgsToSavedStateHandleUtilsWriter,
+    private val mermaidGraphWriter: MermaidGraphWriter,
+    private val moduleRegistryWriter: ModuleRegistryWriter,
+    private val submodules: List<SubModuleInfo>
 ) {
 
     fun write(
         navGraphs: List<RawNavGraphGenParams>,
-        generatedDestinations: List<GeneratedDestination>
+        destinations: List<CodeGenProcessedDestination>
     ) {
-        val usingNavGraphAnnotations =
-            generatedDestinations.any { it.navGraphInfo is NavGraphInfo.AnnotatedSource }
+        val navGraphTrees = if (codeGenConfig.generateNavGraphs && destinations.any { it.navGraphInfo != null }) {
+            val graphTrees = makeNavGraphTrees(navGraphs, destinations)
+            navGraphsSingleObjectWriter.write(graphTrees, destinations)
+            mermaidGraphWriter.write(submodules, graphTrees)
 
-        return when (codeGenConfig.mode) {
-            is CodeGenMode.NavGraphs -> {
-                if (usingNavGraphAnnotations) {
-                    navGraphsModeWriter.write(navGraphs, generatedDestinations)
-                } else {
-                    legacyNavGraphsModeWriter.write(generatedDestinations)
-                }
-            }
+            graphTrees
+        } else {
+            destinationsListModeWriter.write(destinations)
 
-            is CodeGenMode.Destinations -> {
-                destinationsListModeWriter.write(generatedDestinations)
-            }
-
-            is CodeGenMode.SingleModule -> {
-                val generatedNavGraphs = if (codeGenConfig.mode.generateNavGraphs) {
-                    if (usingNavGraphAnnotations) {
-                        navGraphsSingleObjectWriter.write(navGraphs, generatedDestinations)
-                    } else {
-                        legacyNavGraphsSingleObjectWriter.write(generatedDestinations)
-                    }
-                } else {
-                    // We fallback to just generate a list of all destinations
-                    destinationsListModeWriter.write(generatedDestinations)
-                    emptyList()
-                }
-
-                singleModuleExtensionsWriter.write(generatedNavGraphs)
-            }
+            emptyList()
         }
+
+        val flattenedNavGraphTrees = navGraphTrees.flatten()
+        navArgsGetters.write(destinations, flattenedNavGraphTrees)
+        argsToSavedStateHandleUtilsWriter.write(submodules, destinations, flattenedNavGraphTrees)
+
+        moduleRegistryWriter.write(destinations, navGraphTrees)
+    }
+
+    private fun List<RawNavGraphTree>.flatten(): List<RawNavGraphTree> {
+        return this + flatMap { it.nestedGraphs.flatten() }
     }
 }
