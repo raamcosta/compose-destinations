@@ -28,7 +28,6 @@ import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUA
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_PARAM_ANNOTATION_QUALIFIED
-import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.DeepLink
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
@@ -195,7 +194,7 @@ fun KSType.getNavArgsDelegateType(
     if (ksClassDeclaration.isNothing) {
         return null
     }
-Logger.instance.warn("asdas ${ksClassDeclaration.qualifiedName!!.asString()}")
+
     val parameters = ksClassDeclaration.primaryConstructor!!
         .parameters
         .map { it.toParameter(resolver, navTypeSerializersByType) }

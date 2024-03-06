@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
  * to control parameters available with that annotation for that specific [DestinationSpec]
  */
 @Repeatable
-@Retention(AnnotationRetention.BINARY)
+@Retention(AnnotationRetention.SOURCE)
 annotation class ExternalModuleDestinations<T: ModuleDestinationsContainer>(
     val overriding: Array<OverrideDestination<out DestinationSpec>> = []
 )
