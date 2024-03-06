@@ -182,11 +182,8 @@ Choose the one that matches your Compose version, considering this table:
   <summary>groovy - build.gradle(:module-name)</summary>
 
 ```gradle
-ksp 'io.github.raamcosta.compose-destinations:ksp:<version>'
 implementation 'io.github.raamcosta.compose-destinations:core:<version>'
-
-// if you want to use bottom sheet destinations:
-implementation 'io.github.raamcosta.compose-destinations:bottom-sheet:<version>'
+ksp 'io.github.raamcosta.compose-destinations:ksp:<version>'
 ```
 </details>
 
@@ -194,18 +191,17 @@ implementation 'io.github.raamcosta.compose-destinations:bottom-sheet:<version>'
   <summary>kotlin - build.gradle.kts(:module-name)</summary>  
 
 ```gradle
-ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
 implementation("io.github.raamcosta.compose-destinations:core:<version>")
-
-// if you want to use bottom sheet destinations:
-implementation("io.github.raamcosta.compose-destinations:bottom-sheet:<version>")
+ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
 ```
 </details>
 
 > [!IMPORTANT]  
-> `bottom-sheet` dependency uses [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
+> If you want to use bottom sheet screens, replace above core dependency with: </br>
+`implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
+> this will use [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/styles-and-animations)
-
+   
 > [!IMPORTANT]  
 > If you want to use Compose Destinations in a **Wear OS** app, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:wear-core:<version>'` </br>
