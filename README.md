@@ -202,4 +202,10 @@ implementation("io.github.raamcosta.compose-destinations:bottom-sheet:<version>"
 > this will use [Wear Compose Navigation](https://developer.android.com/training/wearables/compose/navigation) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/wear-os)
 
+## Community 💬
+
+Please join the community at Kotlin slack channel: [#compose-destinations](https://kotlinlang.slack.com/archives/C06CS4UCQ10)  
+Ask questions, suggest improvements, or anything else related to the library.
+
+
 **If you like the library, consider starring and sharing it with your colleagues.**
