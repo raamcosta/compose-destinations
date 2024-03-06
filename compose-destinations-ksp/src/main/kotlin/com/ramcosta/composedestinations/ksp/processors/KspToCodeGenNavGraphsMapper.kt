@@ -77,7 +77,8 @@ internal class KspToCodeGenNavGraphsMapper(
             it is KSClassDeclaration && it.isCompanionObject
         }?.annotations?.flatMap {
             when (it.shortName.asString()) {
-                "ExternalDestination" -> it.getExternalDestinations()
+                "ExternalModuleDestinations" -> it.getExternalModuleDestinations()
+                "ExternalDestination" -> listOf(it.getExternalDestination())
                 "ExternalNavGraph" -> listOf(it.getExternalNavGraph())
                 else -> emptyList()
             }
@@ -131,50 +132,64 @@ internal class KspToCodeGenNavGraphsMapper(
         )
     }
 
-    private fun KSAnnotation.getExternalDestinations(): List<ExternalRoute.Destination> {
-        val annotationTypeArg = this.annotationType.resolve().arguments.first().type!!.resolve()
+    private fun KSAnnotation.getExternalModuleDestinations(): List<ExternalRoute.Destination> {
+        val genModuleDestinationsType = this.annotationType.resolve().arguments.first().type!!.resolve()
 
-        val firstSuperType = (annotationTypeArg.declaration as KSClassDeclaration).superTypes.first().resolve().declaration
-        val destinationTypes: List<KSType> = if (firstSuperType.simpleName.asString() == "ModuleDestinationsContainer") {
-            (annotationTypeArg.declaration as KSClassDeclaration).declarations
-                .first { it.simpleName.asString() == "Includes" }
-                .annotations.first { it.shortName.asString() == "GeneratedCodeExternalDestinations" }
-                .findArgumentValue<ArrayList<KSType>>("destinations")!!
-        } else {
-            listOf(annotationTypeArg)
+        val destinationTypes: List<KSType> = (genModuleDestinationsType.declaration as KSClassDeclaration).declarations
+            .first { it.simpleName.asString() == "Includes" }
+            .annotations.first { it.shortName.asString() == "GeneratedCodeExternalDestinations" }
+            .findArgumentValue<ArrayList<KSType>>("destinations")!!
+
+        val overridingByDestinationType: Map<KSType, KSAnnotation> = findArgumentValue<ArrayList<KSAnnotation>>("overriding")!!
+            .associate {
+                it.findArgumentValue<KSType>("destination")!! to it.findArgumentValue<KSAnnotation>("with")!!
+            }
+
+        val overridingMissingDestinations = overridingByDestinationType.keys.filter { it !in destinationTypes }
+        if (overridingMissingDestinations.isNotEmpty()) {
+            throw IllegalDestinationsSetup(
+                "Trying to override specifics of $overridingMissingDestinations destinations which are not part of ${genModuleDestinationsType.declaration.simpleName.asString()}!"
+            )
         }
 
         return destinationTypes.map { destinationType ->
-            val importable = destinationType.let {
-                Importable(
-                    it.declaration.simpleName.asString(),
-                    it.declaration.qualifiedName?.asString() ?: throw IllegalDestinationsSetup("Check ${this.location} for unresolved symbols.")
-                )
-            }
-
-            val superType = (destinationType.declaration as KSClassDeclaration).superTypes.take(2).last().resolve()
-            val navArgs = if (superType.declaration.simpleName.asString() == "TypedDestinationSpec") {
-                superType.arguments.first().type!!.resolve()
-                    .getNavArgsDelegateType(resolver, navTypeSerializersByType)?.type
-            } else {
-                null
-            }
-
-            val deepLinks = findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)
-                ?.map { it.toDeepLink() }
-                .orEmpty()
-
-            ExternalRoute.Destination(
-                superType = superType.toType(location, resolver, navTypeSerializersByType)!!,
-                isStart = findArgumentValue<Boolean>("start")!!,
-                generatedType = importable,
-                navArgs = navArgs,
-                requireOptInAnnotationTypes = destinationType.declaration.findAllRequireOptInAnnotations(),
-                additionalDeepLinks = deepLinks,
-                overriddenDestinationStyleType = destinationMappingUtils.getDestinationStyleType(this, "@ExternalDestination of ${importable.preferredSimpleName}", allowNothing = true),
-                additionalComposableWrappers = destinationMappingUtils.getDestinationWrappers(this)!!,
-            )
+            externalDestinationFrom(destinationType, overridingByDestinationType[destinationType])
         }
+    }
+
+    private fun KSAnnotation.getExternalDestination(): ExternalRoute.Destination {
+        val destinationType = this.annotationType.resolve().arguments.first().type!!.resolve()
+        return externalDestinationFrom(destinationType, this)
+    }
+
+    private fun externalDestinationFrom(destinationType: KSType, overridingStuffAnnotation: KSAnnotation?): ExternalRoute.Destination {
+        val importable = Importable(
+            destinationType.declaration.simpleName.asString(),
+            destinationType.declaration.qualifiedName?.asString() ?: throw IllegalDestinationsSetup("Check ${destinationType.declaration.location} for unresolved symbols.")
+        )
+
+        val superType = (destinationType.declaration as KSClassDeclaration).superTypes.take(2).last().resolve()
+        val navArgs = if (superType.declaration.simpleName.asString() == "TypedDestinationSpec") {
+            superType.arguments.first().type!!.resolve()
+                .getNavArgsDelegateType(resolver, navTypeSerializersByType)?.type
+        } else {
+            null
+        }
+
+        val deepLinks = overridingStuffAnnotation?.findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)
+            ?.map { it.toDeepLink() }
+            .orEmpty()
+
+        return ExternalRoute.Destination(
+            superType = superType.toType(superType.declaration.location, resolver, navTypeSerializersByType)!!,
+            isStart = overridingStuffAnnotation?.findArgumentValue<Boolean>("start") ?: false,
+            generatedType = importable,
+            navArgs = navArgs,
+            requireOptInAnnotationTypes = destinationType.declaration.findAllRequireOptInAnnotations(),
+            additionalDeepLinks = deepLinks,
+            overriddenDestinationStyleType = overridingStuffAnnotation?.let { destinationMappingUtils.getDestinationStyleType(overridingStuffAnnotation, "@ExternalDestination of ${importable.preferredSimpleName}", allowNothing = true) },
+            additionalComposableWrappers = overridingStuffAnnotation?.let { destinationMappingUtils.getDestinationWrappers(overridingStuffAnnotation)!! }.orEmpty(),
+        )
     }
 
     private fun KSAnnotation.getExternalNavGraph(): ExternalRoute.NavGraph {

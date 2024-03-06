@@ -13,17 +13,22 @@ import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransit
 import com.ramcosta.composedestinations.animations.defaults.NoTransitions
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.ExternalDestination
+import com.ramcosta.composedestinations.annotation.ExternalModuleDestinations
 import com.ramcosta.composedestinations.annotation.ExternalNavGraph
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.NavHostGraph
+import com.ramcosta.composedestinations.annotation.OverrideDestination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
 import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.annotation.parameters.FULL_ROUTE_PLACEHOLDER
+import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXNavGraph
 import com.ramcosta.composedestinations.generated.featurey.destinations.PublicFeatureYSideScreenDestination
 import com.ramcosta.composedestinations.generated.featurey.navgraphs.FeatureYNavGraph
 import com.ramcosta.composedestinations.generated.featurez.FeatureZModuleDestinations
+import com.ramcosta.composedestinations.generated.featurez.destinations.FeatureZHomeDestination
+import com.ramcosta.composedestinations.generated.featurez.destinations.FeatureZSecondScreenDestination
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.ArgsFromAnotherModule
@@ -51,7 +56,18 @@ annotation class ProfileGraph {
         val graphArg: String,
     )
 
-    @ExternalDestination<FeatureZModuleDestinations>
+    @ExternalModuleDestinations<FeatureZModuleDestinations>(
+        [
+            OverrideDestination(
+                destination = FeatureZHomeDestination::class,
+                with = ExternalDestination(style = DestinationStyleBottomSheet::class),
+            ),
+            OverrideDestination(
+                destination = FeatureZSecondScreenDestination::class,
+                with = ExternalDestination(style = DestinationStyle.Dialog::class),
+            ),
+        ]
+    )
     @ExternalDestination<PublicFeatureYSideScreenDestination>
     @ExternalNavGraph<FeatureXNavGraph>(
         deepLinks = [
