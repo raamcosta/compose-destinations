@@ -1,10 +1,9 @@
 package com.ramcosta.composedestinations.bottomsheet.utils
 
+import androidx.compose.material.navigation.bottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
 import com.ramcosta.composedestinations.bottomsheet.scope.BottomSheetNavGraphBuilderDestinationScopeImpl
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.scope.BottomSheetNavGraphBuilderDestinationScope
@@ -29,7 +28,6 @@ import com.ramcosta.composedestinations.spec.TypedDestinationSpec
  * }
  * ```
  */
-@ExperimentalMaterialNavigationApi
 fun <T> NavGraphBuilder.bottomSheetComposable(
     destination: TypedDestinationSpec<T>,
     content: @Composable BottomSheetNavGraphBuilderDestinationScope<T>.() -> Unit
