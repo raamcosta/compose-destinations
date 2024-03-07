@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SizeTransform
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -15,6 +16,7 @@ import androidx.navigation.Navigator
 import androidx.navigation.compose.navigation
 import com.ramcosta.composedestinations.animations.defaults.DestinationEnterTransition
 import com.ramcosta.composedestinations.animations.defaults.DestinationExitTransition
+import com.ramcosta.composedestinations.animations.defaults.DestinationSizeTransform
 import com.ramcosta.composedestinations.animations.defaults.NestedNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
@@ -23,7 +25,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.Route
-import com.ramcosta.composedestinations.spec.addActivityDestination
+import com.ramcosta.composedestinations.spec.addDestination
 
 /**
  * Returns the default [NavHostEngine] to be used with [DestinationsNavHost]
@@ -86,6 +88,7 @@ internal class DefaultNavHostEngine(
             exitTransition = exitTransition.toAccompanist(),
             popEnterTransition = popEnterTransition.toAccompanist(),
             popExitTransition = popExitTransition.toAccompanist(),
+            sizeTransform = sizeTransform?.toAccompanist(),
             builder = builder
         )
     }
@@ -103,6 +106,7 @@ internal class DefaultNavHostEngine(
                 exitTransition = transitions.exitTransition?.toAccompanist(),
                 popEnterTransition = transitions.popEnterTransition?.toAccompanist(),
                 popExitTransition = transitions.popExitTransition?.toAccompanist(),
+                sizeTransform = transitions.sizeTransform?.toAccompanist(),
                 builder = builder
             )
         } else {
@@ -120,7 +124,7 @@ internal class DefaultNavHostEngine(
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     ) = with(destination.style) {
-        addActivityDestination(this@composable, destination, navController, dependenciesContainerBuilder, manualComposableCalls)
+        addDestination(this@composable, destination, navController, dependenciesContainerBuilder, manualComposableCalls)
     }
 
     private fun DestinationEnterTransition.toAccompanist(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition) {
@@ -129,5 +133,9 @@ internal class DefaultNavHostEngine(
 
     private fun DestinationExitTransition.toAccompanist(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition) {
         return { exit() }
+    }
+
+    private fun DestinationSizeTransform.toAccompanist(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform?) {
+        return { sizeTransform() }
     }
 }

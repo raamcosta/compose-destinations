@@ -17,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.activity
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
+import com.ramcosta.composedestinations.animations.defaults.DestinationSizeTransform
 import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
@@ -81,6 +82,8 @@ interface DestinationStyle {
             return exitTransition()
         }
 
+        val sizeTransform: DestinationSizeTransform? get() = null
+
         /**
          * Can be used to force no animations for certain destinations, if you've overridden
          * the default animation with `defaultAnimationParams`.
@@ -141,7 +144,7 @@ internal typealias AddComposable<T> = (NavGraphBuilder, DestinationSpec<T>, NavH
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 var additionalAddComposable : AddComposable<*>? = null
 
-internal fun <T> DestinationStyle.addActivityDestination(
+internal fun <T> DestinationStyle.addDestination(
     navGraphBuilder: NavGraphBuilder,
     destination: DestinationSpec<T>,
     navController: NavHostController,
@@ -190,14 +193,17 @@ internal fun <T> DestinationStyle.addActivityDestination(
             }
         }
         is DestinationStyle.Animated -> {
-             navGraphBuilder.composable(
+            navGraphBuilder.composable(
                 route = destination.route,
                 arguments = destination.arguments,
                 deepLinks = destination.deepLinks,
                 enterTransition = { enterTransition() },
                 exitTransition = { exitTransition() },
                 popEnterTransition = { popEnterTransition() },
-                popExitTransition = { popExitTransition() }
+                popExitTransition = { popExitTransition() },
+                sizeTransform = sizeTransform?.let { transform ->
+                    { with(transform) { sizeTransform() } }
+                }
             ) { navBackStackEntry ->
                 @SuppressLint("RestrictedApi")
                 @Suppress("UNCHECKED_CAST")

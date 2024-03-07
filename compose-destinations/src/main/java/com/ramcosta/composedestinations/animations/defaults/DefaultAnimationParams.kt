@@ -8,6 +8,7 @@ interface NavGraphDefaultAnimationParams {
     val exitTransition: DestinationExitTransition?
     val popEnterTransition: DestinationEnterTransition?
     val popExitTransition: DestinationExitTransition?
+    val sizeTransform: DestinationSizeTransform?
 }
 
 /**
@@ -23,6 +24,7 @@ class RootNavGraphDefaultAnimations(
     override val exitTransition: DestinationExitTransition = DestinationExitTransition { ExitTransition.None },
     override val popEnterTransition: DestinationEnterTransition = enterTransition,
     override val popExitTransition: DestinationExitTransition = exitTransition,
+    override val sizeTransform: DestinationSizeTransform? = null
 ): NavGraphDefaultAnimationParams {
     companion object {
         val ACCOMPANIST_FADING by lazy {
@@ -46,6 +48,7 @@ class NestedNavGraphDefaultAnimations(
     override val exitTransition: DestinationExitTransition? = null,
     override val popEnterTransition: DestinationEnterTransition? = enterTransition,
     override val popExitTransition: DestinationExitTransition? = exitTransition,
+    override val sizeTransform: DestinationSizeTransform? = null
 ) : NavGraphDefaultAnimationParams {
     companion object {
         val ACCOMPANIST_FADING by lazy {

@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.animations.utils.bottomSheetComposable
@@ -34,7 +33,7 @@ import com.ramcosta.samples.playground.ui.screens.settings.SettingsScreen
 import com.ramcosta.samples.playground.ui.screens.settings.SettingsViewModel
 import com.ramcosta.samples.playground.ui.screens.settings.ThemeSettings
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialNavigationApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavigation(
     modifier: Modifier = Modifier,
@@ -98,7 +97,6 @@ private fun ManualComposableCallsBuilder.greetingScreen(
 
 // region ------- Without using DestinationsNavHost example -------
 @Suppress("UNUSED")
-@ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
 @Composable
 fun SampleAppAnimatedNavHostExample(

@@ -2,18 +2,22 @@
 
 package com.ramcosta.composedestinations.animations
 
-import androidx.compose.animation.*
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.ramcosta.composedestinations.animations.defaults.*
+import com.ramcosta.composedestinations.animations.defaults.NestedNavGraphDefaultAnimations
+import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.annotation.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.rememberNavHostEngine
-import com.ramcosta.composedestinations.spec.*
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.spec.NavHostEngine
+import com.ramcosta.composedestinations.spec.addComposable
+import com.ramcosta.composedestinations.spec.additionalAddComposable
 
 /**
  * Remembers and returns an instance of a [NavHostEngine]
@@ -29,7 +33,6 @@ import com.ramcosta.composedestinations.spec.*
  * that specific nested navigation graph. Return null for all nested nav graphs, you don't wish
  * to override animations for.
  */
-@ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
 @Composable
 fun rememberAnimatedNavHostEngine(
@@ -46,7 +49,6 @@ fun rememberAnimatedNavHostEngine(
     )
 }
 
-@ExperimentalMaterialNavigationApi
 private val lambda: (
     NavGraphBuilder,
     DestinationSpec<*>,
