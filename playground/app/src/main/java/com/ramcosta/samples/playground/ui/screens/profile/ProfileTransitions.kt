@@ -13,9 +13,8 @@ import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDes
 
 object ProfileTransitions : DestinationStyle.Animated() {
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
-
-        return when (initialState.destination()) {
+    override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? = {
+        when (initialState.destination()) {
             GreetingScreenDestination ->
                 slideInHorizontally(
                     initialOffsetX = { 1000 },
@@ -25,9 +24,8 @@ object ProfileTransitions : DestinationStyle.Animated() {
         }
     }
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
-
-        return when (targetState.destination()) {
+    override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? = {
+        when (targetState.destination()) {
             GreetingScreenDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { -1000 },
@@ -37,9 +35,8 @@ object ProfileTransitions : DestinationStyle.Animated() {
         }
     }
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
-
-        return when (initialState.destination()) {
+    override val popEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? = {
+        when (initialState.destination()) {
             GreetingScreenDestination ->
                 slideInHorizontally(
                     initialOffsetX = { -1000 },
@@ -49,9 +46,8 @@ object ProfileTransitions : DestinationStyle.Animated() {
         }
     }
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
-
-        return when (targetState.destination()) {
+    override val popExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? = {
+        when (targetState.destination()) {
             GreetingScreenDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { 1000 },

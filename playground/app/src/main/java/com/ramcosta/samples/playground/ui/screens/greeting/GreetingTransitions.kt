@@ -14,9 +14,8 @@ import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDes
 
 object GreetingTransitions : DestinationStyle.Animated() {
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
-
-        return when (initialState.destination()) {
+    override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? = {
+        when (initialState.destination()) {
             SettingsScreenDestination,
             ProfileScreenDestination ->
                 slideInHorizontally(
@@ -27,9 +26,8 @@ object GreetingTransitions : DestinationStyle.Animated() {
         }
     }
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
-
-        return when (targetState.destination()) {
+    override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? = {
+        when (targetState.destination()) {
             ProfileScreenDestination,
             SettingsScreenDestination ->
                 slideOutHorizontally(
@@ -40,9 +38,8 @@ object GreetingTransitions : DestinationStyle.Animated() {
         }
     }
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
-
-        return when (initialState.destination()) {
+    override val popEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? = {
+        when (initialState.destination()) {
             ProfileScreenDestination,
             SettingsScreenDestination ->
                 slideInHorizontally(
@@ -53,9 +50,8 @@ object GreetingTransitions : DestinationStyle.Animated() {
         }
     }
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
-
-        return when (targetState.destination()) {
+    override val popExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? = {
+        when (targetState.destination()) {
             ProfileScreenDestination,
             SettingsScreenDestination ->
                 slideOutHorizontally(

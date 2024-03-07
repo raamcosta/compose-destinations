@@ -58,10 +58,10 @@ internal class DefaultNavHostEngine(
             modifier = modifier,
             route = route,
             contentAlignment = navHostContentAlignment,
-            enterTransition = { enterTransition() },
-            exitTransition = { exitTransition() },
-            popEnterTransition = { popEnterTransition() },
-            popExitTransition = { popExitTransition() },
+            enterTransition = enterTransition,
+            exitTransition = exitTransition,
+            popEnterTransition = popEnterTransition,
+            popExitTransition = popExitTransition,
             builder = builder
         )
     }
@@ -80,10 +80,10 @@ internal class DefaultNavHostEngine(
                     route = navGraph.route,
                     arguments = navGraph.arguments,
                     deepLinks = navGraph.deepLinks,
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
+                    enterTransition = enterTransition,
+                    exitTransition = exitTransition,
+                    popEnterTransition = popEnterTransition,
+                    popExitTransition = popExitTransition,
                     builder = builder,
                 )
             }

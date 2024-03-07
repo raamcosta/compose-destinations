@@ -13,12 +13,12 @@ import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationSty
  * Disables all animations for this NavHost by default.
  */
 object NoTransitions : NavHostAnimatedDestinationStyle() {
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition {
-        return EnterTransition.None
+    override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+        EnterTransition.None
     }
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition {
-        return ExitTransition.None
+    override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+        ExitTransition.None
     }
 }
 
@@ -26,11 +26,11 @@ object NoTransitions : NavHostAnimatedDestinationStyle() {
  * Uses default fading animations for this NavHost by default.
  */
 object DefaultFadingTransitions: NavHostAnimatedDestinationStyle() {
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition {
-        return fadeIn(animationSpec = tween(700))
+    override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+        fadeIn(animationSpec = tween(700))
     }
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition {
-        return fadeOut(animationSpec = tween(700))
+    override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+        fadeOut(animationSpec = tween(700))
     }
 }

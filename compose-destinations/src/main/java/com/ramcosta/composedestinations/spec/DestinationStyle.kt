@@ -77,32 +77,23 @@ abstract class DestinationStyle {
      */
     abstract class Animated : DestinationStyle() {
 
-        open fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
-            return null
-        }
-
-        open fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
-            return null
-        }
-
-        open fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
-            return enterTransition()
-        }
-
-        open fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
-            return exitTransition()
-        }
+        open val enterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)?
+            get() = null
+        open val exitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)?
+            get() = null
+        open val popEnterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)?
+            get() = enterTransition
+        open val popExitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)?
+            get() = exitTransition
 
         /**
          * Can be used to force no animations for certain destinations, if you've overridden
          * the default animation with `defaultAnimationParams`.
          */
         object None : Animated() {
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
-                EnterTransition.None
+            override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition? = { EnterTransition.None }
 
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
-                ExitTransition.None
+            override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition? = { ExitTransition.None }
         }
 
         final override fun <T> NavGraphBuilder.addComposable(
@@ -115,10 +106,10 @@ abstract class DestinationStyle {
                 route = destination.route,
                 arguments = destination.arguments,
                 deepLinks = destination.deepLinks,
-                enterTransition = { enterTransition() },
-                exitTransition = { exitTransition() },
-                popEnterTransition = { popEnterTransition() },
-                popExitTransition = { popExitTransition() }
+                enterTransition = enterTransition,
+                exitTransition = exitTransition,
+                popEnterTransition = popEnterTransition,
+                popExitTransition = popExitTransition,
             ) { navBackStackEntry ->
                 @Suppress("UNCHECKED_CAST")
                 val contentWrapper = manualComposableCalls[destination.route] as? DestinationLambda<T>?

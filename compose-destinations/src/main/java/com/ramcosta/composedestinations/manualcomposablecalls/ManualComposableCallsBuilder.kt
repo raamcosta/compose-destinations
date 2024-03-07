@@ -100,17 +100,10 @@ class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi
         )? = exitTransition,
     ) {
         this animateWith object: DestinationStyle.Animated() {
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? =
-                enterTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? =
-                exitTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? =
-                popEnterTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? =
-                popExitTransition?.invoke(this)
+            override val enterTransition = enterTransition
+            override val exitTransition = exitTransition
+            override val popEnterTransition = popEnterTransition
+            override val popExitTransition = popExitTransition
         }
     }
 
@@ -145,17 +138,10 @@ class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi
             exitTransition,
     ) {
         this animateWith object : DestinationStyle.Animated() {
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
-                enterTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
-                exitTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition() =
-                popEnterTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition() =
-                popExitTransition?.invoke(this)
+            override val enterTransition = enterTransition
+            override val exitTransition = exitTransition
+            override val popEnterTransition = popEnterTransition
+            override val popExitTransition = popExitTransition
         }
     }
 
