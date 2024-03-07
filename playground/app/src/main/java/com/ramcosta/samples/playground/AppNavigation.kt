@@ -1,6 +1,8 @@
 package com.ramcosta.samples.playground
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -12,7 +14,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.bottomsheet.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
@@ -80,10 +81,10 @@ fun AppNavigation(
         }
     ) {
         ProfileScreenDestination animateWith object: DestinationStyle.Animated() {
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
-                fadeIn(tween(5000))
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
-                fadeOut(tween(2000))
+            override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
+                { fadeIn(tween(5000)) }
+            override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
+                { fadeOut(tween(2000)) }
         }
 
         greetingScreen(testProfileDeepLink, drawerController)
@@ -112,7 +113,6 @@ private fun ManualComposableCallsBuilder.greetingScreen(
 
 // region ------- Without using DestinationsNavHost example -------
 @Suppress("UNUSED")
-@ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
 @Composable
 fun SampleAppAnimatedNavHostExample(

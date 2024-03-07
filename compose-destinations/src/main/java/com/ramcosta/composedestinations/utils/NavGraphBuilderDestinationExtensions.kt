@@ -59,10 +59,11 @@ fun <T> NavGraphBuilder.composable(
                 route = destination.route,
                 arguments = destination.arguments,
                 deepLinks = destination.deepLinks,
-                enterTransition = { enterTransition() },
-                exitTransition = { exitTransition() },
-                popEnterTransition = { popEnterTransition() },
-                popExitTransition = { popExitTransition() }
+                enterTransition = enterTransition,
+                exitTransition = exitTransition,
+                popEnterTransition = popEnterTransition,
+                popExitTransition = popExitTransition,
+                sizeTransform = sizeTransform
             ) {
                 val scope = remember {
                     AnimatedNavGraphBuilderDestinationScopeImpl(

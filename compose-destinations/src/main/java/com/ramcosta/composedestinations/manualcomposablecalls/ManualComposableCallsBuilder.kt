@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.manualcomposablecalls
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SizeTransform
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
@@ -98,19 +99,15 @@ class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi
         popExitTransition: (
         AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?
         )? = exitTransition,
+        sizeTransform: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform?)? = null,
     ) {
         this animateWith object: DestinationStyle.Animated() {
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? =
-                enterTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? =
-                exitTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? =
-                popEnterTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? =
-                popExitTransition?.invoke(this)
+            override val enterTransition = enterTransition
+            override val exitTransition = exitTransition
+            override val popEnterTransition = popEnterTransition
+            override val popExitTransition = popExitTransition
+            override val sizeTransform = sizeTransform
         }
     }
 
@@ -143,19 +140,15 @@ class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi
         popExitTransition: (@JvmSuppressWildcards
         AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? =
             exitTransition,
+        sizeTransform: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform?)? = null,
     ) {
         this animateWith object : DestinationStyle.Animated() {
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
-                enterTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
-                exitTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition() =
-                popEnterTransition?.invoke(this)
-
-            override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition() =
-                popExitTransition?.invoke(this)
+            override val enterTransition = enterTransition
+            override val exitTransition = exitTransition
+            override val popEnterTransition = popEnterTransition
+            override val popExitTransition = popExitTransition
+            override val sizeTransform = sizeTransform
         }
     }
 

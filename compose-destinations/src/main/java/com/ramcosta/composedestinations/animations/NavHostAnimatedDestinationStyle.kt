@@ -15,15 +15,13 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
  */
 abstract class NavHostAnimatedDestinationStyle: DestinationStyle.Animated() {
 
-    abstract override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition
+    abstract override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition
 
-    abstract override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition
+    abstract override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition {
-        return enterTransition()
-    }
+    override val popEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition
+        get() = enterTransition
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition {
-        return exitTransition()
-    }
+    override val popExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition
+        get() = exitTransition
 }
