@@ -8,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.navigation.navigate
@@ -19,7 +18,7 @@ import com.ramcosta.destinations.sample.ui.composables.BottomBar
 import com.ramcosta.destinations.sample.ui.composables.SampleScaffold
 import com.ramcosta.destinations.sample.ui.composables.TopBar
 
-@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SampleApp() {
     val engine = rememberAnimatedNavHostEngine()

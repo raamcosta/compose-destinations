@@ -2,13 +2,12 @@ package com.ramcosta.composedestinations.spec
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.material.navigation.bottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
 import com.ramcosta.composedestinations.animations.scope.BottomSheetDestinationScopeImpl
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
@@ -38,7 +37,6 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
  */
 object DestinationStyleBottomSheet : DestinationStyle
 
-@ExperimentalMaterialNavigationApi
 internal fun <T> NavGraphBuilder.addComposable(
     destination: DestinationSpec<T>,
     navController: NavHostController,
