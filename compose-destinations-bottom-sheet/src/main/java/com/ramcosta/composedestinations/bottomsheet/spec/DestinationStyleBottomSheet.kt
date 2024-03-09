@@ -68,7 +68,7 @@ private fun <T> ColumnScope.CallComposable(
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
     contentWrapper: DestinationLambda<T>?
 ) {
-    val scope = remember(navBackStackEntry) {
+    val scope = remember(destination, navBackStackEntry, navController, this, dependenciesContainerBuilder) {
         BottomSheetDestinationScopeImpl(
             destination,
             navBackStackEntry,

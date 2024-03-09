@@ -42,7 +42,7 @@ fun <T> NavGraphBuilder.composable(
                 arguments = destination.arguments,
                 deepLinks = destination.deepLinks
             ) {
-                val scope = remember {
+                val scope = remember(destination, it, this) {
                     AnimatedNavGraphBuilderDestinationScopeImpl(
                         destination,
                         it,
@@ -65,7 +65,7 @@ fun <T> NavGraphBuilder.composable(
                 popExitTransition = popExitTransition,
                 sizeTransform = sizeTransform
             ) {
-                val scope = remember {
+                val scope = remember(destination, it, this) {
                     AnimatedNavGraphBuilderDestinationScopeImpl(
                         destination,
                         it,
@@ -119,7 +119,7 @@ fun <T> NavGraphBuilder.dialogComposable(
         deepLinks,
         style.properties
     ) {
-        val scope = remember(it) {
+        val scope = remember(destination, it) {
             NavGraphBuilderDestinationScopeImpl.Default(
                 destination,
                 it,
