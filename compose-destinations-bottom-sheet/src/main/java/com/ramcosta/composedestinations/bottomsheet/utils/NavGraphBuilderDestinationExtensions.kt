@@ -41,7 +41,7 @@ fun <T> NavGraphBuilder.bottomSheetComposable(
                 destination.arguments,
                 destination.deepLinks,
             ) {
-                val scope = remember {
+                val scope = remember(destination, it, this) {
                     BottomSheetNavGraphBuilderDestinationScopeImpl(
                         destination,
                         it,

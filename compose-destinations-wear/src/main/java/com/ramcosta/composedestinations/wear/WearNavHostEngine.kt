@@ -152,7 +152,7 @@ internal class WearNavHostEngine(
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         contentWrapper: DestinationLambda<T>?
     ) {
-        val scope = remember(navBackStackEntry) {
+        val scope = remember(destination, navBackStackEntry, navController, dependenciesContainerBuilder) {
             WearDestinationScope(
                 destination,
                 navBackStackEntry,

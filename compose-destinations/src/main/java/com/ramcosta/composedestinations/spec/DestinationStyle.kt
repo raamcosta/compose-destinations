@@ -216,7 +216,7 @@ private fun <T> CallDialogComposable(
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
     contentWrapper: DestinationLambda<T>?
 ) {
-    val scope = remember(navBackStackEntry) {
+    val scope = remember(destination, navBackStackEntry, navController, dependenciesContainerBuilder) {
         DestinationScopeImpl.Default(
             destination,
             navBackStackEntry,
@@ -241,7 +241,7 @@ private fun <T> AnimatedVisibilityScope.CallComposable(
     contentWrapper: DestinationLambda<T>?,
 ) {
 
-    val scope = remember(navBackStackEntry) {
+    val scope = remember(destination, navBackStackEntry, navController, this, dependenciesContainerBuilder) {
         AnimatedDestinationScopeImpl(
             destination,
             navBackStackEntry,

@@ -4,6 +4,7 @@ import androidx.annotation.RestrictTo
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
@@ -22,13 +23,15 @@ abstract class DestinationScopeImpl<T> : DestinationScope<T> {
     }
 
     override val destinationsNavigator: DestinationsNavigator
-        get() = DestinationsNavController(navController, navBackStackEntry)
+        get() = DestinationsNavController(navController, isCurrentNavBackStackEntryResumed)
 
     @Composable
     override fun buildDependencies(): DestinationDependenciesContainer {
         return remember(navBackStackEntry) { DestinationDependenciesContainerImpl(this) }
             .apply { dependenciesContainerBuilder() }
     }
+
+    private val isCurrentNavBackStackEntryResumed = { navBackStackEntry.lifecycle.currentState == Lifecycle.State.RESUMED }
 
     internal class Default<T>(
         override val destination: TypedDestinationSpec<T>,
@@ -46,8 +49,10 @@ abstract class NavGraphBuilderDestinationScopeImpl<T> : NavGraphBuilderDestinati
     }
 
     override fun destinationsNavigator(navController: NavController): DestinationsNavigator {
-        return DestinationsNavController(navController, navBackStackEntry)
+        return DestinationsNavController(navController, isCurrentNavBackStackEntryResumed)
     }
+
+    private val isCurrentNavBackStackEntryResumed = { navBackStackEntry.lifecycle.currentState == Lifecycle.State.RESUMED }
 
     internal class Default<T>(
         override val destination: TypedDestinationSpec<T>,
