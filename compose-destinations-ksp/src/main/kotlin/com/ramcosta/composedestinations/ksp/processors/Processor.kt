@@ -95,7 +95,7 @@ class Processor(
 
     private fun generateModuleRegistryPathInfo(resolver: Resolver) {
         val moduleRegistryFile: KSFile = resolver.getNewFiles()
-            .firstOrNull { it.fileName == "_ModuleRegistry.kt" }
+            .firstOrNull { it.fileName.startsWith("_ModuleRegistry_") }
             ?: return
         val moduleRegistryId = moduleRegistryFile
             .declarations.first {

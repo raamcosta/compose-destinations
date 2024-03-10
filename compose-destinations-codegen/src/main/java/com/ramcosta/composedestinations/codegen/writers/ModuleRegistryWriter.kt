@@ -46,7 +46,7 @@ internal class ModuleRegistryWriter(
             )
         )
         codeGenerator.makeFile(
-            "_ModuleRegistry",
+            "_ModuleRegistry_$registryId",
             "_generated._ramcosta._composedestinations._moduleregistry"
         ).writeSourceFile(
             packageStatement = "package _generated._ramcosta._composedestinations._moduleregistry",
@@ -109,7 +109,7 @@ internal class ModuleRegistryWriter(
             moduleRegistryId: String
         ) {
             codeGenerator.makeFile(
-                "_PathInfo_ModuleRegistry",
+                "_PathInfo_ModuleRegistry_$moduleRegistryId",
                 "_generated._ramcosta._composedestinations._moduleregistry"
             ).use {
                 it += """
