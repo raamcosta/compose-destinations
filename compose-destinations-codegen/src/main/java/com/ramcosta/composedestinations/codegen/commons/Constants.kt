@@ -58,7 +58,8 @@ const val CORE_DIRECTION_DESTINATION_SPEC = "DirectionDestinationSpec"
 const val CORE_ALIAS_NAV_GRAPH_SPEC = "NavGraphSpec"
 
 val CORE_NAV_HOST_ANIMATED_DESTINATION_STYLE = Importable("NavHostAnimatedDestinationStyle", "$CORE_PACKAGE_NAME.animations.NavHostAnimatedDestinationStyle")
-val CORE_NAV_HOST_GRAPH_SPEC = Importable("NavHostGraphSpec", "$CORE_PACKAGE_NAME.spec.NavHostGraphSpec")
+val CORE_TYPED_NAV_HOST_GRAPH_SPEC = Importable("TypedNavHostGraphSpec", "$CORE_PACKAGE_NAME.spec.TypedNavHostGraphSpec")
+val CORE_DIRECTION_NAV_HOST_GRAPH_SPEC = Importable("DirectionNavHostGraphSpec", "$CORE_PACKAGE_NAME.spec.DirectionNavHostGraphSpec")
 val CORE_DIRECTION_NAV_GRAPH_SPEC = Importable("DirectionNavGraphSpec", "$CORE_PACKAGE_NAME.spec.DirectionNavGraphSpec")
 val CORE_TYPED_NAV_GRAPH_SPEC = Importable("TypedNavGraphSpec", "$CORE_PACKAGE_NAME.spec.TypedNavGraphSpec")
 val CORE_ACTIVITY_DESTINATION_SPEC = Importable("ActivityDestinationSpec", "$CORE_PACKAGE_NAME.spec.ActivityDestinationSpec")
