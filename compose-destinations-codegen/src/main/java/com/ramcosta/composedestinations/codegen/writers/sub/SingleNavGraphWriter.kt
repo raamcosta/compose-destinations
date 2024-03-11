@@ -5,10 +5,11 @@ import com.ramcosta.composedestinations.codegen.commons.CORE_ALIAS_NAV_GRAPH_SPE
 import com.ramcosta.composedestinations.codegen.commons.CORE_DESTINATION_ANIMATION_STYLE
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_NAV_GRAPH_SPEC
+import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_NAV_HOST_GRAPH_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_NAV_HOST_ANIMATED_DESTINATION_STYLE
-import com.ramcosta.composedestinations.codegen.commons.CORE_NAV_HOST_GRAPH_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.CORE_TYPED_NAV_GRAPH_SPEC
+import com.ramcosta.composedestinations.codegen.commons.CORE_TYPED_NAV_HOST_GRAPH_SPEC
 import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
 import com.ramcosta.composedestinations.codegen.commons.bundleImportable
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
@@ -59,7 +60,8 @@ internal class SingleNavGraphWriter(
     private val navArgResolver: NavArgResolver
 ) {
     private val navGraphType = CORE_TYPED_NAV_GRAPH_SPEC
-    private val navHostNavGraphType = CORE_NAV_HOST_GRAPH_SPEC
+    private val typedNavHostNavGraphType = CORE_TYPED_NAV_HOST_GRAPH_SPEC
+    private val directionNavHostNavGraphType = CORE_DIRECTION_NAV_HOST_GRAPH_SPEC
     private val directionNavGraphType = CORE_DIRECTION_NAV_GRAPH_SPEC
 
     private val navArgumentBridgeCodeBuilder = NavArgumentBridgeCodeBuilder(
@@ -160,6 +162,10 @@ internal class SingleNavGraphWriter(
     }
 
     private fun RawNavGraphTree.graphInvokeFunction(): String {
+        if (isNavHostGraph || hasNoArgs()) {
+            return "\n"
+        }
+
         if (usesSameArgsAsStartRoute()) {
             return """
             |
@@ -170,10 +176,6 @@ internal class SingleNavGraphWriter(
             |        )
             |    }    
             """.trimMargin()
-        }
-
-        if (isNavHostGraph || hasNoArgs()) {
-            return ""
         }
 
         val navArgsType = navArgTypes.first?.let { importableHelper.addAndGetPlaceholder(it) } ?: "Unit"
@@ -280,7 +282,11 @@ internal class SingleNavGraphWriter(
 
     private fun RawNavGraphTree.graphSuperType(): String {
         if (isNavHostGraph) {
-            return importableHelper.addAndGetPlaceholder(navHostNavGraphType)
+            return if (startRouteArgs != null) {
+                "${importableHelper.addAndGetPlaceholder(typedNavHostNavGraphType)}<${importableHelper.addAndGetPlaceholder(startRouteArgs.type)}>"
+            } else {
+                importableHelper.addAndGetPlaceholder(directionNavHostNavGraphType)
+            }
         }
 
         val (graphArgs, startRouteNavArgsName) = navArgTypes.let { argTypes ->
@@ -298,7 +304,11 @@ internal class SingleNavGraphWriter(
 
     private fun RawNavGraphTree.startRouteType(isDestination: Boolean): String {
         if (isNavHostGraph) {
-            return "TypedRoute<Unit>"
+            return if (startRouteArgs != null) {
+                "TypedRoute<${importableHelper.addAndGetPlaceholder(startRouteArgs.type)}>"
+            } else {
+                "TypedRoute<Unit>"
+            }
         }
 
         return if (startRouteArgs != null) {
