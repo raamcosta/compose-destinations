@@ -36,7 +36,7 @@ internal class NavGraphsSingleObjectWriter(
 
     private fun navGraphWriter(rawNavGraphTree: RawNavGraphTree) = singleNavGraphWriter(
         codeGenerator,
-        importableHelper,
+        ImportableHelper(navGraphsObjectTemplate.imports),
         rawNavGraphTree,
         NavArgResolver(customNavTypeByType, importableHelper)
     )
