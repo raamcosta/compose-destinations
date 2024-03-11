@@ -12,6 +12,7 @@ import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_D
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_ROUTE_ARGUMENT
 import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION_SUFFIX
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.JAVA_ACTIVITY_DESTINATION_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
 import com.ramcosta.composedestinations.codegen.commons.toValidClassName
 import com.ramcosta.composedestinations.codegen.model.ActivityDestinationParams
@@ -42,7 +43,7 @@ internal class KspToCodeGenDestinationsMapper(
 
     fun map(
         composableDestinationPaths: Sequence<DestinationAnnotationsPath>,
-        activityDestinations: Sequence<KSClassDeclaration> //TODO RACOSTA do we need to have a path as well for activity? 🤔
+        activityDestinations: List<KSClassDeclaration> //TODO RACOSTA do we need to have a path as well for activity? 🤔
     ): List<RawDestinationGenParams> {
         val composableDestinations = composableDestinationPaths.groupBy { it.function.qualifiedName?.asString() }
             .values.flatMap { destinationsWithSameFunction ->
@@ -94,7 +95,11 @@ internal class KspToCodeGenDestinationsMapper(
         errorLocationHint: String
     ): NavGraphInfo? {
         return findOverridingArgumentValue {
-            annotationType.resolve().arguments.firstOrNull()?.type?.resolve()
+            if (shortName.asString() == JAVA_ACTIVITY_DESTINATION_ANNOTATION) {
+                findArgumentValue<KSType>("navGraph")
+            } else {
+                annotationType.resolve().arguments.firstOrNull()?.type?.resolve()
+            }
         }!!.toNavGraphParentInfo(
             errorLocationHint = errorLocationHint,
             annotationType = "@Destination"
@@ -102,7 +107,7 @@ internal class KspToCodeGenDestinationsMapper(
     }
 
     private fun KSClassDeclaration.toActivityDestination(): RawDestinationGenParams {
-        val activityDestinationAnnotations = findAnnotationPathRecursively(ACTIVITY_DESTINATION_ANNOTATION)!!.reversed()
+        val activityDestinationAnnotations = findAnnotationPathRecursively(listOf(ACTIVITY_DESTINATION_ANNOTATION, JAVA_ACTIVITY_DESTINATION_ANNOTATION))!!.reversed()
         val deepLinksAnnotations = activityDestinationAnnotations.findCumulativeArgumentValue { findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT) }
         val explicitActivityClass = activityDestinationAnnotations.findOverridingArgumentValue { findArgumentValue<KSType>("activityClass") }!!
             .declaration as KSClassDeclaration

@@ -42,3 +42,26 @@ annotation class ActivityDestination<T: Annotation>(
         const val DEFAULT_NULL = "@ramcosta.destinations.activity-null-default@"
     }
 }
+
+/**
+ * Like [ActivityDestination] but specifically for java files, since
+ * java doesn't have annotation with type arguments, so nav graph can't be
+ * set in that manner.
+ * Use [navGraph] instead to pass that same annotation class.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.SOURCE)
+annotation class JavaActivityDestination(
+    /* keep in sync with ActivityDestination fields */
+    val navGraph: KClass<out Annotation>,
+    val route: String = Destination.COMPOSABLE_NAME,
+    val start: Boolean = false,
+    val navArgs: KClass<*> = Nothing::class,
+    val deepLinks: Array<DeepLink> = [],
+    val activityClass: KClass<out Activity> = Nothing::class,
+    val targetPackage: String = ActivityDestination.DEFAULT_NULL,
+    val action: String = ActivityDestination.DEFAULT_NULL,
+    val dataUri: String = ActivityDestination.DEFAULT_NULL,
+    val dataPattern: String = ActivityDestination.DEFAULT_NULL,
+    val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
+)

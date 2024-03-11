@@ -102,7 +102,7 @@ annotation class ProfileSettingsGraph {
 }
 
 @Repeatable
-@Destination<RootGraph>(
+@Destination<Nothing>(
     visibility = CodeGenVisibility.INTERNAL
 )
 annotation class InternalDestination<T: Annotation>(

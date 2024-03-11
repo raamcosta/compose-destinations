@@ -18,6 +18,7 @@ import com.ramcosta.composedestinations.codegen.commons.CORE_BOTTOM_SHEET_DESTIN
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
+import com.ramcosta.composedestinations.codegen.commons.JAVA_ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED
@@ -217,19 +218,24 @@ class Processor(
         }
     }
 
-    private fun Resolver.getActivityDestinations(name: String = ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED): Sequence<KSClassDeclaration> {
-        val symbolsWithAnnotation = getSymbolsWithAnnotation(name)
+    private fun Resolver.getActivityDestinations(
+        names: List<String> = listOf(
+            JAVA_ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED,
+            ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED
+        )
+    ): List<KSClassDeclaration> {
+        val symbolsWithAnnotation = names.flatMap { getSymbolsWithAnnotation(it) }
 
         return symbolsWithAnnotation
             .filterIsInstance<KSClassDeclaration>()
             .filter { Modifier.ANNOTATION !in it.modifiers } + getAnnotationActivityDestinations(symbolsWithAnnotation)
     }
 
-    private fun Resolver.getAnnotationActivityDestinations(symbolsWithAnnotation: Sequence<KSAnnotated>): Sequence<KSClassDeclaration> {
+    private fun Resolver.getAnnotationActivityDestinations(symbolsWithAnnotation: List<KSAnnotated>): List<KSClassDeclaration> {
         return symbolsWithAnnotation.filterIsInstance<KSClassDeclaration>()
             .filter { Modifier.ANNOTATION in it.modifiers && it.qualifiedName != null }
             .flatMap {
-                getActivityDestinations(it.qualifiedName!!.asString())
+                getActivityDestinations(listOf(it.qualifiedName!!.asString()))
             }
     }
 

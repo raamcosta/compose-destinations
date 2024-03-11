@@ -60,15 +60,15 @@ fun KSAnnotated.findAnnotation(name: String): KSAnnotation {
     return annotations.find { it.shortName.asString() == name }!!
 }
 
-fun KSAnnotated.findAnnotationPathRecursively(name: String, path: List<KSAnnotation> = emptyList()): List<KSAnnotation>? {
+fun KSAnnotated.findAnnotationPathRecursively(names: List<String>, path: List<KSAnnotation> = emptyList()): List<KSAnnotation>? {
     val relevantAnnotations = annotations.filter { it.shortName.asString() !in ignoreAnnotations}
-    val foundAnnotation = relevantAnnotations.find { it.shortName.asString() == name }
+    val foundAnnotation = relevantAnnotations.find { it.shortName.asString() in names }
     if (foundAnnotation != null) {
         return path + foundAnnotation
     }
 
     relevantAnnotations.forEach { annotation ->
-        val found = annotation.annotationType.resolve().declaration.findAnnotationPathRecursively(name, path + annotation)
+        val found = annotation.annotationType.resolve().declaration.findAnnotationPathRecursively(names, path + annotation)
         if (found != null) {
             return found
         }
