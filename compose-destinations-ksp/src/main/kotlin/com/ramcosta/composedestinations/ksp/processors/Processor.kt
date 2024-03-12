@@ -151,8 +151,8 @@ class Processor(
                                 "typeResults"
                             )?.map { typeResultAnnotation ->
                                 DestinationResultSenderInfo(
-                                    typeResultAnnotation.findArgumentValue<KSType>("destination")!!.declaration.qualifiedName!!.asString(),
-                                    typeResultAnnotation.findArgumentValue<KSType>("resultType")!!.declaration.qualifiedName!!.asString(),
+                                    typeResultAnnotation.findArgumentValue<String>("destination")!!,
+                                    typeResultAnnotation.findArgumentValue<String>("resultType")!!,
                                     typeResultAnnotation.findArgumentValue<Boolean>("isResultNullable")!!,
                                 )
                             }.orEmpty()
