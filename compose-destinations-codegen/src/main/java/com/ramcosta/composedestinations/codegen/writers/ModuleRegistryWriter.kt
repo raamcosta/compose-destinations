@@ -41,8 +41,7 @@ internal class ModuleRegistryWriter(
         val registryId = moduleName.ifEmpty { UUID.randomUUID().toString().replace("-", "_") }
         val importableHelper = ImportableHelper(
             setOfImportable(
-                "com.ramcosta.composedestinations.spec.DestinationSpec",
-                "kotlin.reflect.KClass"
+                "com.ramcosta.composedestinations.spec.DestinationSpec"
             )
         )
         codeGenerator.makeFile(
@@ -60,8 +59,8 @@ internal class ModuleRegistryWriter(
                     )
                     
                     annotation class _Destination_Result_Info_$registryId(
-                        val destination: KClass<out DestinationSpec>,
-                        val resultType: KClass<*>,
+                        val destination: String,
+                        val resultType: String,
                         val isResultNullable: Boolean
                     )
                     
@@ -82,12 +81,8 @@ internal class ModuleRegistryWriter(
                     resultBackTypesByDestination.joinToString(",\n") { (destination, type) ->
                         """
                         |       _Destination_Result_Info_$registryId(
-                        |           destination = ${
-                            importableHelper.addAndGetPlaceholder(
-                                destination.destinationImportable
-                            )
-                        }::class,
-                        |           resultType = ${importableHelper.addAndGetPlaceholder(type.importable)}::class,
+                        |           destination = "${destination.destinationImportable.qualifiedName}",
+                        |           resultType = "${type.importable.qualifiedName}",
                         |           isResultNullable = ${type.isNullable}
                         |       )
                         """.trimMargin()
