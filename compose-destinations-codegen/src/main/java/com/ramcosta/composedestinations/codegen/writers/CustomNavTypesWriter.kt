@@ -1,18 +1,51 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
-import com.ramcosta.composedestinations.codegen.commons.*
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.firstTypeArg
+import com.ramcosta.composedestinations.codegen.commons.isArray
+import com.ramcosta.composedestinations.codegen.commons.isArrayList
+import com.ramcosta.composedestinations.codegen.commons.isArrayOrArrayList
+import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayListTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.isCustomTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
-import com.ramcosta.composedestinations.codegen.facades.Logger
-import com.ramcosta.composedestinations.codegen.model.*
-import com.ramcosta.composedestinations.codegen.templates.*
+import com.ramcosta.composedestinations.codegen.model.ClassKind
+import com.ramcosta.composedestinations.codegen.model.CustomNavType
+import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParamsWithNavArgs
+import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
+import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
-import com.ramcosta.composedestinations.codegen.templates.navtype.*
-import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.*
+import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
+import com.ramcosta.composedestinations.codegen.templates.navtype.CLASS_SIMPLE_NAME_CAMEL_CASE
+import com.ramcosta.composedestinations.codegen.templates.navtype.DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE
+import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_CLASS_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_VISIBILITY
+import com.ramcosta.composedestinations.codegen.templates.navtype.PARSE_VALUE_CAST_TO_CLASS
+import com.ramcosta.composedestinations.codegen.templates.navtype.SERIALIZER_SIMPLE_CLASS_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.ARRAY_CUSTOM_NAV_TYPE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.NAV_TYPE_INITIALIZATION_CODE
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.TYPE_ARG_CLASS_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.customTypeArrayListNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.customTypeArrayNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.ktxSerializableArrayListNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.ktxSerializableArrayNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.parcelableArrayListNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.parcelableArrayNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.serializableArrayListNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.arrays.serializableArrayNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.customTypeSerializerNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.ktxSerializableNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.parcelableNavTypeTemplate
+import com.ramcosta.composedestinations.codegen.templates.navtype.serializableNavTypeTemplate
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 import java.io.OutputStream
-import java.util.*
+import java.util.Locale
 
 class CustomNavTypesWriter(
     private val codeGenerator: CodeOutputStreamMaker,
@@ -87,51 +120,49 @@ class CustomNavTypesWriter(
             return
         }
 
+        val importableHelper = ImportableHelper(
+            setOfImportable(
+                "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsEnumNavType",
+                "$CORE_PACKAGE_NAME.navargs.primitives.array.DestinationsEnumArrayNavType",
+                "$CORE_PACKAGE_NAME.navargs.primitives.arraylist.DestinationsEnumArrayListNavType",
+                "$CORE_PACKAGE_NAME.navargs.primitives.valueOfIgnoreCase",
+            )
+        )
+
+        val allEnums = StringBuilder()
+        typesToGenerate.forEach {
+            val navTypeName = it.getNavTypeName()
+
+            val importable = if (it.isArrayOrArrayList()) {
+                it.firstTypeArg.importable
+            } else it.importable
+
+            val typePlaceHolder = importableHelper.addAndGetPlaceholder(importable)
+            val (instantiateNavType, navType) = when {
+                it.isArrayList() -> {
+                    "DestinationsEnumArrayListNavType(${typePlaceHolder}::class.java)" to "DestinationsEnumArrayListNavType<${typePlaceHolder}>"
+                }
+                it.isArray() -> {
+                    "DestinationsEnumArrayNavType { Array<${typePlaceHolder}>(it.size) { idx -> ${typePlaceHolder}::class.java.valueOfIgnoreCase(it[idx]) } }" to "DestinationsEnumArrayNavType<${typePlaceHolder}>"
+                }
+                else -> {
+                    "DestinationsEnumNavType(${typePlaceHolder}::class.java)" to "DestinationsEnumNavType<${typePlaceHolder}>"
+                }
+            }
+
+            allEnums += "\n\npublic val $navTypeName: $navType = $instantiateNavType"
+
+            typesForNavTypeName[it] = CustomNavType(navTypeName, null)
+        }
+
         codeGenerator.makeFile(
             "EnumCustomNavTypes",
             "$codeGenBasePackageName.navtype",
-        ).use { out ->
-            val allEnums = StringBuilder()
-            val typeImports = StringBuilder()
-            allEnums += """
-                package $codeGenBasePackageName.navtype
-                
-                import $CORE_PACKAGE_NAME.navargs.primitives.DestinationsEnumNavType
-                import $CORE_PACKAGE_NAME.navargs.primitives.array.DestinationsEnumArrayNavType
-                import $CORE_PACKAGE_NAME.navargs.primitives.arraylist.DestinationsEnumArrayListNavType
-                import $CORE_PACKAGE_NAME.navargs.primitives.valueOfIgnoreCase%s1
-            """.trimIndent()
-
-            typesToGenerate.forEach {
-                val navTypeName = it.getNavTypeName()
-
-                val importable = if (it.isArrayOrArrayList()) {
-                    it.firstTypeArg.importable
-                } else it.importable
-
-                if (!typeImports.contains(importable.qualifiedName)) {
-                    typeImports += "\nimport ${importable.qualifiedName.sanitizePackageName()}"
-                }
-                val (instantiateNavType, navType) = when {
-                    it.isArrayList() -> {
-                        "DestinationsEnumArrayListNavType(${importable.simpleName}::class.java)" to "DestinationsEnumArrayListNavType<${importable.simpleName}>"
-                    }
-                    it.isArray() -> {
-                        "DestinationsEnumArrayNavType { Array<${importable.simpleName}>(it.size) { idx -> ${importable.simpleName}::class.java.valueOfIgnoreCase(it[idx]) } }" to "DestinationsEnumArrayNavType<${importable.simpleName}>"
-                    }
-                    else -> {
-                        "DestinationsEnumNavType(${importable.simpleName}::class.java)" to "DestinationsEnumNavType<${importable.simpleName}>"
-                    }
-                }
-
-                allEnums += "\n\npublic val $navTypeName: $navType = $instantiateNavType"
-
-                typesForNavTypeName[it] = CustomNavType(navTypeName, null)
-            }
-
-            out += allEnums.toString()
-                .replace("%s1", typeImports.toString())
-        }
+        ).writeSourceFile(
+            "package $codeGenBasePackageName.navtype",
+            importableHelper,
+            allEnums.toString()
+        )
     }
 
     private fun Type.generateCustomNavType(navTypeSerializer: NavTypeSerializer?) {
