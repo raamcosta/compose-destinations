@@ -24,7 +24,7 @@ internal class ModuleOutputWriter(
         navGraphs: List<RawNavGraphGenParams>,
         destinations: List<CodeGenProcessedDestination>
     ) {
-        val navGraphTrees = if (codeGenConfig.generateNavGraphs && destinations.any { it.navGraphInfo != null }) {
+        val navGraphTrees = if (codeGenConfig.generateNavGraphs && navGraphsHaveRoutes(navGraphs, destinations)) {
             val graphTrees = makeNavGraphTrees(navGraphs, destinations)
             navGraphsSingleObjectWriter.write(graphTrees, destinations)
             mermaidGraphWriter.write(submodules, graphTrees)
@@ -41,6 +41,17 @@ internal class ModuleOutputWriter(
         argsToSavedStateHandleUtilsWriter.write(submodules, destinations, flattenedNavGraphTrees)
 
         moduleRegistryWriter.write(destinations, navGraphTrees)
+    }
+
+    private fun navGraphsHaveRoutes(
+        navGraphs: List<RawNavGraphGenParams>,
+        destinations: List<CodeGenProcessedDestination>
+    ): Boolean {
+        val anyDestinationHasNavGraph = destinations.any { it.navGraphInfo != null }
+        val anyNavGraphHasParent = navGraphs.any { it.parent != null }
+        val anyNavGraphHasExternalRoutes = navGraphs.any { it.externalRoutes.isNotEmpty() }
+
+        return anyDestinationHasNavGraph || anyNavGraphHasParent || anyNavGraphHasExternalRoutes
     }
 
     private fun List<RawNavGraphTree>.flatten(): List<RawNavGraphTree> {
