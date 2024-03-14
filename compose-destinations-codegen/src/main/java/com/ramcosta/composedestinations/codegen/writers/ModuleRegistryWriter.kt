@@ -3,7 +3,6 @@ package com.ramcosta.composedestinations.codegen.writers
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
-import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
@@ -95,33 +94,5 @@ internal class ModuleRegistryWriter(
                     }
                 )
         )
-    }
-
-    companion object {
-        fun generateModuleRegistryPathInfo(
-            codeGenerator: CodeOutputStreamMaker,
-            moduleRegistryPath: String,
-            moduleRegistryId: String
-        ) {
-            codeGenerator.makeFile(
-                "_PathInfo_ModuleRegistry_$moduleRegistryId",
-                "_generated._ramcosta._composedestinations._moduleregistry"
-            ).use {
-                it += """
-                    package _generated._ramcosta._composedestinations._moduleregistry
-                    
-                    annotation class _Annotation_PathInfo_$moduleRegistryId(
-                        val path: String,
-                        val moduleRegistryId: String
-                    )
-                    
-                    @_Annotation_PathInfo_$moduleRegistryId(
-                        path = "$moduleRegistryPath",
-                        moduleRegistryId = "$moduleRegistryId"
-                    )
-                    object _PathInfo_ModuleRegistry_$moduleRegistryId
-                """.trimIndent()
-            }
-        }
     }
 }
