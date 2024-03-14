@@ -19,7 +19,6 @@ import com.ramcosta.composedestinations.codegen.servicelocator.destinationWithNa
 import com.ramcosta.composedestinations.codegen.servicelocator.destinationsWriter
 import com.ramcosta.composedestinations.codegen.servicelocator.initialValidator
 import com.ramcosta.composedestinations.codegen.servicelocator.moduleOutputWriter
-import com.ramcosta.composedestinations.codegen.writers.ModuleRegistryWriter
 import java.util.Locale
 
 internal const val DEFAULT_GEN_PACKAGE_NAME = "com.ramcosta.composedestinations.generated"
@@ -90,16 +89,6 @@ class CodeGenerator(
                             !isSerializable
                 }
             }
-        }
-    }
-
-    companion object {
-        fun generateModuleRegistryPathInfo(
-            codeGenerator: CodeOutputStreamMaker,
-            moduleRegistryPath: String,
-            moduleRegistryId: String
-        ) {
-            ModuleRegistryWriter.generateModuleRegistryPathInfo(codeGenerator, moduleRegistryPath, moduleRegistryId)
         }
     }
 }

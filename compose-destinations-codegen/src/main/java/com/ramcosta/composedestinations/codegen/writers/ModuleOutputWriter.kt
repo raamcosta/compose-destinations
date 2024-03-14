@@ -27,7 +27,7 @@ internal class ModuleOutputWriter(
         val navGraphTrees = if (codeGenConfig.generateNavGraphs && navGraphsHaveRoutes(navGraphs, destinations)) {
             val graphTrees = makeNavGraphTrees(navGraphs, destinations)
             navGraphsSingleObjectWriter.write(graphTrees, destinations)
-            mermaidGraphWriter.write(submodules, graphTrees)
+            mermaidGraphWriter.write(graphTrees)
 
             graphTrees
         } else {

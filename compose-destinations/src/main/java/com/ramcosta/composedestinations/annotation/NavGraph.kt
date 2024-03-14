@@ -30,7 +30,7 @@ import kotlin.reflect.KClass
  * @param T type of the parent navigation graph the destination should belong to. Should be an
  * annotation annotated with [NavGraph] or [NavHostGraph], such as [RootGraph].
  * @param route unique id name of the nav graph used to register it in the `DestinationsNavHost`.
- * By default the name of the annotation class will be used removing "NavGraph" (case insensitive)
+ * By default the name of the annotation class will be used removing "Graph" or "NavGraph" (case insensitive)
  * and changing it to snake case.
  * @param start whether this navigation graph will be the start of its parent navigation graph,
  * false by default.

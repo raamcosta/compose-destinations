@@ -10,7 +10,6 @@ import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.model.NavGraphGenParams
-import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
 import java.io.File
 import java.util.Locale
 
@@ -19,13 +18,13 @@ internal class MermaidGraphWriter(
     private val codeGenerator: CodeOutputStreamMaker
 ) {
 
-    fun write(submodules: List<SubModuleInfo>, graphTrees: List<RawNavGraphTree>) {
+    fun write(graphTrees: List<RawNavGraphTree>) {
         graphTrees.forEach {
-            writeMermaidGraph(submodules, it)
+            writeMermaidGraph(it)
         }
     }
 
-    private fun writeMermaidGraph(submodules: List<SubModuleInfo>, tree: RawNavGraphTree) {
+    private fun writeMermaidGraph(tree: RawNavGraphTree) {
         val title = tree.rawNavGraphGenParams.baseRoute
             .snakeToCamelCase()
             .replaceFirstChar { it.titlecase(Locale.ROOT) } + " Navigation Graph"
@@ -55,7 +54,7 @@ internal class MermaidGraphWriter(
             File(codeGenConfig.mermaidGraph, "${tree.rawNavGraphGenParams.name}.mmd")
                 .writeText(
                     mermaidGraph
-                        .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, null, "mmd"))
+                        .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, "mmd"))
                 )
         } else {
             codeGenerator.makeFile(
@@ -64,7 +63,7 @@ internal class MermaidGraphWriter(
                 extensionName = "mmd",
             ).use {
                 it += mermaidGraph
-                    .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, submodules, "mmd"))
+                    .replace("@clicksPlaceholder@", "")
             }
         }
 
@@ -72,7 +71,7 @@ internal class MermaidGraphWriter(
         if (codeGenConfig.htmlMermaidGraph != null) {
             File(codeGenConfig.htmlMermaidGraph, "${tree.rawNavGraphGenParams.name}.html")
                 .writeText(
-                    htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, null, "html"))
+                    htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, "html"))
                 )
         } else {
             codeGenerator.makeFile(
@@ -80,34 +79,18 @@ internal class MermaidGraphWriter(
                 packageName = "$DEFAULT_GEN_PACKAGE_NAME.mermaid",
                 extensionName = "html",
             ).use {
-                it += htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, submodules, "html"))
+                it += htmlMermaid.replace("@clicksPlaceholder@", "")
             }
         }
     }
 
     private fun externalNavGraphClicks(
         tree: RawNavGraphTree,
-        submodules: List<SubModuleInfo>?,
         fileExtension: String
     ): String {
         val sb = StringBuilder()
         tree.findAllExternalNavGraphs().forEach { externalGraph ->
-            if (submodules != null) {
-                val moduleRegistryFilePath =
-                    submodules.first { externalGraph.generatedType.simpleName in it.topLevelGraphs }
-                        .moduleRegistryFilePath
-                val splits = moduleRegistryFilePath.split("/")
-                val buildIndex = splits.indexOf("build")
-                val kotlinIndex = splits.indexOf("kotlin")
-                val pathWithoutUserDirs = splits.drop(buildIndex - 2) // keep module & project folder
-                    .dropLast(splits.size - kotlinIndex) // drop after kotlin folder (included)
-                    .joinToString("/")
-
-                val path = "/$pathWithoutUserDirs/resources/${DEFAULT_GEN_PACKAGE_NAME.replace(".", "/")}/mermaid/${externalGraph.generatedType.simpleName}.$fileExtension"
-                sb.appendLine("click ${externalGraph.mermaidId} \"$path\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
-            } else {
-                sb.appendLine("click ${externalGraph.mermaidId} \"${externalGraph.generatedType.simpleName}.$fileExtension\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
-            }
+            sb.appendLine("click ${externalGraph.mermaidId} \"${externalGraph.generatedType.simpleName}.$fileExtension\" \"See ${externalGraph.mermaidVisualName} details\" _blank")
         }
 
         return sb.toString()
