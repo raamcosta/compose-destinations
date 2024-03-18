@@ -1,5 +1,8 @@
 package com.ramcosta.composedestinations.navigation
 
+import android.annotation.SuppressLint
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.ramcosta.composedestinations.scope.DestinationScopeWithNoDependencies
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
@@ -29,13 +32,19 @@ inline fun <reified D : Any, T> DependenciesContainerBuilder<T>.dependency(depen
  * navigated to, giving an opportunity to specify dependencies with [dependency] method
  * that are supposed to be used only by destinations of that [navGraph].
  */
+@SuppressLint("ComposableNaming")
+@Composable
 inline fun <T> DependenciesContainerBuilder<T>.navGraph(
     navGraph: NavGraphSpec,
     dependencyProvider: DependenciesContainerBuilder<T>.() -> Unit,
 ) {
-    val route = requireNotNull(navBackStackEntry.destination.route)
+    val isDestinationOnNavGraph = remember(navBackStackEntry, navGraph) {
+        val route = requireNotNull(navBackStackEntry.destination.route)
 
-    if (navGraph.findDestination(route) != null) {
+        navGraph.findDestination(route) != null
+    }
+
+    if (isDestinationOnNavGraph) {
         dependencyProvider()
     }
 }
@@ -45,6 +54,8 @@ inline fun <T> DependenciesContainerBuilder<T>.navGraph(
  * giving an opportunity to specify dependencies with [dependency] method
  * that are supposed to be used only by that [destination].
  */
+@SuppressLint("ComposableNaming")
+@Composable
 inline fun <T> DependenciesContainerBuilder<T>.destination(
     destination: DestinationSpec,
     dependencyProvider: DependenciesContainerBuilder<T>.() -> Unit,
