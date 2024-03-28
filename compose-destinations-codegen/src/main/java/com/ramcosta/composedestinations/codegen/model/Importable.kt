@@ -18,14 +18,13 @@ data class Importable(
         }
 
     private fun getCodeFriendlyName(): String {
-        val result = StringBuilder()
-
         val splits = qualifiedName.split(".")
         if (!splits.last()[0].isUpperCase()) {
             // if last is not starting with uppercase, we don't do anything here
             return simpleName
         }
 
+        val result = StringBuilder()
         for (part in splits) {
             if (part.firstOrNull()?.isUpperCase() == true) {
                 if (result.isNotEmpty()) {

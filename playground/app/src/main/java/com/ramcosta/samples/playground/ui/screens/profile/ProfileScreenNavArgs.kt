@@ -11,6 +11,8 @@ const val DEFAULT_GROUP: String = ""
 
 data class ProfileScreenNavArgs(
     val id: Long,
+    val source: SomeSource = aSource(),
+    val sourceId: SomeSource.Id? = someSourceId(),
     val stuff: Stuff = Stuff.STUFF1,
     val groupName: String? = DEFAULT_GROUP,
     val whatever: Int? = 12333,
@@ -21,6 +23,24 @@ data class ProfileScreenNavArgs(
     val serializableExampleWithNavTypeSerializer: SerializableExampleWithNavTypeSerializer? = null,
     val color: Color
 )
+
+fun aSource() = SomeSource.ASource(SomeSource.Id("source-id"))
+
+fun someSourceId() = SomeSource.Id("source-id")
+
+@kotlinx.serialization.Serializable
+sealed interface SomeSource {
+
+    @kotlinx.serialization.Serializable
+    data class ASource(val id: Id): SomeSource
+
+    @kotlinx.serialization.Serializable
+    data class AnotherSource(val id: Id): SomeSource
+
+    @JvmInline
+    @kotlinx.serialization.Serializable
+    value class Id(val value: String)
+}
 
 @JvmInline
 value class ValueClassArg(val value: String)
