@@ -234,7 +234,7 @@ internal class CustomNavTypesWriter(
                 TemplateWithReplacements(
                     template = parcelableArrayNavTypeTemplate,
                     importableHelper = importableHelper.parcelableAdditionalImports(typeArg, navTypeSerializer),
-                    navTypeSerializerInit = typeArg.parcelableNavTypeSerializerCode(navTypeSerializer),
+                    navTypeSerializerInit = importableHelper.parcelableNavTypeSerializerCode(typeArg, navTypeSerializer),
                     serializerTypeArg = if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(parcelableImportable)
                     else importableHelper.addAndGetPlaceholder(typeArg.importable)
                 )
@@ -245,7 +245,7 @@ internal class CustomNavTypesWriter(
                 TemplateWithReplacements(
                     template = serializableArrayNavTypeTemplate,
                     importableHelper = importableHelper.serializableAdditionalImports(typeArg, navTypeSerializer),
-                    navTypeSerializerInit = serializableNavTypeSerializerCode(navTypeSerializer),
+                    navTypeSerializerInit = importableHelper.serializableNavTypeSerializerCode(navTypeSerializer),
                     serializerTypeArg = if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(serializableImportable)
                     else importableHelper.addAndGetPlaceholder(typeArg.importable)
                 )
@@ -256,7 +256,7 @@ internal class CustomNavTypesWriter(
                 TemplateWithReplacements(
                     template = customTypeArrayNavTypeTemplate,
                     importableHelper = importableHelper.customTypeSerializerAdditionalImports(typeArg, navTypeSerializer),
-                    navTypeSerializerInit = navTypeSerializerCode(navTypeSerializer),
+                    navTypeSerializerInit = importableHelper.navTypeSerializerCode(navTypeSerializer),
                     serializerTypeArg = importableHelper.addAndGetPlaceholder(typeArg.importable),
                 )
             }
@@ -281,7 +281,7 @@ internal class CustomNavTypesWriter(
                 packageStatement = template.packageStatement,
                 importableHelper = importableHelper,
                 sourceCode = template.sourceCode
-                    .replace(TYPE_ARG_CLASS_SIMPLE_NAME, typeArg.importable.simpleName)
+                    .replace(TYPE_ARG_CLASS_SIMPLE_NAME, importableHelper.addAndGetPlaceholder(typeArg.importable))
                     .replace(ARRAY_CUSTOM_NAV_TYPE_NAME, className)
                     .replace(SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME, serializerTypeArg)
                     .replace(
@@ -308,8 +308,7 @@ internal class CustomNavTypesWriter(
                     template = parcelableArrayListNavTypeTemplate,
                     importableHelper = importableHelper.parcelableAdditionalImports(typeArg,
                         navTypeSerializer),
-                    navTypeSerializerInit = typeArg.parcelableNavTypeSerializerCode(
-                        navTypeSerializer),
+                    navTypeSerializerInit = importableHelper.parcelableNavTypeSerializerCode(typeArg, navTypeSerializer),
                     serializerTypeArg = if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(
                         parcelableImportable)
                     else importableHelper.addAndGetPlaceholder(typeArg.importable)
@@ -323,7 +322,7 @@ internal class CustomNavTypesWriter(
                     template = serializableArrayListNavTypeTemplate,
                     importableHelper = importableHelper.serializableAdditionalImports(typeArg,
                         navTypeSerializer),
-                    navTypeSerializerInit = serializableNavTypeSerializerCode(navTypeSerializer),
+                    navTypeSerializerInit = importableHelper.serializableNavTypeSerializerCode(navTypeSerializer),
                     serializerTypeArg = if (navTypeSerializer == null) importableHelper.addAndGetPlaceholder(
                         serializableImportable)
                     else importableHelper.addAndGetPlaceholder(typeArg.importable)
@@ -337,7 +336,7 @@ internal class CustomNavTypesWriter(
                     importableHelper = importableHelper.customTypeSerializerAdditionalImports(
                         typeArg,
                         navTypeSerializer),
-                    navTypeSerializerInit = navTypeSerializerCode(navTypeSerializer),
+                    navTypeSerializerInit = importableHelper.navTypeSerializerCode(navTypeSerializer),
                     serializerTypeArg = importableHelper.addAndGetPlaceholder(typeArg.importable),
                 )
             }
@@ -363,7 +362,7 @@ internal class CustomNavTypesWriter(
                 packageStatement = template.packageStatement,
                 importableHelper = importableHelper,
                 sourceCode = template.sourceCode
-                    .replace(TYPE_ARG_CLASS_SIMPLE_NAME, typeArg.importable.simpleName)
+                    .replace(TYPE_ARG_CLASS_SIMPLE_NAME, importableHelper.addAndGetPlaceholder(typeArg.importable))
                     .replace(ARRAY_CUSTOM_NAV_TYPE_NAME, className)
                     .replace(SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME, serializerTypeArg)
                     .replace(
@@ -394,7 +393,7 @@ internal class CustomNavTypesWriter(
                 .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
                 .replace(
                     SERIALIZER_SIMPLE_CLASS_NAME,
-                    serializableNavTypeSerializerCode(navTypeSerializer)
+                    importableHelper.serializableNavTypeSerializerCode(navTypeSerializer)
                 )
                 .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importableHelper.addAndGetPlaceholder(importable))
                 .replace(
@@ -426,12 +425,12 @@ internal class CustomNavTypesWriter(
                 .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
                 .replace(
                     SERIALIZER_SIMPLE_CLASS_NAME,
-                    "DefaultKtxSerializableNavTypeSerializer(${importable.simpleName}.serializer())"
+                    "DefaultKtxSerializableNavTypeSerializer(${importableHelper.addAndGetPlaceholder(importable)}.serializer())"
                 )
-                .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importable.simpleName)
+                .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importableHelper.addAndGetPlaceholder(importable))
                 .replace(
                     DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE,
-                    importable.simpleName,
+                    importableHelper.addAndGetPlaceholder(importable),
                 )
                 .replace(NAV_TYPE_VISIBILITY, visibility.name.lowercase())
         )
@@ -452,7 +451,7 @@ internal class CustomNavTypesWriter(
                 .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
                 .replace(
                     SERIALIZER_SIMPLE_CLASS_NAME,
-                    navTypeSerializerCode(navTypeSerializer)
+                    importableHelper.navTypeSerializerCode(navTypeSerializer)
                 )
                 .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importableHelper.addAndGetPlaceholder(importable))
                 .replace(DESTINATIONS_NAV_TYPE_SERIALIZER_TYPE, importableHelper.addAndGetPlaceholder(importable))
@@ -476,7 +475,7 @@ internal class CustomNavTypesWriter(
                 .replace(NAV_TYPE_CLASS_SIMPLE_NAME, navTypeClassName)
                 .replace(
                     SERIALIZER_SIMPLE_CLASS_NAME,
-                    parcelableNavTypeSerializerCode(navTypeSerializer)
+                    importableHelper.parcelableNavTypeSerializerCode(this, navTypeSerializer)
                 )
                 .replace(CLASS_SIMPLE_NAME_CAMEL_CASE, importableHelper.addAndGetPlaceholder(importable))
                 .replace(
@@ -493,15 +492,15 @@ internal class CustomNavTypesWriter(
         )
     }
 
-    private fun Type.parcelableNavTypeSerializerCode(navTypeSerializer: NavTypeSerializer?): String {
+    private fun ImportableHelper.parcelableNavTypeSerializerCode(type: Type, navTypeSerializer: NavTypeSerializer?): String {
         if (navTypeSerializer == null) {
-            return "DefaultParcelableNavTypeSerializer(${this.importable.simpleName}::class.java)"
+            return "DefaultParcelableNavTypeSerializer(${addAndGetPlaceholder(type.importable)}::class.java)"
         }
 
         return navTypeSerializerCode(navTypeSerializer)
     }
 
-    private fun serializableNavTypeSerializerCode(navTypeSerializer: NavTypeSerializer?): String {
+    private fun ImportableHelper.serializableNavTypeSerializerCode(navTypeSerializer: NavTypeSerializer?): String {
         if (navTypeSerializer == null) {
             return "DefaultSerializableNavTypeSerializer()"
         }
@@ -509,8 +508,8 @@ internal class CustomNavTypesWriter(
         return navTypeSerializerCode(navTypeSerializer)
     }
 
-    private fun navTypeSerializerCode(navTypeSerializer: NavTypeSerializer): String {
-        val simpleName = navTypeSerializer.serializerType.simpleName
+    private fun ImportableHelper.navTypeSerializerCode(navTypeSerializer: NavTypeSerializer): String {
+        val simpleName = addAndGetPlaceholder(navTypeSerializer.serializerType)
 
         return if (navTypeSerializer.classKind == ClassKind.CLASS) "$simpleName()" else simpleName
     }
@@ -581,7 +580,7 @@ internal class CustomNavTypesWriter(
         }
 
         val navTypeName =
-            "${importableToUse.simpleName.replaceFirstChar { it.lowercase(Locale.US) }}${
+            "${importableToUse.preferredSimpleName.replace(".", "").replaceFirstChar { it.lowercase(Locale.US) }}${
                 if (isEnum || (isCustomArrayOrArrayListTypeNavArg() && firstTypeArg.isEnum)) "Enum"
                 else ""
             }${
