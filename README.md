@@ -14,6 +14,11 @@
 A KSP library that processes annotations and generates code that uses Official Jetpack Compose Navigation under the hood. It hides the complex, non-type-safe and boilerplate code you would have to write otherwise. </br>
 No need to learn a whole new framework to navigate - most APIs are either the same as with the Jetpack Components or inspired by them.
 
+## V2 is here! 🙌
+Please consider migrating to it and leaving feedback as GH issue or on our slack channel [#compose-destinations](https://kotlinlang.slack.com/archives/C06CS4UCQ10)!  
+ * Migration guide: https://composedestinations.rafaelcosta.xyz/migrating-to-v2
+ * V2 docs: https://composedestinations.rafaelcosta.xyz/v2
+
 
 ## Main features 🧭
 - Typesafe navigation arguments
@@ -41,10 +46,14 @@ For a deeper look into all the features, check our [documentation website](https
 
 ## Basic Usage 🧑‍💻
 
-### 1. Annotate your screen Composables with `@Destination`:
+> [!NOTE]  
+> This readme is already about v2. If you're now starting to use Compose Destinations, I strongly recommend using v2. It is currently in beta stage, but we don't expect major issues with it, and soon it will reach stable!
+> If you really want to see basic v1 usage, [check it here](https://composedestinations.rafaelcosta.xyz/#basic-usage). 
+
+### 1. Annotate your screen Composables with `@Destination<RootGraph>`:
 
 ```kotlin
-@Destination
+@Destination<RootGraph> // sets this as a destination of the "root" nav graph
 @Composable
 fun ProfileScreen() { /*...*/ }
 ```
@@ -52,7 +61,7 @@ fun ProfileScreen() { /*...*/ }
 ### 2. Add navigation arguments to the function declaration:
 
 ```kotlin
-@Destination
+@Destination<RootGraph>
 @Composable
 fun ProfileScreen(
    id: Int, // <-- required navigation argument
@@ -62,11 +71,11 @@ fun ProfileScreen(
 ```
 
 `Parcelable`, `Serializable`, `Enum` and classes annotated with [`@kotlinx.serialization.Serializable`](https://github.com/Kotlin/kotlinx.serialization) (as well as `Array`s and `ArrayList`s of these) work out of the box!
-You can also make any other type a navigation argument type. Read about it [here](https://composedestinations.rafaelcosta.xyz/destination-arguments/navigation-arguments#custom-navigation-argument-types)
+You can also make any other type a navigation argument type. Read about it [here](https://composedestinations.rafaelcosta.xyz/v2/arguments/navigation-arguments#custom-navigation-argument-types)
 
 > [!NOTE]  
 > There is an alternative way to define the destination arguments in case you don't need to use them
-inside the Composable (as is likely the case when using ViewModel). Read more [here](https://composedestinations.rafaelcosta.xyz/destination-arguments/navigation-arguments#navigation-arguments-class-delegate).
+inside the Composable (as is likely the case when using ViewModel). Read more [here](https://composedestinations.rafaelcosta.xyz/v2/arguments/navigation-arguments#destination-navigation-arguments).
 
 ### 3. Build the project
    Or run ksp task (example: `./gradlew kspDebugKotlin`), to generate all the Destinations. With the above annotated composable, a `ProfileScreenDestination` file would be generated (that we'll use in step 4).
@@ -75,19 +84,17 @@ inside the Composable (as is likely the case when using ViewModel). Read more [h
    It will have the correct typed arguments.
 
 ```kotlin
-@RootNavGraph(start = true) // sets this as the start destination of the default nav graph
-@Destination
+@Destination<RootGraph>(start = true) // sets this as the start destination of the "root" nav graph
 @Composable
 fun HomeScreen(
    navigator: DestinationsNavigator
-   // OR navigator: NavController if you prefer, in which case you can use `navigate` extension function
 ) {
    /*...*/
    navigator.navigate(ProfileScreenDestination(id = 7, groupName = "Kotlin programmers"))
 }
 ```
 > [!NOTE]  
-> DestinationsNavigator is a wrapper interface to NavController that if declared as a parameter, will be provided for free by the library. NavController can also be provided in the exact same way, but it ties your composables to a specific implementation which will make it harder to test and preview. Read more [here](https://composedestinations.rafaelcosta.xyz/navigation/basics#destinationsnavigator-vs-navcontroller)
+> DestinationsNavigator is a wrapper interface to NavController that if declared as a parameter, will be provided for free by the library. NavController can also be provided in the exact same way, but it ties your composables to a specific implementation which will make it harder to test and preview. Read more [here](https://composedestinations.rafaelcosta.xyz/v2/navigation/basics/#destinationsnavigator-vs-navcontroller)
 
 ### 5. Finally, add the NavHost call:
 
@@ -95,7 +102,9 @@ fun HomeScreen(
 DestinationsNavHost(navGraph = NavGraphs.root)
 ```
 > [!NOTE]  
-> `NavGraphs` is a generated file that describes your navigation graphs and their destinations. By default all destinations will belong to "root" (@RootNavGraph), but you can create your own nav graphs annotations to have certain screens in other navigation graphs.
+> `NavGraphs` is a generated file that contains all navigation graphs. 
+> `root` here corresponds to the `<RootGraph>` we used in the above examples.
+> You're also able to [create your own navigation graph annotations](https://composedestinations.rafaelcosta.xyz/v2/defining-navgraphs) to use instead of `<RootGraph>`.
 
 This call adds all annotated Composable functions as destinations of the Navigation Host.
 
