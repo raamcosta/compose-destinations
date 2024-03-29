@@ -47,7 +47,7 @@ For a deeper look into all the features, check our [documentation website](https
 ## Basic Usage 🧑‍💻
 
 > [!NOTE]  
-> This readme is already about v2. If you're now starting to use Compose Destinations, I strongly recommend using v2. It is currently in beta stage, but we don't expect major issues with it, and soon it will reach stable!
+> This readme is about v2. If you're now starting to use Compose Destinations, I strongly recommend using v2. It is currently in beta stage, but we don't expect major issues with it, and soon it will reach stable!
 > If you really want to see basic v1 usage, [check it here](https://composedestinations.rafaelcosta.xyz/#basic-usage). 
 
 ### 1. Annotate your screen Composables with `@Destination<RootGraph>`:
@@ -193,6 +193,9 @@ Choose the one that matches your Compose version, considering this table:
 ```gradle
 implementation 'io.github.raamcosta.compose-destinations:core:<version>'
 ksp 'io.github.raamcosta.compose-destinations:ksp:<version>'
+
+// V2 only: for bottom sheet destination support, also add
+implementation 'io.github.raamcosta.compose-destinations:bottom-sheet:<version>'
 ```
 </details>
 
@@ -202,15 +205,12 @@ ksp 'io.github.raamcosta.compose-destinations:ksp:<version>'
 ```gradle
 implementation("io.github.raamcosta.compose-destinations:core:<version>")
 ksp("io.github.raamcosta.compose-destinations:ksp:<version>")
+
+// V2 only: for bottom sheet destination support, also add
+implementation("io.github.raamcosta.compose-destinations:bottom-sheet:<version>")
 ```
 </details>
 
-> [!IMPORTANT]  
-> If you want to use bottom sheet screens, replace above core dependency with: </br>
-`implementation 'io.github.raamcosta.compose-destinations:animations-core:<version>'` </br>
-> this will use [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material) internally. </br>
-> Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/styles-and-animations)
-   
 > [!IMPORTANT]  
 > If you want to use Compose Destinations in a **Wear OS** app, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:wear-core:<version>'` </br>
