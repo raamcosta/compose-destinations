@@ -73,7 +73,7 @@ fun ProfileScreen(
 `Parcelable`, `Serializable`, `Enum` and classes annotated with [`@kotlinx.serialization.Serializable`](https://github.com/Kotlin/kotlinx.serialization) (as well as `Array`s and `ArrayList`s of these) work out of the box!
 You can also make any other type a navigation argument type. Read about it [here](https://composedestinations.rafaelcosta.xyz/v2/arguments/navigation-arguments#custom-navigation-argument-types)
 
-> [!NOTE]  
+> [!TIP]  
 > There is an alternative way to define the destination arguments in case you don't need to use them
 inside the Composable (as is likely the case when using ViewModel). Read more [here](https://composedestinations.rafaelcosta.xyz/v2/arguments/navigation-arguments#destination-navigation-arguments).
 
@@ -87,14 +87,12 @@ inside the Composable (as is likely the case when using ViewModel). Read more [h
 @Destination<RootGraph>(start = true) // sets this as the start destination of the "root" nav graph
 @Composable
 fun HomeScreen(
-   navigator: DestinationsNavigator
+   navigator: DestinationsNavigator // or NavController
 ) {
    /*...*/
    navigator.navigate(ProfileScreenDestination(id = 7, groupName = "Kotlin programmers"))
 }
 ```
-> [!NOTE]  
-> DestinationsNavigator is a wrapper interface to NavController that if declared as a parameter, will be provided for free by the library. NavController can also be provided in the exact same way, but it ties your composables to a specific implementation which will make it harder to test and preview. Read more [here](https://composedestinations.rafaelcosta.xyz/v2/navigation/basics/#destinationsnavigator-vs-navcontroller)
 
 ### 5. Finally, add the NavHost call:
 
@@ -104,7 +102,7 @@ DestinationsNavHost(navGraph = NavGraphs.root)
 > [!NOTE]  
 > `NavGraphs` is a generated file that contains all navigation graphs. 
 > `root` here corresponds to the `<RootGraph>` we used in the above examples.
-> You're also able to [create your own navigation graph annotations](https://composedestinations.rafaelcosta.xyz/v2/defining-navgraphs) to use instead of `<RootGraph>`.
+> You're also able to [define your own navigation graphs](https://composedestinations.rafaelcosta.xyz/v2/defining-navgraphs) to use instead of `<RootGraph>`.
 
 This call adds all annotated Composable functions as destinations of the Navigation Host.
 
@@ -211,7 +209,7 @@ implementation("io.github.raamcosta.compose-destinations:bottom-sheet:<version>"
 ```
 </details>
 
-> [!IMPORTANT]  
+> [!NOTE]  
 > If you want to use Compose Destinations in a **Wear OS** app, replace above core dependency with: </br>
 `implementation 'io.github.raamcosta.compose-destinations:wear-core:<version>'` </br>
 > this will use [Wear Compose Navigation](https://developer.android.com/training/wearables/compose/navigation) internally. </br>
