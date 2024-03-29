@@ -101,7 +101,6 @@ class Processor(
         return moduleRegistryDeclarations
             .filter { it.simpleName.asString().startsWith("_ModuleRegistry_") }
             .flatMap { pckgDeclaration ->
-                val moduleRegistryId = pckgDeclaration.simpleName.asString().removePrefix("_ModuleRegistry_")
                 pckgDeclaration.annotations
                     .filter { it.shortName.asString().startsWith("_Info_") }
                     .map {
