@@ -4,7 +4,7 @@ minSdk = "21"
 compileSdk = "34"
 targetSdk = "34"
 
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 dependencyCheckPluginVersion = "0.51.0"
 agp = "8.2.2"
 mavenPublishPluginVersion = "0.27.0"
@@ -12,17 +12,17 @@ mavenPublishPluginVersion = "0.27.0"
 composeViewModel = "2.7.0"
 activityCompose = "1.8.2"
 
-material = "1.9.0" #ProcessorProviderTests fail when trying to update this one
+material = "1.9.0" #ProcessorProviderTests fail when trying to update this one - to do figure out why
 lifecycleRuntimeKtx = "2.7.0"
 
-ksp = "1.9.22-1.0.17"
+ksp = "1.9.23-1.0.20"
 
 junit = "4.13.2"
 
-compose = "1.7.0-alpha04"
-composeMaterial = "1.7.0-alpha04"
-composeCompiler = "1.5.10"
-composeNavigation = "2.8.0-alpha04"
+compose = "1.7.0-alpha07"
+composeMaterial = "1.7.0-alpha07"
+composeCompiler = "1.5.12"
+composeNavigation = "2.8.0-alpha07"
 
 ktxSerialization = "1.6.3"
 mockk = "1.13.9"

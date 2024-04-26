@@ -23,11 +23,45 @@ class DestinationContentFunctionWriter(
     private val importableHelper: ImportableHelper,
 ) {
 
+    private val requirePlaceholder = importableHelper.addAndGetPlaceholder(
+        Importable(
+            "require",
+            "com.ramcosta.composedestinations.navigation.require"
+        )
+    )
+
+    private val listOfPreSupportedTypes = mapOf(
+        ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME to { "(this as $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME)" },
+        NAV_CONTROLLER_QUALIFIED_NAME to { "navController" },
+        NAV_HOST_CONTROLLER_QUALIFIED_NAME to { "navController" },
+        NAV_BACK_STACK_ENTRY_QUALIFIED_NAME to { "navBackStackEntry" },
+        DESTINATIONS_NAVIGATOR_QUALIFIED_NAME to { "destinationsNavigator" },
+        RESULT_RECIPIENT_QUALIFIED_NAME to {
+            val placeHolder = importableHelper.addAndGetPlaceholder(
+                Importable(
+                    "resultRecipient",
+                    "$CORE_PACKAGE_NAME.scope.resultRecipient"
+                )
+            )
+            "$placeHolder()"
+        },
+        RESULT_BACK_NAVIGATOR_QUALIFIED_NAME to {
+            val placeHolder = importableHelper.addAndGetPlaceholder(
+                Importable(
+                    "resultBackNavigator",
+                    "$CORE_PACKAGE_NAME.scope.resultBackNavigator"
+                )
+            )
+            "$placeHolder()"
+        },
+    )
+
     fun write(): String = with(destination) {
         val functionCallCode = StringBuilder()
 
         val (args, needsDependencyContainer) = prepareArguments()
-        if (needsDependencyContainer) {
+        val (receiverCode, receiverNeedsDependencyContainer) = prepareReceiver()
+        if (needsDependencyContainer || receiverNeedsDependencyContainer) {
             functionCallCode += "\t\tval dependencyContainer = buildDependencies()\n"
         }
 
@@ -37,7 +71,7 @@ class DestinationContentFunctionWriter(
 
         functionCallCode += wrappingPrefix()
 
-        val composableCall = "\t\t${prepareReceiver()}${composableName}($args)"
+        val composableCall = "\t\t$receiverCode${composableName}($args)"
 
         functionCallCode += if (composableWrappers.isEmpty()) composableCall
         else "\t" + composableCall.replace("\n", "\n\t")
@@ -80,9 +114,11 @@ class DestinationContentFunctionWriter(
         return navArgs.joinToString(", ") { it.name }
     }
 
-    private fun prepareReceiver(): String {
-        return when (destination.composableReceiverSimpleName) {
-            ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME -> {
+    private fun prepareReceiver(): Pair<String, Boolean> {
+        val receiverType = destination.composableReceiverType
+        return when (receiverType?.importable?.qualifiedName) {
+            null -> "" to false
+            ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME -> {
                 val animatedVisPlaceholder = importableHelper.addAndGetPlaceholder(
                     Importable(
                         ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME,
@@ -90,10 +126,10 @@ class DestinationContentFunctionWriter(
                     )
                 )
                 "val animatedVisibilityScope = (this as $animatedVisPlaceholder)\n" +
-                        "\t\tanimatedVisibilityScope."
+                        "\t\tanimatedVisibilityScope." to false
             }
 
-            COLUMN_SCOPE_SIMPLE_NAME -> {
+            COLUMN_SCOPE_QUALIFIED_NAME -> {
                 val columnScopePlaceholder = importableHelper.addAndGetPlaceholder(
                     Importable(
                         COLUMN_SCOPE_SIMPLE_NAME,
@@ -101,10 +137,17 @@ class DestinationContentFunctionWriter(
                     )
                 )
                 "val columnScope = (this as $columnScopePlaceholder)\n" +
-                        "\t\tcolumnScope."
+                        "\t\tcolumnScope." to false
             }
 
-            else -> ""
+            in listOfPreSupportedTypes.keys -> {
+                listOfPreSupportedTypes[receiverType.importable.qualifiedName]!!.invoke() + "." to false
+            }
+
+            else -> {
+                val receiverTypePlaceHolder = importableHelper.addAndGetPlaceholder(receiverType.importable)
+                "dependencyContainer.$requirePlaceholder<$receiverTypePlaceHolder>()." to true
+            }
         }
     }
 
@@ -137,29 +180,8 @@ class DestinationContentFunctionWriter(
 
     private fun resolveArgumentForTypeAndName(parameter: Parameter): Pair<String?, Boolean> {
         var needsDependencyContainer = false
-        val arg = when (parameter.type.importable.qualifiedName) {
-            NAV_CONTROLLER_QUALIFIED_NAME,
-            NAV_HOST_CONTROLLER_QUALIFIED_NAME, -> "navController"
-            NAV_BACK_STACK_ENTRY_QUALIFIED_NAME -> "navBackStackEntry"
-            DESTINATIONS_NAVIGATOR_QUALIFIED_NAME -> "destinationsNavigator"
-            RESULT_RECIPIENT_QUALIFIED_NAME -> {
-                val placeHolder = importableHelper.addAndGetPlaceholder(
-                    Importable(
-                        "resultRecipient",
-                        "$CORE_PACKAGE_NAME.scope.resultRecipient"
-                    )
-                )
-                "$placeHolder()"
-            }
-            RESULT_BACK_NAVIGATOR_QUALIFIED_NAME -> {
-                val placeHolder = importableHelper.addAndGetPlaceholder(
-                    Importable(
-                        "resultBackNavigator",
-                        "$CORE_PACKAGE_NAME.scope.resultBackNavigator"
-                    )
-                )
-                "$placeHolder()"
-            }
+        val arg = when (val typeQualifiedName = parameter.type.importable.qualifiedName) {
+            in listOfPreSupportedTypes.keys -> listOfPreSupportedTypes[typeQualifiedName]!!.invoke()
             destination.destinationNavArgsClass?.type?.qualifiedName -> {
                 "navArgs"
             }
@@ -171,13 +193,6 @@ class DestinationContentFunctionWriter(
 
                     !parameter.hasDefault -> {
                         needsDependencyContainer = true
-
-                        val requirePlaceholder = importableHelper.addAndGetPlaceholder(
-                            Importable(
-                                "require",
-                                "com.ramcosta.composedestinations.navigation.require"
-                            )
-                        )
 
                         if (parameter.isMarkedNavHostParam) {
                             "dependencyContainer.$requirePlaceholder(true)"

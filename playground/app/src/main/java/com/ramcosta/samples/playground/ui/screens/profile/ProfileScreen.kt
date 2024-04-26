@@ -3,6 +3,8 @@
 package com.ramcosta.samples.playground.ui.screens.profile
 
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,7 @@ import com.ramcosta.composedestinations.annotation.parameters.FULL_ROUTE_PLACEHO
 import com.ramcosta.samples.playground.commons.ProfileGraph
 import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Destination<ProfileGraph>(
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
@@ -35,12 +38,17 @@ import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
     navArgs = ProfileScreenNavArgs::class
 )
 @Composable
-fun AnimatedVisibilityScope.ProfileScreen(
+fun SharedTransitionScope.ProfileScreen(
+    animatedVisibilityScope: AnimatedVisibilityScope,
     uiState: ProfileUiState,
     uiEvents: ProfileUiEvents
 ) {
     Box(
         modifier = Modifier
+            .sharedElement(
+                state = rememberSharedContentState(key = "asd"),
+                animatedVisibilityScope = animatedVisibilityScope
+            )
             .fillMaxSize()
             .background(Color(0xFFFCDEC0))
     ) {

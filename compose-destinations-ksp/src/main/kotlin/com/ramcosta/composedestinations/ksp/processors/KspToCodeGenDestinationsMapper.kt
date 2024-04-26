@@ -33,6 +33,7 @@ import com.ramcosta.composedestinations.ksp.commons.toDeepLink
 import com.ramcosta.composedestinations.ksp.commons.toGenVisibility
 import com.ramcosta.composedestinations.ksp.commons.toNavGraphParentInfo
 import com.ramcosta.composedestinations.ksp.commons.toParameter
+import com.ramcosta.composedestinations.ksp.commons.toType
 
 internal class KspToCodeGenDestinationsMapper(
     private val resolver: Resolver,
@@ -85,7 +86,7 @@ internal class KspToCodeGenDestinationsMapper(
             composableWrappers = annotations.findCumulativeArgumentValue { destinationMappingUtils.getDestinationWrappers(this) },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             navGraphInfo = navGraphInfo,
-            composableReceiverSimpleName = function.extensionReceiver?.toString(),
+            composableReceiverType = function.extensionReceiver?.resolve()?.toType(function.extensionReceiver!!.location, resolver, navTypeSerializersByType),
             requireOptInAnnotationTypes = function.findAllRequireOptInAnnotations(),
             destinationNavArgsClass = navArgsDelegateTypeAndFile?.type,
         )
@@ -136,7 +137,7 @@ internal class KspToCodeGenDestinationsMapper(
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             navGraphInfo = activityDestinationAnnotations.getNavGraphInfo("Activity '${simpleName.asString()}'"),
             destinationStyleType = DestinationStyleType.Activity,
-            composableReceiverSimpleName = null,
+            composableReceiverType = null,
             requireOptInAnnotationTypes = emptyList(),
             destinationNavArgsClass = navArgsDelegateTypeAndFile?.type,
             activityDestinationParams = ActivityDestinationParams(

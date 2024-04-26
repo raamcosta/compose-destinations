@@ -3,7 +3,8 @@ package com.ramcosta.samples.playground
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -13,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.navigation
+import androidx.navigation.navigation
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.bottomsheet.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
@@ -52,6 +53,7 @@ import com.ramcosta.samples.playground.ui.screens.settings.SettingsScreen
 import com.ramcosta.samples.playground.ui.screens.settings.SettingsViewModel
 import com.ramcosta.samples.playground.ui.screens.settings.ThemeSettings
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AppNavigation(
     modifier: Modifier = Modifier,
@@ -59,35 +61,39 @@ fun AppNavigation(
     navController: NavHostController,
     testProfileDeepLink: () -> Unit,
 ) {
-    DestinationsNavHost(
-        navGraph = NavGraphs.root,
-        startRoute = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startRoute,
-        navController = navController,
-        modifier = modifier,
-        dependenciesContainerBuilder = {
-            dependency(drawerController)
+    SharedTransitionLayout {
+        DestinationsNavHost(
+            navGraph = NavGraphs.root,
+            startRoute = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startRoute,
+            navController = navController,
+            modifier = modifier,
+            dependenciesContainerBuilder = {
+                dependency(this@SharedTransitionLayout)
 
-            destination(ProfileScreenDestination) {
-                dependency(viewModel<ProfileViewModel>())
-            }
+                dependency(drawerController)
 
-            navGraph(NavGraphs.settings) {
-                val parentEntry = remember(navBackStackEntry) {
-                    navController.getBackStackEntry(NavGraphs.settings)
+                destination(ProfileScreenDestination) {
+                    dependency(viewModel<ProfileViewModel>())
                 }
 
-                dependency(viewModel<SettingsViewModel>(parentEntry))
-            }
-        }
-    ) {
-        ProfileScreenDestination animateWith object: DestinationStyle.Animated() {
-            override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
-                { fadeIn(tween(5000)) }
-            override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
-                { fadeOut(tween(2000)) }
-        }
+                navGraph(NavGraphs.settings) {
+                    val parentEntry = remember(navBackStackEntry) {
+                        navController.getBackStackEntry(NavGraphs.settings)
+                    }
 
-        greetingScreen(testProfileDeepLink, drawerController)
+                    dependency(viewModel<SettingsViewModel>(parentEntry))
+                }
+            }
+        ) {
+            ProfileScreenDestination animateWith object: DestinationStyle.Animated() {
+                override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
+                    { fadeIn(tween(5000)) }
+                override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
+                    { fadeOut(tween(2000)) }
+            }
+
+            greetingScreen(testProfileDeepLink, drawerController)
+        }
     }
 }
 
@@ -112,8 +118,8 @@ private fun ManualComposableCallsBuilder.greetingScreen(
 }
 
 // region ------- Without using DestinationsNavHost example -------
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Suppress("UNUSED")
-@ExperimentalAnimationApi
 @Composable
 fun SampleAppAnimatedNavHostExample(
     modifier: Modifier,
@@ -121,76 +127,79 @@ fun SampleAppAnimatedNavHostExample(
     drawerController: DrawerController,
     testProfileDeepLink: () -> Unit
 ) {
-    NavHost(
-        modifier = modifier,
-        navController = navController,
-        startDestination = GreetingScreenDestination.route,
-        route = "root"
-    ) {
-
-        composable(GreetingScreenDestination) {
-            val vm = viewModel<GreetingViewModel>()
-
-            GreetingScreen(
-                navigator = destinationsNavigator(navController),
-                drawerController = drawerController,
-                uiEvents = vm as GreetingUiEvents,
-                uiState = vm as GreetingUiState,
-                resultRecipient = resultRecipient(),
-                featYResult = resultRecipient(),
-                testProfileDeepLink = testProfileDeepLink,
-                test = "testing param from NavHost",
-            )
-        }
-
-        composable(FeedDestination) {
-            Feed(destinationsNavigator(navController), resultRecipient())
-        }
-
-        dialogComposable(GoToProfileConfirmationDestination) {
-            GoToProfileConfirmation(
-                resultNavigator = resultBackNavigator(navController)
-            )
-        }
-
-        composable(TestScreenDestination) {
-            TestScreen(
-                id = navArgs.id,
-                asd = navArgs.asd,
-                stuff1 = navArgs.stuff1,
-                stuff2 = navArgs.stuff2,
-                stuff3 = navArgs.stuff3,
-                stuff5 = navArgs.stuff5,
-                stuff6 = navArgs.stuff6,
-            )
-        }
-
-        composable(ProfileScreenDestination) {
-            val vm = viewModel<ProfileViewModel>()
-
-            ProfileScreen(
-                vm as ProfileUiState,
-                vm as ProfileUiEvents,
-            )
-        }
-
-        navigation(
-            startDestination = SettingsScreenDestination.route,
-            route = "settings"
+    SharedTransitionLayout {
+        NavHost(
+            modifier = modifier,
+            navController = navController,
+            startDestination = GreetingScreenDestination.route,
+            route = "root"
         ) {
-            composable(SettingsScreenDestination) {
-                SettingsScreen(
-                    viewModel = viewModel(),
+
+            composable(GreetingScreenDestination) {
+                val vm = viewModel<GreetingViewModel>()
+
+                GreetingScreen(
                     navigator = destinationsNavigator(navController),
-                    themeSettingsResultRecipient = resultRecipient()
+                    drawerController = drawerController,
+                    uiEvents = vm as GreetingUiEvents,
+                    uiState = vm as GreetingUiState,
+                    resultRecipient = resultRecipient(),
+                    featYResult = resultRecipient(),
+                    testProfileDeepLink = testProfileDeepLink,
+                    test = "testing param from NavHost",
                 )
             }
 
-            bottomSheetComposable(ThemeSettingsDestination) {
-                ThemeSettings(
-                    viewModel = viewModel(),
+            composable(FeedDestination) {
+                Feed(destinationsNavigator(navController), resultRecipient())
+            }
+
+            dialogComposable(GoToProfileConfirmationDestination) {
+                GoToProfileConfirmation(
                     resultNavigator = resultBackNavigator(navController)
                 )
+            }
+
+            composable(TestScreenDestination) {
+                TestScreen(
+                    id = navArgs.id,
+                    asd = navArgs.asd,
+                    stuff1 = navArgs.stuff1,
+                    stuff2 = navArgs.stuff2,
+                    stuff3 = navArgs.stuff3,
+                    stuff5 = navArgs.stuff5,
+                    stuff6 = navArgs.stuff6,
+                )
+            }
+
+            composable(ProfileScreenDestination) {
+                val vm = viewModel<ProfileViewModel>()
+
+                ProfileScreen(
+                    animatedVisibilityScope = this,
+                    uiState = vm as ProfileUiState,
+                    uiEvents = vm as ProfileUiEvents,
+                )
+            }
+
+            navigation(
+                startDestination = SettingsScreenDestination.route,
+                route = "settings"
+            ) {
+                composable(SettingsScreenDestination) {
+                    SettingsScreen(
+                        viewModel = viewModel(),
+                        navigator = destinationsNavigator(navController),
+                        themeSettingsResultRecipient = resultRecipient()
+                    )
+                }
+
+                bottomSheetComposable(ThemeSettingsDestination) {
+                    ThemeSettings(
+                        viewModel = viewModel(),
+                        resultNavigator = resultBackNavigator(navController)
+                    )
+                }
             }
         }
     }

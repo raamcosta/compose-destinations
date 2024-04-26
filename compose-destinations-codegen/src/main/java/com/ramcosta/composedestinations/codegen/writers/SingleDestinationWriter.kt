@@ -257,7 +257,8 @@ internal class SingleDestinationWriter(
     private fun destinationStyleAnimated(destinationStyleType: DestinationStyleType.Animated): String {
         experimentalAnimationApiType.addImport()
 
-        if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
+        if (destination.composableReceiverType?.importable?.qualifiedName == ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
+            || destination.parameters.any { it.type.importable.qualifiedName == ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME }) {
             Importable(
                 ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME,
                 ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME

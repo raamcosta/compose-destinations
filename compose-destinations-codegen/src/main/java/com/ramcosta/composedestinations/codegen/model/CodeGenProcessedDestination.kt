@@ -40,6 +40,18 @@ internal data class CodeGenProcessedDestination(
     private fun gatherOptInAnnotations(): List<OptInAnnotation> {
         val optInByAnnotation = destinationGeneratingParams.requireOptInAnnotationTypes.associateWithTo(mutableMapOf()) { false }
 
+        val destinationComposableReceiverOptInAnnotations =
+            destinationGeneratingParams.composableReceiverType?.recursiveRequireOptInAnnotations()
+
+        if (!destinationComposableReceiverOptInAnnotations.isNullOrEmpty()) {
+            optInByAnnotation.putAll(
+                destinationComposableReceiverOptInAnnotations.associateWith { requireOptInType ->
+                    // if the destination itself doesn't need this annotation, then it was opted in
+                    !destinationGeneratingParams.requireOptInAnnotationTypes.contains(requireOptInType)
+                }
+            )
+        }
+
         destinationGeneratingParams.parameters.forEach { param ->
             optInByAnnotation.putAll(
                 param.type.recursiveRequireOptInAnnotations().associateWith { requireOptInType ->
