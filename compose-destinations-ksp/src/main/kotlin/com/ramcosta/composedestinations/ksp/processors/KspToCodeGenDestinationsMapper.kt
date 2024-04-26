@@ -114,7 +114,7 @@ class KspToCodeGenDestinationsMapper(
             composableWrappers = destinationAnnotations.findCumulativeArgumentValue { getDestinationWrappers() },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             navGraphInfo = getNavGraphInfo() ?: getDefaultNavGraphInfo(destinationAnnotations),
-            composableReceiverSimpleName = extensionReceiver?.toString(),
+            composableReceiverType = extensionReceiver?.resolve()?.toType(extensionReceiver!!.location),
             requireOptInAnnotationTypes = findAllRequireOptInAnnotations(),
             navArgsDelegateType = navArgsDelegateTypeAndFile?.type
         )
@@ -152,7 +152,7 @@ class KspToCodeGenDestinationsMapper(
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             navGraphInfo = getNavGraphInfo() ?: getDefaultNavGraphInfo(activityDestinationAnnotations, true),
             destinationStyleType = DestinationStyleType.Activity,
-            composableReceiverSimpleName = null,
+            composableReceiverType = null,
             requireOptInAnnotationTypes = emptyList(),
             navArgsDelegateType = navArgsDelegateTypeAndFile?.type,
             activityDestinationParams = ActivityDestinationParams(

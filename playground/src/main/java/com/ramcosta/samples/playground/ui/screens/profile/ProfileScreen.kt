@@ -1,10 +1,14 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package com.ramcosta.samples.playground.ui.screens.profile
 
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -21,6 +25,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Destination(
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
@@ -30,12 +35,17 @@ import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
     navArgsDelegate = ProfileScreenNavArgs::class
 )
 @Composable
-fun AnimatedVisibilityScope.ProfileScreen(
+fun SharedTransitionScope.ProfileScreen(
+    animatedVisibilityScope: AnimatedVisibilityScope,
     uiState: ProfileUiState,
     uiEvents: ProfileUiEvents
 ) {
     Box(
         modifier = Modifier
+            .sharedElement(
+                state = rememberSharedContentState(key = "asd"),
+                animatedVisibilityScope = animatedVisibilityScope
+            )
             .fillMaxSize()
             .background(Color(0xFFFCDEC0))
     ) {

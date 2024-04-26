@@ -11,7 +11,7 @@ interface DestinationGeneratingParams {
     val deepLinks: List<DeepLink>
     val navGraphInfo: NavGraphInfo
     val destinationStyleType: DestinationStyleType
-    val composableReceiverSimpleName: String?
+    val composableReceiverType: TypeInfo?
     val requireOptInAnnotationTypes: List<Importable>
     val navArgsDelegateType: NavArgsDelegateType?
     val activityDestinationParams: ActivityDestinationParams?
@@ -29,7 +29,7 @@ data class RawDestinationGenParams(
     override val deepLinks: List<DeepLink>,
     override val navGraphInfo: NavGraphInfo,
     override val destinationStyleType: DestinationStyleType,
-    override val composableReceiverSimpleName: String?,
+    override val composableReceiverType: TypeInfo?,
     override val requireOptInAnnotationTypes: List<Importable>,
     override val navArgsDelegateType: NavArgsDelegateType?,
     override val activityDestinationParams: ActivityDestinationParams? = null,

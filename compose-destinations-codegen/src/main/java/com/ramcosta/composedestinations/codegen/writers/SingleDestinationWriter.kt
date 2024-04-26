@@ -172,6 +172,18 @@ class SingleDestinationWriter(
     private fun gatherOptInAnnotations(): List<OptInAnnotation> {
         val optInByAnnotation = destination.requireOptInAnnotationTypes.associateWithTo(mutableMapOf()) { false }
 
+        val destinationComposableReceiverOptInAnnotations =
+            destination.destinationGeneratingParams.composableReceiverType?.recursiveRequireOptInAnnotations()
+
+        if (!destinationComposableReceiverOptInAnnotations.isNullOrEmpty()) {
+            optInByAnnotation.putAll(
+                destinationComposableReceiverOptInAnnotations.associateWith { requireOptInType ->
+                    // if the destination itself doesn't need this annotation, then it was opted in
+                    !destination.destinationGeneratingParams.requireOptInAnnotationTypes.contains(requireOptInType)
+                }
+            )
+        }
+
         destination.parameters.forEach { param ->
             optInByAnnotation.putAll(
                 param.type.recursiveRequireOptInAnnotations().associateWith { requireOptInType ->
@@ -200,7 +212,7 @@ class SingleDestinationWriter(
     }
 
     private fun isRequiredReceiverExperimentalOptedIn(): Boolean {
-        return destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
+        return destination.composableReceiverType?.importable?.simpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
                 && !destination.requireOptInAnnotationTypes.contains(experimentalAnimationApiType)
     }
 
@@ -628,7 +640,8 @@ class SingleDestinationWriter(
     private fun destinationStyleAnimated(destinationStyleType: DestinationStyleType.Animated): String {
         experimentalAnimationApiType.addImport()
 
-        if (destination.composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
+        if (destination.composableReceiverType?.importable?.qualifiedName == ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
+            || destination.parameters.any { it.type.importable.qualifiedName == ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME }) {
             Importable(
                 ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME,
                 ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME

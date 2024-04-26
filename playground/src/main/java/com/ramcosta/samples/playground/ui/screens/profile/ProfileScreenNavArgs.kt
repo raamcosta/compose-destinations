@@ -24,9 +24,9 @@ data class ProfileScreenNavArgs(
     val color: Color
 )
 
-private fun aSource() = SomeSource.ASource(SomeSource.Id("source-id"))
+fun aSource() = SomeSource.ASource(SomeSource.Id("source-id"))
 
-private fun someSourceId() = SomeSource.Id("source-id")
+fun someSourceId() = SomeSource.Id("source-id")
 
 @kotlinx.serialization.Serializable
 sealed interface SomeSource {

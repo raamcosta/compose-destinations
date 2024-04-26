@@ -1,6 +1,8 @@
 package com.ramcosta.composedestinations.codegen.validators
 
+import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_SIMPLE_NAME
 import com.ramcosta.composedestinations.codegen.commons.CORE_ANIMATIONS_DEPENDENCY
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
@@ -122,7 +124,7 @@ class InitialValidator(
     }
 
     private fun DestinationGeneratingParams.validateReceiverAnimatedVisibilityScope() {
-        if (composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
+        if (composableReceiverType?.importable?.qualifiedName == ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME) {
             if (destinationStyleType !is DestinationStyleType.Animated && destinationStyleType !is DestinationStyleType.Default) {
                 throw IllegalDestinationsSetup(
                     "'${composableName}' composable: " +
@@ -133,7 +135,7 @@ class InitialValidator(
     }
 
     private fun DestinationGeneratingParams.validateReceiverColumnScope() {
-        if (composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME) {
+        if (composableReceiverType?.importable?.qualifiedName == COLUMN_SCOPE_QUALIFIED_NAME) {
             if (core != Core.ANIMATIONS) {
                 throw IllegalDestinationsSetup(
                     "'${composableName}' composable: " +
