@@ -10,7 +10,6 @@ import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.Text
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.destinations.sample.wear.MainViewModel
 import com.ramcosta.destinations.sample.wear.NavGraphs
 import com.ramcosta.destinations.sample.wear.core.viewmodel.activityViewModel

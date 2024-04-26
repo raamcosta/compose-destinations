@@ -28,37 +28,13 @@ interface DestinationsNavigator {
      * any navigation arguments or you can call their `invoke` method passing the arguments
      * to get a [Direction] instance.
      *
-     * @param onlyIfResumed if true, will ignore the navigation action if the current `NavBackStackEntry`
-     * is not in the RESUMED state. This avoids duplicate navigation actions.
-     * By default is false to have the same behaviour as [NavController].
-     *
      * @param builder [NavOptionsBuilder]
      *
      * @see [NavController.navigate]
      */
     fun navigate(
         direction: Direction,
-        onlyIfResumed: Boolean = false,
-        builder: NavOptionsBuilder.() -> Unit = {},
-    ) {
-        navigate(direction.route, onlyIfResumed, builder)
-    }
-
-    /**
-     * Navigates to the given [route]
-     *
-     * @param onlyIfResumed if true, will ignore the navigation action if the current `NavBackStackEntry`
-     * is not in the RESUMED state. This avoids duplicate navigation actions.
-     * By default is false to have the same behaviour as [NavController].
-     *
-     * @param builder [NavOptionsBuilder]
-     *
-     * @see [NavController.navigate]
-     */
-    fun navigate(
-        route: String,
-        onlyIfResumed: Boolean = false,
-        builder: NavOptionsBuilder.() -> Unit = {}
+        builder: DestinationsNavOptionsBuilder.() -> Unit,
     )
 
     /**
@@ -67,10 +43,6 @@ interface DestinationsNavigator {
      * any navigation arguments or you can call their `invoke` method passing the arguments
      * to get a [Direction] instance.
      *
-     * @param onlyIfResumed if true, will ignore the navigation action if the current `NavBackStackEntry`
-     * is not in the RESUMED state. This avoids duplicate navigation actions.
-     * By default is false to have the same behaviour as [NavController].
-     *
      * @param navOptions [NavOptions]
      * @param navigatorExtras [Navigator.Extras]
      *
@@ -78,28 +50,6 @@ interface DestinationsNavigator {
      */
     fun navigate(
         direction: Direction,
-        onlyIfResumed: Boolean = false,
-        navOptions: NavOptions? = null,
-        navigatorExtras: Navigator.Extras? = null
-    ) {
-        navigate(direction.route, onlyIfResumed, navOptions, navigatorExtras)
-    }
-
-    /**
-     * Navigates to the given [route]
-     *
-     * @param onlyIfResumed if true, will ignore the navigation action if the current `NavBackStackEntry`
-     * is not in the RESUMED state. This avoids duplicate navigation actions.
-     * By default is false to have the same behaviour as [NavController].
-     *
-     * @param navOptions [NavOptions]
-     * @param navigatorExtras [Navigator.Extras]
-     *
-     * @see [NavController.navigate]
-     */
-    fun navigate(
-        route: String,
-        onlyIfResumed: Boolean = false,
         navOptions: NavOptions? = null,
         navigatorExtras: Navigator.Extras? = null
     )
@@ -124,29 +74,11 @@ interface DestinationsNavigator {
         route: Route,
         inclusive: Boolean,
         saveState: Boolean = false,
-    ): Boolean {
-        return popBackStack(route.route, inclusive, saveState)
-    }
-
-    /**
-     * @see [NavController.popBackStack]
-     */
-    @MainThread
-    fun popBackStack(
-        route: String,
-        inclusive: Boolean,
-        saveState: Boolean = false,
     ): Boolean
 
     /**
      * @see [NavController.clearBackStack]
      */
     @MainThread
-    fun clearBackStack(route: Route): Boolean = clearBackStack(route.route)
-
-    /**
-     * @see [NavController.clearBackStack]
-     */
-    @MainThread
-    fun clearBackStack(route: String): Boolean
+    fun clearBackStack(route: Route): Boolean
 }

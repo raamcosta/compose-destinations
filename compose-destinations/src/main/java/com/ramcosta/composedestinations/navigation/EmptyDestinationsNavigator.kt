@@ -1,8 +1,9 @@
 package com.ramcosta.composedestinations.navigation
 
 import androidx.navigation.NavOptions
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.Navigator
+import com.ramcosta.composedestinations.spec.Direction
+import com.ramcosta.composedestinations.spec.Route
 
 /**
  * Empty implementation of [DestinationsNavigator]
@@ -10,28 +11,16 @@ import androidx.navigation.Navigator
  */
 object EmptyDestinationsNavigator : DestinationsNavigator {
 
-    override fun navigate(
-        route: String,
-        onlyIfResumed: Boolean,
-        builder: NavOptionsBuilder.() -> Unit,
-    ) = Unit
+    override fun navigate(direction: Direction, builder: DestinationsNavOptionsBuilder.() -> Unit) = Unit
 
-    override fun navigate(
-        route: String,
-        onlyIfResumed: Boolean,
-        navOptions: NavOptions?,
-        navigatorExtras: Navigator.Extras?
-    ) = Unit
+    override fun navigate(direction: Direction, navOptions: NavOptions?, navigatorExtras: Navigator.Extras?) = Unit
 
     override fun navigateUp() = false
 
     override fun popBackStack() = false
 
-    override fun popBackStack(
-        route: String,
-        inclusive: Boolean,
-        saveState: Boolean,
-    ) = false
+    override fun popBackStack(route: Route, inclusive: Boolean, saveState: Boolean): Boolean = false
 
-    override fun clearBackStack(route: String) = false
+    override fun clearBackStack(route: Route): Boolean = false
+
 }

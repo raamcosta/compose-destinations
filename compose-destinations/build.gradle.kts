@@ -52,5 +52,5 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 dependencies {
-    api(libs.compose.navigation)
+    implementation(libs.compose.navigation)
 }
