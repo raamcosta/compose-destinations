@@ -10,6 +10,7 @@ import com.ramcosta.composedestinations.generated.destinations.LoginScreenDestin
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.wear.rememberWearNavHostEngine
 import com.ramcosta.destinations.sample.wear.core.viewmodel.activityViewModel
 import com.ramcosta.destinations.sample.wear.ui.composables.SampleScaffold
@@ -50,11 +51,12 @@ private fun ShowLoginWhenLoggedOut(
 ) {
     val currentDestination by navController.currentDestinationAsState()
     val isLoggedIn by vm.isLoggedInFlow.collectAsState()
+    val navigator = navController.rememberDestinationsNavigator()
 
     if (!isLoggedIn && currentDestination != LoginScreenDestination) {
         // everytime destination changes or logged in state we check
         // if we have to show Login screen and navigate to it if so
-        navController.navigate(LoginScreenDestination) {
+        navigator.navigate(LoginScreenDestination) {
             launchSingleTop = true
         }
     }

@@ -22,12 +22,15 @@ import com.ramcosta.composedestinations.navigation.popBackStack
 import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
+import com.ramcosta.destinations.sample.NavGraphs
 import com.ramcosta.destinations.sample.R
 
 @Composable
 fun BottomBar(
     navController: NavHostController
 ) {
+    val navigator = navController.rememberDestinationsNavigator()
     BottomNavigation {
         BottomBarItem.entries.forEach { destination ->
             val isCurrentDestOnBackStack = navController.isRouteOnBackStack(destination.direction)
@@ -37,11 +40,11 @@ fun BottomBar(
                     if (isCurrentDestOnBackStack) {
                         // When we click again on a bottom bar item and it was already selected
                         // we want to pop the back stack until the initial destination of this bottom bar item
-                        navController.popBackStack(destination.direction, false)
+                        navigator.popBackStack(destination.direction, false)
                         return@BottomNavigationItem
                     }
 
-                    navController.navigate(destination.direction) {
+                    navigator.navigate(destination.direction) {
                         // Pop up to the root of the graph to
                         // avoid building up a large stack of destinations
                         // on the back stack as users select items
