@@ -4,10 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
-import androidx.wear.compose.material.rememberSwipeToDismissBoxState
-import androidx.wear.compose.navigation.rememberSwipeDismissableNavHostState
 import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.wear.rememberWearNavHostEngine
 import com.ramcosta.destinations.sample.wear.core.viewmodel.activityViewModel
 import com.ramcosta.destinations.sample.wear.destinations.Destination
@@ -50,11 +48,12 @@ private fun ShowLoginWhenLoggedOut(
 ) {
     val currentDestination by navController.appCurrentDestinationAsState()
     val isLoggedIn by vm.isLoggedInFlow.collectAsState()
+    val navigator = navController.rememberDestinationsNavigator()
 
     if (!isLoggedIn && currentDestination != LoginScreenDestination) {
         // everytime destination changes or logged in state we check
         // if we have to show Login screen and navigate to it if so
-        navController.navigate(LoginScreenDestination) {
+        navigator.navigate(LoginScreenDestination) {
             launchSingleTop = true
         }
     }

@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.destinations.sample.core.viewmodel.activityViewModel
 import com.ramcosta.destinations.sample.destinations.Destination
 import com.ramcosta.destinations.sample.destinations.LoginScreenDestination
@@ -46,7 +46,9 @@ fun SampleApp() {
             engine = engine,
             navController = navController,
             navGraph = NavGraphs.root,
-            modifier = Modifier.padding(it).fillMaxSize(),
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize(),
             startRoute = startRoute
         )
 
@@ -66,11 +68,12 @@ private fun ShowLoginWhenLoggedOut(
 ) {
     val currentDestination by navController.appCurrentDestinationAsState()
     val isLoggedIn by vm.isLoggedInFlow.collectAsState()
+    val navigator = navController.rememberDestinationsNavigator()
 
     if (!isLoggedIn && currentDestination != LoginScreenDestination) {
         // everytime destination changes or logged in state we check
         // if we have to show Login screen and navigate to it if so
-        navController.navigate(LoginScreenDestination) {
+        navigator.navigate(LoginScreenDestination) {
             launchSingleTop = true
         }
     }
