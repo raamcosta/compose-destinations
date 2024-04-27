@@ -5,6 +5,42 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.Navigator
+import androidx.navigation.PopUpToBuilder
+import com.ramcosta.composedestinations.spec.Direction
+import com.ramcosta.composedestinations.spec.Route
+import java.util.WeakHashMap
+
+class DestinationsNavOptionsBuilder(
+    private val jetpackBuilder: NavOptionsBuilder
+) {
+
+    var launchSingleTop
+        get() = jetpackBuilder.launchSingleTop
+        set(value) {
+            jetpackBuilder.launchSingleTop = value
+        }
+
+    var restoreState
+        get() = jetpackBuilder.restoreState
+        set(value) {
+            jetpackBuilder.restoreState = value
+        }
+
+    val popUpToRoute: String?
+        get() = jetpackBuilder.popUpToRoute
+
+    fun popUpTo(route: Route, popUpToBuilder: PopUpToBuilder.() -> Unit = {}) {
+        jetpackBuilder.popUpTo(route.route, popUpToBuilder)
+    }
+}
+
+private val navigators: WeakHashMap<NavController, DestinationsNavigator> = WeakHashMap()
+val NavController.navigator: DestinationsNavigator
+    get(): DestinationsNavigator {
+        return navigators[this] ?: DestinationsNavController(this)
+            .also { navigators[this] = it }
+    }
+
 
 /**
  * Implementation of [DestinationsNavigator] that uses
@@ -12,32 +48,23 @@ import androidx.navigation.Navigator
  */
 internal class DestinationsNavController(
     private val navController: NavController,
-    private val isCurrentBackStackEntryResumed: () -> Boolean,
 ) : DestinationsNavigator {
 
     override fun navigate(
-        route: String,
-        onlyIfResumed: Boolean,
-        builder: NavOptionsBuilder.() -> Unit,
+        direction: Direction,
+        builder: DestinationsNavOptionsBuilder.() -> Unit,
     ) {
-        if (onlyIfResumed && !isCurrentBackStackEntryResumed()) {
-            return
+        navController.navigate(direction.route) {
+            DestinationsNavOptionsBuilder(this).apply(builder)
         }
-
-        navController.navigate(route, builder)
     }
 
     override fun navigate(
-        route: String,
-        onlyIfResumed: Boolean,
+        direction: Direction,
         navOptions: NavOptions?,
         navigatorExtras: Navigator.Extras?
     ) {
-        if (onlyIfResumed && !isCurrentBackStackEntryResumed()) {
-            return
-        }
-
-        navController.navigate(route, navOptions, navigatorExtras)
+       navController.navigate(direction.route, navOptions, navigatorExtras)
     }
 
     @MainThread
@@ -52,15 +79,15 @@ internal class DestinationsNavController(
 
     @MainThread
     override fun popBackStack(
-        route: String,
+        route: Route,
         inclusive: Boolean,
-        saveState: Boolean,
+        saveState: Boolean
     ): Boolean {
-        return navController.popBackStack(route, inclusive, saveState)
+        return navController.popBackStack(route.route, inclusive, saveState)
     }
 
     @MainThread
-    override fun clearBackStack(route: String): Boolean {
-        return navController.clearBackStack(route)
+    override fun clearBackStack(route: Route): Boolean {
+        return navController.clearBackStack(route.route)
     }
 }

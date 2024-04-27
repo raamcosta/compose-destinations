@@ -10,8 +10,8 @@ import androidx.navigation.NavController
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainerImpl
-import com.ramcosta.composedestinations.navigation.DestinationsNavController
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.navigator
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -23,7 +23,7 @@ abstract class DestinationScopeImpl<T> : DestinationScope<T> {
     }
 
     override val destinationsNavigator: DestinationsNavigator
-        get() = DestinationsNavController(navController, isCurrentNavBackStackEntryResumed)
+        get() = navController.navigator
 
     @Composable
     override fun buildDependencies(): DestinationDependenciesContainer {
@@ -49,7 +49,7 @@ abstract class NavGraphBuilderDestinationScopeImpl<T> : NavGraphBuilderDestinati
     }
 
     override fun destinationsNavigator(navController: NavController): DestinationsNavigator {
-        return DestinationsNavController(navController, isCurrentNavBackStackEntryResumed)
+        return navController.navigator
     }
 
     private val isCurrentNavBackStackEntryResumed = { navBackStackEntry.lifecycle.currentState == Lifecycle.State.RESUMED }
