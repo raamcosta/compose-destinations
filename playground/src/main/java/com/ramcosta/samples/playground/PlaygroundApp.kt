@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.samples.playground.commons.DrawerControllerImpl
 import com.ramcosta.samples.playground.commons.composables.BottomBar
 import com.ramcosta.samples.playground.commons.composables.MyDrawer
@@ -23,6 +23,7 @@ fun PlaygroundApp(testProfileDeepLink: () -> Unit) {
         val scaffoldState = rememberScaffoldState()
         val coroutineScope = rememberCoroutineScope()
         val navController = rememberNavController()
+        val navigator = navController.rememberDestinationsNavigator()
 
         PlaygroundScaffold(
             scaffoldState = scaffoldState,
@@ -31,14 +32,14 @@ fun PlaygroundApp(testProfileDeepLink: () -> Unit) {
                 TopBar(
                     destination = destination,
                     onDrawerClick = { coroutineScope.launch { scaffoldState.drawerState.open() } },
-                    onSettingsClick = { navController.navigate(NavGraphs.settings) }
+                    onSettingsClick = { navigator.navigate(NavGraphs.settings) }
                 )
             },
             bottomBar = { destination ->
                 BottomBar(
                     currentDestination = destination,
                     onBottomBarItemClick = {
-                        navController.navigate(it) {
+                        navigator.navigate(it) {
                             launchSingleTop = true
                         }
                     }

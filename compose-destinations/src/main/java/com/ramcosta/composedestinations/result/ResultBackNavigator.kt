@@ -2,8 +2,6 @@ package com.ramcosta.composedestinations.result
 
 import androidx.compose.runtime.*
 import androidx.navigation.NavController
-import com.ramcosta.composedestinations.dynamic.DynamicDestinationSpec
-import com.ramcosta.composedestinations.spec.DestinationSpec
 
 /**
  * Navigator that allows navigating back while passing
@@ -32,15 +30,16 @@ interface ResultBackNavigator<R> {
      *
      * Check [com.ramcosta.composedestinations.result.ResultRecipient] to see
      * how to get the result.
-     *
-     * @param onlyIfResumed if true, will ignore the navigation action if the current `NavBackStackEntry`
-     * is not in the RESUMED state. This avoids duplicate navigation actions.
-     * By default is false to have the same behaviour as [NavController].
      */
-    fun navigateBack(
-        result: R,
-        onlyIfResumed: Boolean = false
-    )
+    fun navigateBack(result: R)
+
+    /**
+     * Goes back to previous destination sending the last result set with [setResult]
+     * or just navigating if no result was set..
+     *
+     * It uses [NavController.navigateUp] internally to go back.
+     */
+    fun navigateBack()
 
     /**
      * Sets a [result] to be sent on the next [navigateBack] call.
@@ -52,16 +51,4 @@ interface ResultBackNavigator<R> {
      * This also applies if you call [navigateBack] (with result) after calling this.
      */
     fun setResult(result: R)
-
-    /**
-     * Goes back to previous destination sending the last result set with [setResult]
-     * or just navigating if no result was set..
-     *
-     * It uses [NavController.navigateUp] internally to go back.
-     *
-     * @param onlyIfResumed if true, will ignore the navigation action if the current `NavBackStackEntry`
-     * is not in the RESUMED state. This avoids duplicate navigation actions.
-     * By default is false to have the same behaviour as [NavController].
-     */
-    fun navigateBack(onlyIfResumed: Boolean = false)
 }

@@ -10,8 +10,8 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainerImpl
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.navigator
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 abstract class DestinationScopeImpl<T> : DestinationScope<T> {
@@ -22,7 +22,7 @@ abstract class DestinationScopeImpl<T> : DestinationScope<T> {
     }
 
     override val destinationsNavigator: DestinationsNavigator
-        get() = navController.navigator
+        get() = navController.toDestinationsNavigator()
 
     @Composable
     override fun buildDependencies(): DestinationDependenciesContainer {
@@ -46,7 +46,7 @@ abstract class NavGraphBuilderDestinationScopeImpl<T> : NavGraphBuilderDestinati
     }
 
     override fun destinationsNavigator(navController: NavController): DestinationsNavigator {
-        return navController.navigator
+        return navController.toDestinationsNavigator()
     }
 
     internal class Default<T>(

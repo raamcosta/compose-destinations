@@ -45,7 +45,7 @@ interface NavGraphBuilderDestinationScope<T> {
 inline fun <reified R> NavGraphBuilderDestinationScope<*>.resultBackNavigator(
     navController: NavController
 ): ResultBackNavigator<R> =
-    resultBackNavigator(destination, R::class.java, navController, navBackStackEntry)
+    resultBackNavigator(destination, R::class.java, navController)
 
 
 /**

@@ -63,7 +63,7 @@ interface DestinationScope<T>: DestinationScopeWithNoDependencies<T> {
  */
 @Composable
 inline fun <reified R> DestinationScopeWithNoDependencies<*>.resultBackNavigator(): ResultBackNavigator<R> =
-    resultBackNavigator(destination, R::class.java, navController, navBackStackEntry)
+    resultBackNavigator(destination, R::class.java, navController)
 
 /**
  * Returns a well typed [ResultRecipient] for this [DestinationScope]
