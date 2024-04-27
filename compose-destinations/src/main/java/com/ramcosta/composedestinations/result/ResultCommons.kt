@@ -19,7 +19,6 @@ internal fun <R> resultBackNavigator(
     val backNavigator = remember(navController, navBackStackEntry, destination, resultType) {
         ResultBackNavigatorImpl(
             navController = navController,
-            navBackStackEntry = navBackStackEntry,
             resultOriginType = if (destination is ExternalRoute) {
                 (destination.original as DestinationSpec).javaClass
             } else {

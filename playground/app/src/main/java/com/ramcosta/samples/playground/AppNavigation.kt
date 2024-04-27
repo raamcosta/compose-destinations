@@ -21,13 +21,13 @@ import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCa
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.destination
-import com.ramcosta.composedestinations.navigation.getBackStackEntry
 import com.ramcosta.composedestinations.navigation.navGraph
 import com.ramcosta.composedestinations.scope.resultBackNavigator
 import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.utils.composable
 import com.ramcosta.composedestinations.utils.dialogComposable
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.samples.playground.commons.DrawerController
 import com.ramcosta.samples.playground.di.viewModel
 import com.ramcosta.samples.playground.ui.screens.Feed
@@ -61,6 +61,7 @@ fun AppNavigation(
     navController: NavHostController,
     testProfileDeepLink: () -> Unit,
 ) {
+    val destinationsNavigator = navController.rememberDestinationsNavigator()
     SharedTransitionLayout {
         DestinationsNavHost(
             navGraph = NavGraphs.root,
@@ -78,7 +79,7 @@ fun AppNavigation(
 
                 navGraph(NavGraphs.settings) {
                     val parentEntry = remember(navBackStackEntry) {
-                        navController.getBackStackEntry(NavGraphs.settings)
+                        destinationsNavigator.getBackStackEntry(NavGraphs.settings)!!
                     }
 
                     dependency(viewModel<SettingsViewModel>(parentEntry))

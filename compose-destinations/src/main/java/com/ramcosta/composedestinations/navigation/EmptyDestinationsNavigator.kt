@@ -1,9 +1,10 @@
 package com.ramcosta.composedestinations.navigation
 
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import com.ramcosta.composedestinations.spec.Direction
-import com.ramcosta.composedestinations.spec.Route
+import com.ramcosta.composedestinations.spec.RouteOrDirection
 
 /**
  * Empty implementation of [DestinationsNavigator]
@@ -19,8 +20,10 @@ object EmptyDestinationsNavigator : DestinationsNavigator {
 
     override fun popBackStack() = false
 
-    override fun popBackStack(route: Route, inclusive: Boolean, saveState: Boolean): Boolean = false
+    override fun popBackStack(route: RouteOrDirection, inclusive: Boolean, saveState: Boolean): Boolean = false
 
-    override fun clearBackStack(route: Route): Boolean = false
+    override fun clearBackStack(route: RouteOrDirection): Boolean = false
+
+    override fun getBackStackEntry(route: RouteOrDirection): NavBackStackEntry? = null
 
 }

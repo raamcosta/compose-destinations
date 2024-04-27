@@ -1,46 +1,12 @@
 package com.ramcosta.composedestinations.navigation
 
 import androidx.annotation.MainThread
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.Navigator
-import androidx.navigation.PopUpToBuilder
 import com.ramcosta.composedestinations.spec.Direction
-import com.ramcosta.composedestinations.spec.Route
-import java.util.WeakHashMap
-
-class DestinationsNavOptionsBuilder(
-    private val jetpackBuilder: NavOptionsBuilder
-) {
-
-    var launchSingleTop
-        get() = jetpackBuilder.launchSingleTop
-        set(value) {
-            jetpackBuilder.launchSingleTop = value
-        }
-
-    var restoreState
-        get() = jetpackBuilder.restoreState
-        set(value) {
-            jetpackBuilder.restoreState = value
-        }
-
-    val popUpToRoute: String?
-        get() = jetpackBuilder.popUpToRoute
-
-    fun popUpTo(route: Route, popUpToBuilder: PopUpToBuilder.() -> Unit = {}) {
-        jetpackBuilder.popUpTo(route.route, popUpToBuilder)
-    }
-}
-
-private val navigators: WeakHashMap<NavController, DestinationsNavigator> = WeakHashMap()
-val NavController.navigator: DestinationsNavigator
-    get(): DestinationsNavigator {
-        return navigators[this] ?: DestinationsNavController(this)
-            .also { navigators[this] = it }
-    }
-
+import com.ramcosta.composedestinations.spec.RouteOrDirection
 
 /**
  * Implementation of [DestinationsNavigator] that uses
@@ -79,7 +45,7 @@ internal class DestinationsNavController(
 
     @MainThread
     override fun popBackStack(
-        route: Route,
+        route: RouteOrDirection,
         inclusive: Boolean,
         saveState: Boolean
     ): Boolean {
@@ -87,7 +53,11 @@ internal class DestinationsNavController(
     }
 
     @MainThread
-    override fun clearBackStack(route: Route): Boolean {
+    override fun clearBackStack(route: RouteOrDirection): Boolean {
         return navController.clearBackStack(route.route)
+    }
+
+    override fun getBackStackEntry(route: RouteOrDirection): NavBackStackEntry? {
+        return runCatching { navController.getBackStackEntry(route.route) }.getOrNull()
     }
 }

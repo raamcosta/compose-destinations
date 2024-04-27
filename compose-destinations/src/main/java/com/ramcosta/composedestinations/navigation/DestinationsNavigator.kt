@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.navigation
 
 import androidx.annotation.MainThread
 import androidx.compose.runtime.Stable
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptionsBuilder
@@ -81,4 +82,14 @@ interface DestinationsNavigator {
      */
     @MainThread
     fun clearBackStack(route: RouteOrDirection): Boolean
+
+    /**
+     * Like [NavController.getBackStackEntry] but returns null if [RouteOrDirection]
+     * is not in the back stack instead of throwing an exception.
+     *
+     * @see [NavController.getBackStackEntry]
+     */
+    fun getBackStackEntry(
+        route: RouteOrDirection
+    ): NavBackStackEntry?
 }
