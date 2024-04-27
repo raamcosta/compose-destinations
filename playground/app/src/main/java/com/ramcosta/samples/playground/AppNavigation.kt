@@ -5,6 +5,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -86,26 +87,29 @@ fun AppNavigation(
                 }
             }
         ) {
-            ProfileScreenDestination animateWith object: DestinationStyle.Animated() {
+            TestScreenDestination animateWith object: DestinationStyle.Animated() {
                 override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
                     { fadeIn(tween(5000)) }
                 override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
                     { fadeOut(tween(2000)) }
             }
 
-            greetingScreen(testProfileDeepLink, drawerController)
+            greetingScreen(this@SharedTransitionLayout, testProfileDeepLink, drawerController)
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 private fun ManualComposableCallsBuilder.greetingScreen(
+    sharedTransitionScope: SharedTransitionScope,
     testProfileDeepLink: () -> Unit,
     drawerController: DrawerController
 ) {
     composable(GreetingScreenDestination) {
         val vm = viewModel<GreetingViewModel>()
 
-        GreetingScreen(
+        sharedTransitionScope.GreetingScreen(
+            animatedVisibilityScope = this,
             navigator = destinationsNavigator,
             testProfileDeepLink = testProfileDeepLink,
             drawerController = drawerController,
@@ -140,6 +144,7 @@ fun SampleAppAnimatedNavHostExample(
                 val vm = viewModel<GreetingViewModel>()
 
                 GreetingScreen(
+                    animatedVisibilityScope = this,
                     navigator = destinationsNavigator(navController),
                     drawerController = drawerController,
                     uiEvents = vm as GreetingUiEvents,

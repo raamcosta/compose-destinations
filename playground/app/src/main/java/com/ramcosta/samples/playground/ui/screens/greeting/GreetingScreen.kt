@@ -1,15 +1,25 @@
 package com.ramcosta.samples.playground.ui.screens.greeting
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -40,12 +50,14 @@ import kotlinx.coroutines.launch
 
 typealias ResultCena<T> = ResultRecipient<GoToProfileConfirmationDestination, T>
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Destination<RootGraph>(
     start = true,
     style = GreetingTransitions::class
 )
 @Composable
-fun GreetingScreen(
+fun SharedTransitionScope.GreetingScreen(
+    animatedVisibilityScope: AnimatedVisibilityScope,
     navigator: DestinationsNavigator,
     testProfileDeepLink: () -> Unit,
     drawerController: DrawerController,
@@ -83,13 +95,15 @@ fun GreetingScreen(
         Toast.makeText(context, "featY result? = $result", Toast.LENGTH_SHORT).show()
     }
 
-    GreetingScreenContent(uiState, uiEvents, navigator, testProfileDeepLink) {
+    GreetingScreenContent(animatedVisibilityScope, uiState, uiEvents, navigator, testProfileDeepLink) {
         coroutineScope.launch { drawerController.open() }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun GreetingScreenContent(
+private fun SharedTransitionScope.GreetingScreenContent(
+    animatedVisibilityScope: AnimatedVisibilityScope,
     uiState: GreetingUiState,
     uiEvents: GreetingUiEvents,
     navigator: DestinationsNavigator,
@@ -126,17 +140,41 @@ private fun GreetingScreenContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
-                onClick = {
-                    navigator.navigate(GoToProfileConfirmationDestination)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                IconButton(
+                    onClick = { /*no op*/ },
+                    modifier = Modifier
+                        .sharedElement(
+                            state = rememberSharedContentState(key = "love-icon"),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+                        .background(
+                            color = Color.Red,
+                            shape = RoundedCornerShape(50)
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = "like",
+                        tint = Color.White
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        navigator.navigate(GoToProfileConfirmationDestination)
 //                    navigator.navigate(FeatureXHomeDestination("SOMETHING"))
 //                    navigator.navigate(
 //                        FeatureXNavGraph("something", FeatureXHomeNavArgs("SOMETHING2"))
 //                    )
 //                    navigator.navigate(ProfileGraph("my graphArg", ProfileSettingsGraphNavArgs("my another graph arg", WithDefaultValueArgs(true))))
+                    }
+                ) {
+                    Text(text = stringResource(R.string.go_to_profile))
                 }
-            ) {
-                Text(text = stringResource(R.string.go_to_profile))
             }
 
             Button(

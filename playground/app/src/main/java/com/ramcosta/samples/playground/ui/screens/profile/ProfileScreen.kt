@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -26,14 +27,12 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.annotation.parameters.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.samples.playground.commons.ProfileGraph
-import com.ramcosta.samples.playground.ui.screens.wrappers.HidingScreenWrapper
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Destination<ProfileGraph>(
     deepLinks = [
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
-    wrappers = [HidingScreenWrapper::class],
     style = ProfileTransitions::class,
     navArgs = ProfileScreenNavArgs::class
 )
@@ -45,10 +44,6 @@ fun SharedTransitionScope.ProfileScreen(
 ) {
     Box(
         modifier = Modifier
-            .sharedElement(
-                state = rememberSharedContentState(key = "asd"),
-                animatedVisibilityScope = animatedVisibilityScope
-            )
             .fillMaxSize()
             .background(Color(0xFFFCDEC0))
     ) {
@@ -79,6 +74,11 @@ fun SharedTransitionScope.ProfileScreen(
                     uiEvents.onLikeButtonClick()
                 },
                 modifier = Modifier
+                    .sharedElement(
+                        state = rememberSharedContentState(key = "love-icon"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                    .size(128.dp)
                     .background(
                         color = Color.Red,
                         shape = RoundedCornerShape(50)
@@ -87,7 +87,7 @@ fun SharedTransitionScope.ProfileScreen(
                 Icon(
                     imageVector = Icons.Filled.Favorite,
                     contentDescription = "like",
-                    tint = Color.White
+                    tint = Color.White,
                 )
             }
         }
