@@ -10,11 +10,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
-import com.ramcosta.destinations.sample.core.viewmodel.activityViewModel
 import com.ramcosta.composedestinations.generated.destinations.LoginScreenDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
+import com.ramcosta.destinations.sample.core.viewmodel.activityViewModel
 import com.ramcosta.destinations.sample.ui.composables.BottomBar
 import com.ramcosta.destinations.sample.ui.composables.SampleScaffold
 import com.ramcosta.destinations.sample.ui.composables.TopBar
