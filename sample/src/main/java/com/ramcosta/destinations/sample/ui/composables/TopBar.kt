@@ -46,15 +46,14 @@ fun DestinationSpec.topBarTitle(navBackStackEntry: NavBackStackEntry?): String {
         TaskScreenDestination -> {
             // Here you can also call another Composable on another file like TaskScreenTopBar
             // 👇 access the same viewmodel instance the screen is using, by passing the back stack entry
-            val task = navBackStackEntry?.let {
-                viewModel<TaskDetailsViewModel>(navBackStackEntry).task.collectAsState().value
-            }
+            val viewModel = navBackStackEntry?.let { viewModel<TaskDetailsViewModel>(navBackStackEntry, navBackStackEntry) }
+            val task = viewModel?.let { viewModel.task.collectAsState().value }
             task?.title ?: ""
         }
         StepScreenDestination -> {
             // Here you can also call another Composable on another file like StepScreenTopBar
             // 👇 access the same viewmodel instance the screen is using, by passing the back stack entry
-            val viewModel = navBackStackEntry?.let { viewModel<StepDetailsViewModel>(navBackStackEntry) }
+            val viewModel = navBackStackEntry?.let { viewModel<StepDetailsViewModel>(navBackStackEntry, navBackStackEntry) }
             val step = viewModel?.let {
                 viewModel.step.collectAsState().value
             }
