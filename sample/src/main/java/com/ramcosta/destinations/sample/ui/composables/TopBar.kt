@@ -12,7 +12,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.destinations.sample.core.viewmodel.viewModel
-import com.ramcosta.destinations.sample.destinations.*
+import com.ramcosta.destinations.sample.destinations.AccountScreenDestination
+import com.ramcosta.destinations.sample.destinations.AddStepDialogDestination
+import com.ramcosta.destinations.sample.destinations.AddTaskDialogDestination
+import com.ramcosta.destinations.sample.destinations.Destination
+import com.ramcosta.destinations.sample.destinations.LoginScreenDestination
+import com.ramcosta.destinations.sample.destinations.SettingsScreenDestination
+import com.ramcosta.destinations.sample.destinations.StepScreenDestination
+import com.ramcosta.destinations.sample.destinations.TaskListScreenDestination
+import com.ramcosta.destinations.sample.destinations.TaskScreenDestination
 import com.ramcosta.destinations.sample.tasks.presentation.details.StepDetailsViewModel
 import com.ramcosta.destinations.sample.tasks.presentation.details.TaskDetailsViewModel
 
@@ -38,15 +46,14 @@ fun Destination.topBarTitle(navBackStackEntry: NavBackStackEntry?): String {
         TaskScreenDestination -> {
             // Here you can also call another Composable on another file like TaskScreenTopBar
             // 👇 access the same viewmodel instance the screen is using, by passing the back stack entry
-            val task = navBackStackEntry?.let {
-                viewModel<TaskDetailsViewModel>(navBackStackEntry).task.collectAsState().value
-            }
+            val viewModel = navBackStackEntry?.let { viewModel<TaskDetailsViewModel>(navBackStackEntry, navBackStackEntry) }
+            val task = viewModel?.let { viewModel.task.collectAsState().value }
             task?.title ?: ""
         }
         StepScreenDestination -> {
             // Here you can also call another Composable on another file like StepScreenTopBar
             // 👇 access the same viewmodel instance the screen is using, by passing the back stack entry
-            val viewModel = navBackStackEntry?.let { viewModel<StepDetailsViewModel>(navBackStackEntry) }
+            val viewModel = navBackStackEntry?.let { viewModel<StepDetailsViewModel>(navBackStackEntry, navBackStackEntry) }
             val step = viewModel?.let {
                 viewModel.step.collectAsState().value
             }
