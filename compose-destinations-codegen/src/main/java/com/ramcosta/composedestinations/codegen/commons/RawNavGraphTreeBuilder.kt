@@ -62,24 +62,25 @@ internal data class RawNavGraphTree(
 internal val setOfPublicStartParticipatingTypes = mutableSetOf<Importable>()
 
 internal fun makeNavGraphTrees(
-    navGraphs: List<RawNavGraphGenParams>,
+    customNavGraphs: List<RawNavGraphGenParams>,
     generatedDestinations: List<CodeGenProcessedDestination>
 ): List<RawNavGraphTree> {
-    val navGraphsByType = (navGraphs + rootNavGraphGenParams).associateBy { it.annotationType }
+    val allNavGraphs = customNavGraphs + rootNavGraphGenParams
+    val navGraphsByType: Map<Importable, RawNavGraphGenParams> = allNavGraphs.associateBy { it.annotationType }
 
-    val destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<CodeGenProcessedDestination>> =
+    val destinationsByParent: Map<RawNavGraphGenParams, List<CodeGenProcessedDestination>> =
         generatedDestinations.filter { it.navGraphInfo != null }.groupBy { destination ->
             navGraphsByType[destination.navGraphInfo!!.graphType]!!
         }
 
     val rawNavGraphGenByParent: Map<Importable?, List<RawNavGraphGenParams>> =
-        destinationsByNavGraphParams.keys.groupBy { it.parent }
+        allNavGraphs.groupBy { it.parent }
 
-    return (navGraphs + destinationsByNavGraphParams.keys).toSet()
-        .filter { it.parent == null }
-        .map {
+    val topLevelGraphs = rawNavGraphGenByParent[null].orEmpty()
+
+    return topLevelGraphs.mapNotNull {
             it.makeGraphTree(
-                destinationsByNavGraphParams,
+                destinationsByParent,
                 rawNavGraphGenByParent,
             )
         }
@@ -88,11 +89,15 @@ internal fun makeNavGraphTrees(
 internal fun RawNavGraphGenParams.makeGraphTree(
     destinationsByNavGraphParams: Map<RawNavGraphGenParams, List<CodeGenProcessedDestination>>,
     navGraphsByParentType: Map<Importable?, List<RawNavGraphGenParams>>
-): RawNavGraphTree {
+): RawNavGraphTree? {
     val destinations = destinationsByNavGraphParams[this].orEmpty()
     val nestedNavGraphs = navGraphsByParentType[annotationType].orEmpty()
 
-    val nestedGraphs = nestedNavGraphs.map {
+    if (destinations.isEmpty() && nestedNavGraphs.isEmpty()) {
+        return null
+    }
+
+    val nestedGraphs = nestedNavGraphs.mapNotNull {
         it.makeGraphTree(destinationsByNavGraphParams, navGraphsByParentType)
     }
 
