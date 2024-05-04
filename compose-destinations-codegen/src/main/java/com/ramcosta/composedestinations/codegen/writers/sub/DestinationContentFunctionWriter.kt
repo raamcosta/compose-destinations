@@ -30,8 +30,15 @@ class DestinationContentFunctionWriter(
         )
     )
 
+    private val animatedVisibilityScopePlaceholder = importableHelper.addAndGetPlaceholder(
+        Importable(
+            ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME,
+            ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
+        )
+    )
+
     private val listOfPreSupportedTypes = mapOf(
-        ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME to { "(this as $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME)" },
+        ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME to { "(this as $animatedVisibilityScopePlaceholder)" },
         NAV_CONTROLLER_QUALIFIED_NAME to { "navController" },
         NAV_HOST_CONTROLLER_QUALIFIED_NAME to { "navController" },
         NAV_BACK_STACK_ENTRY_QUALIFIED_NAME to { "navBackStackEntry" },
@@ -119,13 +126,7 @@ class DestinationContentFunctionWriter(
         return when (receiverType?.importable?.qualifiedName) {
             null -> "" to false
             ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME -> {
-                val animatedVisPlaceholder = importableHelper.addAndGetPlaceholder(
-                    Importable(
-                        ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME,
-                        ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME
-                    )
-                )
-                "val animatedVisibilityScope = (this as $animatedVisPlaceholder)\n" +
+                "val animatedVisibilityScope = (this as $animatedVisibilityScopePlaceholder)\n" +
                         "\t\tanimatedVisibilityScope." to false
             }
 
