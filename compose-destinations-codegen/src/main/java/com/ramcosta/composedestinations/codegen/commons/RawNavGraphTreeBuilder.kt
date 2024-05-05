@@ -93,7 +93,7 @@ internal fun RawNavGraphGenParams.makeGraphTree(
     val destinations = destinationsByNavGraphParams[this].orEmpty()
     val nestedNavGraphs = navGraphsByParentType[annotationType].orEmpty()
 
-    if (destinations.isEmpty() && nestedNavGraphs.isEmpty()) {
+    if (destinations.isEmpty() && nestedNavGraphs.isEmpty() && externalRoutes.isEmpty()) {
         return null
     }
 
