@@ -97,7 +97,7 @@ inside the Composable (as is likely the case when using ViewModel). Read more [h
 @Destination<RootGraph>(start = true) // sets this as the start destination of the "root" nav graph
 @Composable
 fun HomeScreen(
-   navigator: DestinationsNavigator // or NavController
+   navigator: DestinationsNavigator
 ) {
    /*...*/
    navigator.navigate(ProfileScreenDestination(id = 7, groupName = "Kotlin programmers"))
