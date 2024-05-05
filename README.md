@@ -1,8 +1,8 @@
 # ⚠️ WARNING - `1.11.3-alpha` / `2.1.0-beta02` and above (Compose 1.7)
 
 ## - **DO NOT call `NavController.navigate` function** anywhere
-With the introduction of type safe APIs on the official library, our `NavController` extension functions that received `Direction` are now shadowed by new member functions on `NavController`.
-This means that the official member function would be called instead of our extension functions, and so we removed those extension functions.
+With the introduction of type safe APIs on the official library, our `NavController` extension functions that received `Direction` are now shadowed by new member functions on `NavController`.  
+This means that the official member function would be called instead of our extension functions, and so we removed those extension functions.  
 Instead, always make sure to use `DestinationsNavigator`. You can get one of such navigators by:
 
 - If inside a specific screen:
@@ -14,7 +14,7 @@ Instead, always make sure to use `DestinationsNavigator`. You can get one of suc
 Read more about these changes [here](https://github.com/raamcosta/compose-destinations/releases/tag/2.1.0-beta02).
 
 ## - **DO NOT depend on jetpack compose navigation directly**
-Compose Destinations provides the correct version transitively.
+Compose Destinations provides the correct version transitively.  
 So, if you have dependency on `androidx.navigation:navigation-compose`, please remove it! This has always been true, but more important now.
 
 #
@@ -53,16 +53,6 @@ Please consider migrating to it and leaving feedback as GH issue or on our slack
 - All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
 
 For a deeper look into all the features, check our [documentation website](https://composedestinations.rafaelcosta.xyz).
-
-## Materials 📄
-
-- Alex Styl's quick introduction videos [_Navigate using the Compose Destinations library_](https://www.composables.co/courses/destination-compose)
-- Philipp Lackner's Youtube video [_Compose Navigation Just Got SO MUCH EASIER_ 😱](https://www.youtube.com/watch?v=Q3iZyW2etm4)
-- Rafael Costa's blog post [_Compose Destinations: simpler and safer navigation in Compose with no compromises_](https://proandroiddev.com/compose-destinations-simpler-and-safer-navigation-in-compose-with-no-compromises-74a59c6b727d)
-- Yanneck Reiß's blog post [_Type Safe Navigation With Jetpack Compose Destinations_](https://medium.com/codex/type-save-navigation-with-jetpack-compose-destinations-610514e85370)
-- Google Dev Expert Kenji Abe's blog post [_Navigation Composeを便利にしてくれるライブラリ_](https://star-zero.medium.com/navigation-compose%E3%82%92%E4%BE%BF%E5%88%A9%E3%81%AB%E3%81%97%E3%81%A6%E3%81%8F%E3%82%8C%E3%82%8B%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA-c2d0133b3e84)
-- aseem wangoo's blog post (and Youtube video inside): [_Using compose destinations_](https://flatteredwithflutter.com/using-compose-destinations%ef%bf%bc/)
-- Vincent Tsen post in Android Kotlin Weekly [_How to convert your Jetpack Compose navigation app to use Compose Destinations Library to get rid of boilerplate code?_](https://vtsen.hashnode.dev/compose-destinations-navigation-library#heading-build-navigation-graph)
 
 ## Basic Usage 🧑‍💻
 
