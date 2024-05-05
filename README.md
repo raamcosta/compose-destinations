@@ -1,4 +1,6 @@
 # ⚠️ WARNING - `1.11.3-alpha` / `2.1.0-beta02` and above (Compose 1.7)
+OR if you got this error `kotlinx.serialization.SerializationException: Serializer for class 'DirectionImpl' is not found.`
+
 
 ## - **DO NOT call `NavController.navigate` function** anywhere
 With the introduction of type safe APIs on the official library, our `NavController` extension functions that received `Direction` are now shadowed by new member functions on `NavController`.  
