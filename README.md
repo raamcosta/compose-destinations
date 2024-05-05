@@ -1,9 +1,5 @@
 # ⚠️ WARNING - `1.11.3-alpha` / `2.1.0-beta02` and above (Compose 1.7)
 
-## **DO NOT depend on jetpack compose navigation directly**
-Compose Destinations provides the correct version transitively.
-So, if you have dependency on `androidx.navigation:navigation-compose`, please remove it! This has always been true, but more important now.
-
 ## **DO NOT call `NavController.navigate` function** anywhere
 With the introduction of type safe APIs on the official library, our `NavController` extension functions that received `Direction` are now shadowed by new member functions on `NavController`.
 This means that the official member function would be called instead of our extension functions, and so we removed those extension functions.
@@ -14,6 +10,10 @@ Instead, always make sure to use `DestinationsNavigator`. You can get one of suc
 - If navigating on top level (such as around `DestinationsNavHost`, bottom nav bar, etc)
    - `navController.rememberDestinationsNavigator()` if in a Composable
    - `navController.toDestinationsNavigator()` if not in a Composable
+
+## **DO NOT depend on jetpack compose navigation directly**
+Compose Destinations provides the correct version transitively.
+So, if you have dependency on `androidx.navigation:navigation-compose`, please remove it! This has always been true, but more important now.
  
 Read more about it [here](https://github.com/raamcosta/compose-destinations/releases/tag/2.1.0-beta02).
 
