@@ -11,11 +11,11 @@ Instead, always make sure to use `DestinationsNavigator`. You can get one of suc
    - `navController.rememberDestinationsNavigator()` if in a Composable
    - `navController.toDestinationsNavigator()` if not in a Composable
 
+Read more about these changes [here](https://github.com/raamcosta/compose-destinations/releases/tag/2.1.0-beta02).
+
 ## **DO NOT depend on jetpack compose navigation directly**
 Compose Destinations provides the correct version transitively.
 So, if you have dependency on `androidx.navigation:navigation-compose`, please remove it! This has always been true, but more important now.
- 
-Read more about it [here](https://github.com/raamcosta/compose-destinations/releases/tag/2.1.0-beta02).
 
 #
 [![Maven metadata URL](https://img.shields.io/maven-metadata/v?versionPrefix=1.10&color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/io/github/raamcosta/compose-destinations/core/maven-metadata.xml&style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)
