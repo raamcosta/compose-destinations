@@ -10,4 +10,6 @@ interface CodeOutputStreamMaker {
         extensionName: String = "kt",
         vararg sourceIds: String,
     ): OutputStream
+
+    val packageNamesWrittenTo: List<String>
 }

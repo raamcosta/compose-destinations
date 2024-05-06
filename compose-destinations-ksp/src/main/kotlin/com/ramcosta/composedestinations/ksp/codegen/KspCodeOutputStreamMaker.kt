@@ -11,6 +11,8 @@ class KspCodeOutputStreamMaker(
     private val sourceMapper: KSFileSourceMapper
 ) : CodeOutputStreamMaker {
 
+    override val packageNamesWrittenTo = mutableListOf<String>()
+
     override fun makeFile(
         name: String,
         packageName: String,
@@ -28,6 +30,8 @@ class KspCodeOutputStreamMaker(
             )
         }
 
+        packageNamesWrittenTo.add(packageName)
+
         return codeGenerator.createNewFile(
             dependencies = dependencies,
             fileName = name,
@@ -35,4 +39,5 @@ class KspCodeOutputStreamMaker(
             extensionName = extensionName
         )
     }
+
 }
