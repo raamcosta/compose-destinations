@@ -73,7 +73,11 @@ $VISIBILITY_PLACEHOLDER fun $ARGS_DATA_CLASS_SIMPLE_NAME.toSavedStateHandle(
         }
 
         // add nav args packages as imports so we can delegate start route args to submodules generated code
-        setOfImportable(*submodules.map { "${it.genPackageName}.navargs.*" }.toTypedArray()).forEach {
+        setOfImportable(
+            *submodules.mapNotNull { subModule ->
+                "${subModule.genPackageName}.navargs.*".takeIf { subModule.hasNavArgsPackage }
+            }.toTypedArray()
+        ).forEach {
             importableHelper.addPriorityQualifiedImport(it)
         }
 

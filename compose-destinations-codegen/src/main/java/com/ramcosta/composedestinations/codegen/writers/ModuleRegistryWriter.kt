@@ -53,6 +53,7 @@ internal class ModuleRegistryWriter(
                     annotation class _Info_$registryId(
                         val moduleName: String,
                         val packageName: String,
+                        val hasNavArgsPackage: Boolean,
                         val typeResults: Array<_Destination_Result_Info_$registryId> = emptyArray(),
                         val topLevelGraphs: Array<String> = emptyArray()
                     )
@@ -66,6 +67,7 @@ internal class ModuleRegistryWriter(
                     @_Info_$registryId(
                         moduleName = "${codeGenConfig.moduleName ?: ""}",
                         packageName = "$codeGenBasePackageName",
+                        hasNavArgsPackage = ${"$codeGenBasePackageName.navargs" in codeGenerator.packageNamesWrittenTo},
                         typeResults = [
                     %s1
                         ],

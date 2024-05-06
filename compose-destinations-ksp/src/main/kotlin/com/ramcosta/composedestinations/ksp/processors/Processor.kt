@@ -107,6 +107,7 @@ class Processor(
                         SubModuleInfo(
                             name = it.findArgumentValue<String>("moduleName"),
                             genPackageName = it.findArgumentValue<String>("packageName")!!,
+                            hasNavArgsPackage = it.findArgumentValue<Boolean>("hasNavArgsPackage")!!,
                             topLevelGraphs = it.findArgumentValue<ArrayList<String>>("topLevelGraphs")!!,
                             publicResultSenders = it.findArgumentValue<ArrayList<KSAnnotation>>(
                                 "typeResults"
