@@ -50,7 +50,7 @@ internal class ModuleRegistryWriter(
             packageStatement = "package _generated._ramcosta._composedestinations._moduleregistry",
             importableHelper = importableHelper,
             sourceCode = """
-                    annotation class _Info_$registryId(
+                    public annotation class _Info_$registryId(
                         val moduleName: String,
                         val packageName: String,
                         val hasNavArgsPackage: Boolean,
@@ -58,7 +58,7 @@ internal class ModuleRegistryWriter(
                         val topLevelGraphs: Array<String> = emptyArray()
                     )
                     
-                    annotation class _Destination_Result_Info_$registryId(
+                    public annotation class _Destination_Result_Info_$registryId(
                         val destination: String,
                         val resultType: String,
                         val isResultNullable: Boolean
@@ -75,7 +75,7 @@ internal class ModuleRegistryWriter(
                     %s2
                         ]
                     )
-                    object _ModuleRegistry_$registryId
+                    public object _ModuleRegistry_$registryId
                 """.trimIndent()
                 .replace(
                     "%s1",
