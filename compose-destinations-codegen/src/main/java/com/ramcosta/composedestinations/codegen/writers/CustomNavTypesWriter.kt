@@ -15,6 +15,7 @@ import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestinatio
 import com.ramcosta.composedestinations.codegen.model.CustomNavType
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
+import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.templates.core.FileTemplate
@@ -61,14 +62,15 @@ internal class CustomNavTypesWriter(
     )
 
     fun write(
+        navGraphs: List<RawNavGraphGenParams>,
         destinations: List<CodeGenProcessedDestination>,
         navTypeSerializers: List<NavTypeSerializer>,
     ): Map<Type, CustomNavType> {
         val serializersByType: Map<Importable, NavTypeSerializer> =
             navTypeSerializers.associateBy { it.genericType }
 
-        val allNavTypeParams: Set<Type> = destinations
-            .map {
+        val destinationsNavTypes: Set<Type> = destinations
+            .flatMapTo(mutableSetOf()) {
                 it.navArgs
                     .filter { param ->
                         param.isCustomTypeNavArg()
@@ -77,8 +79,17 @@ internal class CustomNavTypesWriter(
                         param.type.value
                     }
             }
-            .flatten()
-            .toSet()
+        val navGraphsNavTypes: Set<Type> = navGraphs
+            .mapNotNull { it.navArgs?.parameters }
+            .flatMapTo(mutableSetOf()) {
+                it.filter { param ->
+                    param.isCustomTypeNavArg()
+                }.map { param ->
+                    param.type.value
+                }
+            }
+
+        val allNavTypeParams: Set<Type> = destinationsNavTypes + navGraphsNavTypes
 
         val enumTypesToGenerate = mutableSetOf<Type>()
 

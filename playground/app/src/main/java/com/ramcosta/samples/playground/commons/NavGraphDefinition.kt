@@ -1,5 +1,6 @@
 package com.ramcosta.samples.playground.commons
 
+import android.os.Parcelable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,12 +38,19 @@ import com.ramcosta.samples.playground.ui.screens.destinations.RootProfileSettin
 import com.ramcosta.samples.playground.ui.screens.navGraphArgs
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileNavGraphArgs
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsNavGraphArgs
+import kotlinx.parcelize.Parcelize
 import kotlin.reflect.KClass
 
 @NavGraph<RootGraph>(
     defaultTransitions = DefaultFadingTransitions::class
 )
 annotation class SettingsGraph
+
+@Parcelize
+data class GraphArgsTest(
+    val cenas: String,
+    val id: Int
+): Parcelable
 
 @NavGraph<RootGraph>(
     navArgs = ProfileGraph.NavArgs::class,
@@ -53,7 +61,7 @@ annotation class SettingsGraph
 )
 annotation class ProfileGraph {
     data class NavArgs(
-        val graphArg: String,
+        val graphArg: GraphArgsTest? = null,
     )
 
     @ExternalModuleDestinations<FeatureZModuleDestinations>(
