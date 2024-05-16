@@ -21,6 +21,7 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.ramcosta.composedestinations.result.EmptyResultRecipient
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.playground.core.ArgsFromAnotherModule
+import com.ramcosta.samples.playground.commons.GraphArgsTest
 import com.ramcosta.samples.playground.commons.SettingsGraph
 import com.ramcosta.samples.playground.commons.requireTitle
 import com.ramcosta.samples.playground.ui.screens.NavGraphs
@@ -69,7 +70,7 @@ fun SettingsScreen(
                 onClick = {
                     navigator.navigate(
                         NavGraphs.profile(
-                            graphArg = "graph arg",
+                            graphArg = GraphArgsTest("graph arg", 1),
                             startRouteArgs = ProfileSettingsNavGraphArgs(
                                 anotherGraphArg = "another graph arg",
                                 startRouteArgs = ArgsFromAnotherModule(false)

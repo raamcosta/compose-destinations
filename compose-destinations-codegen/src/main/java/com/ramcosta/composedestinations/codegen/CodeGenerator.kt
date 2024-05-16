@@ -49,7 +49,7 @@ class CodeGenerator(
 
         val processedDestinations: List<CodeGenProcessedDestination> = destinationWithNavArgsMapper.map(destinations)
 
-        val navTypeNamesByType = customNavTypeWriter.write(processedDestinations, navTypeSerializers)
+        val navTypeNamesByType = customNavTypeWriter.write(navGraphs, processedDestinations, navTypeSerializers)
 
         moduleOutputWriter(navTypeNamesByType, submodules).write(navGraphs, processedDestinations)
 
