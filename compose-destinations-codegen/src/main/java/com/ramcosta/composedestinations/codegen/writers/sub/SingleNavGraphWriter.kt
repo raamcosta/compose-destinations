@@ -83,7 +83,19 @@ internal class SingleNavGraphWriter(
             .replace(NAV_GRAPH_DEEP_LINKS_PLACEHOLDER, navGraph.deepLinksCode())
             .replace(INNER_IMPORTED_ROUTES, navGraph.innerExternalRoutes())
             .replace(NAV_GRAPH_GEN_NAV_ARGS, navGraph.generatedNavArgsClass())
-            .replace(NAV_GRAPH_VISIBILITY_PLACEHOLDER, navGraph.visibility.name.lowercase())
+            .replace(
+                NAV_GRAPH_VISIBILITY_PLACEHOLDER,
+                navGraph.visibility.let {
+                    when (it) {
+                        Visibility.PUBLIC -> """
+                            @${importableHelper.addAndGetPlaceholder(Importable("Keep", "androidx.annotation.Keep"))}
+                            ${it.name.lowercase()}
+                        """.trimIndent()
+                        Visibility.INTERNAL,
+                        Visibility.PRIVATE -> it.name.lowercase()
+                    }
+                }
+            )
             .replace(
                 NAV_GRAPH_TYPE,
                 navGraph.graphSuperType()
