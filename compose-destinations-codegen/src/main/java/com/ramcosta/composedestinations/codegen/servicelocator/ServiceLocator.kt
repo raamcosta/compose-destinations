@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.codegen.servicelocator
 
-import com.ramcosta.composedestinations.codegen.commons.DestinationWithNavArgsMapper
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CustomNavType
@@ -73,8 +72,6 @@ internal fun ServiceLocator.navGraphsSingleObjectWriter(
     customNavTypeByType,
     ::SingleNavGraphWriter
 )
-
-internal val ServiceLocator.destinationWithNavArgsMapper get() = DestinationWithNavArgsMapper()
 
 internal val ServiceLocator.initialValidator get() = InitialValidator(
     codeGenConfig,

@@ -18,6 +18,7 @@ import androidx.wear.compose.navigation.rememberSwipeDismissableNavHostState
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
+import com.ramcosta.composedestinations.manualcomposablecalls.allDeepLinks
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.scope.DestinationScopeImpl
@@ -125,7 +126,7 @@ internal class WearNavHostEngine(
         composable(
             route = destination.route,
             arguments = destination.arguments,
-            deepLinks = destination.deepLinks
+            deepLinks = destination.allDeepLinks(manualComposableCalls)
         ) { navBackStackEntry ->
             CallComposable(
                 destination,
