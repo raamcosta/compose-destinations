@@ -51,7 +51,7 @@ internal fun NavGraphSpec.addAllDestinationsTo(currentList: MutableList<Destinat
         it.addAllDestinationsTo(currentList)
     }
 
-    return destinations
+    return currentList
 }
 
 /**

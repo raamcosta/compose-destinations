@@ -15,7 +15,6 @@ import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
 import com.ramcosta.composedestinations.codegen.servicelocator.ServiceLocator
 import com.ramcosta.composedestinations.codegen.servicelocator.customNavTypeWriter
 import com.ramcosta.composedestinations.codegen.servicelocator.defaultKtxSerializableNavTypeSerializerWriter
-import com.ramcosta.composedestinations.codegen.servicelocator.destinationWithNavArgsMapper
 import com.ramcosta.composedestinations.codegen.servicelocator.destinationsWriter
 import com.ramcosta.composedestinations.codegen.servicelocator.initialValidator
 import com.ramcosta.composedestinations.codegen.servicelocator.moduleOutputWriter
@@ -37,7 +36,9 @@ class CodeGenerator(
         navTypeSerializers: List<NavTypeSerializer>,
         submodules: List<SubModuleInfo>
     ) {
-        initialValidator.validate(
+        initConfigurationValues()
+
+        val validatedDestinations: List<CodeGenProcessedDestination> = initialValidator.validate(
             navGraphs = navGraphs,
             destinations = destinations,
             submoduleResultSenders = submodules
@@ -45,17 +46,28 @@ class CodeGenerator(
                 .associateBy { it.genDestinationQualifiedName }
         )
 
-        initConfigurationValues()
+        postValidateGenerate(
+            navGraphs = navGraphs,
+            destinations = validatedDestinations,
+            navTypeSerializers = navTypeSerializers,
+            submodules = submodules
+        )
+    }
 
-        val processedDestinations: List<CodeGenProcessedDestination> = destinationWithNavArgsMapper.map(destinations)
+    private fun postValidateGenerate(
+        navGraphs: List<RawNavGraphGenParams>,
+        destinations: List<CodeGenProcessedDestination>,
+        navTypeSerializers: List<NavTypeSerializer>,
+        submodules: List<SubModuleInfo>
+    ) {
+        val navTypeNamesByType =
+            customNavTypeWriter.write(navGraphs, destinations, navTypeSerializers)
 
-        val navTypeNamesByType = customNavTypeWriter.write(navGraphs, processedDestinations, navTypeSerializers)
+        moduleOutputWriter(navTypeNamesByType, submodules).write(navGraphs, destinations)
 
-        moduleOutputWriter(navTypeNamesByType, submodules).write(navGraphs, processedDestinations)
+        destinationsWriter(navTypeNamesByType).write(destinations)
 
-        destinationsWriter(navTypeNamesByType).write(processedDestinations)
-
-        if (shouldWriteKtxSerializableNavTypeSerializer(processedDestinations)) {
+        if (shouldWriteKtxSerializableNavTypeSerializer(destinations)) {
             defaultKtxSerializableNavTypeSerializerWriter.write()
         }
     }
