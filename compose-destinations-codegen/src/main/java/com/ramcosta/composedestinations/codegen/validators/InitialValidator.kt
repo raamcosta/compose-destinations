@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.codegen.validators
 import com.ramcosta.composedestinations.codegen.commons.ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME
 import com.ramcosta.composedestinations.codegen.commons.BOTTOM_SHEET_DEPENDENCY
 import com.ramcosta.composedestinations.codegen.commons.COLUMN_SCOPE_SIMPLE_NAME
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
 import com.ramcosta.composedestinations.codegen.commons.OPEN_RESULT_RECIPIENT_QUALIFIED_NAME
@@ -10,20 +11,24 @@ import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QU
 import com.ramcosta.composedestinations.codegen.commons.RESULT_RECIPIENT_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.firstTypeArg
 import com.ramcosta.composedestinations.codegen.commons.firstTypeInfoArg
+import com.ramcosta.composedestinations.codegen.commons.isCoreType
 import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayListTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.isCustomTypeNavArg
 import com.ramcosta.composedestinations.codegen.commons.toTypeCode
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
+import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.DestinationResultSenderInfo
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
 import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.RawNavArgsClass
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
 import com.ramcosta.composedestinations.codegen.model.Visibility
 
-class InitialValidator(
+internal class InitialValidator(
     private val codeGenConfig: CodeGenConfig,
     private val isBottomSheetDependencyPresent: Boolean
 ) {
@@ -32,14 +37,27 @@ class InitialValidator(
         navGraphs: List<RawNavGraphGenParams>,
         destinations: List<DestinationGeneratingParams>,
         submoduleResultSenders: Map<String, DestinationResultSenderInfo>
-    ) {
-        validateNavGraphs(navGraphs)
+    ): List<CodeGenProcessedDestination> {
+        navGraphs.validate()
+        destinations.validate(navGraphs, submoduleResultSenders)
 
-        val destinationsByName = lazy { destinations.associateBy { it.name } }
+        return destinations.map {
+            CodeGenProcessedDestination(
+                it.getNavArgs(),
+                it
+            )
+        }
+    }
+
+    private fun List<DestinationGeneratingParams>.validate(
+        navGraphs: List<RawNavGraphGenParams>,
+        submoduleResultSenders: Map<String, DestinationResultSenderInfo>
+    ) {
+        val destinationsByName = lazy { associateBy { it.name } }
         val navGraphRoutes = navGraphs.map { it.baseRoute }
         val cleanRoutes = mutableListOf<String>()
 
-        destinations.forEach { destination ->
+        forEach { destination ->
             destination.checkVisibilityToNavGraph()
 
             destination.checkNavArgTypes()
@@ -60,8 +78,8 @@ class InitialValidator(
         }
     }
 
-    private fun validateNavGraphs(navGraphs: List<RawNavGraphGenParams>) {
-        val navGraphsByRoute: Map<String, List<RawNavGraphGenParams>> = navGraphs.groupBy { it.baseRoute }
+    private fun List<RawNavGraphGenParams>.validate() {
+        val navGraphsByRoute: Map<String, List<RawNavGraphGenParams>> = groupBy { it.baseRoute }
         navGraphsByRoute.forEach {
             if (it.value.size > 1) {
                 throw IllegalDestinationsSetup(
@@ -70,6 +88,54 @@ class InitialValidator(
                             "Nav graph routes must be unique!"
                 )
             }
+        }
+
+        forEach {
+            it.navArgs?.validateNavArgs("NavGraph annotation '${it.annotationType.simpleName}': ")
+        }
+    }
+
+    private fun DestinationGeneratingParams.getNavArgs(): List<Parameter> {
+        val navArgsDelegateTypeLocal = destinationNavArgsClass
+        return if (navArgsDelegateTypeLocal == null) {
+            parameters.filter { it.isNavArg() }
+        } else {
+            navArgsDelegateTypeLocal.validateNavArgs("Composable '${composableName}': ")
+
+            val navArgInFuncParams =
+                parameters.firstOrNull { it.isNavArg() && it.type.value.importable != navArgsDelegateTypeLocal.type }
+            if (navArgInFuncParams != null) {
+                throw IllegalDestinationsSetup(
+                    "Composable '${composableName}': annotated " +
+                            "function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class. (check argument '${navArgInFuncParams.name})'"
+                )
+            }
+
+            navArgsDelegateTypeLocal.parameters
+        }
+    }
+
+    private fun RawNavArgsClass.validateNavArgs(
+        errorLocationInfo: String,
+    ) {
+        val nonNavArg = parameters.firstOrNull { !it.isNavArg() }
+        if (nonNavArg != null) {
+            if (!nonNavArg.type.isCoreOrCustomNavArgType() &&
+                nonNavArg.type.valueClassInnerInfo != null && // is value class
+                !nonNavArg.type.isValueClassOfValidInnerType()
+            ) {
+
+                throw IllegalDestinationsSetup(
+                    errorLocationInfo +
+                            "'$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types. (check argument '${nonNavArg.name}')\n" +
+                            "HINT: value classes are only valid navigation arguments if they have a public constructor with a public non nullable field which is itself of a navigation type."
+                )
+            }
+
+            throw IllegalDestinationsSetup(
+                errorLocationInfo +
+                        "'$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' cannot have arguments that are not navigation types. (check argument '${nonNavArg.name}')"
+            )
         }
     }
 
@@ -267,8 +333,20 @@ class InitialValidator(
             Int::class.qualifiedName
         )
         if (resultType.importable.qualifiedName !in primitives && !resultType.isSerializable && !resultType.isParcelable) {
-            throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: " +
-                    "Result types must be one of: ${listOf("String", "Long", "Boolean", "Float", "Int", "Parcelable", "java.io.Serializable").joinToString(", ")}")
+            throw IllegalDestinationsSetup(
+                "Composable $composableName, ${resultType.toTypeCode()}: " +
+                        "Result types must be one of: ${
+                            listOf(
+                                "String",
+                                "Long",
+                                "Boolean",
+                                "Float",
+                                "Int",
+                                "Parcelable",
+                                "java.io.Serializable"
+                            ).joinToString(", ")
+                        }"
+            )
         }
     }
 
@@ -279,48 +357,94 @@ class InitialValidator(
             )
         }
     }
-}
 
-private fun DestinationGeneratingParams.checkNavArgTypes() {
-    val navArgsDelegate = destinationNavArgsClass
-    if (navArgsDelegate != null) {
-        navArgsDelegate.parameters.validateArrayTypeArgs()
-    } else {
-        parameters.validateArrayTypeArgs()
-    }
-}
 
-private fun List<Parameter>.validateArrayTypeArgs() {
-    val typesOfPrimitiveArrays = mapOf(
-        Float::class.qualifiedName to FloatArray::class,
-        Int::class.qualifiedName to IntArray::class,
-        Boolean::class.qualifiedName to BooleanArray::class,
-        Long::class.qualifiedName to LongArray::class,
-    )
-
-    forEach { param ->
-        val type = param.type
-        if (type.isCustomArrayOrArrayListTypeNavArg()) {
-            if (type.value.firstTypeInfoArg.isNullable) {
-                val typeArg = type.value.typeArguments.first() as TypeArgument.Typed
-                val recommendedType = type.copy(
-                    value = type.value.copy(
-                        typeArguments = listOf(typeArg.copy(type = typeArg.type.copy(isNullable = false)))
-                    )
-                )
-                throw IllegalDestinationsSetup(
-                    "'${param.name}: ${type.toTypeCode()}': " +
-                            "Arrays / ArrayLists of nullable type arguments are not supported! Maybe " +
-                            "'${recommendedType.toTypeCode()}' can be used instead?"
+    private fun Parameter.isNavArg(): Boolean {
+        if (isMarkedNavHostParam) {
+            if (!type.isNavArgType()) {
+                Logger.instance.info(
+                    "Parameter ${this.name}: annotation @NavHostParam is redundant since it" +
+                            " is not a navigation argument type anyway."
                 )
             }
+            return false
+        }
 
-            val qualifiedName = type.value.firstTypeArg.importable.qualifiedName
-            if (qualifiedName in typesOfPrimitiveArrays.keys) {
-                throw IllegalDestinationsSetup(
-                    "'${param.name}: ${type.toTypeCode()}': " +
-                            "${type.toTypeCode()} is not allowed, use '${typesOfPrimitiveArrays[qualifiedName]!!.simpleName}' instead."
-                )
+        return type.isNavArgType()
+    }
+
+    private fun TypeInfo.isNavArgType(): Boolean {
+        if (isCoreOrCustomNavArgType()) {
+            return true
+        }
+
+        return isValueClassOfValidInnerType()
+    }
+
+    private fun TypeInfo.isValueClassOfValidInnerType(): Boolean {
+        if (valueClassInnerInfo != null &&
+            valueClassInnerInfo.isConstructorPublic &&
+            valueClassInnerInfo.publicNonNullableField != null
+        ) {
+            return valueClassInnerInfo.typeInfo.isCoreOrCustomNavArgType()
+        }
+
+        return false
+    }
+
+    private fun TypeInfo.isCoreOrCustomNavArgType(): Boolean {
+        if (isCoreType()) {
+            return true
+        }
+
+        if (isCustomTypeNavArg()) {
+            return true
+        }
+
+        return false
+    }
+
+    private fun DestinationGeneratingParams.checkNavArgTypes() {
+        val navArgsDelegate = destinationNavArgsClass
+        if (navArgsDelegate != null) {
+            navArgsDelegate.parameters.validateArrayTypeArgs()
+        } else {
+            parameters.validateArrayTypeArgs()
+        }
+    }
+
+    private fun List<Parameter>.validateArrayTypeArgs() {
+        val typesOfPrimitiveArrays = mapOf(
+            Float::class.qualifiedName to FloatArray::class,
+            Int::class.qualifiedName to IntArray::class,
+            Boolean::class.qualifiedName to BooleanArray::class,
+            Long::class.qualifiedName to LongArray::class,
+        )
+
+        forEach { param ->
+            val type = param.type
+            if (type.isCustomArrayOrArrayListTypeNavArg()) {
+                if (type.value.firstTypeInfoArg.isNullable) {
+                    val typeArg = type.value.typeArguments.first() as TypeArgument.Typed
+                    val recommendedType = type.copy(
+                        value = type.value.copy(
+                            typeArguments = listOf(typeArg.copy(type = typeArg.type.copy(isNullable = false)))
+                        )
+                    )
+                    throw IllegalDestinationsSetup(
+                        "'${param.name}: ${type.toTypeCode()}': " +
+                                "Arrays / ArrayLists of nullable type arguments are not supported! Maybe " +
+                                "'${recommendedType.toTypeCode()}' can be used instead?"
+                    )
+                }
+
+                val qualifiedName = type.value.firstTypeArg.importable.qualifiedName
+                if (qualifiedName in typesOfPrimitiveArrays.keys) {
+                    throw IllegalDestinationsSetup(
+                        "'${param.name}: ${type.toTypeCode()}': " +
+                                "${type.toTypeCode()} is not allowed, use '${typesOfPrimitiveArrays[qualifiedName]!!.simpleName}' instead."
+                    )
+                }
             }
         }
     }

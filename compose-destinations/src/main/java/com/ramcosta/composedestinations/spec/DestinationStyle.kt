@@ -16,6 +16,7 @@ import androidx.navigation.compose.dialog
 import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
+import com.ramcosta.composedestinations.manualcomposablecalls.allDeepLinks
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.scope.AnimatedDestinationScopeImpl
 import com.ramcosta.composedestinations.scope.DestinationScopeImpl
@@ -55,7 +56,7 @@ abstract class DestinationStyle {
             composable(
                 route = destination.route,
                 arguments = destination.arguments,
-                deepLinks = destination.deepLinks,
+                deepLinks = destination.allDeepLinks(manualComposableCalls),
             ) { navBackStackEntry ->
                 CallComposable(
                     destination,
@@ -105,7 +106,7 @@ abstract class DestinationStyle {
             composable(
                 route = destination.route,
                 arguments = destination.arguments,
-                deepLinks = destination.deepLinks,
+                deepLinks = destination.allDeepLinks(manualComposableCalls),
                 enterTransition = enterTransition,
                 exitTransition = exitTransition,
                 popEnterTransition = popEnterTransition,
@@ -150,7 +151,7 @@ abstract class DestinationStyle {
             dialog(
                 destination.route,
                 destination.arguments,
-                destination.deepLinks,
+                destination.allDeepLinks(manualComposableCalls),
                 properties
             ) { navBackStackEntry ->
                 CallDialogComposable(
@@ -174,10 +175,13 @@ abstract class DestinationStyle {
         ) {
             destination as ActivityDestinationSpec<T>
 
-            addComposable(destination)
+            addComposable(destination, manualComposableCalls)
         }
 
-        internal fun <T> NavGraphBuilder.addComposable(destination: ActivityDestinationSpec<T>) {
+        internal fun <T> NavGraphBuilder.addComposable(
+            destination: ActivityDestinationSpec<T>,
+            manualComposableCalls: ManualComposableCalls? = null
+        ) {
             activity(destination.route) {
                 targetPackage = destination.targetPackage
                 activityClass = destination.activityClass?.kotlin
@@ -185,7 +189,7 @@ abstract class DestinationStyle {
                 data = destination.data
                 dataPattern = destination.dataPattern
 
-                destination.deepLinks.forEach { deepLink ->
+                destination.allDeepLinks(manualComposableCalls).forEach { deepLink ->
                     deepLink {
                         action = deepLink.action
                         uriPattern = deepLink.uriPattern

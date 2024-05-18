@@ -52,6 +52,7 @@ internal class MermaidGraphWriter(
 
         if (codeGenConfig.mermaidGraph != null) {
             File(codeGenConfig.mermaidGraph, "${tree.rawNavGraphGenParams.name}.mmd")
+                .apply { parentFile?.mkdirs() }
                 .writeText(
                     mermaidGraph
                         .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, "mmd"))
@@ -70,6 +71,7 @@ internal class MermaidGraphWriter(
         val htmlMermaid = html(title, mermaidGraph)
         if (codeGenConfig.htmlMermaidGraph != null) {
             File(codeGenConfig.htmlMermaidGraph, "${tree.rawNavGraphGenParams.name}.html")
+                .apply { parentFile?.mkdirs() }
                 .writeText(
                     htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, "html"))
                 )

@@ -5,6 +5,9 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDeepLink
+import androidx.navigation.NavDeepLinkDslBuilder
+import androidx.navigation.navDeepLink
 import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
 import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
@@ -13,6 +16,7 @@ import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.NavHostGraphSpec
+import com.ramcosta.composedestinations.spec.Route
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
@@ -82,6 +86,15 @@ class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi
     }
 
     /**
+     * Adds deep link created by [deepLinkBuilder] to this [Route] ([NavGraphSpec] or [DestinationSpec]).
+     *
+     * Useful when you need to create the deep link at runtime.
+     */
+    infix fun Route.addDeepLink(deepLinkBuilder: NavDeepLinkDslBuilder.() -> Unit) {
+        add(route, navDeepLink(deepLinkBuilder))
+    }
+
+    /**
      * Overrides the default animations of [this] [NavGraphSpec] at runtime to use [enterTransition],
      * [exitTransition], [popEnterTransition] and [popExitTransition].
      * You should prefer to use the NavGraph annotation `defaultTransitions` unless there's a specific
@@ -147,6 +160,14 @@ class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi
 
     private val map: MutableMap<String, DestinationLambda<*>> = mutableMapOf()
     private val animations: MutableMap<String, DestinationStyle.Animated> = mutableMapOf()
+    private val deepLinks: MutableMap<String, MutableList<NavDeepLink>> = mutableMapOf()
+
+    internal fun add(
+        route: String,
+        deepLink: NavDeepLink,
+    ) {
+        deepLinks.getOrPut(route) { mutableListOf() }.add(deepLink)
+    }
 
     internal fun add(
         route: String,
@@ -164,5 +185,5 @@ class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi
         map[destination.route] = lambda
     }
 
-    internal fun build() = ManualComposableCalls(map, animations)
+    internal fun build() = ManualComposableCalls(map, animations, deepLinks)
 }

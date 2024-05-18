@@ -81,6 +81,8 @@ fun AppNavigation(
             }
         }
     ) {
+        TestScreenDestination addDeepLink { uriPattern = "runtimeschema://${TestScreenDestination.route}" }
+
         ProfileScreenDestination animateWith object: DestinationStyle.Animated() {
             override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
                 { fadeIn(tween(5000)) }

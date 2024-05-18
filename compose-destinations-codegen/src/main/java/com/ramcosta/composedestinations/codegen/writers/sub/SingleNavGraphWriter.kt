@@ -198,10 +198,10 @@ internal class SingleNavGraphWriter(
         }
 
         return navArgumentBridgeCodeBuilder.invokeMethodsCode(
-            navArgsType,
-            false,
-            directionRouteSuffix,
-            navArgTypes.second?.let {
+            navArgsType = navArgsType,
+            writeEmptyInvoke = false,
+            directionRouteSuffix = directionRouteSuffix,
+            additionalArgs = navArgTypes.second?.let {
                 mapOf("startRouteArgs" to it)
             } ?: emptyMap()
         ).let {

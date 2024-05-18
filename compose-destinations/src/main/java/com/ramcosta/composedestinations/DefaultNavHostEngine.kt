@@ -11,6 +11,7 @@ import androidx.navigation.Navigator
 import androidx.navigation.compose.navigation
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
+import com.ramcosta.composedestinations.manualcomposablecalls.allDeepLinks
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
@@ -73,13 +74,14 @@ internal class DefaultNavHostEngine(
     ) {
         val transitions = manualComposableCalls.manualAnimation(navGraph.route)
             ?: navGraph.defaultTransitions
+
         if (transitions != null) {
             with(transitions) {
                 navigation(
                     startDestination = navGraph.startRoute.route,
                     route = navGraph.route,
                     arguments = navGraph.arguments,
-                    deepLinks = navGraph.deepLinks,
+                    deepLinks = navGraph.allDeepLinks(manualComposableCalls),
                     enterTransition = enterTransition,
                     exitTransition = exitTransition,
                     popEnterTransition = popEnterTransition,
@@ -92,7 +94,7 @@ internal class DefaultNavHostEngine(
                 startDestination = navGraph.startRoute.route,
                 route = navGraph.route,
                 arguments = navGraph.arguments,
-                deepLinks = navGraph.deepLinks,
+                deepLinks = navGraph.allDeepLinks(manualComposableCalls),
                 builder = builder
             )
         }

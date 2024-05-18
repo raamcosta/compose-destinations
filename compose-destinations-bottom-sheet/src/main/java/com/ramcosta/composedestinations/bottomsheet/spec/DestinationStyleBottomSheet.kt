@@ -11,6 +11,7 @@ import com.google.accompanist.navigation.material.bottomSheet
 import com.ramcosta.composedestinations.bottomsheet.scope.BottomSheetDestinationScopeImpl
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
+import com.ramcosta.composedestinations.manualcomposablecalls.allDeepLinks
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
@@ -47,9 +48,9 @@ object DestinationStyleBottomSheet : DestinationStyle() {
         val contentWrapper = manualComposableCalls[destination.route] as? DestinationLambda<T>?
 
         bottomSheet(
-            destination.route,
-            destination.arguments,
-            destination.deepLinks
+            route = destination.route,
+            arguments = destination.arguments,
+            deepLinks = destination.allDeepLinks(manualComposableCalls)
         ) { navBackStackEntry ->
             CallComposable(
                 destination,
