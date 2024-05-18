@@ -18,7 +18,7 @@ val moduleDestinationTemplate = FileTemplate(
     ),
     sourceCode = """
 ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public data object $MODULE_DESTINATIONS_CLASS_NAME_PLACEHOLDER : ModuleDestinationsContainer {
-  public override val destinations = listOf<DestinationSpec>(
+  public override val destinations: List<DestinationSpec> = listOf<DestinationSpec>(
 $MODULE_DESTINATIONS_PLACEHOLDER
     )
     
