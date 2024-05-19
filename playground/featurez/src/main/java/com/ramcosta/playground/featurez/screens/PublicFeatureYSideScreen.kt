@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.ExternalModuleGraph
 
-data class SomeArgsInHere(
+public data class SomeArgsInHere(
     val asd: String,
     val list: ArrayList<String>
 )
@@ -14,6 +14,6 @@ data class SomeArgsInHere(
     navArgs = SomeArgsInHere::class
 )
 @Composable
-fun PublicFeatureZSideScreen() {
+internal fun PublicFeatureZSideScreen() {
     Text("PublicFeatureYSideScreen")
 }
