@@ -1,10 +1,15 @@
 package com.ramcosta.composedestinations.codegen.model
 
+import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION_SUFFIX
+import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
+import com.ramcosta.composedestinations.codegen.commons.toValidClassName
+import com.ramcosta.composedestinations.codegen.moduleName
+
 interface DestinationGeneratingParams {
     val sourceIds: List<String>
     val name: String
-    val composableName: String
-    val composableQualifiedName: String
+    val annotatedName: String
+    val annotatedQualifiedName: String
     val visibility: Visibility
     val baseRoute: String
     val parameters: List<Parameter>
@@ -21,11 +26,9 @@ interface DestinationGeneratingParams {
 
 data class RawDestinationGenParams(
     override val sourceIds: List<String>,
-    override val name: String,
-    override val composableName: String,
-    override val composableQualifiedName: String,
+    override val annotatedName: String,
+    override val annotatedQualifiedName: String,
     override val visibility: Visibility,
-    override val baseRoute: String,
     override val parameters: List<Parameter>,
     override val deepLinks: List<DeepLink>,
     override val navGraphInfo: NavGraphInfo?,
@@ -36,4 +39,37 @@ data class RawDestinationGenParams(
     override val activityDestinationParams: ActivityDestinationParams? = null,
     override val composableWrappers: List<Importable>,
     override val isParentStart: Boolean,
-): DestinationGeneratingParams
+    private val hasMultipleDestinations: Boolean,
+    private val routeOverride: String?,
+) : DestinationGeneratingParams {
+
+    private val destinationNames: DestinationNames by lazy {
+        if (routeOverride != null) {
+            return@lazy DestinationNames(
+                route = routeOverride,
+                destination = routeOverride.toValidClassName() + GENERATED_DESTINATION_SUFFIX
+            )
+        }
+
+        val moduleNamePrefix = moduleName.takeIf { it.isNotBlank() }?.let { "${it.toSnakeCase()}/" } ?: ""
+        val routeWithNoModule = if (hasMultipleDestinations) {
+            val navGraphName = navGraphInfo?.graphType?.simpleName
+                ?.removeSuffix("NavGraph")
+                ?.removeSuffix("Graph")
+                .orEmpty()
+            "${navGraphName.toSnakeCase()}/${annotatedName.toSnakeCase()}"
+        } else {
+            annotatedName.toSnakeCase()
+        }
+
+        DestinationNames(
+            route = "$moduleNamePrefix$routeWithNoModule",
+            destination = routeWithNoModule.toValidClassName() + GENERATED_DESTINATION_SUFFIX
+        )
+    }
+
+    override val name: String get() = destinationNames.destination
+    override val baseRoute: String get() = destinationNames.route
+
+    private class DestinationNames(val route: String, val destination: String)
+}

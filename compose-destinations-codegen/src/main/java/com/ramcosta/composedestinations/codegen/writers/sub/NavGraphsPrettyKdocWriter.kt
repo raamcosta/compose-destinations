@@ -69,7 +69,7 @@ internal class NavGraphsPrettyKdocWriter(
                 KdocRoute(
                     false,
                     it.isParentStart,
-                    Importable(it.composableName, it.composableQualifiedName),
+                    Importable(it.annotatedName, it.annotatedQualifiedName),
                     true
                 )
             } +

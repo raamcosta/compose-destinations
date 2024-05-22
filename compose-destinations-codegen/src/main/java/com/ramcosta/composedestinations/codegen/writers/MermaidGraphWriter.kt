@@ -193,7 +193,7 @@ internal class MermaidGraphWriter(
     private val ExternalRoute.Destination.mermaidVisualName get() = generatedType.simpleName.removeSuffix("Destination")
 
     private val CodeGenProcessedDestination.mermaidId get() = baseRoute.replace("graph", "g")
-    private val CodeGenProcessedDestination.mermaidVisualName get() = composableName
+    private val CodeGenProcessedDestination.mermaidVisualName get() = annotatedName
 
     private val NavGraphGenParams.mermaidId get() = baseRoute.replace("graph", "g")
     private val NavGraphGenParams.mermaidVisualName get() = annotationType.simpleName

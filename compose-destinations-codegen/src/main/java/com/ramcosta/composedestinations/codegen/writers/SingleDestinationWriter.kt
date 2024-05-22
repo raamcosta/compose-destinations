@@ -59,16 +59,16 @@ internal class SingleDestinationWriter(
         importableHelper,
         navArgResolver,
         navArgs,
-        "Composable '${destination.composableName}'"
+        "Composable '${destination.annotatedName}'"
     )
 
     init {
         if (destination.isParentStart && destination.navGraphInfo?.isNavHostGraph == true && destination.navArgs.any { it.isMandatory }) {
-            throw IllegalDestinationsSetup("\"'${destination.composableName}' composable: Start destinations of NavHostGraphs cannot have mandatory navigation arguments!")
+            throw IllegalDestinationsSetup("\"'${destination.annotatedName}' composable: Start destinations of NavHostGraphs cannot have mandatory navigation arguments!")
         }
 
         importableHelper.addAll(destinationTemplate.imports)
-        importableHelper.addPriorityQualifiedImport(destination.composableQualifiedName, destination.composableName)
+        importableHelper.addPriorityQualifiedImport(destination.annotatedQualifiedName, destination.annotatedName)
     }
 
     fun write() = with(destination) {
@@ -81,7 +81,7 @@ internal class SingleDestinationWriter(
             importableHelper = importableHelper,
             sourceCode = destinationTemplate.sourceCode
                 .replace(DESTINATION_NAME, name)
-                .replace(USER_COMPOSABLE_DESTINATION, composableName)
+                .replace(USER_COMPOSABLE_DESTINATION, annotatedName)
                 .replaceSuperclassDestination()
                 .addNavArgsDataClass()
                 .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
@@ -192,8 +192,8 @@ internal class SingleDestinationWriter(
         )
 
         val activityClassImportable = Importable(
-            composableName,
-            composableQualifiedName
+            annotatedName,
+            annotatedQualifiedName
         )
 
         return """override val targetPackage: String? = @targetPackage@ 

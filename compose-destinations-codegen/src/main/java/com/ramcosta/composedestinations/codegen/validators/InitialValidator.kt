@@ -100,13 +100,13 @@ internal class InitialValidator(
         return if (navArgsDelegateTypeLocal == null) {
             parameters.filter { it.isNavArg() }
         } else {
-            navArgsDelegateTypeLocal.validateNavArgs("Composable '${composableName}': ")
+            navArgsDelegateTypeLocal.validateNavArgs("Composable '${annotatedName}': ")
 
             val navArgInFuncParams =
                 parameters.firstOrNull { it.isNavArg() && it.type.value.importable != navArgsDelegateTypeLocal.type }
             if (navArgInFuncParams != null) {
                 throw IllegalDestinationsSetup(
-                    "Composable '${composableName}': annotated " +
+                    "Composable '${annotatedName}': annotated " +
                             "function cannot define arguments of navigation type if using a '$DESTINATION_ANNOTATION_NAV_ARGS_DELEGATE_ARGUMENT' class. (check argument '${navArgInFuncParams.name})'"
                 )
             }
@@ -143,7 +143,7 @@ internal class InitialValidator(
         if (!codeGenConfig.generateNavGraphs) {
 
             Logger.instance.warn(
-                "'${composableName}' composable: is annotated with a `NavGraph` annotation, but it will be ignored." +
+                "'${annotatedName}' composable: is annotated with a `NavGraph` annotation, but it will be ignored." +
                         "Reason: nav graphs generation was disabled by ksp gradle configuration."
             )
         }
@@ -153,7 +153,7 @@ internal class InitialValidator(
         if (composableReceiverSimpleName == ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME) {
             if (destinationStyleType !is DestinationStyleType.Animated && destinationStyleType !is DestinationStyleType.Default) {
                 throw IllegalDestinationsSetup(
-                    "'${composableName}' composable: " +
+                    "'${annotatedName}' composable: " +
                             "Only destinations with a DestinationStyle.Animated or DestinationStyle.Default style may have a $ANIMATED_VISIBILITY_SCOPE_SIMPLE_NAME receiver!"
                 )
             }
@@ -164,14 +164,14 @@ internal class InitialValidator(
         if (composableReceiverSimpleName == COLUMN_SCOPE_SIMPLE_NAME) {
             if (!isBottomSheetDependencyPresent) {
                 throw MissingRequiredDependency(
-                    "'${composableName}' composable: " +
+                    "'${annotatedName}' composable: " +
                             "You need to include $BOTTOM_SHEET_DEPENDENCY dependency to use a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
                 )
             }
 
             if (destinationStyleType !is DestinationStyleType.BottomSheet) {
                 throw IllegalDestinationsSetup(
-                    "'${composableName}' composable: " +
+                    "'${annotatedName}' composable: " +
                             "Only destinations with a DestinationStyleBottomSheet style may have a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
                 )
             }
@@ -187,7 +187,7 @@ internal class InitialValidator(
         }
 
         if (navGraphRoutes.contains(baseRoute)) {
-            throw IllegalDestinationsSetup("There is a NavGraph with same base route as destination '$composableName'")
+            throw IllegalDestinationsSetup("There is a NavGraph with same base route as destination '$annotatedName'")
         }
     }
 
@@ -201,7 +201,7 @@ internal class InitialValidator(
         val destinationResultOriginForAllResultTypes = mutableSetOf<String>()
 
         resultRecipientParams.forEach { parameter ->
-            Logger.instance.info("validateClosedResultRecipients | checking param $composableName ${parameter.name}")
+            Logger.instance.info("validateClosedResultRecipients | checking param $annotatedName ${parameter.name}")
 
             val resultType = (parameter.type.typeArguments[1] as? TypeArgument.Typed)?.type
                 ?: throw IllegalDestinationsSetup(
@@ -220,7 +220,7 @@ internal class InitialValidator(
                 if (info == null || info.resultTypeQualifiedName != resultType.importable.qualifiedName || info.isResultTypeNullable != resultType.isNullable) {
                     throw IllegalDestinationsSetup(
                         "Composable correspondent to '${resultOriginQualifiedName}' must receive a 'ResultBackNavigator<${resultType.toTypeCode()}>'" +
-                                " parameter in order to be used as result originator for '${composableName}'"
+                                " parameter in order to be used as result originator for '${annotatedName}'"
                     )
                 }
 
@@ -233,22 +233,22 @@ internal class InitialValidator(
 
                 val resultOriginDestinationParams =
                     destinationsByName.value[resultOriginDestinationName]
-                        ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin (type aliases are not allowed here) for '$composableName'.")
+                        ?: throw IllegalDestinationsSetup("Non existent Destination ('$resultOriginDestinationName') as the ResultRecipient's result origin (type aliases are not allowed here) for '$annotatedName'.")
 
                 resultOriginDestinationParams.parameters.firstOrNull {
                     it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME &&
                             (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type == resultType
                 }
                     ?: throw IllegalDestinationsSetup(
-                        "Composable '${resultOriginDestinationParams.composableName}' must receive a ResultBackNavigator" +
-                                " of type '${resultType.toTypeCode()}' in order to be used as result originator for '${composableName}'"
+                        "Composable '${resultOriginDestinationParams.annotatedName}' must receive a ResultBackNavigator" +
+                                " of type '${resultType.toTypeCode()}' in order to be used as result originator for '${annotatedName}'"
                     )
             }
         }
 
         if (destinationResultOriginForAllResultTypes.size != resultRecipientParams.size) {
             throw IllegalDestinationsSetup(
-                "Composable '${composableName}': " +
+                "Composable '${annotatedName}': " +
                         "has multiple ResultRecipients with the same Destination, only one recipient is allowed for a given destination!"
             )
         }
@@ -257,7 +257,7 @@ internal class InitialValidator(
             parameters.filter { it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME }
         if (resultBackNavigatorParams.size > 1) {
             throw IllegalDestinationsSetup(
-                "Composable '${composableName}': " +
+                "Composable '${annotatedName}': " +
                         "Destination annotated Composables must have at most one ResultBackNavigator"
             )
         }
@@ -322,7 +322,7 @@ internal class InitialValidator(
 
     private fun DestinationGeneratingParams.validateResultType(resultType: TypeInfo) {
         if (resultType.typeArguments.isNotEmpty()) {
-            throw IllegalDestinationsSetup("Composable $composableName, ${resultType.toTypeCode()}: Result types cannot have type arguments!")
+            throw IllegalDestinationsSetup("Composable $annotatedName, ${resultType.toTypeCode()}: Result types cannot have type arguments!")
         }
 
         val primitives = listOf(
@@ -334,7 +334,7 @@ internal class InitialValidator(
         )
         if (resultType.importable.qualifiedName !in primitives && !resultType.isSerializable && !resultType.isParcelable) {
             throw IllegalDestinationsSetup(
-                "Composable $composableName, ${resultType.toTypeCode()}: " +
+                "Composable $annotatedName, ${resultType.toTypeCode()}: " +
                         "Result types must be one of: ${
                             listOf(
                                 "String",
@@ -353,7 +353,7 @@ internal class InitialValidator(
     private fun DestinationGeneratingParams.checkVisibilityToNavGraph() {
         if (navGraphInfo == null && visibility != Visibility.PUBLIC) {
             throw IllegalDestinationsSetup(
-                "$composableName has visibility $visibility but it's using 'ExternalModuleGraph'. In order for it to be included in an external module graph, it has to be public!"
+                "$annotatedName has visibility $visibility but it's using 'ExternalModuleGraph'. In order for it to be included in an external module graph, it has to be public!"
             )
         }
     }

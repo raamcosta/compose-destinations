@@ -10,11 +10,8 @@ import com.ramcosta.composedestinations.codegen.commons.ACTIVITY_DESTINATION_ANN
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_ROUTE_ARGUMENT
-import com.ramcosta.composedestinations.codegen.commons.GENERATED_DESTINATION_SUFFIX
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.JAVA_ACTIVITY_DESTINATION_ANNOTATION
-import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
-import com.ramcosta.composedestinations.codegen.commons.toValidClassName
 import com.ramcosta.composedestinations.codegen.model.ActivityDestinationParams
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
 import com.ramcosta.composedestinations.codegen.model.Importable
@@ -63,8 +60,7 @@ internal class KspToCodeGenDestinationsMapper(
 
         val isStart = annotations.findOverridingArgumentValue { findArgumentValue<Boolean>("start") }!!
         val navGraphInfo = annotations.getNavGraphInfo("Composable '$composableName'")
-        val cleanRoute = annotations.findOverridingArgumentValue { prepareRoute(composableName, hasMultipleDestinations, navGraphInfo) }!!
-        val name = cleanRoute.toValidClassName() + GENERATED_DESTINATION_SUFFIX
+        val route = annotations.findOverridingArgumentValue { findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT) }!!
 
         val navArgsDelegateTypeAndFile = annotations.findOverridingArgumentValue { getNavArgsDelegateType(resolver, navTypeSerializersByType) }
         if (navArgsDelegateTypeAndFile?.file != null) {
@@ -74,12 +70,12 @@ internal class KspToCodeGenDestinationsMapper(
 
         return RawDestinationGenParams(
             sourceIds = listOfNotNull(function.containingFile!!.filePath, navArgsDelegateTypeAndFile?.file?.filePath),
-            name = name,
             isParentStart = isStart,
-            composableName = composableName,
-            composableQualifiedName = function.qualifiedName!!.asString(),
+            annotatedName = composableName,
+            annotatedQualifiedName = function.qualifiedName!!.asString(),
             visibility = annotations.findOverridingArgumentValue { getDestinationVisibility() }!!,
-            baseRoute = cleanRoute,
+            routeOverride = route.takeIf { it != DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER },
+            hasMultipleDestinations = hasMultipleDestinations,
             destinationStyleType = annotations.findOverridingArgumentValue { destinationMappingUtils.getDestinationStyleType(this, "composable $composableName") }!!,
             parameters = function.parameters.map { it.toParameter(resolver, navTypeSerializersByType) },
             composableWrappers = annotations.findCumulativeArgumentValue { destinationMappingUtils.getDestinationWrappers(this) },
@@ -125,13 +121,13 @@ internal class KspToCodeGenDestinationsMapper(
 
         val isStart = activityDestinationAnnotations.findOverridingArgumentValue { findArgumentValue<Boolean>("start") }!!
 
+        val route = activityDestinationAnnotations.findOverridingArgumentValue { findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT) }!!
+
         return RawDestinationGenParams(
             sourceIds = listOf(containingFile!!.filePath),
-            name = finalActivityClass.simpleName + GENERATED_DESTINATION_SUFFIX,
-            composableName = finalActivityClass.simpleName,
-            composableQualifiedName = finalActivityClass.qualifiedName,
+            annotatedName = finalActivityClass.simpleName,
+            annotatedQualifiedName = finalActivityClass.qualifiedName,
             visibility = activityDestinationAnnotations.findOverridingArgumentValue { getDestinationVisibility() }!!,
-            baseRoute = activityDestinationAnnotations.findOverridingArgumentValue { prepareRoute(finalActivityClass.simpleName) }!!,
             parameters = emptyList(),
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             navGraphInfo = activityDestinationAnnotations.getNavGraphInfo("Activity '${simpleName.asString()}'"),
@@ -147,6 +143,8 @@ internal class KspToCodeGenDestinationsMapper(
             ),
             composableWrappers = emptyList(),
             isParentStart = isStart,
+            routeOverride = route.takeIf { it != DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER },
+            hasMultipleDestinations = false
         )
     }
 
@@ -206,27 +204,6 @@ internal class KspToCodeGenDestinationsMapper(
 
     private fun KSAnnotation.getDestinationVisibility(): Visibility? {
         return findArgumentValue<KSType>("visibility")?.toGenVisibility()
-    }
-
-    private fun KSAnnotation.prepareRoute(
-        composableName: String,
-        hasMultipleDestinations: Boolean = false,
-        navGraphInfo: NavGraphInfo? = null
-    ): String? {
-        val cleanRoute = findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT)
-        return if (cleanRoute == DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER) {
-            if (hasMultipleDestinations) {
-                val navGraphName = navGraphInfo?.graphType?.simpleName
-                    ?.removeSuffix("NavGraph")
-                    ?.removeSuffix("Graph")
-                    .orEmpty()
-                "${navGraphName.toSnakeCase()}/${composableName.toSnakeCase()}"
-            } else {
-                composableName.toSnakeCase()
-            }
-        } else {
-            cleanRoute
-        }
     }
 
     private val activityType by lazy {
