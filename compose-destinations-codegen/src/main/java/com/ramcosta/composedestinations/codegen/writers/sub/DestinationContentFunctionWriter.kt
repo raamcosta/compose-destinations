@@ -78,7 +78,7 @@ class DestinationContentFunctionWriter(
 
         functionCallCode += wrappingPrefix()
 
-        val composableCall = "\t\t$receiverCode${composableName}($args)"
+        val composableCall = "\t\t$receiverCode${annotatedName}($args)"
 
         functionCallCode += if (composableWrappers.isEmpty()) composableCall
         else "\t" + composableCall.replace("\n", "\n\t")

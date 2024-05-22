@@ -125,7 +125,7 @@ private fun RawNavGraphTree.addStartRouteTreeToParticipantsOfPublicAPIs() {
         if (startDestination != null || startNestedGraph != null) {
             throw IllegalDestinationsSetup(
                 "${annotationType.preferredSimpleName} defines external route with `start = true` but " +
-                        "'${(startDestination?.composableName ?: startNestedGraph?.annotationType?.preferredSimpleName)}' is also defined " +
+                        "'${(startDestination?.annotatedName ?: startNestedGraph?.annotationType?.preferredSimpleName)}' is also defined " +
                         "as its start. Use external annotations with `start = true` only when start route is not in the current module!"
             )
         }

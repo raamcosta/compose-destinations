@@ -1,6 +1,8 @@
 package com.ramcosta.composedestinations.codegen.model
 
 import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
+import com.ramcosta.composedestinations.codegen.moduleName
+import java.util.Locale
 
 interface NavGraphGenParams {
     val sourceIds: List<String>
@@ -31,7 +33,7 @@ data class RawNavGraphGenParams(
     override val isParentStart: Boolean? = null,
     override val visibility: Visibility,
     override val externalRoutes: List<ExternalRoute>,
-    private val routeOverride: String? = null,
+    private val routeOverride: String? = null
 ) : NavGraphGenParams {
 
     override val externalNavGraphs: List<ExternalRoute.NavGraph> = externalRoutes.filterIsInstance<ExternalRoute.NavGraph>()
@@ -49,9 +51,14 @@ data class RawNavGraphGenParams(
     }
 
     override val baseRoute: String by lazy(LazyThreadSafetyMode.NONE) {
-        routeOverride ?: name
+        routeOverride ?: nameWithModuleName()
             .replace("(?i)navgraph".toRegex(), "")
             .replace("(?i)graph".toRegex(), "")
             .toSnakeCase()
+    }
+
+    private fun nameWithModuleName(): String {
+        val moduleNamePrefix = moduleName.takeIf { it.isNotBlank() }?.let { "${it.toSnakeCase()}/" } ?: ""
+        return "$moduleNamePrefix${name.replaceFirstChar { it.lowercase(Locale.US) }}"
     }
 }
