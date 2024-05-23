@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
+import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilderImpl
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.scope.BottomSheetDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
@@ -30,7 +31,7 @@ fun <T> ManualComposableCallsBuilder.bottomSheetComposable(
     content: @Composable BottomSheetDestinationScope<T>.() -> Unit
 ) {
     validateBottomSheet(destination)
-
+    this as ManualComposableCallsBuilderImpl
     add(
         lambda = DestinationLambda.BottomSheet(content),
         destination = destination,
@@ -40,6 +41,7 @@ fun <T> ManualComposableCallsBuilder.bottomSheetComposable(
 private fun ManualComposableCallsBuilder.validateBottomSheet(
     destination: DestinationSpec
 ) {
+    this as ManualComposableCallsBuilderImpl
     if (engineType != NavHostEngine.Type.DEFAULT) {
         error("'bottomSheetComposable' can only be called with a 'NavHostEngine'")
     }

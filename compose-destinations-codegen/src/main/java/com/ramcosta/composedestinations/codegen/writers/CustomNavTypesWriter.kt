@@ -153,7 +153,6 @@ internal class CustomNavTypesWriter(
                 "$CORE_PACKAGE_NAME.navargs.primitives.DestinationsEnumNavType",
                 "$CORE_PACKAGE_NAME.navargs.primitives.array.DestinationsEnumArrayNavType",
                 "$CORE_PACKAGE_NAME.navargs.primitives.arraylist.DestinationsEnumArrayListNavType",
-                "$CORE_PACKAGE_NAME.navargs.primitives.valueOfIgnoreCase",
             )
         )
 
@@ -168,13 +167,13 @@ internal class CustomNavTypesWriter(
             val typePlaceHolder = importableHelper.addAndGetPlaceholder(importable)
             val (instantiateNavType, navType) = when {
                 it.isArrayList() -> {
-                    "DestinationsEnumArrayListNavType(${typePlaceHolder}::class.java)" to "DestinationsEnumArrayListNavType<${typePlaceHolder}>"
+                    "DestinationsEnumArrayListNavType(${typePlaceHolder}::valueOf)" to "DestinationsEnumArrayListNavType<${typePlaceHolder}>"
                 }
                 it.isArray() -> {
-                    "DestinationsEnumArrayNavType { Array<${typePlaceHolder}>(it.size) { idx -> ${typePlaceHolder}::class.java.valueOfIgnoreCase(it[idx]) } }" to "DestinationsEnumArrayNavType<${typePlaceHolder}>"
+                    "DestinationsEnumArrayNavType { Array<${typePlaceHolder}>(it.size) { idx -> ${typePlaceHolder}.valueOf(it[idx]) } }" to "DestinationsEnumArrayNavType<${typePlaceHolder}>"
                 }
                 else -> {
-                    "DestinationsEnumNavType(${typePlaceHolder}::class.java)" to "DestinationsEnumNavType<${typePlaceHolder}>"
+                    "DestinationsEnumNavType(${typePlaceHolder}::valueOf)" to "DestinationsEnumNavType<${typePlaceHolder}>"
                 }
             }
 

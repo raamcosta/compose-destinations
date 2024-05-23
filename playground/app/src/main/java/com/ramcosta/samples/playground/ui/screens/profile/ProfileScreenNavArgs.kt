@@ -14,6 +14,8 @@ data class ProfileScreenNavArgs(
     val source: SomeSource = aSource(),
     val sourceId: SomeSource.Id? = someSourceId(),
     val stuff: Stuff = Stuff.STUFF1,
+    val stuff2: Array<Stuff> = stuffs2(),
+    val stuff3: ArrayList<Stuff> = stuffs3(),
     val groupName: String? = DEFAULT_GROUP,
     val whatever: Int? = 12333,
     val things: ArgumentThings? = null,
@@ -23,6 +25,10 @@ data class ProfileScreenNavArgs(
     val serializableExampleWithNavTypeSerializer: SerializableExampleWithNavTypeSerializer? = null,
     val color: Color
 )
+
+fun stuffs3() = arrayListOf(Stuff.STUFF1)
+
+fun stuffs2() = arrayOf(Stuff.STUFF1)
 
 fun aSource() = SomeSource.ASource(SomeSource.Id("source-id"))
 

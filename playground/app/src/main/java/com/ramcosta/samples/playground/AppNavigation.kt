@@ -20,6 +20,7 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.bottomsheet.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.generated.featurey.navtype.internalBackResultNavType
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
+import com.ramcosta.composedestinations.manualcomposablecalls.addDeepLink
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navargs.primitives.DestinationsBooleanNavType
 import com.ramcosta.composedestinations.navigation.dependency
@@ -90,7 +91,7 @@ fun AppNavigation(
                 }
             }
         ) {
-            TestScreenDestination addDeepLink { uriPattern = "runtimeschema://${TestScreenDestination.route}" }
+            addDeepLink(TestScreenDestination) { uriPattern = "runtimeschema://${TestScreenDestination.route}" }
 
             TestScreenDestination animateWith object: DestinationStyle.Animated() {
                 override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
@@ -176,6 +177,7 @@ fun SampleAppAnimatedNavHostExample(
                     id = navArgs.id,
                     asd = navArgs.asd,
                     stuff1 = navArgs.stuff1,
+                    stuffn = navArgs.stuffn,
                     stuff2 = navArgs.stuff2,
                     stuff3 = navArgs.stuff3,
                     stuff5 = navArgs.stuff5,
