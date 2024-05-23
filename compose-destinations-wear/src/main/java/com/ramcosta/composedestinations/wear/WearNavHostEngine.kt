@@ -22,6 +22,7 @@ import com.ramcosta.composedestinations.manualcomposablecalls.allDeepLinks
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.scope.DestinationScopeImpl
+import com.ramcosta.composedestinations.spec.ActivityDestinationStyle
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
@@ -101,7 +102,7 @@ internal class WearNavHostEngine(
                 )
             }
 
-            is DestinationStyle.Activity -> {
+            is ActivityDestinationStyle -> {
                 with(defaultNavHostEngine) {
                     composable(destination, navController, dependenciesContainerBuilder, manualComposableCalls)
                 }

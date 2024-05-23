@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.application")
-    kotlin("android")
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinAndroid)
     id("com.google.devtools.ksp") version libs.versions.ksp.get()
     kotlin("plugin.parcelize")
     kotlin("plugin.serialization")

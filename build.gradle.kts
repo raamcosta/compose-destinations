@@ -3,26 +3,19 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
     alias(libs.plugins.dependencyCheckPlugin)
-    alias(libs.plugins.compose.compiler).apply(false)
-}
+    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.androidApplication) apply false
 
-buildscript {
+    alias(libs.plugins.kotlinMultiplatform) apply false
+    alias(libs.plugins.kotlinAndroid) apply false
+    alias(libs.plugins.kotlinSerialization) apply false
+    alias(libs.plugins.compose.compiler) apply false
 
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath(libs.agp)
-        classpath(libs.kotlin)
-        classpath(libs.kotlinSerialization)
-        classpath(libs.mavenPublishPlugin)
-    }
+    alias(libs.plugins.mavenPublish) apply false
 }
 
 tasks.register<Delete>("clean") {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }
 
 /**

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="compose-destinations-jvm-local-kmp-1">
+    <output-path>$PROJECT_DIR$/compose-destinations/build/libs</output-path>
+    <root id="archive" name="compose-destinations-jvm-local-kmp-1.jar">
+      <element id="module-output" name="io.github.raamcosta.compose-destinations.ComposeDestinations.compose-destinations.jvmMain" />
+    </root>
+  </artifact>
+</component>
