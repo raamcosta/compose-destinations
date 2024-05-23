@@ -3,7 +3,7 @@ apply plugin: "com.vanniktech.maven.publish"
 def tag = "git describe --tags --abbrev=0".execute().text.trim()
 
 group = "io.github.raamcosta.compose-destinations"
-version = "local-kmp-1"
+version = "local-kmp-1" // TODO RACOSTA
 
 mavenPublishing {
     publishToMavenCentral("S01")
