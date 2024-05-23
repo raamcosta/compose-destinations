@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
@@ -7,7 +9,6 @@ plugins {
 apply(from = "${rootProject.projectDir}/publish.gradle")
 
 kotlin {
-//    applyDefaultHierarchyTemplate()
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -22,20 +23,26 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("jvmAndAndroid") {
+                withJvm()
+                withAndroidTarget()
+            }
+        }
+    }
+
     sourceSets {
-//        val androidMain by getting
-//        val jvmMain by getting
 
         commonMain.dependencies {
-            api("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha02")
+            api("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha02") // TODO RACOSTA move to catalog
         }
 
         androidMain.dependencies {
 //            api(libs.compose.navigation)
             api("org.jetbrains.androidx.core:core-bundle:1.0.0") // TODO RACOSTA why do I need this?
         }
-
-//        androidMain.dependsOn(jvmMain)
     }
 
     compilerOptions {
