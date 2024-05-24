@@ -8,13 +8,28 @@
       <module name="compose-destinations-build" target="17" />
       <module name="compose-destinations-build.main" target="17" />
       <module name="compose-destinations-build.test" target="17" />
+      <module name="compose-destinations.bottom-sheet" target="17" />
       <module name="compose-destinations.buildSrc" target="11" />
       <module name="compose-destinations.ComposeDestinations.core" target="17" />
+      <module name="compose-destinations.core" target="17" />
+      <module name="compose-destinations.playground.app" target="11" />
+      <module name="compose-destinations.playground.core" target="11" />
+      <module name="compose-destinations.playground.core.main" target="11" />
+      <module name="compose-destinations.playground.core.test" target="11" />
+      <module name="compose-destinations.sample-wear" target="11" />
+      <module name="compose-destinations.samples.playground.app" target="11" />
+      <module name="compose-destinations.samples.playground.core" target="11" />
+      <module name="compose-destinations.samples.playground.core.main" target="11" />
+      <module name="compose-destinations.samples.playground.core.test" target="11" />
+      <module name="compose-destinations.samples.sample" target="11" />
+      <module name="compose-destinations.samples.sample-wear" target="11" />
+      <module name="compose-destinations.wear-core" target="11" />
       <module name="ComposeDestinations.bottom-sheet" target="17" />
       <module name="ComposeDestinations.buildSrc" target="17" />
       <module name="ComposeDestinations.buildSrc.main" target="17" />
       <module name="ComposeDestinations.buildSrc.test" target="17" />
       <module name="ComposeDestinations.compose-destinations" target="17" />
+      <module name="ComposeDestinations.core" target="17" />
       <module name="ComposeDestinations.myapplication" target="17" />
       <module name="ComposeDestinations.playground" target="11" />
       <module name="ComposeDestinations.playground-core.main" target="11" />

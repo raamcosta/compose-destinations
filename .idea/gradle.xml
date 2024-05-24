@@ -25,15 +25,16 @@
             <option value="$PROJECT_DIR$/codegen" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/ksp" />
-            <option value="$PROJECT_DIR$/playground" />
-            <option value="$PROJECT_DIR$/playground/app" />
-            <option value="$PROJECT_DIR$/playground/core" />
-            <option value="$PROJECT_DIR$/playground/featurex" />
-            <option value="$PROJECT_DIR$/playground/featurey" />
-            <option value="$PROJECT_DIR$/playground/featurey/sub" />
-            <option value="$PROJECT_DIR$/playground/featurez" />
-            <option value="$PROJECT_DIR$/sample" />
-            <option value="$PROJECT_DIR$/sample-wear" />
+            <option value="$PROJECT_DIR$/samples" />
+            <option value="$PROJECT_DIR$/samples/playground" />
+            <option value="$PROJECT_DIR$/samples/playground/app" />
+            <option value="$PROJECT_DIR$/samples/playground/core" />
+            <option value="$PROJECT_DIR$/samples/playground/featurex" />
+            <option value="$PROJECT_DIR$/samples/playground/featurey" />
+            <option value="$PROJECT_DIR$/samples/playground/featurey/sub" />
+            <option value="$PROJECT_DIR$/samples/playground/featurez" />
+            <option value="$PROJECT_DIR$/samples/sample" />
+            <option value="$PROJECT_DIR$/samples/sample-wear" />
             <option value="$PROJECT_DIR$/wear-core" />
           </set>
         </option>

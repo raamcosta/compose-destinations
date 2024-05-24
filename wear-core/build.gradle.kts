@@ -51,6 +51,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
 
-    api(project(mapOf("path" to ":core")))
+    api(project(":core"))
     api(libs.wear.compose.navigation)
 }

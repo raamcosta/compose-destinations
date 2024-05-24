@@ -20,7 +20,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
 
-    implementation(project(mapOf("path" to ":codegen")))
+    implementation(project(":codegen"))
     implementation(libs.ksp.api)
     implementation(libs.test.junit)
 }
