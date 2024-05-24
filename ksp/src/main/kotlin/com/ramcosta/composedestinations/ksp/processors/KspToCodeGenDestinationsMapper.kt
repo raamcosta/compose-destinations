@@ -12,6 +12,7 @@ import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_D
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_ROUTE_ARGUMENT
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.JAVA_ACTIVITY_DESTINATION_ANNOTATION
+import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.ActivityDestinationParams
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
 import com.ramcosta.composedestinations.codegen.model.Importable
@@ -53,36 +54,70 @@ internal class KspToCodeGenDestinationsMapper(
     }
 
     private fun DestinationAnnotationsPath.toDestination(hasMultipleDestinations: Boolean): RawDestinationGenParams {
+        Logger.instance.warn("toDestination | $hasMultipleDestinations $this")
         val composableName = function.simpleName.asString()
 
+        Logger.instance.warn("toDestination | val deepLinksAnnotations = annotations.findCumulativeArgumentValue {\n" +
+                "            findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)\n" +
+                "        }")
         val deepLinksAnnotations = annotations.findCumulativeArgumentValue {
-            findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT)
+            Logger.instance.warn("toDestination | deepLinks find on ${this@toDestination}")
+            findArgumentValue<ArrayList<KSAnnotation>>(DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT).also {
+                Logger.instance.warn("toDestination | found $it")
+            } ?: emptyList()
         }
 
+        Logger.instance.warn("toDestination | val isStart = annotations.findOverridingArgumentValue { findArgumentValue<Boolean>(\"start\") }!!")
         val isStart = annotations.findOverridingArgumentValue { findArgumentValue<Boolean>("start") }!!
         val navGraphInfo = annotations.getNavGraphInfo("Composable '$composableName'")
+        Logger.instance.warn("toDestination | val route = annotations.findOverridingArgumentValue { findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT) }!!")
         val route = annotations.findOverridingArgumentValue { findArgumentValue<String>(DESTINATION_ANNOTATION_ROUTE_ARGUMENT) }!!
 
         val navArgsDelegateTypeAndFile = annotations.findOverridingArgumentValue { getNavArgsDelegateType(resolver, navTypeSerializersByType) }
         if (navArgsDelegateTypeAndFile?.file != null) {
             sourceFileMapper[navArgsDelegateTypeAndFile.file.filePath] = navArgsDelegateTypeAndFile.file
         }
+
+        Logger.instance.warn("toDestination | sourceFileMapper[function.containingFile!!.filePath] = function.containingFile")
         sourceFileMapper[function.containingFile!!.filePath] = function.containingFile
 
+        Logger.instance.warn("toDestination | val visibility = annotations.findOverridingArgumentValue { getDestinationVisibility() }!!")
+        val visibility = annotations.findOverridingArgumentValue { getDestinationVisibility() }!!
+        Logger.instance.warn("toDestination | function.qualifiedName!!.asString()")
+        val annotatedQualifiedName = function.qualifiedName!!.asString()
+
+        Logger.instance.warn("toDestination | val destinationStyleType = annotations.findOverridingArgumentValue {\n" +
+                "            destinationMappingUtils.getDestinationStyleType(\n" +
+                "                this,\n" +
+                "                \"composable $composableName\"\n" +
+                "            )\n" +
+                "        }!!")
+        val destinationStyleType = annotations.findOverridingArgumentValue {
+            destinationMappingUtils.getDestinationStyleType(
+                this,
+                "composable $composableName"
+            )
+        }!!
+        Logger.instance.warn("toDestination | function.extensionReceiver?.resolve()\n" +
+                "            ?.toType(function.extensionReceiver!!.location, resolver, navTypeSerializersByType)")
+        val composableReceiverType = function.extensionReceiver?.resolve()
+            ?.toType(function.extensionReceiver!!.location, resolver, navTypeSerializersByType)
+
+        Logger.instance.warn("toDestination | building it!")
         return RawDestinationGenParams(
             sourceIds = listOfNotNull(function.containingFile!!.filePath, navArgsDelegateTypeAndFile?.file?.filePath),
             isParentStart = isStart,
             annotatedName = composableName,
-            annotatedQualifiedName = function.qualifiedName!!.asString(),
-            visibility = annotations.findOverridingArgumentValue { getDestinationVisibility() }!!,
+            annotatedQualifiedName = annotatedQualifiedName,
+            visibility = visibility,
             routeOverride = route.takeIf { it != DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER },
             hasMultipleDestinations = hasMultipleDestinations,
-            destinationStyleType = annotations.findOverridingArgumentValue { destinationMappingUtils.getDestinationStyleType(this, "composable $composableName") }!!,
+            destinationStyleType = destinationStyleType,
             parameters = function.parameters.map { it.toParameter(resolver, navTypeSerializersByType) },
             composableWrappers = annotations.findCumulativeArgumentValue { destinationMappingUtils.getDestinationWrappers(this) },
             deepLinks = deepLinksAnnotations.map { it.toDeepLink() },
             navGraphInfo = navGraphInfo,
-            composableReceiverType = function.extensionReceiver?.resolve()?.toType(function.extensionReceiver!!.location, resolver, navTypeSerializersByType),
+            composableReceiverType = composableReceiverType,
             requireOptInAnnotationTypes = function.findAllRequireOptInAnnotations(),
             destinationNavArgsClass = navArgsDelegateTypeAndFile?.type,
         )

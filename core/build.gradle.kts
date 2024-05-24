@@ -35,9 +35,13 @@ kotlin {
             api("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha02") // TODO RACOSTA move to catalog
         }
 
-        androidMain.dependencies {
+        androidMain {
+            dependsOn(commonMain.get())
 //            api(libs.compose.navigation)
-            api("org.jetbrains.androidx.core:core-bundle:1.0.0") // TODO RACOSTA why do I need this?
+            dependencies {
+//                api(libs.compose.navigation)
+                api("org.jetbrains.androidx.core:core-bundle:1.0.0") // TODO RACOSTA why do I need this?
+            }
         }
     }
 

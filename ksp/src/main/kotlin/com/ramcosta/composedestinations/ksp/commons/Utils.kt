@@ -28,6 +28,7 @@ import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUA
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_PARAM_ANNOTATION_QUALIFIED
+import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.DeepLink
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavGraphInfo
@@ -78,6 +79,7 @@ fun KSAnnotated.findAnnotationPathRecursively(names: List<String>, path: List<KS
 }
 
 inline fun <reified T> KSAnnotation.findArgumentValue(name: String): T? {
+    Logger.instance.warn(arguments.joinToString { it.name?.asString() + " " + it.value })
     return arguments.find { it.name?.asString() == name }?.value as T?
 }
 
@@ -298,8 +300,8 @@ fun KSType.toType(
             requireOptInAnnotations = ksClassDeclaration?.findAllRequireOptInAnnotations() ?: emptyList(),
             visibility = declaration.getVisibility(),
             isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
-            isParcelable = classDeclarationType?.let { resolver.parcelableType().isAssignableFrom(it) } ?: false,
-            isSerializable = classDeclarationType?.let { resolver.serializableType().isAssignableFrom(it) } ?: false,
+            isParcelable = classDeclarationType?.let { resolver.parcelableType()?.isAssignableFrom(it) } ?: false,
+            isSerializable = classDeclarationType?.let { resolver.serializableType()?.isAssignableFrom(it) } ?: false,
             isKtxSerializable = isKtxSerializable(),
             valueClassInnerInfo = ksClassDeclaration?.valueClassInnerInfo(resolver, navTypeSerializersByType),
         ),
@@ -375,15 +377,15 @@ private fun getErrorLines(location: Location): String {
 }
 
 private var _parcelableType: KSType? = null
-private fun Resolver.parcelableType(): KSType {
-    return _parcelableType ?: getClassDeclarationByName("android.os.Parcelable")!!.asType(emptyList()).also {
+private fun Resolver.parcelableType(): KSType? {
+    return _parcelableType ?: getClassDeclarationByName("android.os.Parcelable")?.asType(emptyList()).also {
         _parcelableType = it
     }
 }
 
 private var _serializableType: KSType? = null
-private fun Resolver.serializableType(): KSType {
-    return _serializableType ?: getClassDeclarationByName("java.io.Serializable")!!.asType(emptyList()).also {
+private fun Resolver.serializableType(): KSType? {
+    return _serializableType ?: getClassDeclarationByName("java.io.Serializable")?.asType(emptyList()).also {
         _serializableType = it
     }
 }

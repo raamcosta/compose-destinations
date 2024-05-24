@@ -14,18 +14,18 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ComposeDestinations"
+rootProject.name = "compose-destinations"
 
 include(":core")
 include(":ksp")
 include(":codegen")
 include(":bottom-sheet")
 include(":wear-core")
-include(":sample")
-include(":sample-wear")
-include(":playground:app")
-include(":playground:core")
-include(":playground:featurex")
-include(":playground:featurey")
-include(":playground:featurey:sub")
-include(":playground:featurez")
+include(":samples:sample")
+include(":samples:sample-wear")
+include(":samples:playground:app")
+include(":samples:playground:core")
+include(":samples:playground:featurex")
+include(":samples:playground:featurey")
+include(":samples:playground:featurey:sub")
+include(":samples:playground:featurez")
