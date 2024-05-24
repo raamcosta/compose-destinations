@@ -1,9 +1,9 @@
 plugins {
-    id("java-library")
-    id("kotlin")
+    alias(libs.plugins.kotlinJvm)
+    id("composedestinations.convention.publish")
 }
 
-apply(from = "${rootProject.projectDir}/publish.gradle")
+//apply(from = "${rootProject.projectDir}/publish.gradle")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8

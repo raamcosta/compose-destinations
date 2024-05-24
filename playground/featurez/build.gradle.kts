@@ -54,8 +54,8 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
 
-    implementation(project(mapOf("path" to ":compose-destinations")))
-    ksp(project(":compose-destinations-ksp"))
+    implementation(project(mapOf("path" to ":core")))
+    "ksp"(project(":ksp"))
 
     implementation(libs.androidMaterial)
 
@@ -70,8 +70,8 @@ dependencies {
 
     testImplementation(libs.test.junit)
     testImplementation(libs.test.mockk)
+    testImplementation(project(":ksp"))
 
-    testImplementation(project(":compose-destinations-ksp"))
     testImplementation(libs.test.kotlinCompile)
     testImplementation(libs.test.kotlinCompileKsp)
 }

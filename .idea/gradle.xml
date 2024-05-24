@@ -4,16 +4,27 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/build-logic" name="build-logic">
+                <projects>
+                  <project path="$PROJECT_DIR$/build-logic" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/compose-destinations" />
-            <option value="$PROJECT_DIR$/compose-destinations-bottom-sheet" />
-            <option value="$PROJECT_DIR$/compose-destinations-codegen" />
-            <option value="$PROJECT_DIR$/compose-destinations-ksp" />
-            <option value="$PROJECT_DIR$/compose-destinations-wear" />
+            <option value="$PROJECT_DIR$/bottom-sheet" />
+            <option value="$PROJECT_DIR$/build-logic" />
+            <option value="$PROJECT_DIR$/codegen" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/ksp" />
             <option value="$PROJECT_DIR$/playground" />
             <option value="$PROJECT_DIR$/playground/app" />
             <option value="$PROJECT_DIR$/playground/core" />
@@ -23,6 +34,7 @@
             <option value="$PROJECT_DIR$/playground/featurez" />
             <option value="$PROJECT_DIR$/sample" />
             <option value="$PROJECT_DIR$/sample-wear" />
+            <option value="$PROJECT_DIR$/wear-core" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

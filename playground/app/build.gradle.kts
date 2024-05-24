@@ -74,13 +74,13 @@ kotlin {
 
 dependencies {
 
-    implementation(project(mapOf("path" to ":compose-destinations")))
-    implementation(project(mapOf("path" to ":compose-destinations-bottom-sheet")))
+    implementation(project(mapOf("path" to ":core")))
+    implementation(project(mapOf("path" to ":bottom-sheet")))
     implementation(project(mapOf("path" to ":playground:core")))
     implementation(project(mapOf("path" to ":playground:featurex")))
     implementation(project(mapOf("path" to ":playground:featurey")))
     implementation(project(mapOf("path" to ":playground:featurez")))
-    ksp(project(":compose-destinations-ksp"))
+    "ksp"(project(":ksp"))
 
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.2")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.2")
@@ -98,8 +98,8 @@ dependencies {
 
     testImplementation(libs.test.junit)
     testImplementation(libs.test.mockk)
+    testImplementation(project(":ksp"))
 
-    testImplementation(project(":compose-destinations-ksp"))
     testImplementation(libs.test.kotlinCompile)
     testImplementation(libs.test.kotlinCompileKsp)
 }

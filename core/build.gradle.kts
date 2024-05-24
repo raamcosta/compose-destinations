@@ -1,12 +1,13 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
 
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.jetbrainsCompose)
+    id("composedestinations.convention.publish")
 }
-
-apply(from = "${rootProject.projectDir}/publish.gradle")
 
 kotlin {
     androidTarget {
@@ -17,20 +18,15 @@ kotlin {
         }
     }
     jvm()
-    macosX64()
-    macosArm64()
+//    macosX64()
+//    macosArm64()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     applyDefaultHierarchyTemplate {
-        common {
-            group("jvmAndAndroid") {
-                withJvm()
-                withAndroidTarget()
-            }
-        }
+        jvmAndAndroid()
     }
 
     sourceSets {
@@ -83,5 +79,15 @@ android {
 
     buildFeatures {
         compose = true
+    }
+}
+
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
+fun KotlinHierarchyBuilder.Root.jvmAndAndroid() {
+    common {
+        group("jvmAndAndroid") {
+            withJvm()
+            withAndroidTarget()
+        }
     }
 }

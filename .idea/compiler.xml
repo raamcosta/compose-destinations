@@ -2,13 +2,19 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
+      <module name="build-logic" target="17" />
+      <module name="build-logic.main" target="17" />
+      <module name="build-logic.test" target="17" />
+      <module name="compose-destinations-build" target="17" />
+      <module name="compose-destinations-build.main" target="17" />
+      <module name="compose-destinations-build.test" target="17" />
       <module name="compose-destinations.buildSrc" target="11" />
+      <module name="compose-destinations.ComposeDestinations.core" target="17" />
+      <module name="ComposeDestinations.bottom-sheet" target="17" />
       <module name="ComposeDestinations.buildSrc" target="17" />
       <module name="ComposeDestinations.buildSrc.main" target="17" />
       <module name="ComposeDestinations.buildSrc.test" target="17" />
       <module name="ComposeDestinations.compose-destinations" target="17" />
-      <module name="ComposeDestinations.compose-destinations-bottom-sheet" target="17" />
-      <module name="ComposeDestinations.compose-destinations-wear" target="11" />
       <module name="ComposeDestinations.myapplication" target="17" />
       <module name="ComposeDestinations.playground" target="11" />
       <module name="ComposeDestinations.playground-core.main" target="11" />
@@ -19,6 +25,7 @@
       <module name="ComposeDestinations.playground.core.test" target="11" />
       <module name="ComposeDestinations.sample" target="11" />
       <module name="ComposeDestinations.sample-wear" target="11" />
+      <module name="ComposeDestinations.wear-core" target="11" />
       <module name="core" target="11" />
       <module name="io.github.raamcosta.compose-destinations.ComposeDestinations.compose-destinations" target="17" />
       <module name="io.github.raamcosta.compose-destinations.ComposeDestinations.compose-destinations-bottom-sheet" target="17" />
