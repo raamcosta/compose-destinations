@@ -56,8 +56,8 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":compose-destinations-wear")))
-    ksp(project(":compose-destinations-ksp"))
+    implementation(project(mapOf("path" to ":wear-core")))
+    "ksp"(project(":ksp"))
 
     implementation(libs.androidMaterial)
 

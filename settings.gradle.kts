@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google()
         mavenCentral()
@@ -15,11 +16,11 @@ dependencyResolutionManagement {
 
 rootProject.name = "ComposeDestinations"
 
-include(":compose-destinations")
-include(":compose-destinations-ksp")
-include(":compose-destinations-codegen")
-include(":compose-destinations-bottom-sheet")
-include(":compose-destinations-wear")
+include(":core")
+include(":ksp")
+include(":codegen")
+include(":bottom-sheet")
+include(":wear-core")
 include(":sample")
 include(":sample-wear")
 include(":playground:app")

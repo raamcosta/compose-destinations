@@ -1,8 +1,9 @@
 plugins {
-    kotlin("jvm")
+    alias(libs.plugins.kotlinJvm)
+    id("composedestinations.convention.publish")
 }
 
-apply(from = "${rootProject.projectDir}/publish.gradle")
+//apply(from = "${rootProject.projectDir}/publish.gradle")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -18,8 +19,8 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":compose-destinations-codegen")))
 
+    implementation(project(mapOf("path" to ":codegen")))
     implementation(libs.ksp.api)
     implementation(libs.test.junit)
 }

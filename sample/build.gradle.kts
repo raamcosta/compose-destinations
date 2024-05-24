@@ -56,9 +56,9 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":compose-destinations")))
-    implementation(project(mapOf("path" to ":compose-destinations-bottom-sheet")))
-    ksp(project(":compose-destinations-ksp"))
+    implementation(project(mapOf("path" to ":core")))
+    implementation(project(mapOf("path" to ":bottom-sheet")))
+    "ksp"(project(":ksp"))
 
     implementation(libs.androidMaterial)
 

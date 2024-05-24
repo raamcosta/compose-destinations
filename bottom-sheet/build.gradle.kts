@@ -1,18 +1,28 @@
 plugins {
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.compose.compiler)
+    id("composedestinations.convention.publish")
 }
 
-apply(from = "${rootProject.projectDir}/publish.gradle")
+kotlin {
+    applyDefaultHierarchyTemplate()
+    androidTarget {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = JavaVersion.VERSION_1_8.toString()
+            }
+        }
+    }
+}
 
 android {
 
-    namespace = "com.ramcosta.composedestinations.wear"
+    namespace = "com.ramcosta.composedestinations.bottomsheet"
     compileSdk = libs.versions.compileSdk.get().toIntOrNull()
 
     defaultConfig {
-        minSdk = 25
+        minSdk = libs.versions.minSdk.get().toIntOrNull()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles.add(File("consumer-rules.pro"))
@@ -30,17 +40,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
-    }
-
     buildFeatures {
         compose = true
     }
-}
-
-kotlin {
-    jvmToolchain(11)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
@@ -51,7 +53,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 dependencies {
-    api(project(mapOf("path" to ":compose-destinations")))
 
-    api(libs.wear.compose.navigation)
+    implementation(project(mapOf("path" to ":core")))
+    api(libs.compose.material.navigation)
 }
