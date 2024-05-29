@@ -36,6 +36,7 @@ android {
     buildFeatures {
         compose = true
     }
+
 }
 
 kotlin {

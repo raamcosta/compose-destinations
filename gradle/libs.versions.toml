@@ -6,7 +6,7 @@ targetSdk = "34"
 
 kotlin = "2.0.0"
 dependencyCheckPluginVersion = "0.51.0"
-agp = "8.2.1"
+agp = "8.4.1"
 mavenPublish = "0.28.0"
 
 composeViewModel = "2.8.1"
@@ -36,14 +36,11 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 
 jetbrainsCompose = { id = "org.jetbrains.compose", version = "1.6.10" }
-#compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version = "1.5.10.2" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
-#mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 
 [libraries]
 

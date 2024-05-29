@@ -1,9 +1,9 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.compose.compiler)
     id("com.google.devtools.ksp") version libs.versions.ksp.get()
     kotlin("plugin.serialization")
-    alias(libs.plugins.compose.compiler)
 }
 
 android {
