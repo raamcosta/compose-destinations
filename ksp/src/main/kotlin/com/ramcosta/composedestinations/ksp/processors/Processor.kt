@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.ksp.processors
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.KSPLogger
+import com.google.devtools.ksp.processing.PlatformInfo
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -11,6 +12,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Modifier
+import com.ramcosta.composedestinations.codegen.CodeGenEnvironment
 import com.ramcosta.composedestinations.codegen.CodeGenerator
 import com.ramcosta.composedestinations.codegen.commons.ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.CORE_BOTTOM_SHEET_DESTINATION_STYLE
@@ -36,6 +38,7 @@ import com.ramcosta.composedestinations.ksp.commons.findArgumentValue
 
 class Processor(
     private val codeGenerator: KSPCodeGenerator,
+    private val platforms: List<PlatformInfo>,
     private val logger: KSPLogger,
     private val options: Map<String, String>,
 ) : SymbolProcessor {
@@ -81,7 +84,11 @@ class Processor(
         CodeGenerator(
             codeGenerator = kspCodeOutputStreamMaker,
             isBottomSheetDependencyPresent = resolver.isBottomSheetDepPresent(),
-            codeGenConfig = codeGenConfig
+            codeGenConfig = codeGenConfig,
+            env = CodeGenEnvironment(
+                hasKeepAnnotation = resolver.getClassDeclarationByName("androidx.annotation.Keep") != null,
+                hasHiddenFromObjCAnnotation = resolver.getClassDeclarationByName("kotlin.native.HiddenFromObjC") != null
+            )
         ).generate(
             destinations,
             navGraphs,

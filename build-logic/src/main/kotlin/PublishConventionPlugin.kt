@@ -12,7 +12,7 @@ import org.gradle.kotlin.dsl.configure
 class PublishConventionPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
-        val tag = "local-kmp-15" // TODO RACOSTA
+        val tag = "local-kmp-24" // TODO RACOSTA
 //        val tag = "git describe --tags --abbrev=0".runCommand(target)
         println("RACOSTA TAG = $tag")
 

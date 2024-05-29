@@ -1,20 +1,20 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
 
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.compiler)
     id("composedestinations.convention.publish")
 }
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_1_8.toString()
-            }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
     jvm()
@@ -35,13 +35,9 @@ kotlin {
             api("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha02") // TODO RACOSTA move to catalog
         }
 
-        androidMain {
-            dependsOn(commonMain.get())
+        androidMain.dependencies {
 //            api(libs.compose.navigation)
-            dependencies {
-//                api(libs.compose.navigation)
-                api("org.jetbrains.androidx.core:core-bundle:1.0.0") // TODO RACOSTA why do I need this?
-            }
+            api("org.jetbrains.androidx.core:core-bundle:1.0.0") // TODO RACOSTA why do I need this?
         }
     }
 
@@ -84,6 +80,7 @@ android {
     buildFeatures {
         compose = true
     }
+
 }
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)

@@ -6,6 +6,7 @@ import com.ramcosta.composedestinations.codegen.commons.firstTypeInfoArg
 import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayListTypeNavArg
 import com.ramcosta.composedestinations.codegen.commons.sanitizePackageName
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
+import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
@@ -26,11 +27,20 @@ internal lateinit var codeGenBasePackageName: String
 internal lateinit var moduleName: String
 internal lateinit var registryId: String
 
+internal lateinit var environment: CodeGenEnvironment
+
 class CodeGenerator(
     override val codeGenerator: CodeOutputStreamMaker,
     override val isBottomSheetDependencyPresent: Boolean,
-    override val codeGenConfig: CodeGenConfig
+    override val codeGenConfig: CodeGenConfig,
+    env: CodeGenEnvironment
 ) : ServiceLocator {
+
+    init {
+        environment = env.also {
+            Logger.instance.warn("env = $it")
+        }
+    }
 
     fun generate(
         destinations: List<RawDestinationGenParams>,
@@ -107,3 +117,8 @@ class CodeGenerator(
         }
     }
 }
+
+data class CodeGenEnvironment(
+    val hasKeepAnnotation: Boolean,
+    val hasHiddenFromObjCAnnotation: Boolean
+)
