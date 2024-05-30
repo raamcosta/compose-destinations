@@ -3,6 +3,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
     alias(libs.plugins.dependencyCheckPlugin)
+    alias(libs.plugins.compose.compiler).apply(false)
 }
 
 buildscript {

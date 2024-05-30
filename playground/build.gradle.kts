@@ -4,10 +4,7 @@ plugins {
     id("com.google.devtools.ksp") version libs.versions.ksp.get()
     kotlin("plugin.parcelize")
     kotlin("plugin.serialization")
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -47,10 +44,6 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-    }
-
     packaging {
         resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
     }
@@ -86,6 +79,9 @@ android {
 
 kotlin {
     jvmToolchain(11)
+    compilerOptions {
+        freeCompilerArgs.addAll("-opt-in=kotlin.RequiresOptIn")
+    }
 }
 
 dependencies {
