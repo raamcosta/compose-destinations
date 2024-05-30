@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     id("com.google.devtools.ksp") version libs.versions.ksp.get()
     kotlin("plugin.serialization")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -36,10 +37,6 @@ android {
 
     buildFeatures {
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 
     ksp {

@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.Lifecycle
-import androidx.navigation.NavHostController
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
-import com.ramcosta.composedestinations.utils.destination
 import com.ramcosta.composedestinations.utils.startDestination
 import com.ramcosta.samples.playground.commons.DrawerContent
 import com.ramcosta.samples.playground.ui.screens.NavGraphs
@@ -21,7 +19,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MyDrawer(
     destination: DestinationSpec,
-    navController: NavHostController,
+    navigator: DestinationsNavigator,
     coroutineScope: CoroutineScope,
     scaffoldState: ScaffoldState
 ) = Column(Modifier.fillMaxSize()){
@@ -32,12 +30,8 @@ fun MyDrawer(
             it.DrawerContent(
                 isSelected = it == destination,
                 onDestinationClick = { clickedDestination ->
-                    if (navController.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
-                        && navController.currentBackStackEntry?.destination() != clickedDestination
-                    ) {
-                        navController.navigate(clickedDestination as DirectionDestinationSpec)
-                        coroutineScope.launch { scaffoldState.drawerState.close() }
-                    }
+                    navigator.navigate(clickedDestination as DirectionDestinationSpec)
+                    coroutineScope.launch { scaffoldState.drawerState.close() }
                 }
             )
         }
@@ -45,14 +39,14 @@ fun MyDrawer(
     ProfileSettingsProfileSettingsScreenDestination.DrawerContent(
         isSelected = destination == ProfileSettingsProfileSettingsScreenDestination,
         onDestinationClick = {
-            navController.navigate(ProfileSettingsProfileSettingsScreenDestination(true))
+            navigator.navigate(ProfileSettingsProfileSettingsScreenDestination(true))
         }
     )
 
     RootProfileSettingsScreenDestination.DrawerContent(
         isSelected = destination == RootProfileSettingsScreenDestination,
         onDestinationClick = {
-            navController.navigate(RootProfileSettingsScreenDestination(false))
+            navigator.navigate(RootProfileSettingsScreenDestination(false))
         }
     )
 }

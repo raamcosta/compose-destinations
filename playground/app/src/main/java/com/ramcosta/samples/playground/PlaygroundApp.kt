@@ -48,7 +48,7 @@ fun PlaygroundApp(testProfileDeepLink: () -> Unit) {
             drawerContent = { destination ->
                 MyDrawer(
                     destination = destination,
-                    navController = navController,
+                    navigator = navigator,
                     coroutineScope = coroutineScope,
                     scaffoldState = scaffoldState
                 )

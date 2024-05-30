@@ -4,6 +4,7 @@ plugins {
     id("com.google.devtools.ksp") version libs.versions.ksp.get()
     kotlin("plugin.parcelize")
     kotlin("plugin.serialization")
+    alias(libs.plugins.compose.compiler)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
@@ -45,10 +46,6 @@ android {
 
     buildFeatures {
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 
     packaging {
