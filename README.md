@@ -49,7 +49,7 @@ Please consider migrating to it and leaving feedback as GH issue or on our slack
 - Getting the navigation arguments from the `SavedStateHandle` (useful in ViewModels) and `NavBackStackEntry` in a type-safe way.
 - Navigation animations
 - Destination wrappers to allow reusing Compose logic on multiple screens
-- Bottom sheet screens through integration with [Accompanist Navigation-Material](https://github.com/google/accompanist/tree/main/navigation-material)
+- Bottom sheet screens
 - Easy deep linking to screens
 - Wear OS support (since versions 1.x.30!)
 - All you can do with Official Jetpack Compose Navigation but in a simpler safer way!
