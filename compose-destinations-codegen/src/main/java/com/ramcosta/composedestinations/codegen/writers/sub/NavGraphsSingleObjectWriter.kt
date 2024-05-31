@@ -4,7 +4,6 @@ import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.GENERATED_NAV_GRAPHS_OBJECT
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
-import com.ramcosta.composedestinations.codegen.commons.navGraphFieldName
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
@@ -105,18 +104,25 @@ internal class NavGraphsSingleObjectWriter(
     }
 
     private fun checkUniquenessOnNavGraphFieldNames(navGraphsParams: List<RawNavGraphTree>) {
-        val nonUniqueFieldNames = navGraphsParams.groupBy { navGraphFieldName(it.rawNavGraphGenParams.baseRoute) }
+        val nonUniqueRoutesToAnnotationName: List<Pair<String, String>> = navGraphsParams.groupBy { it.navGraphFieldName() }
             .filter {
                 it.value.size > 1
-            }.flatMap {
-                it.value
-            }.map {
-                it.rawNavGraphGenParams.annotationType.simpleName
+            }.flatMap { mapEntry ->
+                mapEntry.value.map { mapEntry.key to it }
+            }.map { (route, graph) ->
+                route to graph.rawNavGraphGenParams.annotationType.simpleName
             }
 
-        if (nonUniqueFieldNames.isNotEmpty()) {
+        if (nonUniqueRoutesToAnnotationName.isNotEmpty()) {
+            if (nonUniqueRoutesToAnnotationName.any { it.first == "main" }) {
+                throw IllegalDestinationsSetup(
+                    "NavGraphs ${nonUniqueRoutesToAnnotationName.map { it.second }} result in the same field for the NavGraphs " +
+                    "final object. You cannot have a Graph annotation called `${nonUniqueRoutesToAnnotationName.map { it.second }.firstOrNull { it.startsWith("main", ignoreCase = true) } ?: "MainGraph"}` and also have one with the same name as the module name."
+                )
+            }
+
             throw IllegalDestinationsSetup(
-                "NavGraphs $nonUniqueFieldNames result in the same field for the NavGraphs " +
+                "NavGraphs ${nonUniqueRoutesToAnnotationName.map { it.second }} result in the same field for the NavGraphs " +
                         "final object. Use only letters in your NavGraph annotations!"
             )
         }
@@ -128,7 +134,7 @@ internal class NavGraphsSingleObjectWriter(
         val requireOptInAnnotationsAnchor = "[REQUIRE_OPT_IN_ANNOTATIONS_ANCHOR]"
 
         return """
-       |    ${requireOptInAnnotationsAnchor}val ${navGraphFieldName(navGraph.rawNavGraphGenParams.baseRoute)} = ${navGraph.rawNavGraphGenParams.name}
+       |    ${requireOptInAnnotationsAnchor}val ${navGraph.navGraphFieldName()} = ${navGraph.rawNavGraphGenParams.name}
         """.trimMargin()
             .replace(
                 requireOptInAnnotationsAnchor,
@@ -145,5 +151,30 @@ internal class NavGraphsSingleObjectWriter(
         }
 
         return code.toString()
+    }
+
+    private fun RawNavGraphTree.navGraphFieldName(): String {
+        val navGraphRoute = rawNavGraphGenParams.baseRouteWithNoModulePrefix
+        val regex = "[^a-zA-Z]".toRegex()
+        val auxNavGraphRoute = navGraphRoute.toCharArray().toMutableList()
+        var weirdCharIndex = auxNavGraphRoute.indexOfFirst { it.toString().matches(regex) }
+
+        while (weirdCharIndex != -1) {
+            auxNavGraphRoute.removeAt(weirdCharIndex)
+            if (weirdCharIndex >= auxNavGraphRoute.size) {
+                break
+            }
+            auxNavGraphRoute[weirdCharIndex] = auxNavGraphRoute[weirdCharIndex].uppercaseChar()
+
+            weirdCharIndex = auxNavGraphRoute.indexOfFirst { it.toString().matches(regex) }
+        }
+
+        val fieldName = String(auxNavGraphRoute.toCharArray())
+        return if (fieldName.equals(moduleName, ignoreCase = true)) {
+            // to avoid things like "LoginNavGraphs.login" and have instead "LoginNavGraphs.main"
+            "main"
+        } else {
+            fieldName
+        }
     }
 }

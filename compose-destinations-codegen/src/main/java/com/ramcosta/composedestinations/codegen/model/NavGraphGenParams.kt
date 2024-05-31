@@ -51,11 +51,17 @@ data class RawNavGraphGenParams(
     }
 
     override val baseRoute: String by lazy(LazyThreadSafetyMode.NONE) {
-        routeOverride ?: nameWithModuleName()
-            .replace("(?i)navgraph".toRegex(), "")
-            .replace("(?i)graph".toRegex(), "")
-            .toSnakeCase()
+        routeOverride ?: nameWithModuleName().prepareForRouteFormat()
     }
+
+    val baseRouteWithNoModulePrefix: String by lazy(LazyThreadSafetyMode.NONE) {
+        routeOverride ?: name.prepareForRouteFormat()
+    }
+
+    private fun String.prepareForRouteFormat() = this
+        .replace("(?i)navgraph".toRegex(), "")
+        .replace("(?i)graph".toRegex(), "")
+        .toSnakeCase()
 
     private fun nameWithModuleName(): String {
         val moduleNamePrefix = moduleName.takeIf { it.isNotBlank() }?.let { "${it.toSnakeCase()}/" } ?: ""
