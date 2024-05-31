@@ -53,21 +53,3 @@ internal fun sourceIds(
 
     return sourceIds
 }
-
-internal fun navGraphFieldName(navGraphRoute: String): String {
-    val regex = "[^a-zA-Z]".toRegex()
-    val auxNavGraphRoute = navGraphRoute.toCharArray().toMutableList()
-    var weirdCharIndex = auxNavGraphRoute.indexOfFirst { it.toString().matches(regex) }
-
-    while (weirdCharIndex != -1) {
-        auxNavGraphRoute.removeAt(weirdCharIndex)
-        if (weirdCharIndex >= auxNavGraphRoute.size) {
-            break
-        }
-        auxNavGraphRoute[weirdCharIndex] = auxNavGraphRoute[weirdCharIndex].uppercaseChar()
-
-        weirdCharIndex = auxNavGraphRoute.indexOfFirst { it.toString().matches(regex) }
-    }
-
-    return String(auxNavGraphRoute.toCharArray())
-}
