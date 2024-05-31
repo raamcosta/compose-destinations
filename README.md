@@ -157,7 +157,7 @@ plugins {
 #### 2. Add the dependencies:
 
 Compose Destinations has multiple active versions. 
-The higher one uses the latest versions for Compose and Accompanist, while the others use only stable versions.
+The higher one uses the latest versions for Compose and Navigation, while the others use only stable versions.
 Choose the one that matches your Compose version, considering this table:
 
 <table>
