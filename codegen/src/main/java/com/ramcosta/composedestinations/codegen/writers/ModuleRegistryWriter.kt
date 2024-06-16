@@ -63,8 +63,8 @@ internal class ModuleRegistryWriter(
                         val moduleName: String,
                         val packageName: String,
                         val hasNavArgsPackage: Boolean,
-                        val typeResults: Array<_Destination_Result_Info_$registryId> = emptyArray(),
-                        val topLevelGraphs: Array<String> = emptyArray()
+                        val typeResults: Array<_Destination_Result_Info_$registryId> = [],
+                        val topLevelGraphs: Array<String> = []
                     )
                     
                     public annotation class _Destination_Result_Info_$registryId(

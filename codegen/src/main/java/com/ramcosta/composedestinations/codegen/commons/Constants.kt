@@ -98,7 +98,7 @@ const val NAV_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavController"
 const val NAV_HOST_CONTROLLER_QUALIFIED_NAME = "androidx.navigation.NavHostController"
 val bundleImportable = Importable(
     simpleName = "Bundle",
-    qualifiedName = "android.os.Bundle"
+    qualifiedName = "androidx.core.bundle.Bundle"
 )
 val savedStateHandleImportable = Importable(
     "SavedStateHandle",

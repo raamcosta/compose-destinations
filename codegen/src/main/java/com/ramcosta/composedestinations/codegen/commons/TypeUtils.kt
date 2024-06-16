@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.codegen.commons
 
+import com.ramcosta.composedestinations.codegen.environment
 import com.ramcosta.composedestinations.codegen.model.CodeGenType
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.Parameter
@@ -12,25 +13,25 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import java.io.Serializable
 import kotlin.reflect.KClass
 
-val coreTypes = mapOf(
-    String::class.asType(Visibility.PUBLIC) to CORE_STRING_NAV_TYPE,
-    Int::class.asType(Visibility.PUBLIC) to CORE_INT_NAV_TYPE,
-    Float::class.asType(Visibility.PUBLIC) to CORE_FLOAT_NAV_TYPE,
-    Long::class.asType(Visibility.PUBLIC) to CORE_LONG_NAV_TYPE,
-    Boolean::class.asType(Visibility.PUBLIC) to CORE_BOOLEAN_NAV_TYPE,
+val coreTypes: Map<Type, Importable> = buildMap {
+    put(String::class.asType(), CORE_STRING_NAV_TYPE)
+    put(Int::class.asType(), CORE_INT_NAV_TYPE)
+    put(Float::class.asType(), CORE_FLOAT_NAV_TYPE)
+    put(Long::class.asType(), CORE_LONG_NAV_TYPE)
+    put(Boolean::class.asType(), CORE_BOOLEAN_NAV_TYPE)
 
-    IntArray::class.asType(Visibility.PUBLIC) to CORE_INT_ARRAY_NAV_TYPE,
-    FloatArray::class.asType(Visibility.PUBLIC) to CORE_FLOAT_ARRAY_NAV_TYPE,
-    LongArray::class.asType(Visibility.PUBLIC) to CORE_LONG_ARRAY_NAV_TYPE,
-    BooleanArray::class.asType(Visibility.PUBLIC) to CORE_BOOLEAN_ARRAY_NAV_TYPE,
-    Array::class.asTypeWithArg(String::class, Visibility.PUBLIC) to CORE_STRING_ARRAY_NAV_TYPE,
+    put(IntArray::class.asType(), CORE_INT_ARRAY_NAV_TYPE)
+    put(FloatArray::class.asType(), CORE_FLOAT_ARRAY_NAV_TYPE)
+    put(LongArray::class.asType(), CORE_LONG_ARRAY_NAV_TYPE)
+    put(BooleanArray::class.asType(), CORE_BOOLEAN_ARRAY_NAV_TYPE)
+    put(Array::class.asTypeWithArg(String::class), CORE_STRING_ARRAY_NAV_TYPE)
 
-    ArrayList::class.asTypeWithArg(Boolean::class, Visibility.PUBLIC) to CORE_BOOLEAN_ARRAY_LIST_NAV_TYPE,
-    ArrayList::class.asTypeWithArg(Float::class, Visibility.PUBLIC) to CORE_FLOAT_ARRAY_LIST_NAV_TYPE,
-    ArrayList::class.asTypeWithArg(Int::class, Visibility.PUBLIC) to CORE_INT_ARRAY_LIST_NAV_TYPE,
-    ArrayList::class.asTypeWithArg(Long::class, Visibility.PUBLIC) to CORE_LONG_ARRAY_LIST_NAV_TYPE,
-    ArrayList::class.asTypeWithArg(String::class, Visibility.PUBLIC) to CORE_STRING_ARRAY_LIST_NAV_TYPE,
-)
+    putArrayListWithTypeArg(Boolean::class, CORE_BOOLEAN_ARRAY_LIST_NAV_TYPE)
+    putArrayListWithTypeArg(Float::class, CORE_FLOAT_ARRAY_LIST_NAV_TYPE)
+    putArrayListWithTypeArg(Int::class, CORE_INT_ARRAY_LIST_NAV_TYPE)
+    putArrayListWithTypeArg(Long::class, CORE_LONG_ARRAY_LIST_NAV_TYPE)
+    putArrayListWithTypeArg(String::class, CORE_STRING_ARRAY_LIST_NAV_TYPE)
+}
 
 fun TypeInfo.recursiveRequireOptInAnnotations(): List<Importable> {
     val mutableList = requireOptInAnnotations.toMutableList()
@@ -139,7 +140,7 @@ val Type.firstTypeArg get() = firstTypeInfoArg.value
 
 val Type.firstTypeInfoArg get() = (typeArguments.first() as TypeArgument.Typed).type
 
-private fun KClass<*>.asTypeWithArg(that: KClass<*>, visibility: Visibility) = Type(
+private fun KClass<*>.asTypeWithArg(that: KClass<*>, visibility: Visibility = Visibility.PUBLIC) = Type(
     importable = Importable(
         this.simpleName!!,
         this.qualifiedName!!
@@ -157,13 +158,13 @@ private fun KClass<*>.asTypeWithArg(that: KClass<*>, visibility: Visibility) = T
     requireOptInAnnotations = emptyList(),
     isEnum = false,
     isParcelable = false,
-    isSerializable = Serializable::class.java.isAssignableFrom(this.javaObjectType),
+    isSerializable = environment.hasJavaSerializable && Serializable::class.java.isAssignableFrom(this.javaObjectType),
     isKtxSerializable = false,
     valueClassInnerInfo = null,
     visibility = Visibility.PUBLIC,
 )
 
-private fun KClass<*>.asType(visibility: Visibility): Type {
+private fun KClass<*>.asType(visibility: Visibility = Visibility.PUBLIC): Type {
 
     return Type(
         importable = Importable(
@@ -174,9 +175,15 @@ private fun KClass<*>.asType(visibility: Visibility): Type {
         requireOptInAnnotations = emptyList(),
         isEnum = java.isEnum,
         isParcelable = false,
-        isSerializable = Serializable::class.java.isAssignableFrom(this.javaObjectType),
+        isSerializable = environment.hasJavaSerializable && Serializable::class.java.isAssignableFrom(this.javaObjectType),
         isKtxSerializable = false,
         valueClassInnerInfo = null,
         visibility = visibility,
     )
+}
+
+private fun MutableMap<Type, Importable>.putArrayListWithTypeArg(typeArg: KClass<*>, navTypeImportable: Importable) {
+    val typeWithArg = ArrayList::class.asTypeWithArg(typeArg)
+    put(typeWithArg, navTypeImportable)
+    put(typeWithArg.copy(importable = typeWithArg.importable.copy(qualifiedName = "kotlin.collections.ArrayList")), navTypeImportable)
 }

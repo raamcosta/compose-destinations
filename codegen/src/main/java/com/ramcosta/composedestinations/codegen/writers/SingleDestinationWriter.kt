@@ -8,6 +8,7 @@ import com.ramcosta.composedestinations.codegen.commons.CORE_ACTIVITY_DESTINATIO
 import com.ramcosta.composedestinations.codegen.commons.CORE_BOTTOM_SHEET_DESTINATION_STYLE
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_ACTIVITY_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_DESTINATION_SPEC
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.CORE_TYPED_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
@@ -90,7 +91,15 @@ internal class SingleDestinationWriter(
                 .replaceSuperclassDestination()
                 .addNavArgsDataClass()
                 .replace(REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER, objectWideRequireOptInAnnotationsCode())
-                .replace(DESTINATION_VISIBILITY_PLACEHOLDER, getDestinationVisibilityModifier())
+                .replace(
+                    DESTINATION_VISIBILITY_PLACEHOLDER,
+                    getDestinationVisibilityModifier().let {
+                        """
+                            @${importableHelper.addAndGetPlaceholder(Importable("PlatformHiddenFromObjC", "$CORE_PACKAGE_NAME.annotation.PlatformHiddenFromObjC"))}
+                            $it
+                        """.trimIndent()
+                    }
+                )
                 .replace(BASE_ROUTE, destination.baseRoute)
                 .replace(COMPOSED_ROUTE, navArgumentBridgeCodeBuilder.constructRouteFieldCode())
                 .replace(NAV_ARGUMENTS, navArgumentBridgeCodeBuilder.navArgumentsDeclarationCode())

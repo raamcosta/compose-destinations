@@ -94,8 +94,7 @@ internal class SingleNavGraphWriter(
                             @${
                             importableHelper.addAndGetPlaceholder(
                                 Importable(
-                                    "Keep",
-                                    "androidx.annotation.Keep"
+                                    "PlatformKeep", "$CORE_PACKAGE_NAME.annotation.PlatformKeep"
                                 )
                             )
                         }

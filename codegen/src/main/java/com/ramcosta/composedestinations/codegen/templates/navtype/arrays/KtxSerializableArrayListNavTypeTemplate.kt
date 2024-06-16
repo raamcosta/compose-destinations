@@ -9,7 +9,7 @@ import com.ramcosta.composedestinations.codegen.templates.navtype.NAV_TYPE_VISIB
 val ktxSerializableArrayListNavTypeTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName.navtype",
     imports = setOfImportable(
-        "android.os.Bundle",
+        "androidx.core.bundle.Bundle",
         "android.os.Parcel",
         "android.os.Parcelable",
         "androidx.lifecycle.SavedStateHandle",
