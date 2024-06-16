@@ -44,4 +44,4 @@ jobs:
         run: ./gradlew test
 
       - name: Publish to Maven Central
-        run: ./gradlew publishAllPublicationsToMavenCentral
+        run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
