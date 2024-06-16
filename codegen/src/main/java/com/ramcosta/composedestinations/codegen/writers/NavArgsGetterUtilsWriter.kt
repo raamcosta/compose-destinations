@@ -104,7 +104,7 @@ internal class NavArgsGettersWriter(
         val sb = StringBuilder()
 
         destinationsWithNavArgs.forEachIndexed { idx, it ->
-            sb += "\t\t${importableHelper.addAndGetPlaceholder(it.navArgsClass!!.type)}::class.java " +
+            sb += "\t\t${importableHelper.addAndGetPlaceholder(it.navArgsClass!!.type)}::class " +
                     "-> ${importableHelper.addAndGetPlaceholder(it.destinationImportable)}"
 
             if (idx < destinationsWithNavArgs.lastIndex) {
@@ -121,7 +121,7 @@ internal class NavArgsGettersWriter(
         val sb = StringBuilder()
 
         navGraphsWithNavArgs.forEachIndexed { idx, it ->
-            sb += "\t\t${importableHelper.addAndGetPlaceholder(it.graphArgsType!!)}::class.java " +
+            sb += "\t\t${importableHelper.addAndGetPlaceholder(it.graphArgsType!!)}::class " +
                     "-> ${importableHelper.addAndGetPlaceholder(it.navGraphImportable)}"
 
             if (idx < navGraphsWithNavArgs.lastIndex) {

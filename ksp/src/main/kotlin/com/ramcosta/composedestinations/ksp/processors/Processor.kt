@@ -35,6 +35,7 @@ import com.ramcosta.composedestinations.ksp.commons.DestinationMappingUtils
 import com.ramcosta.composedestinations.ksp.commons.MutableKSFileSourceMapper
 import com.ramcosta.composedestinations.ksp.commons.findActualClassDeclaration
 import com.ramcosta.composedestinations.ksp.commons.findArgumentValue
+import com.ramcosta.composedestinations.ksp.commons.javaSerializableType
 
 class Processor(
     private val codeGenerator: KSPCodeGenerator,
@@ -45,6 +46,14 @@ class Processor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         Logger.instance = KspLogger(logger)
+
+        if (platforms.size == 1) {
+            // from my tests it seems like when platforms has only 1, it means
+            // we're compiling a specific target source set and not commonMain
+            // Compose Destinations only needs to generate code on commonMain
+            Logger.instance.warn("RACOSTA only one platform ${platforms.first()}")
+            return emptyList()
+        }
 
         val composableDestinations = resolver.getComposableDestinationPaths()
         val activityDestinations = resolver.getActivityDestinations()
@@ -86,6 +95,8 @@ class Processor(
             isBottomSheetDependencyPresent = resolver.isBottomSheetDepPresent(),
             codeGenConfig = codeGenConfig,
             env = CodeGenEnvironment(
+                platforms = platforms.map { it.toString() },
+                hasJavaSerializable = resolver.javaSerializableType() != null,
                 hasKeepAnnotation = resolver.getClassDeclarationByName("androidx.annotation.Keep") != null,
                 hasHiddenFromObjCAnnotation = resolver.getClassDeclarationByName("kotlin.native.HiddenFromObjC") != null
             )

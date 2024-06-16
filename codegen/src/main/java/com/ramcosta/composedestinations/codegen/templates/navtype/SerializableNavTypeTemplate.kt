@@ -8,7 +8,7 @@ import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 val serializableNavTypeTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName.navtype",
     imports = setOfImportable(
-        "android.os.Bundle",
+        "androidx.core.bundle.Bundle",
         "java.io.Serializable",
         "androidx.lifecycle.SavedStateHandle",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavType",

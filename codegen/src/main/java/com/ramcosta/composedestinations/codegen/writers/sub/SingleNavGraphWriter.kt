@@ -88,7 +88,7 @@ internal class SingleNavGraphWriter(
                 navGraph.visibility.let {
                     when (it) {
                         Visibility.PUBLIC -> """
-                            @${importableHelper.addAndGetPlaceholder(Importable("Keep", "androidx.annotation.Keep"))}
+                            @${importableHelper.addAndGetPlaceholder(Importable("PlatformKeep", "$CORE_PACKAGE_NAME.annotation.PlatformKeep"))}
                             ${it.name.lowercase()}
                         """.trimIndent()
                         Visibility.INTERNAL,

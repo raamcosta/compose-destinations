@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.spec
 
-import android.os.Bundle
+import androidx.core.bundle.Bundle
 import androidx.lifecycle.SavedStateHandle
 
 /**

@@ -301,7 +301,7 @@ fun KSType.toType(
             visibility = declaration.getVisibility(),
             isEnum = ksClassDeclaration?.classKind == KSPClassKind.ENUM_CLASS,
             isParcelable = classDeclarationType?.let { resolver.parcelableType()?.isAssignableFrom(it) } ?: false,
-            isSerializable = classDeclarationType?.let { resolver.serializableType()?.isAssignableFrom(it) } ?: false,
+            isSerializable = classDeclarationType?.let { resolver.javaSerializableType()?.isAssignableFrom(it) } ?: false,
             isKtxSerializable = isKtxSerializable(),
             valueClassInnerInfo = ksClassDeclaration?.valueClassInnerInfo(resolver, navTypeSerializersByType),
         ),
@@ -384,7 +384,7 @@ private fun Resolver.parcelableType(): KSType? {
 }
 
 private var _serializableType: KSType? = null
-private fun Resolver.serializableType(): KSType? {
+internal fun Resolver.javaSerializableType(): KSType? {
     return _serializableType ?: getClassDeclarationByName("java.io.Serializable")?.asType(emptyList()).also {
         _serializableType = it
     }

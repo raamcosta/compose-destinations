@@ -116,6 +116,8 @@ class CodeGenerator(
 }
 
 data class CodeGenEnvironment(
+    val platforms: List<String>,
+    val hasJavaSerializable: Boolean,
     val hasKeepAnnotation: Boolean,
     val hasHiddenFromObjCAnnotation: Boolean
 )
