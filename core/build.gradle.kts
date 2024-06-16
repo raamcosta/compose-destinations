@@ -18,8 +18,6 @@ kotlin {
         }
     }
     jvm()
-//    macosX64()
-//    macosArm64()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -32,15 +30,15 @@ kotlin {
     sourceSets {
 
         commonMain.dependencies {
-            api("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha02") // TODO RACOSTA move to catalog
+            api(libs.kmp.compose.navigation)
         }
 
         androidMain.dependencies {
-//            api(libs.compose.navigation)
-            api("org.jetbrains.androidx.core:core-bundle:1.0.0") // TODO RACOSTA why do I need this?
+            api(libs.kmp.bundle) // TODO RACOSTA why do I need this?
         }
     }
 
+    @Suppress("OPT_IN_USAGE")
     compilerOptions {
         freeCompilerArgs.addAll(
             "-opt-in=kotlin.RequiresOptIn",

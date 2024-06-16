@@ -6,23 +6,24 @@ targetSdk = "34"
 
 kotlin = "2.0.0"
 dependencyCheckPluginVersion = "0.51.0"
-agp = "8.4.1"
+agp = "8.4.2"
 mavenPublish = "0.28.0"
 
-composeViewModel = "2.8.1"
+composeViewModel = "2.8.2"
 activityCompose = "1.9.0"
 
 material = "1.12.0"
-lifecycleRuntimeKtx = "2.8.1"
+lifecycleRuntimeKtx = "2.8.2"
 
 ksp = "2.0.0-1.0.21"
 
 junit = "4.13.2"
 
-compose = "1.7.0-beta02"
-composeMaterial = "1.7.0-beta02"
+compose = "1.7.0-beta03"
+composeMaterial = "1.7.0-beta03"
 composeNavigationMaterial = "1.7.0-beta01"
-composeNavigation = "2.8.0-beta02"
+kmpComposeNavigation = "2.8.0-alpha02"
+kmpBundle = "1.0.0"
 
 ktxSerialization = "1.6.3"
 mockk = "1.13.9"
@@ -58,8 +59,9 @@ androidx-activityCompose = { module = "androidx.activity:activity-compose", vers
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "composeMaterial" }
 compose-material-navigation = { module = "androidx.compose.material:material-navigation", version.ref = "composeNavigationMaterial" }
-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 compose-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "composeViewModel" }
+kmp-compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "kmpComposeNavigation" }
+kmp-bundle = { module = "org.jetbrains.androidx.core:core-bundle", version.ref = "kmpBundle" }
 
 # Ksp
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
