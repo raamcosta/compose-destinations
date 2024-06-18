@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="featurey-jvm">
+    <output-path>$PROJECT_DIR$/samples/playground/featurey/build/libs</output-path>
+    <root id="archive" name="featurey-jvm.jar">
+      <element id="module-output" name="compose-destinations.samples.playground.featurey.jvmMain" />
+    </root>
+  </artifact>
+</component>

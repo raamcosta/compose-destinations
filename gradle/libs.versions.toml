@@ -2,11 +2,12 @@
 
 minSdk = "21"
 compileSdk = "34"
+sonner = "0.3.6"
 targetSdk = "34"
 
 kotlin = "2.0.0"
 dependencyCheckPluginVersion = "0.51.0"
-agp = "8.4.2"
+agp = "8.3.2"
 mavenPublish = "0.28.0"
 
 composeViewModel = "2.8.2"
@@ -62,6 +63,7 @@ compose-material-navigation = { module = "androidx.compose.material:material-nav
 compose-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "composeViewModel" }
 kmp-compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "kmpComposeNavigation" }
 kmp-bundle = { module = "org.jetbrains.androidx.core:core-bundle", version.ref = "kmpBundle" }
+toaster = { module = "io.github.dokar3:sonner", version.ref = "sonner" }
 
 # Ksp
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }

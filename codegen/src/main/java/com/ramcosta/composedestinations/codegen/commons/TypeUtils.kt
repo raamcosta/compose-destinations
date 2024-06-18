@@ -134,6 +134,7 @@ fun CodeGenType.isArray(): Boolean {
 
 fun CodeGenType.isArrayList(): Boolean {
     return importable.qualifiedName == ArrayList::class.qualifiedName
+            || importable.qualifiedName == "kotlin.collections.ArrayList"
 }
 
 val Type.firstTypeArg get() = firstTypeInfoArg.value

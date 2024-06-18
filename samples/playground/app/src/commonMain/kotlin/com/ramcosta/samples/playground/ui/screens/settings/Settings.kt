@@ -1,0 +1,101 @@
+package com.ramcosta.samples.playground.ui.screens.settings
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Button
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.dokar.sonner.rememberToasterState
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.parameters.DeepLink
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import com.ramcosta.composedestinations.result.EmptyResultRecipient
+import com.ramcosta.composedestinations.result.ResultRecipient
+import com.ramcosta.playground.core.ArgsFromAnotherModule
+import com.ramcosta.samples.playground.commons.GraphArgsTest
+import com.ramcosta.samples.playground.commons.SettingsGraph
+import com.ramcosta.samples.playground.commons.requireTitle
+import com.ramcosta.samples.playground.ui.screens.NavGraphs
+import com.ramcosta.samples.playground.ui.screens.destinations.SettingsScreenDestination
+import com.ramcosta.samples.playground.ui.screens.destinations.ThemeSettingsDestination
+import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsNavGraphArgs
+import com.ramcosta.samples.playground.ui.screens.profile.SerializableExampleWithNavTypeSerializer
+import com.ramcosta.samples.playground.ui.screens.styles.SettingsTransitions
+
+const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
+
+@Destination<SettingsGraph>(
+    start = true,
+    deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],
+    style = SettingsTransitions::class
+)
+@Composable
+fun SettingsScreen(
+    navigator: DestinationsNavigator,
+    viewModel: SettingsViewModel,
+    themeSettingsResultRecipient: ResultRecipient<ThemeSettingsDestination, SerializableExampleWithNavTypeSerializer>
+) {
+    val toaster = rememberToasterState()
+    themeSettingsResultRecipient.onNavResult {
+        println("result = $it")
+        toaster.show("confirmed? = $it")
+    }
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Magenta)
+    ) {
+        Column(
+            modifier = Modifier.align(Alignment.Center)
+        ) {
+            Switch(checked = viewModel.isToggleOn, onCheckedChange = { viewModel.toggle() })
+
+            Button(
+                onClick = { navigator.navigate(ThemeSettingsDestination) }
+            ) {
+                Text(text = ThemeSettingsDestination.requireTitle)
+            }
+
+            Button(
+                onClick = {
+                    navigator.navigate(
+                        NavGraphs.profile(
+                            graphArg = GraphArgsTest("graph arg", 1),
+                            startRouteArgs = ProfileSettingsNavGraphArgs(
+                                anotherGraphArg = "another graph arg",
+                                startRouteArgs = ArgsFromAnotherModule(false)
+                            )
+                        )
+                    )
+                }
+            ) {
+                Text(text = "Navigate to Profile Settings nav graph")
+            }
+
+            Text(
+                text = SettingsScreenDestination.requireTitle
+            )
+        }
+    }
+}
+
+/**
+ * As an example of a preview
+ */
+//@Preview
+@Composable
+fun SettingsPreview() {
+    SettingsScreen(
+        EmptyDestinationsNavigator,
+        SettingsViewModel(),
+        EmptyResultRecipient()
+    )
+}

@@ -41,6 +41,7 @@ import com.ramcosta.composedestinations.codegen.model.TypeInfo
 import com.ramcosta.composedestinations.codegen.model.ValueClassInnerInfo
 import com.ramcosta.composedestinations.codegen.model.Visibility
 import com.ramcosta.composedestinations.ksp.processors.KSPClassKind
+import com.ramcosta.composedestinations.ksp.processors.defaultsMap
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
@@ -79,8 +80,16 @@ fun KSAnnotated.findAnnotationPathRecursively(names: List<String>, path: List<KS
 }
 
 inline fun <reified T> KSAnnotation.findArgumentValue(name: String): T? {
-    Logger.instance.warn(arguments.joinToString { it.name?.asString() + " " + it.value })
-    return arguments.find { it.name?.asString() == name }?.value as T?
+    val argumentValue = arguments.find { it.name?.asString() == name }?.value as T?
+    return if (argumentValue != null) {
+        argumentValue
+    } else {
+        val qualifiedName = this.annotationType.resolve().declaration.qualifiedName!!.asString()
+        (defaultsMap[qualifiedName]?.get(name) as T?)
+            .also {
+                Logger.instance.warn("RACOSTA $qualifiedName name $name value $it")
+            }
+    }
 }
 
 fun File.readLine(lineNumber: Int): String {

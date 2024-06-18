@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="featurex-jvm">
+    <output-path>$PROJECT_DIR$/samples/playground/featurex/build/libs</output-path>
+    <root id="archive" name="featurex-jvm.jar">
+      <element id="module-output" name="compose-destinations.samples.playground.featurex.jvmMain" />
+    </root>
+  </artifact>
+</component>

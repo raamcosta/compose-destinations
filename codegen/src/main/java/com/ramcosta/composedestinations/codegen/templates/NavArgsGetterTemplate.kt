@@ -43,35 +43,35 @@ ${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public fun <T: Any> navArgs(argsClass: 
     return destinationWithArgsType(argsClass).argsFrom(argsContainer) as T
 }$INLINE_DESTINATION_ARGS_METHODS_SECTION_END
 
-$INLINE_NAV_GRAPH_ARGS_METHODS_SECTION_START${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T> SavedStateHandle.navGraphArgs(): T? {
+$INLINE_NAV_GRAPH_ARGS_METHODS_SECTION_START${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T: Any> SavedStateHandle.navGraphArgs(): T? {
     return navGraphArgs(T::class, this)
 }
 
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T> NavBackStackEntry.navGraphArgs(): T? {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T: Any> NavBackStackEntry.navGraphArgs(): T? {
     return navGraphArgs(T::class, this)
 }
 
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T> SavedStateHandle.requireNavGraphArgs(): T {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T: Any> SavedStateHandle.requireNavGraphArgs(): T {
     return requireNavGraphArgs(T::class, this)
 }
 
-${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T> NavBackStackEntry.requireNavGraphArgs(): T {
+${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}public inline fun <reified T: Any> NavBackStackEntry.requireNavGraphArgs(): T {
     return requireNavGraphArgs(T::class, this)
 }
 
-public fun <T> navGraphArgs(argsClass: KClass<T>, argsContainer: SavedStateHandle): T? {
+public fun <T: Any> navGraphArgs(argsClass: KClass<T>, argsContainer: SavedStateHandle): T? {
     return navGraphWithArgsType(argsClass).argsFrom(argsContainer) as T?
 }
 
-public fun <T> navGraphArgs(argsClass: KClass<T>, argsContainer: NavBackStackEntry): T? {
+public fun <T: Any> navGraphArgs(argsClass: KClass<T>, argsContainer: NavBackStackEntry): T? {
     return navGraphWithArgsType(argsClass).argsFrom(argsContainer) as T?
 }
 
-public fun <T> requireNavGraphArgs(argsClass: KClass<T>, argsContainer: SavedStateHandle): T {
+public fun <T: Any> requireNavGraphArgs(argsClass: KClass<T>, argsContainer: SavedStateHandle): T {
     return navGraphWithArgsType(argsClass).requireGraphArgs(argsContainer) as T
 }
 
-public fun <T> requireNavGraphArgs(argsClass: KClass<T>, argsContainer: NavBackStackEntry): T {
+public fun <T: Any> requireNavGraphArgs(argsClass: KClass<T>, argsContainer: NavBackStackEntry): T {
     return navGraphWithArgsType(argsClass).requireGraphArgs(argsContainer) as T
 }$INLINE_NAV_GRAPH_ARGS_METHODS_SECTION_END
 
@@ -82,7 +82,7 @@ $NAV_ARGS_METHOD_WHEN_CASES
     }
 }$DESTINATION_ARGS_METHODS_SECTION_END
 
-${NAV_GRAPH_ARGS_METHODS_SECTION_START}${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}private fun <T> navGraphWithArgsType(argsClass: KClass<T>): NavGraphSpec {
+${NAV_GRAPH_ARGS_METHODS_SECTION_START}${REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER}private fun <T: Any> navGraphWithArgsType(argsClass: KClass<T>): NavGraphSpec {
     return when (argsClass) {
 $NAV_GRAPH_ARGS_METHOD_WHEN_CASES
         else -> error("Class $CLASS_ESCAPED is not a navigation graph arguments class known by this module!")

@@ -54,6 +54,7 @@ class Processor(
             Logger.instance.warn("RACOSTA only one platform ${platforms.first()}")
             return emptyList()
         }
+        resolver.initializeDefaultsMap() // to remove once kotlin has metadata about annotations on all targets
 
         val composableDestinations = resolver.getComposableDestinationPaths()
         val activityDestinations = resolver.getActivityDestinations()

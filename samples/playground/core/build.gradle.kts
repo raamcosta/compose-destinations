@@ -1,15 +1,13 @@
 plugins {
-    id("java-library")
-    id("org.jetbrains.kotlin.jvm")
+    alias(libs.plugins.kotlinMultiplatform)
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
+kotlin {
+    jvm()
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
+    jvmToolchain(11)
+    applyDefaultHierarchyTemplate()
 }

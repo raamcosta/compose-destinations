@@ -25,6 +25,14 @@
       </SelectionState>
       <SelectionState runConfigName="samples.playground.app">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-06-16T21:19:54.491886Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/rafael.costa/.android/avd/Pixel_3a_API_33_arm64-v8a.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="samples.sample-wear">
         <option name="selectionMode" value="DROPDOWN" />

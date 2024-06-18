@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="featurez-jvm">
+    <output-path>$PROJECT_DIR$/samples/playground/featurez/build/libs</output-path>
+    <root id="archive" name="featurez-jvm.jar">
+      <element id="module-output" name="compose-destinations.samples.playground.featurez.jvmMain" />
+    </root>
+  </artifact>
+</component>

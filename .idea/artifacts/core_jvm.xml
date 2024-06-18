@@ -1,8 +1,8 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="core-jvm">
-    <output-path>$PROJECT_DIR$/core/build/libs</output-path>
+    <output-path>$PROJECT_DIR$/samples/playground/core/build/libs</output-path>
     <root id="archive" name="core-jvm.jar">
-      <element id="module-output" name="compose-destinations.core.jvmMain" />
+      <element id="module-output" name="compose-destinations.samples.playground.core.jvmMain" />
     </root>
   </artifact>
 </component>

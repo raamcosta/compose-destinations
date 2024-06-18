@@ -10,8 +10,6 @@ val ktxSerializableArrayListNavTypeTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName.navtype",
     imports = setOfImportable(
         "androidx.core.bundle.Bundle",
-        "android.os.Parcel",
-        "android.os.Parcelable",
         "androidx.lifecycle.SavedStateHandle",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavType",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavTypeSerializer",
@@ -19,23 +17,19 @@ val ktxSerializableArrayListNavTypeTemplate = FileTemplate(
         "$CORE_PACKAGE_NAME.navargs.primitives.ENCODED_NULL",
         "$CORE_PACKAGE_NAME.navargs.primitives.encodedComma",
         "$CORE_PACKAGE_NAME.navargs.utils.encodeForRoute",
-        "kotlinx.serialization.ExperimentalSerializationApi",
     ),
     sourceCode = """
-@OptIn(ExperimentalSerializationApi::class)
 $NAV_TYPE_INITIALIZATION_CODE
-@OptIn(ExperimentalSerializationApi::class)
 $NAV_TYPE_VISIBILITY class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     private val serializer: DefaultKtxSerializableNavTypeSerializer<$SERIALIZER_TYPE_ARG_CLASS_SIMPLE_NAME>
 ) : DestinationsNavType<ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>?>() {
 
     override fun put(bundle: Bundle, key: String, value: ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>?) {
-        bundle.putParcelableArrayList(key, value?.toBundleArrayList())
+        bundle.putStringArrayList(key, value?.toBundleArrayList())
     }
 
     override fun get(bundle: Bundle, key: String): ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
-        @Suppress("DEPRECATION")
-        return bundle.getParcelableArrayList<ParcelableByteArrayList>(key)?.toTypeArrayList()
+        return bundle.getStringArrayList(key)?.toTypeArrayList()
     }
 
     override fun parseValue(value: String): ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
@@ -63,7 +57,7 @@ $NAV_TYPE_VISIBILITY class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>? {
-        return savedStateHandle.get<ArrayList<ParcelableByteArrayList>?>(key)?.toTypeArrayList()
+        return savedStateHandle.get<ArrayList<String>?>(key)?.toTypeArrayList()
     }
     
     override fun put(savedStateHandle: SavedStateHandle, key: String, value: ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>?) {
@@ -71,35 +65,10 @@ $NAV_TYPE_VISIBILITY class $ARRAY_CUSTOM_NAV_TYPE_NAME(
     }
 
     private fun ArrayList<$TYPE_ARG_CLASS_SIMPLE_NAME>.toBundleArrayList() =
-        mapTo(ArrayList()) { ParcelableByteArrayList(serializer.toByteArray(it)) }
+        mapTo(ArrayList()) { serializer.toRouteString(it) }
 
-    private fun ArrayList<ParcelableByteArrayList>.toTypeArrayList() =
-        mapTo(ArrayList()) { serializer.fromByteArray(it.value) }
-
-    private class ParcelableByteArrayList(
-        val value: ByteArray
-    ): Parcelable {
-
-        constructor(parcel: Parcel) : this(parcel.createByteArray()!!)
-
-        override fun writeToParcel(parcel: Parcel, flags: Int) {
-            parcel.writeByteArray(value)
-        }
-
-        override fun describeContents(): Int {
-            return 0
-        }
-
-        companion object CREATOR : Parcelable.Creator<ParcelableByteArrayList> {
-            override fun createFromParcel(parcel: Parcel): ParcelableByteArrayList {
-                return ParcelableByteArrayList(parcel)
-            }
-
-            override fun newArray(size: Int): Array<ParcelableByteArrayList?> {
-                return arrayOfNulls(size)
-            }
-        }
-    }
+    private fun ArrayList<String>.toTypeArrayList() =
+        mapTo(ArrayList()) { serializer.fromRouteString(it) }
 }
 """.trimIndent()
 )

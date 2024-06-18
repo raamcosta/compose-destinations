@@ -57,6 +57,6 @@ annotation class NavGraph<T: Annotation>(
     val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
 ) {
     companion object {
-        internal const val ANNOTATION_NAME = "@ramcosta.destinations.annotation-navgraph-route@"
+        const val ANNOTATION_NAME = "@ramcosta.destinations.annotation-navgraph-route@"
     }
 }

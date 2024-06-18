@@ -1,21 +1,8 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlinMultiplatform)
+    id("com.android.library")
+    kotlin("android")
     alias(libs.plugins.compose.compiler)
     id("composedestinations.convention.publish")
-}
-
-kotlin {
-    applyDefaultHierarchyTemplate()
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
-        }
-    }
 }
 
 android {
@@ -25,6 +12,7 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toIntOrNull()
+        targetSdk = libs.versions.targetSdk.get().toIntOrNull()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles.add(File("consumer-rules.pro"))
@@ -42,10 +30,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     buildFeatures {
         compose = true
     }
-
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
@@ -57,6 +48,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
 
-    implementation(project(":core"))
+    implementation(project(mapOf("path" to ":core")))
+
     api(libs.compose.material.navigation)
 }
