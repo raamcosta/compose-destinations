@@ -13,6 +13,7 @@ import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QU
 import com.ramcosta.composedestinations.codegen.commons.RESULT_RECIPIENT_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.coreTypes
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.model.CodeGenType
 import com.ramcosta.composedestinations.codegen.model.CustomNavType
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.Importable
@@ -50,13 +51,13 @@ class DestinationContentFunctionWriter(
         )
     )
 
-    private val listOfPreSupportedTypes = mapOf(
+    private val listOfPreSupportedTypes = mapOf<String, (CodeGenType) -> String>(
         ANIMATED_VISIBILITY_SCOPE_QUALIFIED_NAME to { "(this as $animatedVisibilityScopePlaceholder)" },
         NAV_CONTROLLER_QUALIFIED_NAME to { "navController" },
         NAV_HOST_CONTROLLER_QUALIFIED_NAME to { "navController" },
         NAV_BACK_STACK_ENTRY_QUALIFIED_NAME to { "navBackStackEntry" },
         DESTINATIONS_NAVIGATOR_QUALIFIED_NAME to { "destinationsNavigator" },
-        RESULT_RECIPIENT_QUALIFIED_NAME to {
+        RESULT_RECIPIENT_QUALIFIED_NAME to { type ->
             val placeHolder = importableHelper.addAndGetPlaceholder(
                 Importable(
                     "resultRecipient",
@@ -64,16 +65,16 @@ class DestinationContentFunctionWriter(
                 )
             )
 
-            "$placeHolder(${parameter.type.typeArguments[1].getResultNavTypePlaceholder()})"
+            "$placeHolder(${type.typeArguments[1].getResultNavTypePlaceholder()})"
         },
-        RESULT_BACK_NAVIGATOR_QUALIFIED_NAME to {
+        RESULT_BACK_NAVIGATOR_QUALIFIED_NAME to { type ->
             val placeHolder = importableHelper.addAndGetPlaceholder(
                 Importable(
                     "resultBackNavigator",
                     "$CORE_PACKAGE_NAME.scope.resultBackNavigator"
                 )
             )
-            "$placeHolder(${parameter.type.typeArguments.first().getResultNavTypePlaceholder()})"
+            "$placeHolder(${type.typeArguments.first().getResultNavTypePlaceholder()})"
         },
     )
 
@@ -156,7 +157,7 @@ class DestinationContentFunctionWriter(
             }
 
             in listOfPreSupportedTypes.keys -> {
-                listOfPreSupportedTypes[receiverType.importable.qualifiedName]!!.invoke() + "." to false
+                listOfPreSupportedTypes[receiverType.importable.qualifiedName]!!.invoke(receiverType) + "." to false
             }
 
             else -> {
@@ -196,7 +197,7 @@ class DestinationContentFunctionWriter(
     private fun resolveArgumentForTypeAndName(parameter: Parameter): Pair<String?, Boolean> {
         var needsDependencyContainer = false
         val arg = when (val typeQualifiedName = parameter.type.importable.qualifiedName) {
-            in listOfPreSupportedTypes.keys -> listOfPreSupportedTypes[typeQualifiedName]!!.invoke(parameter)
+            in listOfPreSupportedTypes.keys -> listOfPreSupportedTypes[typeQualifiedName]!!.invoke(parameter.type)
             destination.destinationNavArgsClass?.type?.qualifiedName -> {
                 "navArgs"
             }
