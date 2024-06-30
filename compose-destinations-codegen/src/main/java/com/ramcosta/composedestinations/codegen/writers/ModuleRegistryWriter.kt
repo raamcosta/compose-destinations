@@ -1,24 +1,35 @@
 package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
+import com.ramcosta.composedestinations.codegen.commons.coreTypes
+import com.ramcosta.composedestinations.codegen.commons.isCustomTypeNavArg
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.model.CustomNavType
+import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
 import com.ramcosta.composedestinations.codegen.model.Visibility
-import com.ramcosta.composedestinations.codegen.moduleName
+import com.ramcosta.composedestinations.codegen.registryId
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
-import java.util.UUID
 
 internal class ModuleRegistryWriter(
+    private val customNavTypeByType: Map<Type, CustomNavType>,
     private val codeGenConfig: CodeGenConfig,
     private val codeGenerator: CodeOutputStreamMaker
 ) {
+    companion object {
+
+        private const val packageName = "_generated._ramcosta._composedestinations._moduleregistry"
+
+    }
+
     fun write(
         destinations: List<CodeGenProcessedDestination>,
         graphTrees: List<RawNavGraphTree>
@@ -30,24 +41,22 @@ internal class ModuleRegistryWriter(
                 destination.parameters.firstOrNull { it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME }
                     ?.let {
                         val type =
-                            (it.type.typeArguments.firstOrNull() as? TypeArgument.Typed)?.type
+                            (it.type.typeArguments.firstOrNull<TypeArgument>() as? TypeArgument.Typed)?.type
                                 ?: return@mapNotNull null
 
                         destination to type
                     }
             }
-
-        val registryId = moduleName.ifEmpty { UUID.randomUUID().toString().replace("-", "_") }
         val importableHelper = ImportableHelper(
             setOfImportable(
-                "com.ramcosta.composedestinations.spec.DestinationSpec"
+                "$CORE_PACKAGE_NAME.spec.DestinationSpec"
             )
         )
         codeGenerator.makeFile(
             "_ModuleRegistry_$registryId",
-            "_generated._ramcosta._composedestinations._moduleregistry"
+            packageName
         ).writeSourceFile(
-            packageStatement = "package _generated._ramcosta._composedestinations._moduleregistry",
+            packageStatement = "package $packageName",
             importableHelper = importableHelper,
             sourceCode = """
                     public annotation class _Info_$registryId(
@@ -61,6 +70,7 @@ internal class ModuleRegistryWriter(
                     public annotation class _Destination_Result_Info_$registryId(
                         val destination: String,
                         val resultType: String,
+                        val resultNavType: String,
                         val isResultNullable: Boolean
                     )
                     
@@ -81,12 +91,13 @@ internal class ModuleRegistryWriter(
                     "%s1",
                     resultBackTypesByDestination.joinToString(",\n") { (destination, type) ->
                         """
-                        |       _Destination_Result_Info_$registryId(
-                        |           destination = "${destination.destinationImportable.qualifiedName}",
-                        |           resultType = "${type.importable.qualifiedName}",
-                        |           isResultNullable = ${type.isNullable}
-                        |       )
-                        """.trimMargin()
+                            |       _Destination_Result_Info_$registryId(
+                            |           destination = "${destination.destinationImportable.qualifiedName}",
+                            |           resultType = "${type.importable.qualifiedName}",
+                            |           resultNavType = "${if (type.isCustomTypeNavArg()) customNavTypeByType[type.value]!!.importable.qualifiedName else coreTypes[type.value]!!.qualifiedName}",
+                            |           isResultNullable = ${type.isNullable}
+                            |       )
+                            """.trimMargin()
                     }
                 )
                 .replace(

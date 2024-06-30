@@ -12,16 +12,18 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavBackStackEntry
+import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import kotlin.reflect.KClass
 
 internal class ResultRecipientImpl<D : DestinationSpec, R>(
     private val navBackStackEntry: NavBackStackEntry,
-    resultOriginType: Class<D>,
-    resultType: Class<R>,
+    resultOriginType: KClass<D>,
+    private val resultNavType: DestinationsNavType<in R>,
 ) : ResultRecipient<D, R> {
 
-    private val resultKey = resultKey(resultOriginType, resultType)
-    private val canceledKey = canceledKey(resultOriginType, resultType)
+    private val resultKey = resultKey(resultOriginType, resultNavType)
+    private val canceledKey = canceledKey(resultOriginType, resultNavType)
 
     @Composable
     override fun onNavResult(listener: (NavResult<R>) -> Unit) {
@@ -63,11 +65,9 @@ internal class ResultRecipientImpl<D : DestinationSpec, R>(
         if (canceled == true) {
             listener(NavResult.Canceled)
         } else if (navBackStackEntry.savedStateHandle.contains(resultKey)) {
-            listener(
-                NavResult.Value(
-                    navBackStackEntry.savedStateHandle.remove<R>(resultKey) as R
-                )
-            )
+            val result = resultNavType.get(navBackStackEntry.savedStateHandle, resultKey) as R
+            navBackStackEntry.savedStateHandle.remove<Any?>(resultKey)
+            listener(NavResult.Value(result))
         }
     }
 

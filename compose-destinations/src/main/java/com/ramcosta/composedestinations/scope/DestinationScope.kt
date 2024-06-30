@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -61,17 +62,37 @@ interface DestinationScope<T>: DestinationScopeWithNoDependencies<T> {
 
 /**
  * Returns a well typed [ResultBackNavigator] for this [DestinationScope]
+ *
+ * When calling this directly (usually when using manually calling your destination
+ * Composables), you can go into the corresponding generated Destination and check what
+ * [DestinationsNavType] is passed in to the corresponding Composable [ResultBackNavigator]
+ * parameter.
+ *
+ * @param resultNavType [DestinationsNavType] for the [R] type, which will
+ * handle serialization of the result.
  */
 @Composable
-inline fun <reified R> DestinationScopeWithNoDependencies<*>.resultBackNavigator(): ResultBackNavigator<R> =
-    resultBackNavigator(destination, R::class.java, navController, navBackStackEntry)
+fun <R> DestinationScopeWithNoDependencies<*>.resultBackNavigator(
+    resultNavType: DestinationsNavType<in R>
+): ResultBackNavigator<R> =
+    resultBackNavigator(destination, resultNavType, navController, navBackStackEntry)
 
 /**
  * Returns a well typed [ResultRecipient] for this [DestinationScope]
+ *
+ * When calling this directly (usually when using manually calling your destination
+ * Composables), you can go into the corresponding generated Destination and check what
+ * [DestinationsNavType] is passed in to the corresponding Composable [ResultBackNavigator]
+ * parameter.
+ *
+ * @param resultNavType [DestinationsNavType] for the [R] type, which will
+ * handle serialization of the result.
  */
 @Composable
-inline fun <reified D : DestinationSpec, reified R> DestinationScopeWithNoDependencies<*>.resultRecipient(): ResultRecipient<D, R> =
-    resultRecipient(navBackStackEntry, D::class.java, R::class.java)
+inline fun <reified D : DestinationSpec, R> DestinationScopeWithNoDependencies<*>.resultRecipient(
+    resultNavType: DestinationsNavType<in R>
+): ResultRecipient<D, R> =
+    resultRecipient(navBackStackEntry, D::class, resultNavType)
 
 /**
  * Like [DestinationScope] but also [AnimatedVisibilityScope] so that

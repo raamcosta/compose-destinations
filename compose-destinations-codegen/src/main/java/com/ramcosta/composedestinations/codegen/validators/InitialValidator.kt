@@ -124,7 +124,7 @@ internal class InitialValidator(
         if (nonNavArg != null) {
             if (!nonNavArg.type.isCoreOrCustomNavArgType() &&
                 nonNavArg.type.valueClassInnerInfo != null && // is value class
-                !nonNavArg.type.isValueClassOfValidInnerType()
+                !nonNavArg.type.isValueClassOfValidInnerNavArgType()
             ) {
 
                 throw IllegalDestinationsSetup(
@@ -323,32 +323,8 @@ internal class InitialValidator(
     }
 
     private fun DestinationGeneratingParams.validateResultType(resultType: TypeInfo) {
-        if (resultType.typeArguments.isNotEmpty()) {
-            throw IllegalDestinationsSetup("Composable $annotatedName, ${resultType.toTypeCode()}: Result types cannot have type arguments!")
-        }
-
-        val primitives = listOf(
-            String::class.qualifiedName,
-            Long::class.qualifiedName,
-            Boolean::class.qualifiedName,
-            Float::class.qualifiedName,
-            Int::class.qualifiedName
-        )
-        if (resultType.importable.qualifiedName !in primitives && !resultType.isSerializable && !resultType.isParcelable) {
-            throw IllegalDestinationsSetup(
-                "Composable $annotatedName, ${resultType.toTypeCode()}: " +
-                        "Result types must be one of: ${
-                            listOf(
-                                "String",
-                                "Long",
-                                "Boolean",
-                                "Float",
-                                "Int",
-                                "Parcelable",
-                                "java.io.Serializable"
-                            ).joinToString(", ")
-                        }"
-            )
+        if (!resultType.isNavArgType()) {
+            throw IllegalDestinationsSetup("Composable $annotatedName, ${resultType.toTypeCode()}: Result types must be of a valid navigation argument type.")
         }
     }
 
@@ -380,10 +356,10 @@ internal class InitialValidator(
             return true
         }
 
-        return isValueClassOfValidInnerType()
+        return isValueClassOfValidInnerNavArgType()
     }
 
-    private fun TypeInfo.isValueClassOfValidInnerType(): Boolean {
+    private fun TypeInfo.isValueClassOfValidInnerNavArgType(): Boolean {
         if (valueClassInnerInfo != null &&
             valueClassInnerInfo.isConstructorPublic &&
             valueClassInnerInfo.publicNonNullableField != null

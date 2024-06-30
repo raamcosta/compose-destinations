@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.codegen.writers
 
 import com.ramcosta.composedestinations.codegen.codeGenBasePackageName
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
+import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.firstTypeArg
 import com.ramcosta.composedestinations.codegen.commons.isArray
 import com.ramcosta.composedestinations.codegen.commons.isArrayList
@@ -69,31 +70,9 @@ internal class CustomNavTypesWriter(
         val serializersByType: Map<Importable, NavTypeSerializer> =
             navTypeSerializers.associateBy { it.genericType }
 
-        val destinationsNavTypes: Set<Type> = destinations
-            .flatMapTo(mutableSetOf()) {
-                it.navArgs
-                    .filter { param ->
-                        param.isCustomTypeNavArg()
-                    }
-                    .map { param ->
-                        param.type.value
-                    }
-            }
-        val navGraphsNavTypes: Set<Type> = navGraphs
-            .mapNotNull { it.navArgs?.parameters }
-            .flatMapTo(mutableSetOf()) {
-                it.filter { param ->
-                    param.isCustomTypeNavArg()
-                }.map { param ->
-                    param.type.value
-                }
-            }
-
-        val allNavTypeParams: Set<Type> = destinationsNavTypes + navGraphsNavTypes
-
         val enumTypesToGenerate = mutableSetOf<Type>()
 
-        allNavTypeParams
+        getAllNavTypes(navGraphs, destinations)
             .toMutableList()
             // if we have multiple classes with equal simple name, ordering by the package length,
             // will make it so we first create the one with the simplest package name, then
@@ -124,6 +103,44 @@ internal class CustomNavTypesWriter(
         generateEnumCustomTypesFile(enumTypesToGenerate)
 
         return typesForNavTypeName
+    }
+
+    private fun getAllNavTypes(
+        navGraphs: List<RawNavGraphGenParams>,
+        destinations: List<CodeGenProcessedDestination>,
+    ): Set<Type> {
+        val destinationsNavTypes: Set<Type> = destinations
+            .flatMapTo(mutableSetOf()) {
+                it.navArgs
+                    .filter { param ->
+                        param.isCustomTypeNavArg()
+                    }
+                    .map { param ->
+                        param.type.value
+                    }
+            }
+        val navGraphsNavTypes: Set<Type> = navGraphs
+            .mapNotNull { it.navArgs?.parameters }
+            .flatMapTo(mutableSetOf()) {
+                it.filter { param ->
+                    param.isCustomTypeNavArg()
+                }.map { param ->
+                    param.type.value
+                }
+            }
+
+        val resultBackNavTypes: Set<Type> = destinations.mapNotNullTo(mutableSetOf()) { destination ->
+            destination.parameters
+                .firstOrNull { it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME }
+                ?.type?.value
+                ?.typeArguments?.first()?.let {
+                    (it as? TypeArgument.Typed)?.type
+                }?.takeIf { it.isCustomTypeNavArg() }
+                ?.value
+        }
+
+        val allNavTypeParams: Set<Type> = destinationsNavTypes + navGraphsNavTypes + resultBackNavTypes
+        return allNavTypeParams
     }
 
     private fun generateEnumCustomTypesFile(typesToGenerate: Set<Type>) {
@@ -163,7 +180,14 @@ internal class CustomNavTypesWriter(
 
             allEnums += "\n\npublic val $navTypeName: $navType = $instantiateNavType"
 
-            typesForNavTypeName[it] = CustomNavType(navTypeName, null)
+            typesForNavTypeName[it] = CustomNavType(
+                navTypeName,
+                null,
+                Importable(
+                    simpleName = navTypeName,
+                    qualifiedName = "$codeGenBasePackageName.navtype.$navTypeName"
+                )
+            )
         }
 
         codeGenerator.makeFile(
@@ -185,7 +209,14 @@ internal class CustomNavTypesWriter(
             "$codeGenBasePackageName.navtype",
         )
 
-        typesForNavTypeName[this] = CustomNavType(navTypeName, navTypeSerializer)
+        typesForNavTypeName[this] = CustomNavType(
+            navTypeName,
+            navTypeSerializer,
+            Importable(
+                simpleName = navTypeName,
+                qualifiedName = "$codeGenBasePackageName.navtype.$navTypeName"
+            )
+        )
 
         when {
             isArray() -> generateArrayCustomNavType(

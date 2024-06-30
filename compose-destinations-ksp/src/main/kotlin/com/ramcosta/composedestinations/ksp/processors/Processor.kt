@@ -116,6 +116,7 @@ class Processor(
                                     typeResultAnnotation.findArgumentValue<String>("destination")!!,
                                     typeResultAnnotation.findArgumentValue<String>("resultType")!!,
                                     typeResultAnnotation.findArgumentValue<Boolean>("isResultNullable")!!,
+                                    typeResultAnnotation.findArgumentValue<String>("resultNavType")!!,
                                 )
                             }.orEmpty()
                         )

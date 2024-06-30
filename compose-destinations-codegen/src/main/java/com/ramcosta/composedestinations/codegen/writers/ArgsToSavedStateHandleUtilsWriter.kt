@@ -21,6 +21,7 @@ import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
 
 internal class ArgsToSavedStateHandleUtilsWriter(
     private val codeGenerator: CodeOutputStreamMaker,
+    private val submodules: List<SubModuleInfo>,
     customNavTypeByType: Map<Type, CustomNavType>,
 ) {
 
@@ -45,7 +46,6 @@ $VISIBILITY_PLACEHOLDER fun $ARGS_DATA_CLASS_SIMPLE_NAME.toSavedStateHandle(
 """.trimIndent()
 
     fun write(
-        submodules: List<SubModuleInfo>,
         generatedDestinations: List<CodeGenProcessedDestination>,
         navGraphTrees: List<RawNavGraphTree>
     ) {

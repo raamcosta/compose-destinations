@@ -74,7 +74,10 @@ internal class SingleNavGraphWriter(
     fun write() {
         val startRouteInfo = importableHelper.startingRouteInfo(navGraph)
         val file = moduleNavGraphTemplate.sourceCode
-            .replace(USER_NAV_GRAPH_ANNOTATION, importableHelper.addAndGetPlaceholder(navGraph.annotationType))
+            .replace(
+                USER_NAV_GRAPH_ANNOTATION,
+                importableHelper.addAndGetPlaceholder(navGraph.annotationType)
+            )
             .replace(NAV_GRAPH_NAME_PLACEHOLDER, navGraph.name)
             .replace(NAV_GRAPH_ROUTE_PLACEHOLDER, navGraph.graphRouteCode())
             .replace(NAV_GRAPH_INVOKE_FUNCTION, navGraph.graphInvokeFunction())
@@ -88,9 +91,17 @@ internal class SingleNavGraphWriter(
                 navGraph.visibility.let {
                     when (it) {
                         Visibility.PUBLIC -> """
-                            @${importableHelper.addAndGetPlaceholder(Importable("Keep", "androidx.annotation.Keep"))}
+                            @${
+                            importableHelper.addAndGetPlaceholder(
+                                Importable(
+                                    "Keep",
+                                    "androidx.annotation.Keep"
+                                )
+                            )
+                        }
                             ${it.name.lowercase()}
                         """.trimIndent()
+
                         Visibility.INTERNAL,
                         Visibility.PRIVATE -> it.name.lowercase()
                     }
@@ -114,7 +125,10 @@ internal class SingleNavGraphWriter(
             )
             .replace(
                 NAV_GRAPH_KDOC,
-                NavGraphsPrettyKdocWriter(importableHelper, listOf(navGraph)).write(includeLegend = false)
+                NavGraphsPrettyKdocWriter(
+                    importableHelper,
+                    listOf(navGraph)
+                ).write(includeLegend = false)
             )
             .replace(
                 REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER,

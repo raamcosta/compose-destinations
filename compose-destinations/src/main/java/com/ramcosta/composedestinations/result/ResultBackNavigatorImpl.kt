@@ -8,16 +8,18 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
+import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import kotlin.reflect.KClass
 
 internal class ResultBackNavigatorImpl<R>(
     private val navController: NavController,
-    resultOriginType: Class<out DestinationSpec>,
-    resultType: Class<R>
+    resultOriginType: KClass<out DestinationSpec>,
+    private val resultNavType: DestinationsNavType<in R>
 ) : ResultBackNavigator<R> {
 
-    private val resultKey = resultKey(resultOriginType, resultType)
-    private val canceledKey = canceledKey(resultOriginType, resultType)
+    private val resultKey = resultKey(resultOriginType, resultNavType)
+    private val canceledKey = canceledKey(resultOriginType, resultNavType)
 
     override fun navigateBack(result: R) {
         setResult(result)
@@ -27,7 +29,7 @@ internal class ResultBackNavigatorImpl<R>(
     override fun setResult(result: R) {
         navController.previousBackStackEntry?.savedStateHandle?.let {
             it[canceledKey] = false
-            it[resultKey] = result
+            resultNavType.put(it, resultKey, result)
         }
     }
 

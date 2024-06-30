@@ -11,17 +11,30 @@ import com.ramcosta.composedestinations.codegen.commons.NAV_CONTROLLER_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_CONTROLLER_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.RESULT_RECIPIENT_QUALIFIED_NAME
+import com.ramcosta.composedestinations.codegen.commons.coreTypes
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
+import com.ramcosta.composedestinations.codegen.model.CustomNavType
 import com.ramcosta.composedestinations.codegen.model.DestinationGeneratingParams
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.Parameter
+import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
+import com.ramcosta.composedestinations.codegen.model.Type
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 
 class DestinationContentFunctionWriter(
     private val destination: DestinationGeneratingParams,
     private val navArgs: List<Parameter>,
     private val importableHelper: ImportableHelper,
+    private val customNavTypeByType: Map<Type, CustomNavType>,
+    private val submodules: List<SubModuleInfo>,
 ) {
+
+    private val submoduleResultNavTypeByTypeQualifiedNames: Map<String, String> by lazy {
+        submodules.flatMap { it.publicResultSenders }
+            .associateBy { it.resultTypeQualifiedName }
+            .mapValues { it.value.resultNavTypeQualifiedName }
+    }
 
     private val requirePlaceholder = importableHelper.addAndGetPlaceholder(
         Importable(
@@ -50,7 +63,8 @@ class DestinationContentFunctionWriter(
                     "$CORE_PACKAGE_NAME.scope.resultRecipient"
                 )
             )
-            "$placeHolder()"
+
+            "$placeHolder(${parameter.type.typeArguments[1].getResultNavTypePlaceholder()})"
         },
         RESULT_BACK_NAVIGATOR_QUALIFIED_NAME to {
             val placeHolder = importableHelper.addAndGetPlaceholder(
@@ -59,7 +73,7 @@ class DestinationContentFunctionWriter(
                     "$CORE_PACKAGE_NAME.scope.resultBackNavigator"
                 )
             )
-            "$placeHolder()"
+            "$placeHolder(${parameter.type.typeArguments.first().getResultNavTypePlaceholder()})"
         },
     )
 
@@ -182,7 +196,7 @@ class DestinationContentFunctionWriter(
     private fun resolveArgumentForTypeAndName(parameter: Parameter): Pair<String?, Boolean> {
         var needsDependencyContainer = false
         val arg = when (val typeQualifiedName = parameter.type.importable.qualifiedName) {
-            in listOfPreSupportedTypes.keys -> listOfPreSupportedTypes[typeQualifiedName]!!.invoke()
+            in listOfPreSupportedTypes.keys -> listOfPreSupportedTypes[typeQualifiedName]!!.invoke(parameter)
             destination.destinationNavArgsClass?.type?.qualifiedName -> {
                 "navArgs"
             }
@@ -208,5 +222,36 @@ class DestinationContentFunctionWriter(
         }
 
         return arg to needsDependencyContainer
+    }
+
+    private fun TypeArgument.getResultNavTypePlaceholder(): String {
+        when (this) {
+            is TypeArgument.Error,
+            is TypeArgument.GenericType,
+            is TypeArgument.Star -> error("Unexpected result type argument $this")
+            is TypeArgument.Typed -> {
+                val coreNavType = coreTypes[type.value]
+                if (coreNavType != null) {
+                    return importableHelper.addAndGetPlaceholder(coreNavType)
+                }
+
+                val thisModuleCustomNavType = customNavTypeByType[type.value]
+                if (thisModuleCustomNavType != null) {
+                    return importableHelper.addAndGetPlaceholder(thisModuleCustomNavType.importable)
+                }
+
+                val submoduleCustomNavType = submoduleResultNavTypeByTypeQualifiedNames[type.value.importable.qualifiedName]
+                if (submoduleCustomNavType != null) {
+                    return importableHelper.addAndGetPlaceholder(
+                        Importable(
+                            submoduleCustomNavType.split(".").last(),
+                            submoduleCustomNavType
+                        )
+                    )
+                }
+
+                error("Unknown result nav type $type")
+            }
+        }
     }
 }

@@ -18,8 +18,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.bottomsheet.utils.bottomSheetComposable
+import com.ramcosta.composedestinations.generated.featurey.navtype.internalBackResultNavType
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
+import com.ramcosta.composedestinations.navargs.primitives.DestinationsBooleanNavType
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.destination
 import com.ramcosta.composedestinations.navigation.navGraph
@@ -46,6 +48,7 @@ import com.ramcosta.samples.playground.ui.screens.greeting.GreetingScreen
 import com.ramcosta.samples.playground.ui.screens.greeting.GreetingUiEvents
 import com.ramcosta.samples.playground.ui.screens.greeting.GreetingUiState
 import com.ramcosta.samples.playground.ui.screens.greeting.GreetingViewModel
+import com.ramcosta.samples.playground.ui.screens.navtype.serializableExampleWithNavTypeSerializerNavType
 import com.ramcosta.samples.playground.ui.screens.profile.ProfileScreen
 import com.ramcosta.samples.playground.ui.screens.profile.ProfileUiEvents
 import com.ramcosta.samples.playground.ui.screens.profile.ProfileUiState
@@ -118,8 +121,8 @@ private fun ManualComposableCallsBuilder.greetingScreen(
             uiEvents = vm as GreetingUiEvents,
             uiState = vm as GreetingUiState,
             test = "testing param from NavHost",
-            resultRecipient = resultRecipient(),
-            featYResult = resultRecipient(),
+            resultRecipient = resultRecipient(DestinationsBooleanNavType),
+            featYResult = resultRecipient(internalBackResultNavType),
         )
     }
 }
@@ -151,20 +154,20 @@ fun SampleAppAnimatedNavHostExample(
                     drawerController = drawerController,
                     uiEvents = vm as GreetingUiEvents,
                     uiState = vm as GreetingUiState,
-                    resultRecipient = resultRecipient(),
-                    featYResult = resultRecipient(),
+                    resultRecipient = resultRecipient(DestinationsBooleanNavType),
+                    featYResult = resultRecipient(internalBackResultNavType),
                     testProfileDeepLink = testProfileDeepLink,
                     test = "testing param from NavHost",
                 )
             }
 
             composable(FeedDestination) {
-                Feed(destinationsNavigator(navController), resultRecipient())
+                Feed(destinationsNavigator(navController), resultRecipient(internalBackResultNavType))
             }
 
             dialogComposable(GoToProfileConfirmationDestination) {
                 GoToProfileConfirmation(
-                    resultNavigator = resultBackNavigator(navController)
+                    resultNavigator = resultBackNavigator(navController, DestinationsBooleanNavType)
                 )
             }
 
@@ -198,14 +201,14 @@ fun SampleAppAnimatedNavHostExample(
                     SettingsScreen(
                         viewModel = viewModel(),
                         navigator = destinationsNavigator(navController),
-                        themeSettingsResultRecipient = resultRecipient()
+                        themeSettingsResultRecipient = resultRecipient(serializableExampleWithNavTypeSerializerNavType)
                     )
                 }
 
                 bottomSheetComposable(ThemeSettingsDestination) {
                     ThemeSettings(
                         viewModel = viewModel(),
-                        resultNavigator = resultBackNavigator(navController)
+                        resultNavigator = resultBackNavigator(navController, serializableExampleWithNavTypeSerializerNavType)
                     )
                 }
             }

@@ -18,8 +18,11 @@ import com.ramcosta.composedestinations.codegen.commons.setOfPublicStartParticip
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
+import com.ramcosta.composedestinations.codegen.model.CustomNavType
 import com.ramcosta.composedestinations.codegen.model.DestinationStyleType
 import com.ramcosta.composedestinations.codegen.model.Importable
+import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
+import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.model.Visibility
 import com.ramcosta.composedestinations.codegen.templates.ACTIVITY_DESTINATION_FIELDS
 import com.ramcosta.composedestinations.codegen.templates.ARGS_FROM_METHODS
@@ -51,7 +54,9 @@ internal class SingleDestinationWriter(
     private val isBottomSheetDependencyPresent: Boolean,
     private val navArgResolver: NavArgResolver,
     private val destination: CodeGenProcessedDestination,
-    private val importableHelper: ImportableHelper
+    private val importableHelper: ImportableHelper,
+    private val customNavTypeByType: Map<Type, CustomNavType>,
+    private val submodules: List<SubModuleInfo>
 ) {
 
     private val navArgs get() = destination.navArgs
@@ -232,7 +237,9 @@ internal class SingleDestinationWriter(
                 "%s1", DestinationContentFunctionWriter(
                     destination,
                     navArgs,
-                    importableHelper
+                    importableHelper,
+                    customNavTypeByType,
+                    submodules
                 ).write()
             )
     }

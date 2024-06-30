@@ -12,4 +12,5 @@ data class DestinationResultSenderInfo(
     val genDestinationQualifiedName: String,
     val resultTypeQualifiedName: String,
     val isResultTypeNullable: Boolean,
+    val resultNavTypeQualifiedName: String
 )
