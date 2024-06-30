@@ -3,6 +3,7 @@ package com.ramcosta.composedestinations.spec
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
+import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
 
 typealias NavHostGraphSpec = TypedNavHostGraphSpec<*>
 
@@ -12,18 +13,21 @@ typealias NavHostGraphSpec = TypedNavHostGraphSpec<*>
  */
 interface TypedNavHostGraphSpec<START_ROUTE_NAV_ARGS>: TypedNavGraphSpec<START_ROUTE_NAV_ARGS, START_ROUTE_NAV_ARGS> {
 
+    /**
+     * Like [TypedNavGraphSpec.defaultTransitions] but not nullable since NavHost level
+     * graphs must have animations defined (even if they are defined as "No animations")
+     */
+    override val defaultTransitions: NavHostAnimatedDestinationStyle
+
+    @InternalDestinationsApi
+    fun onGraphRegistered()
+
     override val baseRoute: String get() = route
 
     override fun invoke(navArgs: START_ROUTE_NAV_ARGS): Direction {
         //args cannot have mandatory args on start routes of NavHostGraphs, so this is ok
         return Direction(route)
     }
-
-    /**
-     * Like [TypedNavGraphSpec.defaultTransitions] but not nullable since NavHost level
-     * graphs must have animations defined (even if they are defined as "No animations")
-     */
-    override val defaultTransitions: NavHostAnimatedDestinationStyle
 }
 
 interface DirectionNavHostGraphSpec : TypedNavHostGraphSpec<Unit>, Direction {

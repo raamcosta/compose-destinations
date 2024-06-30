@@ -9,7 +9,6 @@
       <module name="ComposeDestinations.compose-destinations" target="17" />
       <module name="ComposeDestinations.compose-destinations-bottom-sheet" target="17" />
       <module name="ComposeDestinations.compose-destinations-wear" target="11" />
-      <module name="ComposeDestinations.playground" target="11" />
       <module name="ComposeDestinations.playground-core.main" target="11" />
       <module name="ComposeDestinations.playground-core.test" target="11" />
       <module name="ComposeDestinations.playground.app" target="11" />

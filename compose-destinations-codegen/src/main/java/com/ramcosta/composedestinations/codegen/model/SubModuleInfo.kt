@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.codegen.model
 
 data class SubModuleInfo(
     val name: String?,
+    val navTypeRegisterFunction: String,
     val genPackageName: String,
     val hasNavArgsPackage: Boolean,
     val topLevelGraphs: List<String>,
@@ -12,4 +13,5 @@ data class DestinationResultSenderInfo(
     val genDestinationQualifiedName: String,
     val resultTypeQualifiedName: String,
     val isResultTypeNullable: Boolean,
+    val resultNavTypeQualifiedName: String
 )

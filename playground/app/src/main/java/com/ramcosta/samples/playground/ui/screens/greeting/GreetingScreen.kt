@@ -25,6 +25,7 @@ import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureY
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
+import com.ramcosta.playground.featurey.screens.InternalBackResult
 import com.ramcosta.samples.playground.R
 import com.ramcosta.samples.playground.commons.DrawerController
 import com.ramcosta.samples.playground.ui.screens.OtherThings
@@ -55,7 +56,7 @@ fun GreetingScreen(
     @NavHostParam test: String,
     resultRecipient:
     ResultCena<Boolean>,
-    featYResult: ResultRecipient<FeatureYHomeDestination, Boolean>,
+    featYResult: ResultRecipient<FeatureYHomeDestination, InternalBackResult>,
 ) {
     val context = LocalContext.current
     resultRecipient.onNavResult { result ->
@@ -80,6 +81,7 @@ fun GreetingScreen(
     }
 
     featYResult.onNavResult { result ->
+        println("featY result? = $result")
         Toast.makeText(context, "featY result? = $result", Toast.LENGTH_SHORT).show()
     }
 

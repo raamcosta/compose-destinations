@@ -14,11 +14,14 @@ import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.playground.featurey.FeatureYGraph
 
+@kotlinx.serialization.Serializable
+data class InternalBackResult(val value: Boolean)
+
 @Destination<FeatureYGraph>(start = true)
 @Composable
 internal fun FeatureYHome(
     navigator: DestinationsNavigator,
-    backNavigator: ResultBackNavigator<Boolean>,
+    backNavigator: ResultBackNavigator<InternalBackResult>,
     internalResult: ResultRecipient<FeatureYInternalArgsScreenDestination, Boolean?>
 ) = Column {
 
@@ -28,7 +31,7 @@ internal fun FeatureYHome(
         when (it) {
             is NavResult.Canceled -> Unit
             is NavResult.Value -> if (it.value != null) {
-                backNavigator.navigateBack(result = it.value!!)
+                backNavigator.navigateBack(result = InternalBackResult(it.value!!))
             }
         }
     }

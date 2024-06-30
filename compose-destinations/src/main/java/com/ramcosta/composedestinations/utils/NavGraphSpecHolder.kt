@@ -14,16 +14,13 @@ internal object NavGraphRegistry {
     private val holderByTopLevelRoute = mutableMapOf<NavController, NavGraphSpecHolder>()
 
     fun addGraph(navController: NavController, navGraph: NavHostGraphSpec) {
-        val routes = mutableSetOf<String>()
-        navGraph.allRoutes.forEach {
-            if (!routes.add(it.route)) {
-                error("Duplicate route found '${it.route}'. Routes must be unique!")
-            }
-        }
-
         if (holderByTopLevelRoute.containsKey(navController)) {
             return
         }
+
+        checkRoutesUniqueness(navGraph)
+
+        navGraph.onGraphRegistered()
 
         holderByTopLevelRoute[navController] = NavGraphSpecHolder().apply {
             addGraph(navGraph)
@@ -63,6 +60,15 @@ internal object NavGraphRegistry {
             }
 
         return navController?.let { get(it) } ?: get(navControllersWithTopLevelRoute.first())
+    }
+
+    private fun checkRoutesUniqueness(navGraph: NavHostGraphSpec) {
+        val routes = mutableSetOf<String>()
+        navGraph.allRoutes.forEach {
+            if (!routes.add(it.route)) {
+                error("Duplicate route found '${it.route}'. Routes must be unique!")
+            }
+        }
     }
 }
 

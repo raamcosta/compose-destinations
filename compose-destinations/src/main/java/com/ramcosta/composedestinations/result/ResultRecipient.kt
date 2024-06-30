@@ -13,15 +13,16 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  * from a specific [DestinationSpec] (of type [D]).
  *
  * If declared as a parameter of a `@Destination` annotated Composable,
- * Compose Destinations will provide a correct implementation. If you're
- * manually calling that Composable, then you can use
- * [com.ramcosta.composedestinations.result.resultRecipient]
+ * Compose Destinations will provide a correct implementation.
+ *
+ * If you're manually calling that Composable, then you can use
+ * [com.ramcosta.composedestinations.scope.resultRecipient]
  * extension function to get a correctly typed implementation.
+ * To get a correctly typed [com.ramcosta.composedestinations.navargs.DestinationsNavType]
+ * in this case, check what the generated Destination object uses.
  *
  * Type safety related limitations (compile time enforced):
- * - [R] must be one of String, Boolean, Float, Int, Long, Serializable, or Parcelable.
- * They can be nullable.
- * - [R] type cannot have type arguments itself (f.e you can't use Array<String> even though it is Serializable)
+ * - [R] must be a valid navigation argument type.
  * - Each annotated Composable can have at most one parameter of type [ResultRecipient] for a given [DestinationSpec] ([D])
  * - [D] destination Composable must have a corresponding [ResultBackNavigator] of the same type [R]
  *

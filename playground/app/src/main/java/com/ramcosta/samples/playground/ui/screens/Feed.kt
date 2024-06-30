@@ -22,6 +22,7 @@ import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureY
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.onResult
+import com.ramcosta.playground.featurey.screens.InternalBackResult
 import com.ramcosta.samples.playground.commons.requireTitle
 import com.ramcosta.samples.playground.ui.screens.destinations.FeedDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.OtherActivityDestination
@@ -31,7 +32,7 @@ import com.ramcosta.samples.playground.ui.screens.destinations.OtherActivityDest
 @Composable
 fun AnimatedVisibilityScope.Feed(
     navigator: DestinationsNavigator,
-    featYResult: ResultRecipient<FeatureYHomeDestination, Boolean>,
+    featYResult: ResultRecipient<FeatureYHomeDestination, InternalBackResult>,
 ) {
     Log.d("Feed", "running? " + transition.isRunning)
 

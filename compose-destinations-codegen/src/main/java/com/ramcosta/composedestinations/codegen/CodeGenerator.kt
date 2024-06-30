@@ -19,10 +19,12 @@ import com.ramcosta.composedestinations.codegen.servicelocator.destinationsWrite
 import com.ramcosta.composedestinations.codegen.servicelocator.initialValidator
 import com.ramcosta.composedestinations.codegen.servicelocator.moduleOutputWriter
 import java.util.Locale
+import java.util.UUID
 
 internal const val DEFAULT_GEN_PACKAGE_NAME = "com.ramcosta.composedestinations.generated"
 internal lateinit var codeGenBasePackageName: String
 internal lateinit var moduleName: String
+internal lateinit var registryId: String
 
 class CodeGenerator(
     override val codeGenerator: CodeOutputStreamMaker,
@@ -65,7 +67,7 @@ class CodeGenerator(
 
         moduleOutputWriter(navTypeNamesByType, submodules).write(navGraphs, destinations)
 
-        destinationsWriter(navTypeNamesByType).write(destinations)
+        destinationsWriter(navTypeNamesByType, submodules).write(destinations)
 
         if (shouldWriteKtxSerializableNavTypeSerializer(destinations)) {
             defaultKtxSerializableNavTypeSerializerWriter.write()
@@ -80,6 +82,7 @@ class CodeGenerator(
             "$DEFAULT_GEN_PACKAGE_NAME.${moduleName.lowercase()}".sanitizePackageName()
         }
         codeGenBasePackageName = codeGenConfig.packageName?.sanitizePackageName() ?: defaultPackageName
+        registryId = moduleName.ifEmpty { UUID.randomUUID().toString().replace("-", "_") }
     }
 
     private fun shouldWriteKtxSerializableNavTypeSerializer(

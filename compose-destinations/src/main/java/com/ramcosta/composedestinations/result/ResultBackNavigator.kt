@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.result
 
-import androidx.compose.runtime.*
 import androidx.navigation.NavController
 
 /**
@@ -8,15 +7,16 @@ import androidx.navigation.NavController
  * a result of type [R].
  *
  * If declared as a parameter of a `@Destination` annotated Composable,
- * Compose Destinations will provide a correct implementation. If you're
- * manually calling that Composable, then you can use
- * [com.ramcosta.composedestinations.manualcomposablecalls.resultBackNavigator]
+ * Compose Destinations will provide a correct implementation.
+ *
+ * If you're manually calling that Composable, then you can use
+ * [com.ramcosta.composedestinations.scope.resultBackNavigator]
  * extension function to get a correctly typed implementation.
+ * To get a correctly typed [com.ramcosta.composedestinations.navargs.DestinationsNavType]
+ * in this case, check what the generated Destination object uses.
  *
  * Type safety related limitations (compile time enforced):
- * - [R] must be one of String, Boolean, Float, Int, Long, Serializable, or Parcelable.
- * They can be nullable.
- * - [R] type cannot have type arguments itself (f.e you can't use Array<String> even though it is Serializable)
+ * - [R] must be a valid navigation argument type.
  * - Each annotated Composable can have at most one parameter of type [ResultBackNavigator]
  *
  * @see [com.ramcosta.composedestinations.result.ResultRecipient]

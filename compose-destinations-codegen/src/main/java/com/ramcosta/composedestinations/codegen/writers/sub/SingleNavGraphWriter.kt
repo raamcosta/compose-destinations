@@ -42,11 +42,13 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_START_ROUTE_
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_START_TYPED_ROUTE_TYPE
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_TYPE
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_VISIBILITY_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.NAV_TYPE_REGISTRY_CALL
 import com.ramcosta.composedestinations.codegen.templates.NESTED_NAV_GRAPHS
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.USER_NAV_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 import com.ramcosta.composedestinations.codegen.templates.moduleNavGraphTemplate
+import com.ramcosta.composedestinations.codegen.writers.ModuleRegistryWriter
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
@@ -74,7 +76,10 @@ internal class SingleNavGraphWriter(
     fun write() {
         val startRouteInfo = importableHelper.startingRouteInfo(navGraph)
         val file = moduleNavGraphTemplate.sourceCode
-            .replace(USER_NAV_GRAPH_ANNOTATION, importableHelper.addAndGetPlaceholder(navGraph.annotationType))
+            .replace(
+                USER_NAV_GRAPH_ANNOTATION,
+                importableHelper.addAndGetPlaceholder(navGraph.annotationType)
+            )
             .replace(NAV_GRAPH_NAME_PLACEHOLDER, navGraph.name)
             .replace(NAV_GRAPH_ROUTE_PLACEHOLDER, navGraph.graphRouteCode())
             .replace(NAV_GRAPH_INVOKE_FUNCTION, navGraph.graphInvokeFunction())
@@ -84,13 +89,34 @@ internal class SingleNavGraphWriter(
             .replace(INNER_IMPORTED_ROUTES, navGraph.innerExternalRoutes())
             .replace(NAV_GRAPH_GEN_NAV_ARGS, navGraph.generatedNavArgsClass())
             .replace(
+                NAV_TYPE_REGISTRY_CALL,
+                if (navGraph.isNavHostGraph) {
+                    """
+                    |   @com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
+                    |   override fun onGraphRegistered() {
+                    |       ${importableHelper.addAndGetPlaceholder(ModuleRegistryWriter.navTypeRegistryImportable)}()
+                    |   }
+                    """.trimMargin()
+                } else {
+                    ""
+                }
+            )
+            .replace(
                 NAV_GRAPH_VISIBILITY_PLACEHOLDER,
                 navGraph.visibility.let {
                     when (it) {
                         Visibility.PUBLIC -> """
-                            @${importableHelper.addAndGetPlaceholder(Importable("Keep", "androidx.annotation.Keep"))}
+                            @${
+                            importableHelper.addAndGetPlaceholder(
+                                Importable(
+                                    "Keep",
+                                    "androidx.annotation.Keep"
+                                )
+                            )
+                        }
                             ${it.name.lowercase()}
                         """.trimIndent()
+
                         Visibility.INTERNAL,
                         Visibility.PRIVATE -> it.name.lowercase()
                     }
@@ -114,7 +140,10 @@ internal class SingleNavGraphWriter(
             )
             .replace(
                 NAV_GRAPH_KDOC,
-                NavGraphsPrettyKdocWriter(importableHelper, listOf(navGraph)).write(includeLegend = false)
+                NavGraphsPrettyKdocWriter(
+                    importableHelper,
+                    listOf(navGraph)
+                ).write(includeLegend = false)
             )
             .replace(
                 REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER,

@@ -32,13 +32,17 @@ internal fun ServiceLocator.moduleOutputWriter(
     destinationsListModeWriter,
     navGraphsSingleObjectWriter(customNavTypeByType),
     navArgsGetters,
-    argsToSavedStateHandle(customNavTypeByType),
+    argsToSavedStateHandle(customNavTypeByType, submodules),
     mermaidGraphWriter,
-    moduleRegistryWriter,
-    submodules
+    moduleRegistryWriter(customNavTypeByType, submodules),
 )
 
-internal val ServiceLocator.moduleRegistryWriter get() = ModuleRegistryWriter(
+internal fun ServiceLocator.moduleRegistryWriter(
+    customNavTypeByType: Map<Type, CustomNavType>,
+    submodules: List<SubModuleInfo>
+) = ModuleRegistryWriter(
+    customNavTypeByType,
+    submodules,
     codeGenConfig,
     codeGenerator,
 )
@@ -53,12 +57,14 @@ internal val ServiceLocator.customNavTypeWriter get() = CustomNavTypesWriter(
 )
 
 internal fun ServiceLocator.destinationsWriter(
-    customNavTypeByType: Map<Type, CustomNavType>
+    customNavTypeByType: Map<Type, CustomNavType>,
+    submodules: List<SubModuleInfo>
 ) = DestinationsWriter(
     codeGenConfig,
     codeGenerator,
     isBottomSheetDependencyPresent,
-    customNavTypeByType
+    customNavTypeByType,
+    submodules,
 )
 
 internal val ServiceLocator.destinationsListModeWriter get() = DestinationsModeWriter(
@@ -89,8 +95,10 @@ internal val ServiceLocator.navArgsGetters get() =
     )
 
 internal fun ServiceLocator.argsToSavedStateHandle(
-    customNavTypeByType: Map<Type, CustomNavType>
+    customNavTypeByType: Map<Type, CustomNavType>,
+    submodules: List<SubModuleInfo>
 ) = ArgsToSavedStateHandleUtilsWriter(
     codeGenerator,
+    submodules,
     customNavTypeByType
 )

@@ -8,8 +8,10 @@ class FileTemplate(
     val sourceCode: String
 )
 
-fun setOfImportable(vararg qualifiedNames: Any): Set<Importable> {
-    return qualifiedNames.mapTo(mutableSetOf()) {
+fun setOfImportable(vararg qualifiedNames: Any?): Set<Importable> {
+    return qualifiedNames.mapNotNullTo(mutableSetOf()) {
+        it ?: return@mapNotNullTo null
+
         if (it is String) {
             Importable(it.substring(it.lastIndexOf(".") + 1), it)
         } else {

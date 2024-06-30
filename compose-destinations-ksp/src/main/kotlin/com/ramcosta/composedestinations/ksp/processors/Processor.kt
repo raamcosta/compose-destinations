@@ -109,6 +109,7 @@ class Processor(
                             genPackageName = it.findArgumentValue<String>("packageName")!!,
                             hasNavArgsPackage = it.findArgumentValue<Boolean>("hasNavArgsPackage")!!,
                             topLevelGraphs = it.findArgumentValue<ArrayList<String>>("topLevelGraphs")!!,
+                            navTypeRegisterFunction = it.findArgumentValue<String>("navTypeRegisterFunction")!!,
                             publicResultSenders = it.findArgumentValue<ArrayList<KSAnnotation>>(
                                 "typeResults"
                             )?.map { typeResultAnnotation ->
@@ -116,6 +117,7 @@ class Processor(
                                     typeResultAnnotation.findArgumentValue<String>("destination")!!,
                                     typeResultAnnotation.findArgumentValue<String>("resultType")!!,
                                     typeResultAnnotation.findArgumentValue<Boolean>("isResultNullable")!!,
+                                    typeResultAnnotation.findArgumentValue<String>("resultNavType")!!,
                                 )
                             }.orEmpty()
                         )
