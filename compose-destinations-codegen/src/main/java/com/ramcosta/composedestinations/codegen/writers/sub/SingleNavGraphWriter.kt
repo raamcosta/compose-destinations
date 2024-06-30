@@ -42,13 +42,11 @@ import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_START_ROUTE_
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_START_TYPED_ROUTE_TYPE
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_TYPE
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_VISIBILITY_PLACEHOLDER
-import com.ramcosta.composedestinations.codegen.templates.NAV_TYPE_REGISTRY_CALL
 import com.ramcosta.composedestinations.codegen.templates.NESTED_NAV_GRAPHS
 import com.ramcosta.composedestinations.codegen.templates.REQUIRE_OPT_IN_ANNOTATIONS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.USER_NAV_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 import com.ramcosta.composedestinations.codegen.templates.moduleNavGraphTemplate
-import com.ramcosta.composedestinations.codegen.writers.ModuleRegistryWriter
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 import com.ramcosta.composedestinations.codegen.writers.helpers.writeSourceFile
@@ -88,19 +86,6 @@ internal class SingleNavGraphWriter(
             .replace(NAV_GRAPH_DEEP_LINKS_PLACEHOLDER, navGraph.deepLinksCode())
             .replace(INNER_IMPORTED_ROUTES, navGraph.innerExternalRoutes())
             .replace(NAV_GRAPH_GEN_NAV_ARGS, navGraph.generatedNavArgsClass())
-            .replace(
-                NAV_TYPE_REGISTRY_CALL,
-                if (navGraph.isNavHostGraph) {
-                    """
-                    |   @com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
-                    |   override fun onGraphRegistered() {
-                    |       ${importableHelper.addAndGetPlaceholder(ModuleRegistryWriter.navTypeRegistryImportable)}()
-                    |   }
-                    """.trimMargin()
-                } else {
-                    ""
-                }
-            )
             .replace(
                 NAV_GRAPH_VISIBILITY_PLACEHOLDER,
                 navGraph.visibility.let {

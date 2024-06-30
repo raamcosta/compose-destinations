@@ -34,15 +34,13 @@ internal fun ServiceLocator.moduleOutputWriter(
     navArgsGetters,
     argsToSavedStateHandle(customNavTypeByType, submodules),
     mermaidGraphWriter,
-    moduleRegistryWriter(customNavTypeByType, submodules),
+    moduleRegistryWriter(customNavTypeByType),
 )
 
 internal fun ServiceLocator.moduleRegistryWriter(
     customNavTypeByType: Map<Type, CustomNavType>,
-    submodules: List<SubModuleInfo>
 ) = ModuleRegistryWriter(
     customNavTypeByType,
-    submodules,
     codeGenConfig,
     codeGenerator,
 )

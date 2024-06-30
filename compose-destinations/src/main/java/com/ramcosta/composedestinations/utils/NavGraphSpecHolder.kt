@@ -20,8 +20,6 @@ internal object NavGraphRegistry {
 
         checkRoutesUniqueness(navGraph)
 
-        navGraph.onGraphRegistered()
-
         holderByTopLevelRoute[navController] = NavGraphSpecHolder().apply {
             addGraph(navGraph)
         }

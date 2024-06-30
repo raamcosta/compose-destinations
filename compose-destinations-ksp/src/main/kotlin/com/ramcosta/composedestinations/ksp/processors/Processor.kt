@@ -109,7 +109,6 @@ class Processor(
                             genPackageName = it.findArgumentValue<String>("packageName")!!,
                             hasNavArgsPackage = it.findArgumentValue<Boolean>("hasNavArgsPackage")!!,
                             topLevelGraphs = it.findArgumentValue<ArrayList<String>>("topLevelGraphs")!!,
-                            navTypeRegisterFunction = it.findArgumentValue<String>("navTypeRegisterFunction")!!,
                             publicResultSenders = it.findArgumentValue<ArrayList<KSAnnotation>>(
                                 "typeResults"
                             )?.map { typeResultAnnotation ->

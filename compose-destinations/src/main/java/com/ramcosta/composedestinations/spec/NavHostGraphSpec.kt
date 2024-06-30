@@ -3,7 +3,6 @@ package com.ramcosta.composedestinations.spec
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
-import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
 
 typealias NavHostGraphSpec = TypedNavHostGraphSpec<*>
 
@@ -18,9 +17,6 @@ interface TypedNavHostGraphSpec<START_ROUTE_NAV_ARGS>: TypedNavGraphSpec<START_R
      * graphs must have animations defined (even if they are defined as "No animations")
      */
     override val defaultTransitions: NavHostAnimatedDestinationStyle
-
-    @InternalDestinationsApi
-    fun onGraphRegistered()
 
     override val baseRoute: String get() = route
 
