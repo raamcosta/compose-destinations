@@ -47,19 +47,11 @@ class Processor(
     override fun process(resolver: Resolver): List<KSAnnotated> {
         Logger.instance = KspLogger(logger)
 
-        if (platforms.size == 1) {
-            // from my tests it seems like when platforms has only 1, it means
-            // we're compiling a specific target source set and not commonMain
-            // Compose Destinations only needs to generate code on commonMain
-            Logger.instance.warn("RACOSTA only one platform ${platforms.first()}")
-            return emptyList()
-        }
-        resolver.initializeDefaultsMap() // to remove once kotlin has metadata about annotations on all targets
-
         val composableDestinations = resolver.getComposableDestinationPaths()
         val activityDestinations = resolver.getActivityDestinations()
         val navGraphAnnotations = resolver.getNavGraphAnnotations()
         val navHostGraphAnnotations = resolver.getNavHostGraphAnnotations()
+
 
         if (!composableDestinations.iterator().hasNext() &&
             !activityDestinations.iterator().hasNext() &&
@@ -68,6 +60,17 @@ class Processor(
         ) {
             return emptyList()
         }
+
+        resolver.initializeDefaultsMap() // to remove once kotlin has metadata about annotations on all targets
+        Logger.instance.warn("RACOSTA doing it ${platforms.joinToString { it.platformName }}")
+
+//        if (platforms.size == 1) {
+//            // from my tests it seems like when platforms has only 1, it means
+//            // we're compiling a specific target source set and not commonMain
+//            // Compose Destinations only needs to generate code on commonMain
+//            Logger.instance.warn("RACOSTA only one platform ${platforms.first()} \n $activityDestinations")
+//            return emptyList()
+//        }
 
         val navTypeSerializers = resolver.getNavTypeSerializers()
         val codeGenConfig = ConfigParser(options).parse()

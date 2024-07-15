@@ -9,12 +9,15 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.generated.featurey.navtype.internalBackResultNavType
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
-import com.ramcosta.composedestinations.manualcomposablecalls.addDeepLink
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
+import com.ramcosta.composedestinations.navargs.primitives.DestinationsBooleanNavType
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.destination
 import com.ramcosta.composedestinations.navigation.navGraph
@@ -22,9 +25,7 @@ import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.samples.playground.commons.DrawerController
-import com.ramcosta.samples.playground.di.viewModel
 import com.ramcosta.samples.playground.ui.screens.NavGraphs
-import com.ramcosta.samples.playground.ui.screens.destinations.FeedDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.TestScreenDestination
@@ -43,20 +44,26 @@ fun AppNavigation(
     navController: NavHostController,
     testProfileDeepLink: () -> Unit,
 ) {
+    val toaster = LocalToaster.current
     val destinationsNavigator = navController.rememberDestinationsNavigator()
 //    SharedTransitionLayout {
-        DestinationsNavHost(
+    val diContainer = LocalDIContainer.current
+    DestinationsNavHost(
             navGraph = NavGraphs.root,
-            startRoute = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startRoute,
             navController = navController,
             modifier = modifier,
             dependenciesContainerBuilder = {
 //                dependency(this@SharedTransitionLayout)
 
+                dependency(toaster)
                 dependency(drawerController)
 
                 destination(ProfileScreenDestination) {
-                    dependency(viewModel<ProfileViewModel>())
+                    dependency(
+                        viewModel {
+                            ProfileViewModel(diContainer.getProfileLikeCount, createSavedStateHandle())
+                        }
+                    )
                 }
 
                 navGraph(NavGraphs.settings) {
@@ -64,11 +71,11 @@ fun AppNavigation(
                         destinationsNavigator.getBackStackEntry(NavGraphs.settings)!!
                     }
 
-                    dependency(viewModel<SettingsViewModel>(parentEntry))
+                    dependency(viewModel(parentEntry) { SettingsViewModel() })
                 }
             }
         ) {
-            addDeepLink(TestScreenDestination) { uriPattern = "runtimeschema://${TestScreenDestination.route}" }
+            addPlatformDependentDeepLinks()
 
             TestScreenDestination animateWith object: DestinationStyle.Animated() {
                 override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
@@ -82,6 +89,8 @@ fun AppNavigation(
 //    }
 }
 
+expect fun ManualComposableCallsBuilder.addPlatformDependentDeepLinks()
+
 //@OptIn(ExperimentalSharedTransitionApi::class)
 private fun ManualComposableCallsBuilder.greetingScreen(
 //    sharedTransitionScope: SharedTransitionScope,
@@ -89,7 +98,7 @@ private fun ManualComposableCallsBuilder.greetingScreen(
     drawerController: DrawerController
 ) {
     composable(GreetingScreenDestination) {
-        val vm = viewModel<GreetingViewModel>()
+        val vm = viewModel { GreetingViewModel() }
 
 //        sharedTransitionScope.
         GreetingScreen(
@@ -100,8 +109,8 @@ private fun ManualComposableCallsBuilder.greetingScreen(
             uiEvents = vm as GreetingUiEvents,
             uiState = vm as GreetingUiState,
             test = "testing param from NavHost",
-            resultRecipient = resultRecipient(),
-            featYResult = resultRecipient(),
+            resultRecipient = resultRecipient(DestinationsBooleanNavType),
+            featYResult = resultRecipient(internalBackResultNavType),
         )
     }
 }

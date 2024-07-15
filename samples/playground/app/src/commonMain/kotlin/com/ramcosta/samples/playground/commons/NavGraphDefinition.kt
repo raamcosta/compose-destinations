@@ -19,10 +19,9 @@ import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.NavHostGraph
 import com.ramcosta.composedestinations.annotation.OverrideDestination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.annotation.parameters.AndroidDeepLink
 import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
-import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.annotation.parameters.FULL_ROUTE_PLACEHOLDER
-import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.generated.featurex.navgraphs.FeatureXNavGraph
 import com.ramcosta.composedestinations.generated.featurey.destinations.PublicFeatureYSideScreenDestination
 import com.ramcosta.composedestinations.generated.featurey.navgraphs.FeatureYNavGraph
@@ -34,7 +33,7 @@ import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.ArgsFromAnotherModule
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileSettingsProfileSettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.RootProfileSettingsScreenDestination
-import com.ramcosta.samples.playground.ui.screens.navGraphArgs
+import com.ramcosta.samples.playground.ui.screens.navargs.navGraphArgs
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileNavGraphArgs
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsNavGraphArgs
 import kotlinx.serialization.Serializable
@@ -54,7 +53,7 @@ data class GraphArgsTest(
 @NavGraph<RootGraph>(
     navArgs = ProfileGraph.NavArgs::class,
     deepLinks = [
-        DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
+        AndroidDeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
     visibility = CodeGenVisibility.PUBLIC
 )
@@ -67,7 +66,7 @@ annotation class ProfileGraph {
         [
             OverrideDestination(
                 destination = FeatureZHomeDestination::class,
-                with = ExternalDestination(style = DestinationStyleBottomSheet::class),
+                with = ExternalDestination(style = DestinationStyle.Dialog::class),
             ),
             OverrideDestination(
                 destination = FeatureZSecondScreenDestination::class,
@@ -78,8 +77,8 @@ annotation class ProfileGraph {
     @ExternalDestination<PublicFeatureYSideScreenDestination>
     @ExternalNavGraph<FeatureXNavGraph>(
         deepLinks = [
-            DeepLink(uriPattern = "https://cenas/$FULL_ROUTE_PLACEHOLDER"),
-            DeepLink(uriPattern = "https://qweqwe/$FULL_ROUTE_PLACEHOLDER")
+            AndroidDeepLink(uriPattern = "https://cenas/$FULL_ROUTE_PLACEHOLDER"),
+            AndroidDeepLink(uriPattern = "https://qweqwe/$FULL_ROUTE_PLACEHOLDER")
         ],
         defaultTransitions = NoTransitions::class
     )
@@ -116,7 +115,7 @@ annotation class InternalDestination<T: Annotation>(
     val route: String = Destination.COMPOSABLE_NAME,
     val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
-    val deepLinks: Array<DeepLink> = [],
+    val deepLinks: Array<AndroidDeepLink> = [],
     val style: KClass<out DestinationStyle> = DestinationStyle.Default::class,
     val wrappers: Array<KClass<out DestinationWrapper>> = [],
 )

@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import com.dokar.sonner.rememberToasterState
+import com.dokar.sonner.ToasterState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.featurey.destinations.FeatureYInternalArgsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -19,12 +19,12 @@ data class InternalBackResult(val value: Boolean)
 @Destination<FeatureYGraph>(start = true)
 @Composable
 internal fun FeatureYHome(
+    toaster: ToasterState,
     navigator: DestinationsNavigator,
     backNavigator: ResultBackNavigator<InternalBackResult>,
     internalResult: ResultRecipient<FeatureYInternalArgsScreenDestination, Boolean?>
 ) = Column {
 
-    val toaster = rememberToasterState()
     internalResult.onNavResult {
         toaster.show(it)
         when (it) {

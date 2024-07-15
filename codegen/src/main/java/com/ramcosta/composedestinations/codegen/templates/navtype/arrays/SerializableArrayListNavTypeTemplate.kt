@@ -10,8 +10,7 @@ val serializableArrayListNavTypeTemplate = FileTemplate(
     packageStatement = "package $codeGenBasePackageName.navtype",
     imports = setOfImportable(
         "androidx.core.bundle.Bundle",
-        "android.os.Parcelable",
-        "java.io.Serializable",
+
         "androidx.lifecycle.SavedStateHandle",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavType",
         "$CORE_PACKAGE_NAME.navargs.DestinationsNavTypeSerializer",

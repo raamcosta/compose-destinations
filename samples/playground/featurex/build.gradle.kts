@@ -49,8 +49,8 @@ kotlin {
 
     ksp {
         arg("compose-destinations.moduleName", "featureX")
-        arg("compose-destinations.htmlMermaidGraph", "$rootDir/playground/docs")
-        arg("compose-destinations.mermaidGraph", "$rootDir/playground/docs")
+        arg("compose-destinations.htmlMermaidGraph", "$rootDir/samples/playground/docs")
+        arg("compose-destinations.mermaidGraph", "$rootDir/samples/playground/docs")
     }
 
     @Suppress("OPT_IN_USAGE")

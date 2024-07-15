@@ -11,14 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.dokar.sonner.rememberToasterState
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.parameters.DeepLink
+import com.ramcosta.composedestinations.annotation.parameters.AndroidDeepLink
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.ramcosta.composedestinations.result.EmptyResultRecipient
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.playground.core.ArgsFromAnotherModule
+import com.ramcosta.samples.playground.LocalToaster
 import com.ramcosta.samples.playground.commons.GraphArgsTest
 import com.ramcosta.samples.playground.commons.SettingsGraph
 import com.ramcosta.samples.playground.commons.requireTitle
@@ -33,7 +33,7 @@ const val SETTINGS_DEEP_LINK_URI = "https://destinationssample.com/settings"
 
 @Destination<SettingsGraph>(
     start = true,
-    deepLinks = [DeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],
+    deepLinks = [AndroidDeepLink(uriPattern = SETTINGS_DEEP_LINK_URI)],
     style = SettingsTransitions::class
 )
 @Composable
@@ -42,7 +42,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     themeSettingsResultRecipient: ResultRecipient<ThemeSettingsDestination, SerializableExampleWithNavTypeSerializer>
 ) {
-    val toaster = rememberToasterState()
+    val toaster = LocalToaster.current
     themeSettingsResultRecipient.onNavResult {
         println("result = $it")
         toaster.show("confirmed? = $it")

@@ -1,8 +1,8 @@
 package com.ramcosta.composedestinations.annotation
 
 import android.app.Activity
+import com.ramcosta.composedestinations.annotation.parameters.AndroidDeepLink
 import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
-import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import kotlin.reflect.KClass
 
 /**
@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
  * to be defined.
  * The generated `Destination` class has `argsFrom` methods that accept an `Intent` and return an
  * instance of this class.
- * @param deepLinks array of [DeepLink] which can be used to navigate to this destination
+ * @param deepLinks array of [AndroidDeepLink] which can be used to navigate to this destination
  * @param activityClass the class corresponding to the [Activity] to be registered as a destination.
  * If you annotate an [Activity] class with this, then you cannot specify this. However, if you annotate
  * a non-activity class, then you'll need to pass this (useful for external activities that you cannot
@@ -30,7 +30,7 @@ annotation class ActivityDestination<T: Annotation>(
     val route: String = Destination.COMPOSABLE_NAME,
     val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
-    val deepLinks: Array<DeepLink> = [],
+    val deepLinks: Array<AndroidDeepLink> = [],
     val activityClass: KClass<out Activity> = Nothing::class,
     val targetPackage: String = DEFAULT_NULL,
     val action: String = DEFAULT_NULL,
@@ -57,7 +57,7 @@ annotation class JavaActivityDestination(
     val route: String = Destination.COMPOSABLE_NAME,
     val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
-    val deepLinks: Array<DeepLink> = [],
+    val deepLinks: Array<AndroidDeepLink> = [],
     val activityClass: KClass<out Activity> = Nothing::class,
     val targetPackage: String = ActivityDestination.DEFAULT_NULL,
     val action: String = ActivityDestination.DEFAULT_NULL,

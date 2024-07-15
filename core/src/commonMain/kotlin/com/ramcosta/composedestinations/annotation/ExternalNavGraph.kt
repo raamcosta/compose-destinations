@@ -1,6 +1,6 @@
 package com.ramcosta.composedestinations.annotation
 
-import com.ramcosta.composedestinations.annotation.parameters.DeepLink
+import com.ramcosta.composedestinations.annotation.parameters.AndroidDeepLink
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import kotlin.reflect.KClass
@@ -25,7 +25,7 @@ import kotlin.reflect.KClass
  * @param T the [NavGraphSpec] from another module to include in the navigation graph
  * @param start defines this navigation graph as the start of the navigation graph
  * it is being included on.
- * @param deepLinks adds [DeepLink]s to this nav graph. Both these and the deep links
+ * @param deepLinks adds [AndroidDeepLink]s to this nav graph. Both these and the deep links
  * defined on the declaring module (if any) can be used to navigate to this nav graph.
  * @param defaultTransitions overrides animations set on the declaring module (if any).
  * See [NavGraph.defaultTransitions] for more info on these animations.
@@ -34,7 +34,7 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.SOURCE)
 annotation class ExternalNavGraph<T: NavGraphSpec>(
     val start: Boolean = false,
-    val deepLinks: Array<DeepLink> = [],
+    val deepLinks: Array<AndroidDeepLink> = [],
     val defaultTransitions: KClass<out DestinationStyle.Animated> = NoOverride::class,
 ) {
     companion object {

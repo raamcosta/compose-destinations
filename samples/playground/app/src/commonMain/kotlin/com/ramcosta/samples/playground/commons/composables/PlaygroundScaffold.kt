@@ -1,19 +1,16 @@
 package com.ramcosta.samples.playground.commons.composables
 
+//import androidx.compose.material.navigation.ModalBottomSheetLayout
+//import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.navigation.ModalBottomSheetLayout
-import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.plusAssign
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.route
@@ -35,13 +32,13 @@ fun PlaygroundScaffold(
     //Just for me to debug, ignore this line
     LogBackStack(navController)
 
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
-    navController.navigatorProvider += bottomSheetNavigator
+//    val bottomSheetNavigator = rememberBottomSheetNavigator()
+//    navController.navigatorProvider += bottomSheetNavigator
 
-    ModalBottomSheetLayout(
-        bottomSheetNavigator = bottomSheetNavigator,
-        sheetShape = RoundedCornerShape(16.dp)
-    ) {
+//    ModalBottomSheetLayout(
+//        bottomSheetNavigator = bottomSheetNavigator,
+//        sheetShape = RoundedCornerShape(16.dp)
+//    ) {
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = { topBar(destination) },
@@ -49,7 +46,7 @@ fun PlaygroundScaffold(
             drawerContent = { drawerContent(destination) },
             content = content
         )
-    }
+//    }
 }
 
 @Composable

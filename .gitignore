@@ -17,5 +17,5 @@
 .cxx
 local.properties
 /secring.gpg
-/playground/docs/*NavGraph.html
+/samples/playground/docs/*NavGraph.html
 /build-logic/build

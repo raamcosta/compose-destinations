@@ -12,9 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
-import com.ramcosta.samples.playground.di.viewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +27,7 @@ object HidingScreenWrapper : DestinationWrapper {
     override fun <T> DestinationScope<T>.Wrap(
         screenContent: @Composable () -> Unit
     ) {
-        val vm = viewModel<HidingScreenWrapperViewModel>()
+        val vm = viewModel { HidingScreenWrapperViewModel() }
         val showingScreen by vm.showingScreen.collectAsState()
 
         if (showingScreen) {

@@ -11,6 +11,7 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(8)
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -31,6 +32,7 @@ kotlin {
 
         commonMain.dependencies {
             api(libs.kmp.compose.navigation)
+            api(libs.kmp.compose.vm)
         }
 
         androidMain.dependencies {

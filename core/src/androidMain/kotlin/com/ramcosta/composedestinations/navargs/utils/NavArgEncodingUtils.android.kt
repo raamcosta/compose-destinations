@@ -12,6 +12,7 @@ actual fun encodeForRoute(arg: String): String {
         Uri.encode(arg)
     } else {
         URLEncoder.encode(arg, StandardCharsets.UTF_8.toString())
+            .replace("+", "%20")
     }
 }
 

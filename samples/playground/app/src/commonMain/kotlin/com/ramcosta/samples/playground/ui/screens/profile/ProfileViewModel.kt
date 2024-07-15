@@ -6,7 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ramcosta.samples.playground.ui.screens.navArgs
+import com.ramcosta.samples.playground.ui.screens.navargs.navArgs
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
@@ -27,7 +28,7 @@ class ProfileViewModel(
     override var likeCount: Int by mutableStateOf(0)
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             likeCount = getProfileLikeCount(id)
         }
     }

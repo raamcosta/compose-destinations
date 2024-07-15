@@ -24,6 +24,7 @@ compose = "1.7.0-beta03"
 composeMaterial = "1.7.0-beta03"
 composeNavigationMaterial = "1.7.0-beta01"
 kmpComposeNavigation = "2.8.0-alpha02"
+kmpComposeVMLifecycle = "2.8.0"
 kmpBundle = "1.0.0"
 
 ktxSerialization = "1.6.3"
@@ -62,6 +63,7 @@ compose-material = { module = "androidx.compose.material:material", version.ref 
 compose-material-navigation = { module = "androidx.compose.material:material-navigation", version.ref = "composeNavigationMaterial" }
 compose-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "composeViewModel" }
 kmp-compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "kmpComposeNavigation" }
+kmp-compose-vm = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "kmpComposeVMLifecycle" }
 kmp-bundle = { module = "org.jetbrains.androidx.core:core-bundle", version.ref = "kmpBundle" }
 toaster = { module = "io.github.dokar3:sonner", version.ref = "sonner" }
 

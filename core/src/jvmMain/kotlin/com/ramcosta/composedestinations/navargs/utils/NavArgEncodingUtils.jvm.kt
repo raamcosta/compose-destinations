@@ -6,6 +6,7 @@ import java.util.Base64
 
 actual fun encodeForRoute(arg: String): String {
     return URLEncoder.encode(arg, StandardCharsets.UTF_8.toString())
+        .replace("+", "%20")
 }
 
 actual fun String.base64ToByteArray(): ByteArray {

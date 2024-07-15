@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.annotation
 
+import com.ramcosta.composedestinations.annotation.parameters.AndroidDeepLink
 import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
-import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import kotlin.reflect.KClass
@@ -27,7 +27,7 @@ import kotlin.reflect.KClass
  * the Composable function signature when it has a lot of navigation arguments (which should be rare).
  * The generated `Destination` class has `argsFrom` methods that accept a `NavBackStackEntry`
  * or a `SavedStateHandle` (useful inside a ViewModel) and return an instance of this class.
- * @param deepLinks array of [DeepLink] which can be used to navigate to this destination
+ * @param deepLinks array of [AndroidDeepLink] which can be used to navigate to this destination
  * @param style class of a [DestinationStyle] subclass which is used to define the destination style:
  * its transitions animations OR if it is dialog destination OR a bottom sheet destination. For
  * bottom sheet, you need to use the "io.github.raamcosta.compose-destinations:bottom-sheet"
@@ -44,7 +44,7 @@ annotation class Destination<T: Annotation>(
     val route: String = COMPOSABLE_NAME,
     val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
-    val deepLinks: Array<DeepLink> = [],
+    val deepLinks: Array<AndroidDeepLink> = [],
     val style: KClass<out DestinationStyle> = DestinationStyle.Default::class,
     val wrappers: Array<KClass<out DestinationWrapper>> = [],
     val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC

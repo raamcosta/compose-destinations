@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.style.TextAlign
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.annotation.parameters.DeepLink
+import com.ramcosta.composedestinations.annotation.parameters.AndroidDeepLink
 import com.ramcosta.composedestinations.annotation.parameters.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
 import com.ramcosta.composedestinations.navargs.NavTypeSerializer
@@ -137,7 +137,7 @@ fun TestScreen2(
 }
 
 @Destination<RootGraph>(
-    deepLinks = [DeepLink(uriPattern = "something://$FULL_ROUTE_PLACEHOLDER")]
+    deepLinks = [AndroidDeepLink(uriPattern = "something://$FULL_ROUTE_PLACEHOLDER")]
 )
 @Composable
 fun TestScreen3(

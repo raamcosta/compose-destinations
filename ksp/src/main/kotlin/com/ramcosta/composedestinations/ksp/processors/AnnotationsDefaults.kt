@@ -53,6 +53,11 @@ fun Resolver.initializeDefaultsMap() {
             "action" to "",
             "mimeType" to "",
             "uriPattern" to "",
+        ),
+        "com.ramcosta.composedestinations.annotation.parameters.AndroidDeepLink" to mapOf(
+            "action" to "",
+            "mimeType" to "",
+            "uriPattern" to "",
         )
     )
 }

@@ -1,6 +1,5 @@
 package com.ramcosta.composedestinations.result
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -37,7 +36,6 @@ internal class ResultBackNavigatorImpl<R>(
         navController.navigateUp()
     }
 
-    @SuppressLint("ComposableNaming")
     @Composable
     fun handleCanceled() {
         val currentNavBackStackEntry = remember { navController.currentBackStackEntry } ?: return

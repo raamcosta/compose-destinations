@@ -28,10 +28,10 @@ $NAV_TYPE_VISIBILITY class $NAV_TYPE_CLASS_SIMPLE_NAME(
 ) : DestinationsNavType<$CLASS_SIMPLE_NAME_CAMEL_CASE?>() {
 
     override fun get(bundle: Bundle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? =
-        bundle.getByteArray(key)?.let { fromByteArray(it) }
+        bundle.getString(key)?.let { serializer.fromRouteString(it) }
 
     override fun put(bundle: Bundle, key: String, value: $CLASS_SIMPLE_NAME_CAMEL_CASE?) {
-        bundle.putByteArray(key, value?.let { toByteArray(it) })
+        bundle.putString(key, value?.let { serializer.toRouteString(it) })
     }
 
     override fun parseValue(value: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
@@ -51,16 +51,12 @@ $NAV_TYPE_VISIBILITY class $NAV_TYPE_CLASS_SIMPLE_NAME(
     }
 
     override fun get(savedStateHandle: SavedStateHandle, key: String): $CLASS_SIMPLE_NAME_CAMEL_CASE? {
-        return savedStateHandle.get<ByteArray>(key)?.let { fromByteArray(it) }
+        return savedStateHandle.get<String>(key)?.let { serializer.fromRouteString(it) }
     }
     
     override fun put(savedStateHandle: SavedStateHandle, key: String, value: $CLASS_SIMPLE_NAME_CAMEL_CASE?) {
-        savedStateHandle[key] = value?.let { toByteArray(it) }
+        savedStateHandle[key] = value?.let { serializer.toRouteString(it) }
     }
-
-    private fun fromByteArray(bytes: ByteArray): $CLASS_SIMPLE_NAME_CAMEL_CASE = serializer.fromByteArray(bytes)
-
-    private fun toByteArray(value: $CLASS_SIMPLE_NAME_CAMEL_CASE): ByteArray = serializer.toByteArray(value)
 
 }
 """.trimIndent()

@@ -10,7 +10,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import com.ramcosta.composedestinations.annotation.ActivityDestination
 import com.ramcosta.samples.playground.commons.SettingsGraph
-import com.ramcosta.samples.playground.ui.screens.destinations.OtherActivityDestination
 
 data class OtherActivityNavArgs(
     val otherThing: String,

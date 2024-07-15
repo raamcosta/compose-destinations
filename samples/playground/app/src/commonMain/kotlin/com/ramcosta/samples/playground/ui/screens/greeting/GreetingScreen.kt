@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.dokar.sonner.rememberToasterState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.annotation.parameters.NavHostParam
@@ -32,7 +31,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.playground.featurey.screens.InternalBackResult
-import com.ramcosta.samples.playground.R
+import com.ramcosta.samples.playground.LocalToaster
 import com.ramcosta.samples.playground.commons.DrawerController
 import com.ramcosta.samples.playground.ui.screens.OtherThings
 import com.ramcosta.samples.playground.ui.screens.ValueClass
@@ -67,7 +66,7 @@ fun GreetingScreen(
     ResultCena<Boolean>,
     featYResult: ResultRecipient<FeatureYHomeDestination, InternalBackResult>,
 ) {
-    val toaster = rememberToasterState()
+    val toaster = LocalToaster.current
     resultRecipient.onNavResult { result ->
         toaster.show("result? = $result")
         println("go? $result")

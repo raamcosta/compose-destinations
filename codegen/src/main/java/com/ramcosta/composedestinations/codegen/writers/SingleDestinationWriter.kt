@@ -95,9 +95,10 @@ internal class SingleDestinationWriter(
                     DESTINATION_VISIBILITY_PLACEHOLDER,
                     getDestinationVisibilityModifier().let {
                         """
+                            @OptIn(kotlin.experimental.ExperimentalObjCRefinement::class)
                             @${importableHelper.addAndGetPlaceholder(Importable("PlatformHiddenFromObjC", "$CORE_PACKAGE_NAME.annotation.PlatformHiddenFromObjC"))}
                             $it
-                        """.trimIndent()
+                        """.trimIndent() //TODO RACOSTA above annotations.. do they work on all targets?
                     }
                 )
                 .replace(BASE_ROUTE, destination.baseRoute)

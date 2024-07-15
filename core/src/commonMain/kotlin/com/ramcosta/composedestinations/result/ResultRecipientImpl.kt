@@ -1,9 +1,7 @@
-@file:SuppressLint("ComposableNaming")
 @file:Suppress("UNCHECKED_CAST")
 
 package com.ramcosta.composedestinations.result
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue

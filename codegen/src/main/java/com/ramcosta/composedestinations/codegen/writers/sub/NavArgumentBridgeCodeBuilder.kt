@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.codegen.writers.sub
 
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.CORE_STRING_NAV_TYPE
 import com.ramcosta.composedestinations.codegen.commons.DEEP_LINK_ANNOTATION_FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
@@ -30,7 +31,7 @@ class NavArgumentBridgeCodeBuilder(
     private val navArgumentImportable = Importable("navArgument", "androidx.navigation.navArgument")
     val navClassArgumentImportable = Importable("NamedNavArgument", "androidx.navigation.NamedNavArgument")
 
-    private val navDeepLinkImportable = Importable("navDeepLink", "androidx.navigation.navDeepLink")
+    private val navDeepLinkImportable = Importable("navDeepLink", "$CORE_PACKAGE_NAME.deeplinks.navDeepLink")
     private val navClassDeepLinkImportable = Importable("NavDeepLink", "androidx.navigation.NavDeepLink")
 
     fun argsFromFunctions(
@@ -203,9 +204,9 @@ class NavArgumentBridgeCodeBuilder(
         deepLinks.forEachIndexed { i, it ->
             if (i == 0) {
                 code += if (listOfOnly) {
-                    "listOf(\n${"\t".repeat(innerTabsCount)}"
+                    "listOfNotNull(\n${"\t".repeat(innerTabsCount)}"
                 } else {
-                    "\n\toverride val deepLinks: List<${navClassDeepLinkImportable.getCodePlaceHolder()}> get() = listOf(\n${"\t".repeat(innerTabsCount)}"
+                    "\n\toverride val deepLinks: List<${navClassDeepLinkImportable.getCodePlaceHolder()}> get() = listOfNotNull(\n${"\t".repeat(innerTabsCount)}"
                 }
             }
 

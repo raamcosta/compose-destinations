@@ -11,41 +11,30 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
-import com.ramcosta.samples.playground.di.DependencyContainer
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileScreenDestination
 import com.ramcosta.samples.playground.ui.screens.profile.ValueClassArg
 
-val LocalDIContainer = staticCompositionLocalOf<DependencyContainer> {
-    error("No dependency container provided!")
-}
-
 @SuppressLint("InlinedApi")
 class MainActivity : ComponentActivity() {
-
-    private val diContainer = DependencyContainer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CompositionLocalProvider(LocalDIContainer provides diContainer) {
-                PlaygroundApp(
-                    testProfileDeepLink = {
-                        displayNotification(
-                            title = "Test deep link",
-                            text = "Profile screen deep link",
-                            notificationID = 100,
-                            channel = "DEFAULT",
-                            pendingIntent = getPendingIntent()
-                        )
-                    }
-                )
-            }
+            PlaygroundApp(
+                testProfileDeepLink = {
+                    displayNotification(
+                        title = "Test deep link",
+                        text = "Profile screen deep link",
+                        notificationID = 100,
+                        channel = "DEFAULT",
+                        pendingIntent = getPendingIntent()
+                    )
+                }
+            )
         }
     }
 

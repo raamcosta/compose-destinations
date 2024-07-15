@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.annotation
 
+import com.ramcosta.composedestinations.annotation.parameters.AndroidDeepLink
 import com.ramcosta.composedestinations.annotation.parameters.CodeGenVisibility
-import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import kotlin.reflect.KClass
 
@@ -39,7 +39,7 @@ import kotlin.reflect.KClass
  * the start destination by using `argsFrom` function of the generated Navigation graph.
  * To navigate to this navigation graph, you'll need both this and the start destination's navigation
  * arguments.
- * @param deepLinks array of [DeepLink] which can be used to navigate to this navigation graph
+ * @param deepLinks array of [AndroidDeepLink] which can be used to navigate to this navigation graph
  * @param defaultTransitions defines the navigation animations that destinations of this navigation graph
  * use when entering/leaving the screen. These animations will only be used on destinations
  * that do not set any specific style with [com.ramcosta.composedestinations.annotation.Destination.style]
@@ -52,7 +52,7 @@ annotation class NavGraph<T: Annotation>(
     val route: String = ANNOTATION_NAME,
     val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
-    val deepLinks: Array<DeepLink> = [],
+    val deepLinks: Array<AndroidDeepLink> = [],
     val defaultTransitions: KClass<out DestinationStyle.Animated> = Nothing::class,
     val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
 ) {
