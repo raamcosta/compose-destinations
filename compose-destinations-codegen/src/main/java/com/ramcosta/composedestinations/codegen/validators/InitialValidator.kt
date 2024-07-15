@@ -283,8 +283,8 @@ internal class InitialValidator(
 
         if (firstTypeArg is TypeArgument.Error) {
             // Since the Destination is not yet generated, we are expecting this to happen
-            Logger.instance.info("getFirstArgTypeSimpleName | line error = \n```\n${firstTypeArg.lineStr}\n```")
-            return firstTypeArg.lineStr
+            Logger.instance.info("getFirstArgTypeSimpleName | line error = \n```\n${firstTypeArg.linesStr}\n```")
+            return firstTypeArg.linesStr
                 .replaceBefore(this.name, "")
                 .removePrefix(this.name).also {
                     Logger.instance.info("getFirstArgTypeSimpleName | result of removePrefix ${this.name} = \n```\n$it\n```")

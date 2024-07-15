@@ -11,7 +11,7 @@ sealed interface ExternalRoute {
 
     val additionalDeepLinks: List<DeepLink>
 
-    class Destination(
+    data class Destination(
         override val superType: TypeInfo,
         override val isStart: Boolean,
         override val generatedType: Importable,
@@ -28,7 +28,7 @@ sealed interface ExternalRoute {
         }
     }
 
-    class NavGraph(
+    data class NavGraph(
         override val superType: TypeInfo,
         override val isStart: Boolean,
         override val generatedType: Importable,
@@ -45,7 +45,7 @@ sealed interface ExternalRoute {
 
         sealed interface OverrideDefaultTransitions {
             data object NoOverride: OverrideDefaultTransitions
-            class Override(val importable: Importable?): OverrideDefaultTransitions
+            data class Override(val importable: Importable?): OverrideDefaultTransitions
         }
     }
 

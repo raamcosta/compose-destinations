@@ -1,11 +1,11 @@
-@file:Suppress("ObjectPropertyName")
-
 package com.ramcosta.composedestinations.codegen
 
 import com.ramcosta.composedestinations.codegen.commons.firstTypeInfoArg
 import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayListTypeNavArg
 import com.ramcosta.composedestinations.codegen.commons.sanitizePackageName
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
+import com.ramcosta.composedestinations.codegen.facades.Logger
+import com.ramcosta.composedestinations.codegen.facades.debug
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
@@ -32,13 +32,45 @@ class CodeGenerator(
     override val codeGenConfig: CodeGenConfig
 ) : ServiceLocator {
 
+    init {
+        initConfigurationValues()
+
+        Logger.instance.debug {
+            """
+                |CodeGenerator init:
+                |---------------------------------------
+                |codeGenConfig= ${pprint(codeGenConfig)}
+                |isBottomSheetDependencyPresent= $isBottomSheetDependencyPresent
+                |moduleName= '$moduleName'
+                |codeGenBasePackageName= '$codeGenBasePackageName'
+                |registryId= '$registryId'
+            """.trimMargin()
+        }
+    }
+
     fun generate(
         destinations: List<RawDestinationGenParams>,
         navGraphs: List<RawNavGraphGenParams>,
         navTypeSerializers: List<NavTypeSerializer>,
         submodules: List<SubModuleInfo>
     ) {
-        initConfigurationValues()
+        Logger.instance.debug {
+            """
+                |Code gen input:
+                |---------------------------------------
+                |navGraphs:
+                |${pprint(navGraphs)}
+                |---------------------------------------
+                |destinations:
+                |${pprint(destinations)}
+                |---------------------------------------
+                |submodules:
+                |${pprint(submodules)}
+                |---------------------------------------
+                |navTypeSerializers:
+                |${pprint(navTypeSerializers)}
+            """.trimMargin()
+        }
 
         val validatedDestinations: List<CodeGenProcessedDestination> = initialValidator.validate(
             navGraphs = navGraphs,

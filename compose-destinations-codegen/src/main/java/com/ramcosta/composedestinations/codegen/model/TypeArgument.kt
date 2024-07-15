@@ -8,10 +8,8 @@ sealed interface TypeArgument {
     ): TypeArgument
 
     data class Error(
-        private val lazyLineStr: Lazy<String>,
-    ) : TypeArgument {
-        val lineStr get() = lazyLineStr.value
-    }
+        val linesStr: String,
+    ) : TypeArgument
 
     data object GenericType: TypeArgument
 

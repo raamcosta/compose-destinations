@@ -6,4 +6,5 @@ data class CodeGenConfig(
     val generateNavGraphs: Boolean,
     val htmlMermaidGraph: String?,
     val mermaidGraph: String?,
+    val debugModeOutputDir: String?,
 )

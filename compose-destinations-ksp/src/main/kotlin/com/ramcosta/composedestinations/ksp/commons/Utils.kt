@@ -243,7 +243,7 @@ fun KSValueParameter.toParameter(
             it.shortName.asString() == "NavHostParam" &&
                     it.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_HOST_PARAM_ANNOTATION_QUALIFIED
         },
-        lazyDefaultValue = lazy { getDefaultValue(resolver) }
+        defaultValue = getDefaultValue(resolver)
     )
 }
 
@@ -358,7 +358,7 @@ private fun KSType.argumentTypes(location: Location, resolver: Resolver, navType
         val resolvedType = typeArg.type?.resolve()
 
         if (resolvedType?.isError == true) {
-            return@mapNotNull TypeArgument.Error(lazy { getErrorLines(location) })
+            return@mapNotNull TypeArgument.Error(getErrorLines(location))
         }
 
         if (resolvedType?.declaration is KSTypeParameter) return@mapNotNull TypeArgument.GenericType

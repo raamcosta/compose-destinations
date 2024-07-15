@@ -1,6 +1,13 @@
 package com.ramcosta.composedestinations.codegen.facades
 
+import java.io.File
+
 interface Logger {
+    val debugMode: Boolean
+
+    val debugModeOutputPath: String?
+
+    val prettyPrinter: PPrinter
 
     fun logging(message: String)
 
@@ -14,5 +21,22 @@ interface Logger {
 
     companion object {
         lateinit var instance: Logger
+    }
+}
+
+interface PPrinter {
+    fun pprint(any: Any): String
+}
+
+inline fun Logger.debug(message: PPrinter.() -> String) {
+    debugModeOutputPath?.let {
+        File(it)
+            .run {
+                parentFile.mkdirs()
+                appendText("***************************************\n")
+                appendText(message(prettyPrinter))
+                appendText("\n***************************************\n")
+                appendText("\n\n")
+            }
     }
 }

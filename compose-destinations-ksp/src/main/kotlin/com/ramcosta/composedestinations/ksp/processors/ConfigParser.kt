@@ -15,6 +15,7 @@ class ConfigParser(
         private const val GEN_NAV_GRAPHS = "$PREFIX.generateNavGraphs"
         private const val GEN_PACKAGE_NAME = "$PREFIX.codeGenPackageName"
         private const val MODULE_NAME = "$PREFIX.moduleName"
+        private const val GEN_DEBUG_MODE = "$PREFIX.debugMode"
 
         private const val MERMAID_GRAPH = "$PREFIX.mermaidGraph"
         private const val HTML_MERMAID_GRAPH = "$PREFIX.htmlMermaidGraph"
@@ -28,6 +29,7 @@ class ConfigParser(
 
         return CodeGenConfig(
             moduleName = moduleName,
+            debugModeOutputDir = options[GEN_DEBUG_MODE]?.trim(),
             generateNavGraphs = parseBoolean(GEN_NAV_GRAPHS) ?: true,
             packageName = packageName,
             mermaidGraph = mermaidGraph,

@@ -41,7 +41,8 @@ class Processor(
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        Logger.instance = KspLogger(logger)
+        val codeGenConfig = ConfigParser(options).parse()
+        Logger.instance = KspLogger(codeGenConfig, logger)
 
         val composableDestinations = resolver.getComposableDestinationPaths()
         val activityDestinations = resolver.getActivityDestinations()
@@ -56,11 +57,16 @@ class Processor(
             return emptyList()
         }
 
-        val navTypeSerializers = resolver.getNavTypeSerializers()
-        val codeGenConfig = ConfigParser(options).parse()
-        val destinationMappingUtils = DestinationMappingUtils(resolver)
-
         val mutableKSFileSourceMapper = MutableKSFileSourceMapper()
+        val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, mutableKSFileSourceMapper)
+        val codeGenerator = CodeGenerator(
+            codeGenerator = kspCodeOutputStreamMaker,
+            isBottomSheetDependencyPresent = resolver.isBottomSheetDepPresent(),
+            codeGenConfig = codeGenConfig
+        )
+
+        val navTypeSerializers = resolver.getNavTypeSerializers()
+        val destinationMappingUtils = DestinationMappingUtils(resolver)
         val classesToNavGraphsMapper = KspToCodeGenNavGraphsMapper(
             resolver,
             destinationMappingUtils,
@@ -75,14 +81,9 @@ class Processor(
             mutableKSFileSourceMapper,
             navTypeSerializers.associateBy { it.genericType }
         )
-        val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, mutableKSFileSourceMapper)
         val destinations = functionsToDestinationsMapper.map(composableDestinations.map { it.immutable() }, activityDestinations)
 
-        CodeGenerator(
-            codeGenerator = kspCodeOutputStreamMaker,
-            isBottomSheetDependencyPresent = resolver.isBottomSheetDepPresent(),
-            codeGenConfig = codeGenConfig
-        ).generate(
+        codeGenerator.generate(
             destinations,
             navGraphs,
             navTypeSerializers,
