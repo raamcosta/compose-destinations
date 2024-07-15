@@ -6,6 +6,7 @@ package com.ramcosta.composedestinations.result
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
+import androidx.compose.runtime.Stable
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
 /**
@@ -28,6 +29,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
  *
  * @see [com.ramcosta.composedestinations.result.ResultBackNavigator]
  */
+@Stable
 interface ResultRecipient<D : DestinationSpec, R> : OpenResultRecipient<R> {
 
     /**

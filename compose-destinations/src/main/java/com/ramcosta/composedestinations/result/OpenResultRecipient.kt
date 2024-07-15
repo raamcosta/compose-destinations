@@ -2,6 +2,7 @@ package com.ramcosta.composedestinations.result
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 
 /**
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
  * @see [com.ramcosta.composedestinations.result.ResultBackNavigator]
  * @see [ResultRecipient]
  */
+@Stable
 interface OpenResultRecipient<R> {
 
     /**

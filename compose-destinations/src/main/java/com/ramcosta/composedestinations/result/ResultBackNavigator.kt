@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.result
 
+import androidx.compose.runtime.Stable
 import androidx.navigation.NavController
 
 /**
@@ -21,6 +22,7 @@ import androidx.navigation.NavController
  *
  * @see [com.ramcosta.composedestinations.result.ResultRecipient]
  */
+@Stable
 interface ResultBackNavigator<R> {
 
     /**
