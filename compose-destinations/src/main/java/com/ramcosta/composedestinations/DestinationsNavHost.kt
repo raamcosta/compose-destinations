@@ -10,10 +10,10 @@ import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCa
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.NavHostGraphSpec
-import com.ramcosta.composedestinations.spec.Route
 import com.ramcosta.composedestinations.spec.TypedNavGraphSpec
 import com.ramcosta.composedestinations.utils.NavGraphRegistry
 
@@ -34,8 +34,8 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
  *
  * @param modifier [Modifier] to apply to this Composable
  *
- * @param startRoute the start destination of the NavHost. By default, we'll use the `startDestination`
- * of the [navGraph]. This makes it possible to override that default on runtime.
+ * @param start the start [Direction] of the NavHost. By default, we'll use the `defaultStartDirection`
+ * of the [navGraph]. This makes it possible to override that default at runtime.
  *
  * @param defaultTransitions default enter/exit transition animations for all destinations.
  * By default it's [navGraph]'s [TypedNavGraphSpec.defaultTransitions].
@@ -64,7 +64,7 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
 fun DestinationsNavHost(
     navGraph: NavHostGraphSpec,
     modifier: Modifier = Modifier,
-    startRoute: Route = navGraph.startRoute,
+    start: Direction = navGraph.defaultStartDirection,
     defaultTransitions: NavHostAnimatedDestinationStyle = navGraph.defaultTransitions,
     engine: NavHostEngine = rememberNavHostEngine(),
     navController: NavHostController = engine.rememberNavController(),
@@ -77,7 +77,7 @@ fun DestinationsNavHost(
         modifier = modifier,
         route = navGraph.route,
         defaultTransitions = defaultTransitions,
-        startRoute = startRoute,
+        start = start,
         navController = navController,
     ) {
         addNavGraphDestinations(

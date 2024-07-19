@@ -23,9 +23,9 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.scope.DestinationScopeImpl
 import com.ramcosta.composedestinations.spec.DestinationStyle
+import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
-import com.ramcosta.composedestinations.spec.Route
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
@@ -61,14 +61,14 @@ internal class WearNavHostEngine(
     override fun NavHost(
         modifier: Modifier,
         route: String,
-        startRoute: Route,
+        start: Direction,
         defaultTransitions: NavHostAnimatedDestinationStyle,
         navController: NavHostController,
         builder: NavGraphBuilder.() -> Unit,
     ) {
         SwipeDismissableNavHost(
             navController = navController,
-            startDestination = startRoute.route,
+            startDestination = start.route,
             modifier = modifier,
             route = route,
             state = state,

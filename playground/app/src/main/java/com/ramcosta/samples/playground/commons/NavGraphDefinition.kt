@@ -17,6 +17,7 @@ import com.ramcosta.composedestinations.annotation.ExternalDestination
 import com.ramcosta.composedestinations.annotation.ExternalModuleDestinations
 import com.ramcosta.composedestinations.annotation.ExternalNavGraph
 import com.ramcosta.composedestinations.annotation.NavGraph
+import com.ramcosta.composedestinations.annotation.NavHostDefaultStartArgs
 import com.ramcosta.composedestinations.annotation.NavHostGraph
 import com.ramcosta.composedestinations.annotation.OverrideDestination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -35,11 +36,18 @@ import com.ramcosta.composedestinations.wrapper.DestinationWrapper
 import com.ramcosta.playground.core.ArgsFromAnotherModule
 import com.ramcosta.samples.playground.ui.screens.destinations.ProfileSettingsProfileSettingsScreenDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.RootProfileSettingsScreenDestination
+import com.ramcosta.samples.playground.ui.screens.greeting.GreetingScreenNavArgs
 import com.ramcosta.samples.playground.ui.screens.navGraphArgs
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileNavGraphArgs
 import com.ramcosta.samples.playground.ui.screens.navgraphs.ProfileSettingsNavGraphArgs
 import kotlinx.parcelize.Parcelize
 import kotlin.reflect.KClass
+
+@NavHostDefaultStartArgs<RootGraph>
+val defaultRootStartArgs = GreetingScreenNavArgs(
+    "qweqwe",
+    79
+)
 
 @NavGraph<RootGraph>(
     defaultTransitions = DefaultFadingTransitions::class

@@ -30,6 +30,7 @@ import com.ramcosta.composedestinations.codegen.templates.INNER_IMPORTED_ROUTES
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ARGS_FROM
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_ARGUMENTS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_DEEP_LINKS_PLACEHOLDER
+import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_DEFAULT_START_ARGS_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_DEFAULT_TRANSITIONS
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_DEFAULT_TRANSITIONS_TYPE
 import com.ramcosta.composedestinations.codegen.templates.NAV_GRAPH_DESTINATIONS
@@ -120,6 +121,10 @@ internal class SingleNavGraphWriter(
                 startRouteInfo.name
             )
             .replace(
+                NAV_GRAPH_DEFAULT_START_ARGS_PLACEHOLDER,
+                navHostDefaultStartArgsCode()
+            )
+            .replace(
                 NAV_GRAPH_DESTINATIONS,
                 navGraphDestinationsCode(navGraph.destinations, navGraph.externalDestinations)
             )
@@ -172,6 +177,26 @@ internal class SingleNavGraphWriter(
                 )
             )
     }
+
+    private fun navHostDefaultStartArgsCode() =
+        if (navGraph.isNavHostGraph && navGraph.startRouteArgs != null && navGraph.defaultStartArgs != null) {
+
+            """
+            |
+            |
+            |    override val defaultStartArgs: ${importableHelper.addAndGetPlaceholder(navGraph.startRouteArgs.type)} = ${importableHelper.addAndGetPlaceholder(navGraph.defaultStartArgs)}
+            |    
+            |    override val defaultStartDirection: Direction = defaultStartDirection()
+            """.trimMargin()
+        } else if (navGraph.isNavHostGraph) {
+            """
+            |
+            |
+            |    override val defaultStartDirection: Direction = defaultStartDirection()
+            """.trimMargin()
+        } else {
+            ""
+        }
 
     private fun RawNavGraphTree.navArgumentsCode(): String {
         val startRouteArguments = if (startRouteArgs != null) {

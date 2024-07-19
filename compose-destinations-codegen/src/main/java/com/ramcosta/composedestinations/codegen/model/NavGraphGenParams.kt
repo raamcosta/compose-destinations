@@ -10,6 +10,7 @@ interface NavGraphGenParams {
     val baseRoute: String
     val annotationType: Importable
     val isNavHostGraph: Boolean
+    val defaultStartArgs: Importable?
     val defaultTransitions: Importable?
     val deepLinks: List<DeepLink>
     val navArgs: RawNavArgsClass?
@@ -25,6 +26,7 @@ interface NavGraphGenParams {
 data class RawNavGraphGenParams(
     override val annotationType: Importable,
     override val isNavHostGraph: Boolean,
+    override val defaultStartArgs: Importable?,
     override val defaultTransitions: Importable?,
     override val deepLinks: List<DeepLink>,
     override val navArgs: RawNavArgsClass?,

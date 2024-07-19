@@ -12,22 +12,21 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.plusAssign
+import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.spec.DestinationSpec
-import com.ramcosta.composedestinations.spec.Route
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
 
 @SuppressLint("RestrictedApi")
 @Composable
 fun SampleScaffold(
-    startRoute: Route,
     navController: NavHostController,
     topBar: @Composable (DestinationSpec, NavBackStackEntry?) -> Unit,
     bottomBar: @Composable (DestinationSpec) -> Unit,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val destination = navController.currentDestinationAsState().value
-        ?: startRoute.startDestination
+        ?: NavGraphs.root.startDestination
     val navBackStackEntry = navController.currentBackStackEntry
 
     // 👇 only for debugging, you shouldn't use currentBackStack API as it is restricted by annotation

@@ -9,6 +9,7 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Modifier
 import com.ramcosta.composedestinations.codegen.CodeGenerator
@@ -19,6 +20,8 @@ import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_Q
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.JAVA_ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_QUALIFIED
+import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_DEFAULT_START_ARGS
+import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_DEFAULT_START_ARGS_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.NAV_TYPE_SERIALIZER_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.facades.Logger
@@ -56,6 +59,7 @@ class Processor(
             return emptyList()
         }
 
+        val navHostDefaultStartArgsByGraphAnnotationType = resolver.getNavHostDefaultStartArgsByGraphAnnotationType()
         val navTypeSerializers = resolver.getNavTypeSerializers()
         val codeGenConfig = ConfigParser(options).parse()
         val destinationMappingUtils = DestinationMappingUtils(resolver)
@@ -65,7 +69,8 @@ class Processor(
             resolver,
             destinationMappingUtils,
             mutableKSFileSourceMapper,
-            navTypeSerializers.associateBy { it.genericType }
+            navTypeSerializers.associateBy { it.genericType },
+            navHostDefaultStartArgsByGraphAnnotationType
         )
         val navGraphs = classesToNavGraphsMapper.map(navGraphAnnotations, navHostGraphAnnotations)
 
@@ -210,6 +215,27 @@ class Processor(
     private fun Resolver.getNavHostGraphAnnotations(): Sequence<KSClassDeclaration> {
         return getSymbolsWithAnnotation(NAV_HOST_GRAPH_ANNOTATION_QUALIFIED)
             .filterIsInstance<KSClassDeclaration>()
+    }
+
+    private fun Resolver.getNavHostDefaultStartArgsByGraphAnnotationType(): Map<Importable, List<Importable>> {
+        return getSymbolsWithAnnotation(NAV_HOST_DEFAULT_START_ARGS_ANNOTATION_QUALIFIED)
+            .filterIsInstance<KSPropertyDeclaration>()
+            .mapTo(mutableListOf()) {
+                val navGraphKsDeclaration =
+                    it.annotations.first { it.shortName.asString() == NAV_HOST_DEFAULT_START_ARGS }
+                        .annotationType.resolve().arguments.first().type!!.resolve().declaration
+                val navGraph = Importable(
+                    navGraphKsDeclaration.simpleName.asString(),
+                    navGraphKsDeclaration.qualifiedName!!.asString()
+                )
+                val startArgsField = Importable(
+                    it.simpleName.asString(),
+                    it.qualifiedName!!.asString()
+                )
+
+                navGraph to startArgsField
+            }.groupBy { it.first }
+            .mapValues { entry -> entry.value.map { it.second } }
     }
 
     private fun Resolver.getNavTypeSerializers(): List<NavTypeSerializer> {

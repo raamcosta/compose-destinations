@@ -12,9 +12,11 @@ const val JAVA_ACTIVITY_DESTINATION_ANNOTATION = "JavaActivityDestination"
 const val NAV_GRAPH_ANNOTATION = "NavGraph"
 const val NAV_HOST_GRAPH_ANNOTATION = "NavHostGraph"
 const val NAV_TYPE_SERIALIZER_ANNOTATION = "NavTypeSerializer"
+const val NAV_HOST_DEFAULT_START_ARGS = "NavHostDefaultStartArgs"
 const val DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$DESTINATION_ANNOTATION"
 const val NAV_GRAPH_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$NAV_GRAPH_ANNOTATION"
 const val NAV_HOST_GRAPH_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$NAV_HOST_GRAPH_ANNOTATION"
+const val NAV_HOST_DEFAULT_START_ARGS_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$NAV_HOST_DEFAULT_START_ARGS"
 const val ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$ACTIVITY_DESTINATION_ANNOTATION"
 const val JAVA_ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.$JAVA_ACTIVITY_DESTINATION_ANNOTATION"
 const val NAV_HOST_PARAM_ANNOTATION_QUALIFIED = "$CORE_PACKAGE_NAME.annotation.parameters.NavHostParam"
@@ -24,19 +26,15 @@ val rootNavGraphType = Importable(
     "RootGraph",
     "$CORE_PACKAGE_NAME.annotation.RootGraph"
 )
-val rootNavGraphGenParams = RawNavGraphGenParams(
-    annotationType = rootNavGraphType,
-    isNavHostGraph = true,
-    defaultTransitions = Importable(
-        "NoTransitions",
-        "com.ramcosta.composedestinations.animations.defaults.NoTransitions"
-    ),
-    deepLinks = emptyList(),
-    sourceIds = emptyList(),
-    navArgs = null,
-    visibility = Visibility.PUBLIC,
-    externalRoutes = emptyList()
-)
+
+var rootNavGraphGenParams = defaultRootNavGraphGenParams()
+    private set
+
+fun addRootDefaultStartArgs(defaultStartArgs: Importable) {
+    rootNavGraphGenParams = rootNavGraphGenParams.copy(
+        defaultStartArgs = defaultStartArgs
+    )
+}
 
 const val DESTINATION_ANNOTATION_ROUTE_ARGUMENT = "route"
 const val DESTINATION_ANNOTATION_STYLE_ARGUMENT = "style"
@@ -112,3 +110,18 @@ const val COLUMN_SCOPE_SIMPLE_NAME = "ColumnScope"
 const val COLUMN_SCOPE_QUALIFIED_NAME = "androidx.compose.foundation.layout.$COLUMN_SCOPE_SIMPLE_NAME"
 
 const val BOTTOM_SHEET_DEPENDENCY = "io.github.raamcosta.compose-destinations:bottom-sheet"
+
+private fun defaultRootNavGraphGenParams() = RawNavGraphGenParams(
+    annotationType = rootNavGraphType,
+    isNavHostGraph = true,
+    defaultStartArgs = null,
+    defaultTransitions = Importable(
+        "NoTransitions",
+        "com.ramcosta.composedestinations.animations.defaults.NoTransitions"
+    ),
+    deepLinks = emptyList(),
+    sourceIds = emptyList(),
+    navArgs = null,
+    visibility = Visibility.PUBLIC,
+    externalRoutes = emptyList()
+)

@@ -1,5 +1,6 @@
 package com.ramcosta.samples.playground.ui.screens.greeting
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -49,15 +50,22 @@ import com.ramcosta.samples.playground.ui.screens.profile.ValueClassArg
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+data class GreetingScreenNavArgs(
+    val cenas: String,
+    val id: Int
+)
+
 typealias ResultCena<T> = ResultRecipient<GoToProfileConfirmationDestination, T>
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Destination<RootGraph>(
     start = true,
+    navArgs = GreetingScreenNavArgs::class,
     style = GreetingTransitions::class
 )
 @Composable
 fun SharedTransitionScope.GreetingScreen(
+    navArgs: GreetingScreenNavArgs,
     animatedVisibilityScope: AnimatedVisibilityScope,
     navigator: DestinationsNavigator,
     testProfileDeepLink: () -> Unit,
@@ -70,6 +78,7 @@ fun SharedTransitionScope.GreetingScreen(
     ResultCena<Boolean>,
     featYResult: ResultRecipient<FeatureYHomeDestination, InternalBackResult>,
 ) {
+    Log.i("GreetingScreen", "navArgs: $navArgs")
     val context = LocalContext.current
     resultRecipient.onNavResult { result ->
         Toast.makeText(context, "result? = $result", Toast.LENGTH_SHORT).show()

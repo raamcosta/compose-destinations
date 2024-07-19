@@ -13,9 +13,9 @@ import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationSty
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.manualcomposablecalls.allDeepLinks
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
-import com.ramcosta.composedestinations.spec.Route
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 
 /**
@@ -48,14 +48,14 @@ internal class DefaultNavHostEngine(
     override fun NavHost(
         modifier: Modifier,
         route: String,
-        startRoute: Route,
+        start: Direction,
         defaultTransitions: NavHostAnimatedDestinationStyle,
         navController: NavHostController,
         builder: NavGraphBuilder.() -> Unit,
     ) = with(defaultTransitions) {
         androidx.navigation.compose.NavHost(
             navController = navController,
-            startDestination = startRoute.route,
+            startDestination = start.route,
             modifier = modifier,
             route = route,
             contentAlignment = navHostContentAlignment,

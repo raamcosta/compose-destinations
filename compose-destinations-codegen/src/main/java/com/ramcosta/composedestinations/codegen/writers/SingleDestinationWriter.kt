@@ -9,7 +9,6 @@ import com.ramcosta.composedestinations.codegen.commons.CORE_BOTTOM_SHEET_DESTIN
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_ACTIVITY_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_DIRECTION_DESTINATION_SPEC
 import com.ramcosta.composedestinations.codegen.commons.CORE_TYPED_DESTINATION_SPEC
-import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.MissingRequiredDependency
 import com.ramcosta.composedestinations.codegen.commons.experimentalAnimationApiType
 import com.ramcosta.composedestinations.codegen.commons.plusAssign
@@ -68,10 +67,6 @@ internal class SingleDestinationWriter(
     )
 
     init {
-        if (destination.isParentStart && destination.navGraphInfo?.isNavHostGraph == true && destination.navArgs.any { it.isMandatory }) {
-            throw IllegalDestinationsSetup("\"'${destination.annotatedName}' composable: Start destinations of NavHostGraphs cannot have mandatory navigation arguments!")
-        }
-
         importableHelper.addAll(destinationTemplate.imports)
         importableHelper.addPriorityQualifiedImport(destination.annotatedQualifiedName, destination.annotatedName)
     }

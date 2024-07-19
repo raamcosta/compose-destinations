@@ -9,7 +9,10 @@ import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_R
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION
 import com.ramcosta.composedestinations.codegen.commons.NAV_GRAPH_ANNOTATION_DEFAULT_NAME
+import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_DEFAULT_START_ARGS
 import com.ramcosta.composedestinations.codegen.commons.NAV_HOST_GRAPH_ANNOTATION
+import com.ramcosta.composedestinations.codegen.commons.addRootDefaultStartArgs
+import com.ramcosta.composedestinations.codegen.commons.rootNavGraphType
 import com.ramcosta.composedestinations.codegen.model.ExternalRoute
 import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
@@ -32,7 +35,15 @@ internal class KspToCodeGenNavGraphsMapper(
     private val destinationMappingUtils: DestinationMappingUtils,
     private val mutableKSFileSourceMapper: MutableKSFileSourceMapper,
     private val navTypeSerializersByType: Map<Importable, NavTypeSerializer>,
+    private val navHostDefaultStartArgsByGraphAnnotationType: Map<Importable, List<Importable>>,
 ) {
+
+    init {
+        val defaultStartArgs = defaultStartArgs(rootNavGraphType, true)
+        if (defaultStartArgs != null) {
+            addRootDefaultStartArgs(defaultStartArgs)
+        }
+    }
 
     fun map(
         navGraphAnnotations: Sequence<KSClassDeclaration>,
@@ -114,15 +125,18 @@ internal class KspToCodeGenNavGraphsMapper(
         containingFile?.let { mutableKSFileSourceMapper[it.filePath] = containingFile }
         navArgs?.file?.let { mutableKSFileSourceMapper[it.filePath] = it }
 
+        val annotationType = Importable(
+            this.simpleName.asString(),
+            this.qualifiedName!!.asString()
+        )
+
         return RawNavGraphGenParams(
             sourceIds = listOfNotNull(containingFile?.filePath, navArgs?.file?.filePath),
             routeOverride = if (navGraphAnnotationNameArg == NAV_GRAPH_ANNOTATION_DEFAULT_NAME) null else navGraphAnnotationNameArg,
             isNavHostGraph = isNavHostGraph,
+            defaultStartArgs = defaultStartArgs(annotationType, isNavHostGraph),
             defaultTransitions = navGraphDefaultTransitions,
-            annotationType = Importable(
-                this.simpleName.asString(),
-                this.qualifiedName!!.asString()
-            ),
+            annotationType = annotationType,
             parent = parent,
             isParentStart = isParentStart,
             deepLinks = deepLinks,
@@ -130,6 +144,27 @@ internal class KspToCodeGenNavGraphsMapper(
             visibility = navGraphVisibility,
             externalRoutes = externalRoutes.toList()
         )
+    }
+
+    private fun defaultStartArgs(
+        annotationType: Importable,
+        isNavHostGraph: Boolean
+    ): Importable? {
+        val defaultStartArgsImportables =
+            navHostDefaultStartArgsByGraphAnnotationType[annotationType].orEmpty()
+
+        return if (isNavHostGraph) {
+            if (defaultStartArgsImportables.size > 1) {
+                throw IllegalDestinationsSetup("You defined multiple '$NAV_HOST_DEFAULT_START_ARGS' for graph '${annotationType.preferredSimpleName}'. Only one is allowed!")
+            }
+
+            defaultStartArgsImportables.firstOrNull()
+        } else {
+            if (defaultStartArgsImportables.isNotEmpty()) {
+                throw IllegalDestinationsSetup("You defined a '$NAV_HOST_DEFAULT_START_ARGS' for graph '${annotationType.preferredSimpleName}' which is not a NavHost graph.")
+            }
+            null
+        }
     }
 
     private fun KSAnnotation.getExternalModuleDestinations(): List<ExternalRoute.Destination> {

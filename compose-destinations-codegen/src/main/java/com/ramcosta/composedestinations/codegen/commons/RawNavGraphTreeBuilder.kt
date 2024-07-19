@@ -153,6 +153,9 @@ private fun RawNavGraphGenParams.calculateNavArgsAndValidate(
     nestedGraphs: List<RawNavGraphTree>
 ): RawNavArgsClass? {
     val startRouteArgsTree = calculateStartRouteNavArgsTree(destinations, nestedGraphs)
+    val firstRawNavArgsClass = startRouteArgsTree.first()
+
+    validateNavHostDefaultStartArgs(startRouteArgsTree, firstRawNavArgsClass)
 
     if (visibility == Visibility.PUBLIC) {
         val nonPublicNavArgClasses = startRouteArgsTree.allNavArgs
@@ -161,7 +164,7 @@ private fun RawNavGraphGenParams.calculateNavArgsAndValidate(
 
         if (nonPublicNavArgClasses.isNotEmpty()) {
             throw IllegalDestinationsSetup(
-                "[${nonPublicNavArgClasses.joinToString(",") { "'${it.second.type.preferredSimpleName}'" }}] nav arg" +
+                "[${nonPublicNavArgClasses.joinToString { "'${it.second.type.preferredSimpleName}'" }}] nav arg" +
                         " classes need to be public because they're a part of the public ${annotationType.preferredSimpleName}'s navigation arguments."
             )
         }
@@ -183,7 +186,43 @@ private fun RawNavGraphGenParams.calculateNavArgsAndValidate(
         )
     }
 
-    return startRouteArgsTree.first()
+    return firstRawNavArgsClass
+}
+
+private fun RawNavGraphGenParams.validateNavHostDefaultStartArgs(
+    startRouteArgsTree: StartRouteArgsTree,
+    firstRawNavArgsClass: RawNavArgsClass?
+) {
+    if (!isNavHostGraph) {
+        return
+    }
+
+    // NavHosGraphs cannot have args themselves, but its start route can
+    // so let's check if any of those start args is mandatory
+    val navHostMandatoryArgs: List<Parameter> = startRouteArgsTree.allNavArgs.mapNotNull {
+        it.first.takeIf { it.isMandatory }
+    }
+
+    if (navHostMandatoryArgs.isEmpty()) {
+        return
+    }
+
+    // We have a NavHost graph with mandatory start route args, so:
+
+    if (defaultStartArgs == null) {
+        throw IllegalDestinationsSetup(
+            """
+                '${annotationType.preferredSimpleName}' has mandatory arguments (${navHostMandatoryArgs.joinToString { "'${it.name}'" }}) on its start route.
+                Please either provide default values for these, make them nullable or define default args for the NavHost graph, like this:
+                ```
+                @$NAV_HOST_DEFAULT_START_ARGS<${annotationType.preferredSimpleName}>
+                val default${annotationType.preferredSimpleName}StartArgs = ${firstRawNavArgsClass?.type?.preferredSimpleName}(
+                    //fill default arg values here
+                )
+                ```
+            """.trimIndent()
+        )
+    }
 }
 
 private data class StartRouteArgsTree(
@@ -192,7 +231,7 @@ private data class StartRouteArgsTree(
     val subTree: StartRouteArgsTree?,
 ) {
 
-    val allNavArgs = parametersRecursive()
+    val allNavArgs: List<Pair<Parameter, RawNavArgsClass>> = parametersRecursive()
 
     private fun parametersRecursive(): List<Pair<Parameter, RawNavArgsClass>> {
         val currentParams = navArgsClass?.parameters?.map { it to navArgsClass }.orEmpty()

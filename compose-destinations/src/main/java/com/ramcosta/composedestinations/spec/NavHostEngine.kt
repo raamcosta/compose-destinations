@@ -53,7 +53,7 @@ interface NavHostEngine {
     fun NavHost(
         modifier: Modifier,
         route: String,
-        startRoute: Route,
+        start: Direction,
         defaultTransitions: NavHostAnimatedDestinationStyle,
         navController: NavHostController,
         builder: NavGraphBuilder.() -> Unit,

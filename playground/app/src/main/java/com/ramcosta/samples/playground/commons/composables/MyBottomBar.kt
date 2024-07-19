@@ -13,17 +13,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.Direction
-import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.samples.playground.R
+import com.ramcosta.samples.playground.commons.defaultRootStartArgs
 import com.ramcosta.samples.playground.ui.screens.destinations.FeedDestination
 import com.ramcosta.samples.playground.ui.screens.destinations.GreetingScreenDestination
 
 enum class BottomBarDestination(
-    val direction: DirectionDestinationSpec,
+    val direction: Direction,
     val icon: ImageVector,
     @StringRes val label: Int
 ) {
-    Greeting(GreetingScreenDestination, Icons.Default.Home, R.string.greeting_screen),
+    Greeting(GreetingScreenDestination(defaultRootStartArgs), Icons.Default.Home, R.string.greeting_screen),
     Feed(FeedDestination, Icons.Default.Email, R.string.feed_screen),
 }
 

@@ -69,7 +69,7 @@ fun AppNavigation(
     SharedTransitionLayout {
         DestinationsNavHost(
             navGraph = NavGraphs.root,
-            startRoute = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.startRoute,
+            start = if (Math.random() > 0.5) FeedDestination else NavGraphs.root.defaultStartDirection,
             navController = navController,
             modifier = modifier,
             dependenciesContainerBuilder = {
@@ -114,6 +114,7 @@ private fun ManualComposableCallsBuilder.greetingScreen(
         val vm = viewModel<GreetingViewModel>()
 
         sharedTransitionScope.GreetingScreen(
+            navArgs = navArgs,
             animatedVisibilityScope = this,
             navigator = destinationsNavigator,
             testProfileDeepLink = testProfileDeepLink,
@@ -149,6 +150,7 @@ fun SampleAppAnimatedNavHostExample(
                 val vm = viewModel<GreetingViewModel>()
 
                 GreetingScreen(
+                    navArgs = navArgs,
                     animatedVisibilityScope = this,
                     navigator = destinationsNavigator(navController),
                     drawerController = drawerController,
