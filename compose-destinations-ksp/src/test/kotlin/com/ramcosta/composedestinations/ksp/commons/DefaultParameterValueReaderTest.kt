@@ -1,6 +1,7 @@
 package com.ramcosta.composedestinations.ksp.commons
 
 import com.ramcosta.composedestinations.codegen.facades.Logger
+import com.ramcosta.composedestinations.codegen.facades.PPrinter
 import com.ramcosta.composedestinations.codegen.model.DefaultValue
 import org.junit.Test
 
@@ -359,6 +360,13 @@ class DefaultParameterValueReaderTest {
 
     private fun addLogger() {
         Logger.instance = object : Logger {
+            override val debugMode: Boolean
+                get() = false
+            override val debugModeOutputPath: String?
+                get() = null
+            override val prettyPrinter: PPrinter
+                get() = kotlin.error("")
+
             override fun logging(message: String) {
                 println("logging - $message")
             }
