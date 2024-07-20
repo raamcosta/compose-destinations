@@ -47,6 +47,7 @@ data class RawNavGraphGenParams(
         operator fun invoke(
             annotationType: Importable,
             isNavHostGraph: Boolean,
+            defaultStartArgs: Importable?,
             defaultTransitions: Importable?,
             deepLinks: List<DeepLink>,
             navArgs: RawNavArgsClass?,
@@ -88,6 +89,7 @@ data class RawNavGraphGenParams(
             return RawNavGraphGenParams(
                 annotationType = annotationType,
                 isNavHostGraph = isNavHostGraph,
+                defaultStartArgs = defaultStartArgs,
                 defaultTransitions = defaultTransitions,
                 deepLinks = deepLinks,
                 navArgs = navArgs,
