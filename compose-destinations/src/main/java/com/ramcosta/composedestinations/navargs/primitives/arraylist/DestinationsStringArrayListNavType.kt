@@ -9,7 +9,9 @@ import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 import com.ramcosta.composedestinations.navargs.utils.encodeForRoute
 
-object DestinationsStringArrayListNavType : DestinationsNavType<ArrayList<String>?>() {
+val stringArrayListNavType: DestinationsNavType<ArrayList<String>?> = DestinationsStringArrayListNavType
+
+internal object DestinationsStringArrayListNavType : DestinationsNavType<ArrayList<String>?>() {
 
     override fun put(bundle: Bundle, key: String, value: ArrayList<String>?) {
         bundle.putStringArrayList(key, value)

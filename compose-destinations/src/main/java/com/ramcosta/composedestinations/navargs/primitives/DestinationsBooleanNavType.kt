@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 
-object DestinationsBooleanNavType : DestinationsNavType<Boolean?>() {
+val booleanNavType: DestinationsNavType<Boolean?> = DestinationsBooleanNavType
+
+internal object DestinationsBooleanNavType : DestinationsNavType<Boolean?>() {
 
     override fun put(bundle: Bundle, key: String, value: Boolean?) {
         when (val bundleValue = booleanToBundleValue(value)) {

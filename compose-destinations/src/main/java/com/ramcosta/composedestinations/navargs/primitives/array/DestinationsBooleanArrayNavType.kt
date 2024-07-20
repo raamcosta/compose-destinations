@@ -7,7 +7,9 @@ import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 
-object DestinationsBooleanArrayNavType : DestinationsNavType<BooleanArray?>() {
+val booleanArrayNavType: DestinationsNavType<BooleanArray?> = DestinationsBooleanArrayNavType
+
+internal object DestinationsBooleanArrayNavType : DestinationsNavType<BooleanArray?>() {
 
     override fun put(bundle: Bundle, key: String, value: BooleanArray?) {
         bundle.putBooleanArray(key, value)

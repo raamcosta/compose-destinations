@@ -7,7 +7,9 @@ import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 
-object DestinationsLongArrayNavType : DestinationsNavType<LongArray?>() {
+val longArrayNavType: DestinationsNavType<LongArray?> = DestinationsLongArrayNavType
+
+internal object DestinationsLongArrayNavType : DestinationsNavType<LongArray?>() {
 
     override fun put(bundle: Bundle, key: String, value: LongArray?) {
         bundle.putLongArray(key, value)

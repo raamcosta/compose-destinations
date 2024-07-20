@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 import com.ramcosta.composedestinations.navargs.utils.encodeForRoute
 
+val stringNavType: DestinationsStringNavType = DestinationsStringNavType
+
 object DestinationsStringNavType : DestinationsNavType<String?>() {
 
     internal const val ENCODED_EMPTY_STRING = "%02%03"
