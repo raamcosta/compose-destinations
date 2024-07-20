@@ -80,7 +80,10 @@ internal class DefaultNavHostEngine(
     ) = with(defaultAnimationParams)  {
         androidx.navigation.compose.NavHost(
             navController = navController,
-            startDestination = startRoute.route,
+            // since start destinations of NavHosts can't have
+            // mandatory arguments, we can use baseRoute here safely
+            // prevents official lib to consider weird arg values like "{argName}"
+            startDestination = startRoute.baseRoute,
             modifier = modifier,
             route = route,
             contentAlignment = navHostContentAlignment,

@@ -12,5 +12,14 @@ package com.ramcosta.composedestinations.spec
  */
 sealed interface Route {
 
+    /**
+     * Full route pattern that will be added to the navigation graph.
+     * Navigation arguments are not filled in.
+     */
     val route: String
+
+    /**
+     * Prefix of the route - basically [route] without argument info.
+     */
+    val baseRoute: String
 }
