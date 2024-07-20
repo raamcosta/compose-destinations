@@ -32,7 +32,6 @@ import com.ramcosta.composedestinations.codegen.model.Visibility
 
 internal class InitialValidator(
     private val codeGenConfig: CodeGenConfig,
-    private val isBottomSheetDependencyPresent: Boolean
 ) {
 
     fun validate(
@@ -164,7 +163,7 @@ internal class InitialValidator(
 
     private fun DestinationGeneratingParams.validateReceiverColumnScope() {
         if (composableReceiverType?.importable?.qualifiedName == COLUMN_SCOPE_QUALIFIED_NAME) {
-            if (!isBottomSheetDependencyPresent) {
+            if (!codeGenConfig.isBottomSheetDependencyPresent) {
                 throw MissingRequiredDependency(
                     "'${annotatedName}' composable: " +
                             "You need to include $BOTTOM_SHEET_DEPENDENCY dependency to use a $COLUMN_SCOPE_SIMPLE_NAME receiver!"
@@ -285,8 +284,8 @@ internal class InitialValidator(
 
         if (firstTypeArg is TypeArgument.Error) {
             // Since the Destination is not yet generated, we are expecting this to happen
-            Logger.instance.info("getFirstArgTypeSimpleName | line error = \n```\n${firstTypeArg.lineStr}\n```")
-            return firstTypeArg.lineStr
+            Logger.instance.info("getFirstArgTypeSimpleName | line error = \n```\n${firstTypeArg.linesStr}\n```")
+            return firstTypeArg.linesStr
                 .replaceBefore(this.name, "")
                 .removePrefix(this.name).also {
                     Logger.instance.info("getFirstArgTypeSimpleName | result of removePrefix ${this.name} = \n```\n$it\n```")

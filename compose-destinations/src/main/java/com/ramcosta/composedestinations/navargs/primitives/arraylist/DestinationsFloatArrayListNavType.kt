@@ -7,7 +7,9 @@ import com.ramcosta.composedestinations.navargs.primitives.DECODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.ENCODED_NULL
 import com.ramcosta.composedestinations.navargs.primitives.encodedComma
 
-object DestinationsFloatArrayListNavType : DestinationsNavType<ArrayList<Float>?>() {
+val floatArrayListNavType: DestinationsNavType<ArrayList<Float>?> = DestinationsFloatArrayListNavType
+
+internal object DestinationsFloatArrayListNavType : DestinationsNavType<ArrayList<Float>?>() {
 
     override fun put(bundle: Bundle, key: String, value: ArrayList<Float>?) {
         bundle.putFloatArray(key, value.toArray())

@@ -1,7 +1,6 @@
 package com.ramcosta.composedestinations.ksp.processors
 
 import com.google.devtools.ksp.KspExperimental
-import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -14,7 +13,6 @@ import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Modifier
 import com.ramcosta.composedestinations.codegen.CodeGenerator
 import com.ramcosta.composedestinations.codegen.commons.ACTIVITY_DESTINATION_ANNOTATION_QUALIFIED
-import com.ramcosta.composedestinations.codegen.commons.CORE_BOTTOM_SHEET_DESTINATION_STYLE
 import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_QUALIFIED
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
@@ -44,7 +42,8 @@ class Processor(
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        Logger.instance = KspLogger(logger)
+        val codeGenConfig = ConfigParser(options).parse(resolver)
+        Logger.instance = KspLogger(codeGenConfig, logger)
 
         val composableDestinations = resolver.getComposableDestinationPaths()
         val activityDestinations = resolver.getActivityDestinations()
@@ -60,11 +59,11 @@ class Processor(
         }
 
         val navHostDefaultStartArgsByGraphAnnotationType = resolver.getNavHostDefaultStartArgsByGraphAnnotationType()
-        val navTypeSerializers = resolver.getNavTypeSerializers()
-        val codeGenConfig = ConfigParser(options).parse()
-        val destinationMappingUtils = DestinationMappingUtils(resolver)
-
         val mutableKSFileSourceMapper = MutableKSFileSourceMapper()
+        val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, mutableKSFileSourceMapper)
+
+        val navTypeSerializers = resolver.getNavTypeSerializers()
+        val destinationMappingUtils = DestinationMappingUtils(resolver)
         val classesToNavGraphsMapper = KspToCodeGenNavGraphsMapper(
             resolver,
             destinationMappingUtils,
@@ -80,12 +79,10 @@ class Processor(
             mutableKSFileSourceMapper,
             navTypeSerializers.associateBy { it.genericType }
         )
-        val kspCodeOutputStreamMaker = KspCodeOutputStreamMaker(codeGenerator, mutableKSFileSourceMapper)
         val destinations = functionsToDestinationsMapper.map(composableDestinations.map { it.immutable() }, activityDestinations)
 
         CodeGenerator(
             codeGenerator = kspCodeOutputStreamMaker,
-            isBottomSheetDependencyPresent = resolver.isBottomSheetDepPresent(),
             codeGenConfig = codeGenConfig
         ).generate(
             destinations,
@@ -269,10 +266,6 @@ class Processor(
                     genericType = Importable(genericType.simpleName.asString(), genericType.qualifiedName!!.asString()),
                 )
             }.toList()
-    }
-
-    private fun Resolver.isBottomSheetDepPresent(): Boolean {
-        return getClassDeclarationByName("$CORE_PACKAGE_NAME.bottomsheet.spec.$CORE_BOTTOM_SHEET_DESTINATION_STYLE") != null
     }
 }
 

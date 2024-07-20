@@ -54,6 +54,7 @@ android {
 
     // Possible Compose Destinations configs:
     ksp {
+        arg("compose-destinations.debugMode", "$rootDir")
 //        // Module name.
 //        // It will be used as the generated sealed Destinations prefix
 //        arg("compose-destinations.moduleName", "featureX")

@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 
-object DestinationsIntNavType : DestinationsNavType<Int?>() {
+val intNavType: DestinationsNavType<Int?> = DestinationsIntNavType
+
+internal object DestinationsIntNavType : DestinationsNavType<Int?>() {
 
     override fun put(bundle: Bundle, key: String, value: Int?) {
         when (val bundleValue = intToBundleValue(value)) {

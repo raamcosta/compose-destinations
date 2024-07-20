@@ -7,6 +7,11 @@ import androidx.compose.runtime.Immutable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
+import com.ramcosta.composedestinations.navargs.primitives.DestinationsBooleanNavType
+import com.ramcosta.composedestinations.navargs.primitives.DestinationsFloatNavType
+import com.ramcosta.composedestinations.navargs.primitives.DestinationsIntNavType
+import com.ramcosta.composedestinations.navargs.primitives.DestinationsLongNavType
+import com.ramcosta.composedestinations.navargs.primitives.DestinationsStringNavType
 import com.ramcosta.composedestinations.navigation.DestinationDependenciesContainer
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
@@ -15,6 +20,7 @@ import com.ramcosta.composedestinations.result.resultBackNavigator
 import com.ramcosta.composedestinations.result.resultRecipient
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
+import kotlin.reflect.KClass
 
 /**
  * Scope where a destination screen will be called in.
@@ -108,3 +114,44 @@ interface AnimatedDestinationScope<T> : DestinationScope<T>, AnimatedVisibilityS
  */
 @Immutable
 interface BottomSheetDestinationScope<T> : DestinationScope<T>, ColumnScope
+
+//region deprecated
+@Suppress("DeprecatedCallableAddReplaceWith")
+@Deprecated(
+    level = DeprecationLevel.ERROR,
+    message = "\n" +
+            "Use the `resultRecipient` version that takes in a `DestinationsNavType` parameter!\n" +
+            "Example: for Boolean results, it's `booleanNavType`, for custom types it's `customTypeClassNameNavType`."
+)
+@Composable
+inline fun <reified D : DestinationSpec, R, reified T : R & Any>
+        DestinationScopeWithNoDependencies<*>.resultRecipient(): ResultRecipient<D, R> =
+    resultRecipient(tryGettingNavType(T::class))
+
+@Suppress("DeprecatedCallableAddReplaceWith")
+@Deprecated(
+    level = DeprecationLevel.ERROR,
+    message = "\n" +
+            "Use the `resultBackNavigator` version that takes in a `DestinationsNavType` parameter!\n" +
+            "Example: for Boolean results, it's `booleanNavType`, for custom types it's `customTypeClassNameNavType`."
+)
+@Composable
+inline fun <R, reified T : R & Any> DestinationScopeWithNoDependencies<*>.resultBackNavigator(): ResultBackNavigator<R> =
+    resultBackNavigator(tryGettingNavType(T::class))
+
+@PublishedApi
+@Suppress("UNCHECKED_CAST")
+internal fun <R, T : R & Any> tryGettingNavType(kClass: KClass<T>): DestinationsNavType<in R> {
+    return when (kClass) {
+        String::class -> DestinationsStringNavType
+        Boolean::class -> DestinationsBooleanNavType
+        Float::class -> DestinationsFloatNavType
+        Int::class -> DestinationsIntNavType
+        Long::class -> DestinationsLongNavType
+        else -> error(
+            "Use the `resultBackNavigator`/`resultRecipient` version that takes in a `DestinationsNavType` parameter!\n" +
+                    "Example: for Boolean results, it's `booleanNavType`, for custom types it's `customTypeClassNameNavType`."
+        )
+    } as DestinationsNavType<in R>
+}
+//

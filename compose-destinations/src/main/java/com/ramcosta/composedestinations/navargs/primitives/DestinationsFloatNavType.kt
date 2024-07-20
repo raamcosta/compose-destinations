@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 
-object DestinationsFloatNavType : DestinationsNavType<Float?>() {
+val floatNavType: DestinationsNavType<Float?> = DestinationsFloatNavType
+
+internal object DestinationsFloatNavType : DestinationsNavType<Float?>() {
 
     override fun put(bundle: Bundle, key: String, value: Float?) {
         when (val bundleValue = floatToBundleValue(value)) {

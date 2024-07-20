@@ -21,7 +21,7 @@ import com.ramcosta.composedestinations.bottomsheet.utils.bottomSheetComposable
 import com.ramcosta.composedestinations.generated.featurey.navtype.internalBackResultNavType
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
-import com.ramcosta.composedestinations.navargs.primitives.DestinationsBooleanNavType
+import com.ramcosta.composedestinations.navargs.primitives.booleanNavType
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.destination
 import com.ramcosta.composedestinations.navigation.navGraph
@@ -122,7 +122,7 @@ private fun ManualComposableCallsBuilder.greetingScreen(
             uiEvents = vm as GreetingUiEvents,
             uiState = vm as GreetingUiState,
             test = "testing param from NavHost",
-            resultRecipient = resultRecipient(DestinationsBooleanNavType),
+            resultRecipient = resultRecipient(booleanNavType),
             featYResult = resultRecipient(internalBackResultNavType),
         )
     }
@@ -156,7 +156,7 @@ fun SampleAppAnimatedNavHostExample(
                     drawerController = drawerController,
                     uiEvents = vm as GreetingUiEvents,
                     uiState = vm as GreetingUiState,
-                    resultRecipient = resultRecipient(DestinationsBooleanNavType),
+                    resultRecipient = resultRecipient(booleanNavType),
                     featYResult = resultRecipient(internalBackResultNavType),
                     testProfileDeepLink = testProfileDeepLink,
                     test = "testing param from NavHost",
@@ -169,7 +169,7 @@ fun SampleAppAnimatedNavHostExample(
 
             dialogComposable(GoToProfileConfirmationDestination) {
                 GoToProfileConfirmation(
-                    resultNavigator = resultBackNavigator(navController, DestinationsBooleanNavType)
+                    resultNavigator = resultBackNavigator(navController, booleanNavType)
                 )
             }
 

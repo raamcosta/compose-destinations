@@ -20,7 +20,6 @@ import com.ramcosta.composedestinations.codegen.writers.sub.SingleNavGraphWriter
 
 internal interface ServiceLocator {
     val codeGenerator: CodeOutputStreamMaker
-    val isBottomSheetDependencyPresent: Boolean
     val codeGenConfig: CodeGenConfig
 }
 
@@ -60,7 +59,6 @@ internal fun ServiceLocator.destinationsWriter(
 ) = DestinationsWriter(
     codeGenConfig,
     codeGenerator,
-    isBottomSheetDependencyPresent,
     customNavTypeByType,
     submodules,
 )
@@ -78,8 +76,7 @@ internal fun ServiceLocator.navGraphsSingleObjectWriter(
 )
 
 internal val ServiceLocator.initialValidator get() = InitialValidator(
-    codeGenConfig,
-    isBottomSheetDependencyPresent
+    codeGenConfig
 )
 
 internal val ServiceLocator.defaultKtxSerializableNavTypeSerializerWriter get() =

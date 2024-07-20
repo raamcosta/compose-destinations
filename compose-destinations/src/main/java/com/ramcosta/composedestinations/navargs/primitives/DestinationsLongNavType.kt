@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import com.ramcosta.composedestinations.navargs.DestinationsNavType
 
-object DestinationsLongNavType : DestinationsNavType<Long?>() {
+val longNavType: DestinationsNavType<Long?> = DestinationsLongNavType
+
+internal object DestinationsLongNavType : DestinationsNavType<Long?>() {
 
     override fun put(bundle: Bundle, key: String, value: Long?) {
         when (val bundleValue = longToBundleValue(value)) {

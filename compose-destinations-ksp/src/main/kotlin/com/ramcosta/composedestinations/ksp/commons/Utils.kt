@@ -153,11 +153,13 @@ fun KSType.findActualClassDeclaration(): KSClassDeclaration? {
     return declaration as? KSClassDeclaration?
 }
 
-fun KSClassDeclaration.toImportable(): Importable {
-    return Importable(
-        simpleName.asString(),
-        qualifiedName!!.asString()
-    )
+fun KSClassDeclaration.toImportable(): Importable? {
+    return qualifiedName?.let { nonNullQualifiedName ->
+        Importable(
+            simpleName.asString(),
+            nonNullQualifiedName.asString()
+        )
+    }
 }
 
 val KSClassDeclaration.isNothing get() =
@@ -243,7 +245,7 @@ fun KSValueParameter.toParameter(
             it.shortName.asString() == "NavHostParam" &&
                     it.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_HOST_PARAM_ANNOTATION_QUALIFIED
         },
-        lazyDefaultValue = lazy { getDefaultValue(resolver) }
+        defaultValue = getDefaultValue(resolver)
     )
 }
 
@@ -358,7 +360,7 @@ private fun KSType.argumentTypes(location: Location, resolver: Resolver, navType
         val resolvedType = typeArg.type?.resolve()
 
         if (resolvedType?.isError == true) {
-            return@mapNotNull TypeArgument.Error(lazy { getErrorLines(location) })
+            return@mapNotNull TypeArgument.Error(getErrorLines(location))
         }
 
         if (resolvedType?.declaration is KSTypeParameter) return@mapNotNull TypeArgument.GenericType

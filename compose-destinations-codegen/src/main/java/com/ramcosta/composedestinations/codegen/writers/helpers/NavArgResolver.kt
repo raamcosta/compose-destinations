@@ -75,7 +75,10 @@ class NavArgResolver(
             value in coreTypes.keys -> "${coreTypes[value]!!.simpleName}.put(handle, \"$argName\", $argName$valueClassSuffix)"
             isCustomTypeNavArg() -> "${customNavTypeCode(this)}.put(handle, \"$argName\", $argName$valueClassSuffix)"
             valueClassInnerInfo != null -> {
-                valueClassInnerInfo.typeInfo.toSavedStateHandleArgPutter(argName, ".${valueClassInnerInfo.publicNonNullableField!!}")
+                valueClassInnerInfo.typeInfo.toSavedStateHandleArgPutter(
+                    argName = argName,
+                    valueClassSuffix = "${if (isNullable) "?" else ""}.${valueClassInnerInfo.publicNonNullableField!!}"
+                )
             }
             else -> throw IllegalDestinationsSetup("Unknown type $importable.qualifiedName")
         }

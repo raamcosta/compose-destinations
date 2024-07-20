@@ -58,6 +58,7 @@ fun AnotherTestScreen() {
 fun TestScreen(
     id: Long = 0,
     asd: String,
+    qwe: NullableValueClassArg? = null,
     stuff1: ArrayList<String> = arrayListOf(),
     stuff2: Array<Stuff>?,
     stuff3: ArrayList<Color>? = arrayListOf(),
@@ -75,6 +76,7 @@ fun TestScreen(
             text = """
             id = $id
             asd = $asd
+            qwe = $qwe
             stuff1 = $stuff1
             stuff2 = ${stuff2.contentToString()}
             stuff3 = $stuff3
@@ -105,12 +107,15 @@ data class Things(
 @Serializable
 data class OtherThings(
     val thatIsAThing: String,
-    val thatIsAValueClass: ValueClass,
+    val thatIsAValueClass: ValueClass? = null,
 )
 
 @JvmInline
 @Serializable
 value class ValueClass(val value: String)
+
+@JvmInline
+value class NullableValueClassArg(val value: String)
 
 @NavTypeSerializer
 class ColorTypeSerializer : DestinationsNavTypeSerializer<Color> {

@@ -40,6 +40,7 @@ android {
     }
 
     ksp {
+        arg("compose-destinations.debugMode", "$rootDir")
         arg("compose-destinations.moduleName", "featureZ")
     }
 }
