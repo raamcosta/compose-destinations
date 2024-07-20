@@ -13,7 +13,6 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toIntOrNull()
-        targetSdk = libs.versions.targetSdk.get().toIntOrNull()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles.add(File("consumer-rules.pro"))
@@ -40,11 +39,13 @@ android {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.freeCompilerArgs += listOf(
-        "-opt-in=kotlin.RequiresOptIn",
-        "-opt-in=com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi"
-    )
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll(
+            "-opt-in=kotlin.RequiresOptIn",
+            "-opt-in=com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi"
+        )
+    }
 }
 
 dependencies {

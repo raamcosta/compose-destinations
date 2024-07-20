@@ -5,10 +5,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-}
-
 android {
     namespace = "com.ramcosta.destinations.sample"
     compileSdk = libs.versions.compileSdk.get().toIntOrNull()
@@ -53,6 +49,9 @@ android {
 
 kotlin {
     jvmToolchain(11)
+    compilerOptions {
+        freeCompilerArgs.addAll("-opt-in=kotlin.RequiresOptIn")
+    }
 }
 
 dependencies {
