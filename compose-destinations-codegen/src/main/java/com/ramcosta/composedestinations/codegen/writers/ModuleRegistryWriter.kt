@@ -14,6 +14,7 @@ import com.ramcosta.composedestinations.codegen.model.Type
 import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
 import com.ramcosta.composedestinations.codegen.model.Visibility
+import com.ramcosta.composedestinations.codegen.moduleName
 import com.ramcosta.composedestinations.codegen.registryId
 import com.ramcosta.composedestinations.codegen.templates.core.setOfImportable
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
@@ -75,7 +76,7 @@ internal class ModuleRegistryWriter(
                     )
                     
                     @_Info_$registryId(
-                        moduleName = "${codeGenConfig.moduleName ?: ""}",
+                        moduleName = "$moduleName",
                         packageName = "$codeGenBasePackageName",
                         hasNavArgsPackage = ${"$codeGenBasePackageName.navargs" in codeGenerator.packageNamesWrittenTo},
                         typeResults = [

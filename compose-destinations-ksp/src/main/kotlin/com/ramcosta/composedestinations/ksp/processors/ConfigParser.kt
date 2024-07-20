@@ -2,6 +2,10 @@
 
 package com.ramcosta.composedestinations.ksp.processors
 
+import com.google.devtools.ksp.getClassDeclarationByName
+import com.google.devtools.ksp.processing.Resolver
+import com.ramcosta.composedestinations.codegen.commons.CORE_BOTTOM_SHEET_DESTINATION_STYLE
+import com.ramcosta.composedestinations.codegen.commons.CORE_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 
 class ConfigParser(
@@ -21,7 +25,7 @@ class ConfigParser(
         private const val HTML_MERMAID_GRAPH = "$PREFIX.htmlMermaidGraph"
     }
 
-    fun parse(): CodeGenConfig {
+    fun parse(resolver: Resolver): CodeGenConfig {
         val packageName = options[GEN_PACKAGE_NAME]?.trim()?.removeSuffix(".")
         val moduleName = options[MODULE_NAME]?.trim()?.filter { it.isLetter() }
         val htmlMermaidGraph = options[HTML_MERMAID_GRAPH]?.trim()
@@ -34,6 +38,7 @@ class ConfigParser(
             packageName = packageName,
             mermaidGraph = mermaidGraph,
             htmlMermaidGraph = htmlMermaidGraph,
+            isBottomSheetDependencyPresent = resolver.isBottomSheetDepPresent()
         )
     }
 
@@ -43,6 +48,10 @@ class ConfigParser(
         }?.getOrElse {
             throw WrongConfigurationSetup("$key must be a boolean value!", cause = it)
         }
+    }
+
+    private fun Resolver.isBottomSheetDepPresent(): Boolean {
+        return getClassDeclarationByName("$CORE_PACKAGE_NAME.bottomsheet.spec.$CORE_BOTTOM_SHEET_DESTINATION_STYLE") != null
     }
 }
 

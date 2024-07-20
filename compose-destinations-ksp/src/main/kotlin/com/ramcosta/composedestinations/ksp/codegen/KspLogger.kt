@@ -5,6 +5,7 @@ import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.facades.PPrinter
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import io.exoquery.fansi.Attrs
+import java.util.Locale
 
 class KspLogger(
     private val codeGenConfig: CodeGenConfig,
@@ -13,7 +14,7 @@ class KspLogger(
 
     override val debugMode: Boolean = codeGenConfig.debugModeOutputDir != null
     override val debugModeOutputPath: String? = codeGenConfig.debugModeOutputDir?.let {
-        "$it/compose-destinations-debug.txt"
+        "$it/composeDestinationsDebug/${codeGenConfig.registryId.lowercase(Locale.ROOT)}.txt"
     }
 
     private val _prettyPrinter: PPrinter = object: PPrinter {

@@ -2,7 +2,6 @@ package com.ramcosta.composedestinations.codegen
 
 import com.ramcosta.composedestinations.codegen.commons.firstTypeInfoArg
 import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayListTypeNavArg
-import com.ramcosta.composedestinations.codegen.commons.sanitizePackageName
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.facades.Logger
 import com.ramcosta.composedestinations.codegen.facades.debug
@@ -18,8 +17,6 @@ import com.ramcosta.composedestinations.codegen.servicelocator.defaultKtxSeriali
 import com.ramcosta.composedestinations.codegen.servicelocator.destinationsWriter
 import com.ramcosta.composedestinations.codegen.servicelocator.initialValidator
 import com.ramcosta.composedestinations.codegen.servicelocator.moduleOutputWriter
-import java.util.Locale
-import java.util.UUID
 
 internal const val DEFAULT_GEN_PACKAGE_NAME = "com.ramcosta.composedestinations.generated"
 internal lateinit var codeGenBasePackageName: String
@@ -28,22 +25,15 @@ internal lateinit var registryId: String
 
 class CodeGenerator(
     override val codeGenerator: CodeOutputStreamMaker,
-    override val isBottomSheetDependencyPresent: Boolean,
     override val codeGenConfig: CodeGenConfig
 ) : ServiceLocator {
 
     init {
-        initConfigurationValues()
-
         Logger.instance.debug {
             """
-                |CodeGenerator init:
-                |---------------------------------------
-                |codeGenConfig= ${pprint(codeGenConfig)}
-                |isBottomSheetDependencyPresent= $isBottomSheetDependencyPresent
-                |moduleName= '$moduleName'
-                |codeGenBasePackageName= '$codeGenBasePackageName'
-                |registryId= '$registryId'
+            |CodeGenerator init:
+            |---------------------------------------
+            |${pprint(codeGenConfig)}
             """.trimMargin()
         }
     }
@@ -104,17 +94,6 @@ class CodeGenerator(
         if (shouldWriteKtxSerializableNavTypeSerializer(destinations)) {
             defaultKtxSerializableNavTypeSerializerWriter.write()
         }
-    }
-
-    private fun initConfigurationValues() {
-        moduleName = codeGenConfig.moduleName?.replaceFirstChar { it.uppercase(Locale.US) } ?: ""
-        val defaultPackageName = if (moduleName.isEmpty()) {
-            DEFAULT_GEN_PACKAGE_NAME
-        } else {
-            "$DEFAULT_GEN_PACKAGE_NAME.${moduleName.lowercase()}".sanitizePackageName()
-        }
-        codeGenBasePackageName = codeGenConfig.packageName?.sanitizePackageName() ?: defaultPackageName
-        registryId = moduleName.ifEmpty { UUID.randomUUID().toString().replace("-", "_") }
     }
 
     private fun shouldWriteKtxSerializableNavTypeSerializer(

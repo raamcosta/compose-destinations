@@ -51,7 +51,6 @@ val destinationsPackageName = "$codeGenBasePackageName.destinations"
 internal class SingleDestinationWriter(
     private val codeGenConfig: CodeGenConfig,
     private val codeGenerator: CodeOutputStreamMaker,
-    private val isBottomSheetDependencyPresent: Boolean,
     private val navArgResolver: NavArgResolver,
     private val destination: CodeGenProcessedDestination,
     private val importableHelper: ImportableHelper,
@@ -275,7 +274,7 @@ internal class SingleDestinationWriter(
     }
 
     private fun destinationStyleBottomSheet(): String {
-        if (!isBottomSheetDependencyPresent) {
+        if (!codeGenConfig.isBottomSheetDependencyPresent) {
             throw MissingRequiredDependency("You need to include '$BOTTOM_SHEET_DEPENDENCY' to use $CORE_BOTTOM_SHEET_DESTINATION_STYLE!")
         }
 

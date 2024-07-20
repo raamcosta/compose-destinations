@@ -28,7 +28,7 @@ interface PPrinter {
     fun pprint(any: Any): String
 }
 
-inline fun Logger.debug(message: PPrinter.() -> String) {
+inline fun Logger.debug(message: PPrinter.() -> String) = synchronized(this) {
     debugModeOutputPath?.let {
         File(it)
             .run {
