@@ -1,10 +1,12 @@
 package com.ramcosta.composedestinations.spec
 
 import android.os.Bundle
-import androidx.annotation.RestrictTo
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.*
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
+import androidx.navigation.NavDeepLink
 import com.ramcosta.composedestinations.scope.DestinationScope
 
 /**
@@ -54,10 +56,8 @@ interface DestinationSpec<T> : Route {
 
     /**
      * Prefix of the route - basically [route] without argument info.
-     * Meant for internal usage only.
      */
-    @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
-    val baseRoute: String
+    override val baseRoute: String
 
     /**
      * All [NamedNavArgument]s that will be added to the navigation

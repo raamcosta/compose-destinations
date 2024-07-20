@@ -26,4 +26,6 @@ interface NavGraphSpec : Direction, Route {
      * Nested navigation graphs of this navigation graph.
      */
     val nestedNavGraphs: List<NavGraphSpec> get() = emptyList()
+
+    override val baseRoute: String get() = route
 }

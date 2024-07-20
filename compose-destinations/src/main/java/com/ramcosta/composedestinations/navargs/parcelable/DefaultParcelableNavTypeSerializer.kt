@@ -25,7 +25,13 @@ class DefaultParcelableNavTypeSerializer(
     }
 
     override fun fromRouteString(routeStr: String): Parcelable {
-        val (className, base64) = routeStr.split("@").let { it[0] to it[1] }
+        val splits = routeStr.split("@")
+        // must throw IllegalArgumentException here, such as with require function
+        require(splits.size == 2) {
+            "Impossible to get Parcelable from $routeStr"
+        }
+
+        val (className, base64) = splits.let { it[0] to it[1] }
 
         val creator = if (jClass.isFinal) {
             // Since we have this, small optimization to avoid additional reflection call of Class.forName
