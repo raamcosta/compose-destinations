@@ -249,7 +249,13 @@ fun KSValueParameter.toParameter(
     )
 }
 
-fun KSType.toGenVisibility(): Visibility {
+fun Any.toGenVisibility(): Visibility {
+    val declaration = if (this is KSType) {
+        declaration
+    } else {
+        // KSP 2
+        this as KSClassDeclaration
+    }
     return when (val visibility = declaration.simpleName.asString()) {
         "PUBLIC" -> Visibility.PUBLIC
         "INTERNAL" -> Visibility.INTERNAL
