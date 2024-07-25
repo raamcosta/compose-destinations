@@ -17,6 +17,7 @@ import com.ramcosta.composedestinations.codegen.model.Importable
 import com.ramcosta.composedestinations.codegen.model.Parameter
 import com.ramcosta.composedestinations.codegen.model.TypeArgument
 import com.ramcosta.composedestinations.codegen.model.TypeInfo
+import com.ramcosta.composedestinations.codegen.model.unwrapAvailable
 import com.ramcosta.composedestinations.codegen.writers.helpers.ImportableHelper
 import com.ramcosta.composedestinations.codegen.writers.helpers.NavArgResolver
 
@@ -188,7 +189,7 @@ class NavArgumentBridgeCodeBuilder(
     }
 
     private fun defaultValueForInvokeFunction(it: Parameter): String {
-        return if (it.hasDefault) " = ${it.defaultValue?.code}"
+        return if (it.hasDefault) " = ${it.defaultValue.unwrapAvailable()?.code}"
         else ""
     }
 
@@ -329,7 +330,7 @@ class NavArgumentBridgeCodeBuilder(
 
 
 
-    private fun navArgDefaultCode(param: Parameter): String = param.defaultValue.let { defaultValue ->
+    private fun navArgDefaultCode(param: Parameter): String = param.defaultValue.unwrapAvailable().let { defaultValue ->
         if (defaultValue == null) {
             return ""
         }

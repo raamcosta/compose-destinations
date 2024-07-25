@@ -5,7 +5,7 @@ data class Parameter(
     val type: TypeInfo,
     val hasDefault: Boolean,
     val isMarkedNavHostParam: Boolean,
-    val defaultValue: DefaultValue?,
+    val defaultValue: DefaultValue,
 ) {
     val isMandatory: Boolean get() = !type.isNullable && !hasDefault
 }

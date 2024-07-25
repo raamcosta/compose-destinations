@@ -20,7 +20,7 @@ class DefaultParameterValueReaderTest {
             srcCodeText = "    arg1: String? = \"defaultArg\") {",
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue("\"defaultArg\"")
+            expected = DefaultValue.Available("\"defaultArg\"")
         ),
         TestCase(
             srcCodeText = """
@@ -36,44 +36,44 @@ class DefaultParameterValueReaderTest {
             """,
             argName = "myInfo",
             argType = "MyInfo",
-            expected = DefaultValue("MyInfo()")
+            expected = DefaultValue.Available("MyInfo()")
         ),
         TestCase(
             srcCodeText = "    arg1: String? = null,",
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue("null")
+            expected = DefaultValue.Available("null")
         ),
         TestCase(
             srcCodeText = "internal fun EditRitual(nav: RespawnNavigator, ritualId: Uuid? = null) = AnalyticsScreen(\"EditRitual\") {",
             argName = "ritualId",
             argType = "Uuid",
             imports = listOf("com.ramcosta.package.Uuid"),
-            expected = DefaultValue("null", listOf())
+            expected = DefaultValue.Available("null", listOf())
         ),
         TestCase(
             srcCodeText = "    arg1: String? = \"defaultArg\"",
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue("\"defaultArg\"")
+            expected = DefaultValue.Available("\"defaultArg\"")
         ),
         TestCase(
             srcCodeText = "    arg1: String? = \"defaultArg\",",
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue("\"defaultArg\"")
+            expected = DefaultValue.Available("\"defaultArg\"")
         ),
         TestCase(
             srcCodeText = "arg1: String = \"multiple words string\",",
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue("\"multiple words string\"")
+            expected = DefaultValue.Available("\"multiple words string\"")
         ),
         TestCase(
             srcCodeText = "arg1: String = \"multiple, words string\", arg2: String = \"doesn't matter\"",
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue("\"multiple, words string\"")
+            expected = DefaultValue.Available("\"multiple, words string\"")
         ),
         TestCase(
             srcCodeText = """
@@ -81,7 +81,7 @@ class DefaultParameterValueReaderTest {
             """,
             argName = "cena",
             argType = "Class",
-            expected = DefaultValue("Any::class.java")
+            expected = DefaultValue.Available("Any::class.java")
         ),
         TestCase(
             srcCodeText = """
@@ -91,7 +91,7 @@ class DefaultParameterValueReaderTest {
             """,
             argName = "configuration",
             argType = "SearchConfiguration",
-            expected = DefaultValue("SearchConfiguration()")
+            expected = DefaultValue.Available("SearchConfiguration()")
         ),
         TestCase(
             srcCodeText = """
@@ -100,7 +100,7 @@ class DefaultParameterValueReaderTest {
             """,
             argName = "myProperty",
             argType = "Boolean",
-            expected = DefaultValue("false")
+            expected = DefaultValue.Available("false")
         ),
         TestCase(
             srcCodeText = """
@@ -111,13 +111,13 @@ class DefaultParameterValueReaderTest {
             """,
             argName = "myProperty",
             argType = "Boolean",
-            expected = DefaultValue("false")
+            expected = DefaultValue.Available("false")
         ),
         TestCase(
             srcCodeText = """val appliedFilters: AppliedSearchFilters = AppliedSearchFilters(),)@Preview@Composableprivate fun SearchScreenPreview(@PreviewParameter(PoiListPreviewParameterProvider::class, limit = 1) poiList: ImmutableList,) {OcmPreview {SearchScreenContent(poiCallbacks = PoiCallbacks(null, Origin.Deals, LocalFocusManager.current),""",
             argName = "appliedFilters",
             argType = "AppliedSearchFilters",
-            expected = DefaultValue("AppliedSearchFilters()")
+            expected = DefaultValue.Available("AppliedSearchFilters()")
         ),
         TestCase(
             srcCodeText = """
@@ -131,7 +131,7 @@ class DefaultParameterValueReaderTest {
             """,
             argName = "appliedFilters",
             argType = "AppliedSearchFilters",
-            expected = DefaultValue("AppliedSearchFilters()")
+            expected = DefaultValue.Available("AppliedSearchFilters()")
         ),
         TestCase(
             srcCodeText = """
@@ -140,7 +140,7 @@ class DefaultParameterValueReaderTest {
             """,
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue("\"multiple, words string\"")
+            expected = DefaultValue.Available("\"multiple, words string\"")
         ),
         TestCase(
             srcCodeText = """
@@ -149,7 +149,7 @@ class DefaultParameterValueReaderTest {
             """,
             argName = "thingsWithNavTypeSerializer",
             argType = "Things",
-            expected = DefaultValue("null")
+            expected = DefaultValue.Available("null")
         ),
         TestCase(
             srcCodeText = """
@@ -159,49 +159,49 @@ class DefaultParameterValueReaderTest {
             argName = "stuff3",
             argType = "ArrayList",
             imports = emptyList(),
-            expected = DefaultValue("arrayListOf()")
+            expected = DefaultValue.Available("arrayListOf()")
         ),
         TestCase(
             srcCodeText = "arg1: String = \"multiple, \\\"words string\", arg2: String = \"doesn't matter\"",
             argName = "arg1",
             argType = "String",
-            expected = DefaultValue("\"multiple, \\\"words string\"")
+            expected = DefaultValue.Available("\"multiple, \\\"words string\"")
         ),
         TestCase(
             srcCodeText = "arg1: String = \"doesn't matter\", arg2: String = \"mul\\\"tiple words \\\"string\"",
             argName = "arg2",
             argType = "String",
-            expected = DefaultValue("\"mul\\\"tiple words \\\"string\"")
+            expected = DefaultValue.Available("\"mul\\\"tiple words \\\"string\"")
         ),
         TestCase(
             srcCodeText = "arg1: String = \"doesn't matter\", arg2: Int = 2, arg3: String = \"mul\\\"tiple words \\\"string\"",
             argName = "arg3",
             argType = "String",
-            expected = DefaultValue("\"mul\\\"tiple words \\\"string\"")
+            expected = DefaultValue.Available("\"mul\\\"tiple words \\\"string\"")
         ),
         TestCase(
             srcCodeText = "arg1: String = \"doesn't matter\", arg2: Int = 2, arg3: String = \"mul\\\"tiple words \\\"string\"",
             argName = "arg2",
             argType = "Int",
-            expected = DefaultValue("2")
+            expected = DefaultValue.Available("2")
         ),
         TestCase(
             srcCodeText = "arg1: Float = 123.0f",
             argName = "arg1",
             argType = "Float",
-            expected = DefaultValue("123.0f")
+            expected = DefaultValue.Available("123.0f")
         ),
         TestCase(
             srcCodeText = "arg1: Float = 123L",
             argName = "arg1",
             argType = "Float",
-            expected = DefaultValue("123L")
+            expected = DefaultValue.Available("123L")
         ),
         TestCase(
             srcCodeText = "arg1: Boolean = true",
             argName = "arg1",
             argType = "Boolean",
-            expected = DefaultValue("true")
+            expected = DefaultValue.Available("true")
         ),
 
 
@@ -214,7 +214,7 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
-            expected = DefaultValue("defaultValue()", listOf("com.ramcosta.composedestinations.ksp.commons.defaultValue"))
+            expected = DefaultValue.Available("defaultValue()", listOf("com.ramcosta.composedestinations.ksp.commons.defaultValue"))
         ),
         TestCase(
             isResolvable = samePackageResolver,
@@ -222,7 +222,7 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
-            expected = DefaultValue("Stuff.defaultValue()", listOf("com.ramcosta.composedestinations.ksp.commons.Stuff"))
+            expected = DefaultValue.Available("Stuff.defaultValue()", listOf("com.ramcosta.composedestinations.ksp.commons.Stuff"))
         ),
         TestCase(
             isResolvable = samePackageResolver,
@@ -230,7 +230,7 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
-            expected = DefaultValue("Outer.Stuff.defaultValue()", listOf("com.ramcosta.composedestinations.ksp.commons.Outer"))
+            expected = DefaultValue.Available("Outer.Stuff.defaultValue()", listOf("com.ramcosta.composedestinations.ksp.commons.Outer"))
         ),
         TestCase(
             isResolvable = samePackageResolver,
@@ -238,7 +238,7 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
-            expected = DefaultValue("Stuff.defaultValue", listOf("com.ramcosta.composedestinations.ksp.commons.Stuff"))
+            expected = DefaultValue.Available("Stuff.defaultValue", listOf("com.ramcosta.composedestinations.ksp.commons.Stuff"))
         ),
         TestCase(
             isResolvable = samePackageResolver,
@@ -246,7 +246,7 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
-            expected = DefaultValue("defaultValue", listOf("com.ramcosta.composedestinations.ksp.commons.defaultValue"))
+            expected = DefaultValue.Available("defaultValue", listOf("com.ramcosta.composedestinations.ksp.commons.defaultValue"))
         ),
         TestCase(
             isResolvable = samePackageResolver,
@@ -254,7 +254,7 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
-            expected = DefaultValue("Stuff.asd().stuff()", listOf("com.ramcosta.composedestinations.ksp.commons.Stuff"))
+            expected = DefaultValue.Available("Stuff.asd().stuff()", listOf("com.ramcosta.composedestinations.ksp.commons.Stuff"))
         ),
         TestCase(
             isResolvable = samePackageResolver,
@@ -262,7 +262,7 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = emptyList(),
-            expected = DefaultValue("Stuff.asd().stuff", listOf("com.ramcosta.composedestinations.ksp.commons.Stuff"))
+            expected = DefaultValue.Available("Stuff.asd().stuff", listOf("com.ramcosta.composedestinations.ksp.commons.Stuff"))
         ),
 
 
@@ -274,35 +274,35 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.defaultValue"),
-            expected = DefaultValue("defaultValue()", listOf("com.ramcosta.package.defaultValue"))
+            expected = DefaultValue.Available("defaultValue()", listOf("com.ramcosta.package.defaultValue"))
         ),
         TestCase(
             srcCodeText = "arg1: String = Outer.Stuff.defaultValue()",
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.Outer"),
-            expected = DefaultValue("Outer.Stuff.defaultValue()", listOf("com.ramcosta.package.Outer"))
+            expected = DefaultValue.Available("Outer.Stuff.defaultValue()", listOf("com.ramcosta.package.Outer"))
         ),
         TestCase(
             srcCodeText = "arg1: String = defaultValue",
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.defaultValue"),
-            expected = DefaultValue("defaultValue", listOf("com.ramcosta.package.defaultValue"))
+            expected = DefaultValue.Available("defaultValue", listOf("com.ramcosta.package.defaultValue"))
         ),
         TestCase(
             srcCodeText = "arg1: String = Stuff.asd().stuff()",
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.Stuff"),
-            expected = DefaultValue("Stuff.asd().stuff()", listOf("com.ramcosta.package.Stuff"))
+            expected = DefaultValue.Available("Stuff.asd().stuff()", listOf("com.ramcosta.package.Stuff"))
         ),
         TestCase(
             srcCodeText = "arg1: String = Stuff.asd().stuff",
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.Stuff"),
-            expected = DefaultValue("Stuff.asd().stuff", listOf("com.ramcosta.package.Stuff"))
+            expected = DefaultValue.Available("Stuff.asd().stuff", listOf("com.ramcosta.package.Stuff"))
         ),
         TestCase(
             srcCodeText = """
@@ -313,7 +313,7 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.Stuff"),
-            expected = DefaultValue("Stuff.asd().stuff", listOf("com.ramcosta.package.Stuff"))
+            expected = DefaultValue.Available("Stuff.asd().stuff", listOf("com.ramcosta.package.Stuff"))
         ),
         TestCase(
             srcCodeText = """
@@ -326,7 +326,7 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.Stuff"),
-            expected = DefaultValue("Stuff.asd().stuff", listOf("com.ramcosta.package.Stuff"))
+            expected = DefaultValue.Available("Stuff.asd().stuff", listOf("com.ramcosta.package.Stuff"))
         ),
         TestCase(
             isResolvable = { pckg, _ -> if (pckg == "com.ramcosta.package") ResolvedSymbol(true) else null },
@@ -334,7 +334,7 @@ class DefaultParameterValueReaderTest {
             argName = "arg1",
             argType = "String",
             imports = listOf("com.ramcosta.package.*"),
-            expected = DefaultValue("Stuff.defaultValue", listOf("com.ramcosta.package.*"))
+            expected = DefaultValue.Available("Stuff.defaultValue", listOf("com.ramcosta.package.*"))
         ),
     )
 
@@ -396,6 +396,6 @@ class DefaultParameterValueReaderTest {
         val argName: String,
         val argType: String,
         val imports: List<String> = emptyList(),
-        val expected: DefaultValue?
+        val expected: DefaultValue
     )
 }

@@ -52,9 +52,12 @@ object DefaultParameterValueReader {
 
         return if (auxText.startsWith("\"")) {
             if (auxText.contains("\"\"\"")) {
-                throw IllegalDestinationsSetup("Multiline string literals are not supported as navigation argument defaults (near: '$auxText'")
+                DefaultValue.Error(
+                    IllegalDestinationsSetup("Multiline string literals are not supported as navigation argument defaults (near: '$auxText'")
+                )
+            } else {
+                DefaultValue.Available(stringLiteralValue(auxText))
             }
-            DefaultValue(stringLiteralValue(auxText))
         } else {
             importedDefaultValue(resolver, auxText, packageName, imports)
         }
@@ -131,26 +134,28 @@ object DefaultParameterValueReader {
             || result == "false"
             || result == "null"
             || result.first().isDigit()) {
-            return DefaultValue(result)
+            return DefaultValue.Available(result)
         }
 
         val importableAux = result.removeFromTo("(", ")")
 
         if (result.length - importableAux.length > 2) {
             //we detected a function call with args, we can't resolve this
-            throw IllegalDestinationsSetup("Navigation arguments using function calls with parameters as their default value " +
-                    "are not currently supported (near: '$auxText')")
+            return DefaultValue.Error(
+                IllegalDestinationsSetup("Navigation arguments using function calls with parameters as their default value " +
+                        "are not currently supported (near: '$auxText')")
+            )
         }
 
         val importable = importableAux.split(".")[0]
         val defValueImports = imports.filter { it.endsWith(".$importable") }
 
         if (defValueImports.isNotEmpty()) {
-            return DefaultValue(result, defValueImports)
+            return DefaultValue.Available(result, defValueImports)
         }
 
         if (resolver.invoke(packageName, importable).existsAndIsAccessible()) {
-            return DefaultValue(result, listOf("${packageName}.$importable"))
+            return DefaultValue.Available(result, listOf("${packageName}.$importable"))
         }
 
         val wholePackageImports = imports
@@ -160,20 +165,20 @@ object DefaultParameterValueReader {
             .filter { resolver.invoke(it.removeSuffix(".*"), importable).existsAndIsAccessible() }
 
         if (validImports.size == 1) {
-            return DefaultValue(result, listOf(validImports[0]))
+            return DefaultValue.Available(result, listOf(validImports[0]))
         }
 
         if (result.startsWith("arrayListOf(") //std kotlin lib
             || result.startsWith("arrayOf(") //std kotlin lib
         ) {
-            return DefaultValue(result)
+            return DefaultValue.Available(result)
         }
 
         if (resolver.invoke(packageName, importable).existsAndIsPrivate()) {
-            throw IllegalDestinationsSetup("Navigation arguments with default values which uses a private declaration are not currently supported (near: '$auxText')")
+            return DefaultValue.Error(IllegalDestinationsSetup("Navigation arguments with default values which uses a private declaration are not currently supported (near: '$auxText')"))
         }
 
-        return DefaultValue(result, wholePackageImports)
+        return DefaultValue.Available(result, wholePackageImports)
     }
 }
 
@@ -220,8 +225,8 @@ private fun String.indexOfFinalClosingParenthesis(): Int? {
 }
 
 @OptIn(KspExperimental::class)
-fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
-    if (!hasDefault) return null
+fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue {
+    if (!hasDefault) return DefaultValue.NonExistent
 
     /*
         This is not ideal: having to read the first n lines of the file,
@@ -231,9 +236,11 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue? {
     */
 
     if (location is NonExistLocation) {
-        throw IllegalDestinationsSetup("Cannot detect default value for navigation" +
-                " argument '${name!!.asString()}' because we don't have access to source code. " +
-                "Nav argument classes from other modules with default values are not supported!")
+        return DefaultValue.Error(
+            IllegalDestinationsSetup("Cannot detect default value for navigation" +
+                    " argument '${name!!.asString()}' because we don't have access to source code. " +
+                    "Nav argument classes from other modules with default values are not supported!")
+        )
     }
 
     Logger.instance.info("getDefaultValue | name = ${name!!.asString()} type = $type")
