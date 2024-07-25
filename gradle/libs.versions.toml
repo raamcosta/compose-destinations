@@ -9,20 +9,20 @@ dependencyCheckPluginVersion = "0.51.0"
 agp = "8.4.2"
 mavenPublishPluginVersion = "0.28.0"
 
-composeViewModel = "2.8.3"
+composeViewModel = "2.8.4"
 activityCompose = "1.9.0"
 
 material = "1.12.0"
-lifecycleRuntimeKtx = "2.8.3"
+lifecycleRuntimeKtx = "2.8.4"
 
 ksp = "2.0.0-1.0.22"
 
 junit = "4.13.2"
 
-compose = "1.7.0-beta05"
-composeMaterial = "1.7.0-beta05"
+compose = "1.7.0-beta06"
+composeMaterial = "1.7.0-beta06"
 composeNavigationMaterial = "1.7.0-beta01"
-composeNavigation = "2.8.0-beta05"
+composeNavigation = "2.8.0-beta06"
 
 ktxSerialization = "1.7.1"
 pprint = "1.1.0"
