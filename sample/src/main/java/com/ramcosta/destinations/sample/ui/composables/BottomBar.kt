@@ -6,14 +6,15 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
-import com.ramcosta.composedestinations.utils.isRouteOnBackStack
+import com.ramcosta.composedestinations.utils.isRouteOnBackStackAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.destinations.sample.NavGraphs
 import com.ramcosta.destinations.sample.R
@@ -29,7 +30,7 @@ fun BottomBar(
     val navigator = navController.rememberDestinationsNavigator()
     BottomNavigation {
         BottomBarItem.values().forEach { destination ->
-            val isCurrentDestOnBackStack = navController.isRouteOnBackStack(destination.direction)
+            val isCurrentDestOnBackStack by navController.isRouteOnBackStackAsState(destination.direction)
             BottomNavigationItem(
                 selected = isCurrentDestOnBackStack,
                 onClick = {
@@ -72,7 +73,7 @@ enum class BottomBarItem(
     val icon: ImageVector,
     @StringRes val label: Int
 ) {
-    TaskList(TaskListScreenDestination, Icons.Default.List, R.string.task_list_screen),
+    TaskList(TaskListScreenDestination, Icons.AutoMirrored.Filled.List, R.string.task_list_screen),
     Account(AccountScreenDestination, Icons.Default.Person, R.string.account_screen),
     Settings(SettingsScreenDestination, Icons.Default.Settings, R.string.settings_screen)
 }
