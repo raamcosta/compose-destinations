@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCompilerApi::class)
+
 package com.ramcosta.composedestinations.ksp
 
 import com.tschuchort.compiletesting.KotlinCompilation
