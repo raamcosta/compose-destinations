@@ -63,6 +63,7 @@ dependencies {
 
     implementation(libs.compose.ui)
     implementation(libs.compose.material)
+    implementation(libs.compose.material.icons)
     implementation(libs.compose.viewModel)
 
     implementation(libs.androidx.lifecycleRuntimeKtx)
