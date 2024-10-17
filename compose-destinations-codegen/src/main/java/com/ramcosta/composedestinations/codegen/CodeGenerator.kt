@@ -1,5 +1,6 @@
 package com.ramcosta.composedestinations.codegen
 
+import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QUALIFIED_NAME
 import com.ramcosta.composedestinations.codegen.commons.firstTypeInfoArg
 import com.ramcosta.composedestinations.codegen.commons.isCustomArrayOrArrayListTypeNavArg
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
@@ -11,6 +12,8 @@ import com.ramcosta.composedestinations.codegen.model.NavTypeSerializer
 import com.ramcosta.composedestinations.codegen.model.RawDestinationGenParams
 import com.ramcosta.composedestinations.codegen.model.RawNavGraphGenParams
 import com.ramcosta.composedestinations.codegen.model.SubModuleInfo
+import com.ramcosta.composedestinations.codegen.model.TypeArgument
+import com.ramcosta.composedestinations.codegen.model.TypeInfo
 import com.ramcosta.composedestinations.codegen.servicelocator.ServiceLocator
 import com.ramcosta.composedestinations.codegen.servicelocator.customNavTypeWriter
 import com.ramcosta.composedestinations.codegen.servicelocator.defaultKtxSerializableNavTypeSerializerWriter
@@ -98,23 +101,25 @@ class CodeGenerator(
 
     private fun shouldWriteKtxSerializableNavTypeSerializer(
         destinations: List<CodeGenProcessedDestination>,
-    ) = destinations.any {
-        it.navArgs.any { navArg ->
-            if (navArg.type.isCustomArrayOrArrayListTypeNavArg()) {
-               navArg.type.value.firstTypeInfoArg.run {
-                   isKtxSerializable &&
-                           !hasCustomTypeSerializer &&
-                           !isParcelable &&
-                           !isSerializable
-               }
-            } else {
-                navArg.type.run {
-                    isKtxSerializable &&
-                            !hasCustomTypeSerializer &&
-                            !isParcelable &&
-                            !isSerializable
+    ): Boolean {
+        return destinations.any { destination ->
+            val hasKtxSerializableNavArgs = destination.navArgs.any { navArg ->
+                if (navArg.type.isCustomArrayOrArrayListTypeNavArg()) {
+                    navArg.type.value.firstTypeInfoArg.needsToUseKtxSerializable()
+                } else {
+                    navArg.type.needsToUseKtxSerializable()
                 }
             }
+
+            val hasKtxSerializableResultBackTypes = destination.parameters
+                .firstOrNull { it.type.importable.qualifiedName == RESULT_BACK_NAVIGATOR_QUALIFIED_NAME }
+                ?.type?.value
+                ?.typeArguments?.first()?.let { (it as? TypeArgument.Typed)?.type }
+                ?.needsToUseKtxSerializable() ?: false
+
+            hasKtxSerializableNavArgs || hasKtxSerializableResultBackTypes
         }
     }
+
+    private fun TypeInfo.needsToUseKtxSerializable() = isKtxSerializable && !hasCustomTypeSerializer && !isParcelable && !isSerializable
 }
