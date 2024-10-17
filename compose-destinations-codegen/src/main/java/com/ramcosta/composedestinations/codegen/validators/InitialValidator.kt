@@ -206,7 +206,7 @@ internal class InitialValidator(
                 ?: throw IllegalDestinationsSetup(
                     "ResultRecipient second type argument must be a valid type with no '*' variance."
                 )
-            validateResultType(resultType)
+            validateResultType(resultType, parameter.type.toTypeCode())
 
             val resultOriginQualifiedName = parameter.getFirstArgTypeQualifiedName()
 
@@ -260,6 +260,17 @@ internal class InitialValidator(
                         "Destination annotated Composables must have at most one ResultBackNavigator"
             )
         }
+
+        resultBackNavigatorParams.forEach { parameter ->
+            val resultType =
+                (parameter.type.typeArguments.firstOrNull() as? TypeArgument.Typed?)?.type
+                    ?: throw IllegalDestinationsSetup(
+                        "Composable '${annotatedName}': " +
+                            "ResultBackNavigator type argument must be a valid type with no type arguments."
+                    )
+
+            validateResultType(resultType, parameter.type.toTypeCode())
+        }
     }
 
     private fun DestinationGeneratingParams.validateOpenResultRecipients() {
@@ -270,10 +281,11 @@ internal class InitialValidator(
             val resultType =
                 (parameter.type.typeArguments.firstOrNull() as? TypeArgument.Typed?)?.type
                     ?: throw IllegalDestinationsSetup(
-                        "OpenResultRecipient type argument must be a valid type with no type arguments."
+                        "Composable '${annotatedName}': " +
+                            "OpenResultRecipient type argument must be a valid type with no type arguments."
                     )
 
-            validateResultType(resultType)
+            validateResultType(resultType, parameter.type.toTypeCode())
         }
     }
 
@@ -319,9 +331,9 @@ internal class InitialValidator(
         return (firstTypeArg as? TypeArgument.Typed)?.type?.importable?.qualifiedName
     }
 
-    private fun DestinationGeneratingParams.validateResultType(resultType: TypeInfo) {
+    private fun DestinationGeneratingParams.validateResultType(resultType: TypeInfo, argString: String) {
         if (!resultType.isNavArgType()) {
-            throw IllegalDestinationsSetup("Composable $annotatedName, ${resultType.toTypeCode()}: Result types must be of a valid navigation argument type.")
+            throw IllegalDestinationsSetup("Composable '$annotatedName', $argString: Result types must be of a valid navigation argument type, but was '${resultType.toTypeCode()}'.")
         }
     }
 
