@@ -4,25 +4,25 @@ minSdk = "21"
 compileSdk = "34"
 targetSdk = "34"
 
-kotlin = "2.0.20"
+kotlin = "2.0.21"
 dependencyCheckPluginVersion = "0.51.0"
-agp = "8.7.0"
+agp = "8.7.2"
 mavenPublishPluginVersion = "0.28.0"
 
-composeViewModel = "2.8.6"
-activityCompose = "1.9.2"
+composeViewModel = "2.8.7"
+activityCompose = "1.9.3"
 
 material = "1.12.0"
-lifecycleRuntimeKtx = "2.8.6"
+lifecycleRuntimeKtx = "2.8.7"
 
-ksp = "2.0.20-1.0.25"
+ksp = "2.0.21-1.0.28"
 
 junit = "4.13.2"
 
-compose = "1.7.3"
-composeMaterial = "1.7.3"
+compose = "1.7.5"
+composeMaterial = "1.7.5"
 composeNavigationMaterial = "1.7.0-beta01"
-composeNavigation = "2.8.2"
+composeNavigation = "2.8.4"
 
 ktxSerialization = "1.7.3"
 mockk = "1.13.12"
