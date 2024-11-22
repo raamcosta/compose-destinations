@@ -6,6 +6,7 @@ import com.ramcosta.composedestinations.codegen.commons.RESULT_BACK_NAVIGATOR_QU
 import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
 import com.ramcosta.composedestinations.codegen.commons.coreTypes
 import com.ramcosta.composedestinations.codegen.commons.isCustomTypeNavArg
+import com.ramcosta.composedestinations.codegen.commons.sourceIds
 import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
@@ -55,7 +56,8 @@ internal class ModuleRegistryWriter(
         )
         codeGenerator.makeFile(
             "_ModuleRegistry_$registryId",
-            packageName
+            packageName,
+            sourceIds = sourceIds(destinations, graphTrees).toTypedArray()
         ).writeSourceFile(
             packageStatement = "package $packageName",
             importableHelper = importableHelper,
