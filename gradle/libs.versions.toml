@@ -6,7 +6,7 @@ targetSdk = "34"
 
 kotlin = "2.0.21"
 dependencyCheckPluginVersion = "0.51.0"
-agp = "8.7.2"
+agp = "8.7.3"
 mavenPublishPluginVersion = "0.28.0"
 
 composeViewModel = "2.8.7"
@@ -19,10 +19,10 @@ ksp = "2.0.21-1.0.28"
 
 junit = "4.13.2"
 
-compose = "1.7.5"
-composeMaterial = "1.7.5"
-composeNavigationMaterial = "1.7.0-beta01"
-composeNavigation = "2.8.4"
+compose = "1.7.6"
+composeMaterial = "1.7.6"
+composeNavigationMaterial = "1.7.6"
+composeNavigation = "2.8.5"
 
 ktxSerialization = "1.7.3"
 mockk = "1.13.12"
