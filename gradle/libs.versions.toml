@@ -1,35 +1,35 @@
 [versions]
 
 minSdk = "21"
-compileSdk = "34"
-targetSdk = "34"
+compileSdk = "35"
+targetSdk = "35"
 
 kotlin = "2.0.20"
 dependencyCheckPluginVersion = "0.51.0"
-agp = "8.7.1"
-mavenPublishPluginVersion = "0.28.0"
+agp = "8.7.3"
+mavenPublishPluginVersion = "0.30.0"
 
-composeViewModel = "2.8.6"
-activityCompose = "1.9.2"
+composeViewModel = "2.8.7"
+activityCompose = "1.9.3"
 
 material = "1.12.0"
-lifecycleRuntimeKtx = "2.8.6"
+lifecycleRuntimeKtx = "2.8.7"
 
 ksp = "2.0.20-1.0.25"
 
 junit = "4.13.2"
 
-compose = "1.7.4"
-composeMaterial = "1.7.4"
+compose = "1.7.6"
+composeMaterial = "1.7.6"
 composeNavigationMaterial = "1.7.0-beta01"
-composeNavigation = "2.8.3"
+composeNavigation = "2.8.5"
 
 ktxSerialization = "1.7.3"
 pprint = "1.1.0"
 mockk = "1.13.12"
 
 compileTesting = "1.6.0"
-composeWear = "1.3.1"
+composeWear = "1.4.0"
 
 [plugins]
 dependencyCheckPlugin = { id = "com.github.ben-manes.versions", version.ref = "dependencyCheckPluginVersion" }
