@@ -1,11 +1,8 @@
 package com.ramcosta.composedestinations.codegen.writers
 
-import com.ramcosta.composedestinations.codegen.DEFAULT_GEN_PACKAGE_NAME
 import com.ramcosta.composedestinations.codegen.commons.RawNavGraphTree
-import com.ramcosta.composedestinations.codegen.commons.plusAssign
 import com.ramcosta.composedestinations.codegen.commons.snakeToCamelCase
 import com.ramcosta.composedestinations.codegen.commons.toSnakeCase
-import com.ramcosta.composedestinations.codegen.facades.CodeOutputStreamMaker
 import com.ramcosta.composedestinations.codegen.model.CodeGenConfig
 import com.ramcosta.composedestinations.codegen.model.CodeGenProcessedDestination
 import com.ramcosta.composedestinations.codegen.model.ExternalRoute
@@ -15,10 +12,13 @@ import java.util.Locale
 
 internal class MermaidGraphWriter(
     private val codeGenConfig: CodeGenConfig,
-    private val codeGenerator: CodeOutputStreamMaker
 ) {
 
     fun write(graphTrees: List<RawNavGraphTree>) {
+        if (codeGenConfig.mermaidGraph == null && codeGenConfig.htmlMermaidGraph == null) {
+            return
+        }
+
         graphTrees.forEach {
             writeMermaidGraph(it)
         }
@@ -57,32 +57,15 @@ internal class MermaidGraphWriter(
                     mermaidGraph
                         .replace("@clicksPlaceholder@", externalNavGraphClicks(tree, "mmd"))
                 )
-        } else {
-            codeGenerator.makeFile(
-                name = tree.rawNavGraphGenParams.name,
-                packageName = "$DEFAULT_GEN_PACKAGE_NAME.mermaid",
-                extensionName = "mmd",
-            ).use {
-                it += mermaidGraph
-                    .replace("@clicksPlaceholder@", "")
-            }
         }
 
-        val htmlMermaid = html(title, mermaidGraph)
         if (codeGenConfig.htmlMermaidGraph != null) {
+            val htmlMermaid = html(title, mermaidGraph)
             File(codeGenConfig.htmlMermaidGraph, "${tree.rawNavGraphGenParams.name}.html")
                 .apply { parentFile?.mkdirs() }
                 .writeText(
                     htmlMermaid.replace("@clicksPlaceholder@", externalNavGraphClicks(tree, "html"))
                 )
-        } else {
-            codeGenerator.makeFile(
-                name = tree.rawNavGraphGenParams.name,
-                packageName = "$DEFAULT_GEN_PACKAGE_NAME.mermaid",
-                extensionName = "html",
-            ).use {
-                it += htmlMermaid.replace("@clicksPlaceholder@", "")
-            }
         }
     }
 

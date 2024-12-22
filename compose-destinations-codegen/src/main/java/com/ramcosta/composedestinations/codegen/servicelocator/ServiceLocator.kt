@@ -45,8 +45,7 @@ internal fun ServiceLocator.moduleRegistryWriter(
 )
 
 internal val ServiceLocator.mermaidGraphWriter get() = MermaidGraphWriter(
-    codeGenConfig,
-    codeGenerator
+    codeGenConfig
 )
 
 internal val ServiceLocator.customNavTypeWriter get() = CustomNavTypesWriter(
