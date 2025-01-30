@@ -4,8 +4,8 @@ minSdk = "21"
 compileSdk = "34"
 targetSdk = "34"
 
-kotlin = "2.0.21"
-dependencyCheckPluginVersion = "0.51.0"
+kotlin = "2.1.10"
+dependencyCheckPluginVersion = "0.52.0"
 agp = "8.7.3"
 mavenPublishPluginVersion = "0.28.0"
 
@@ -15,17 +15,17 @@ activityCompose = "1.9.3"
 material = "1.12.0"
 lifecycleRuntimeKtx = "2.8.7"
 
-ksp = "2.0.21-1.0.28"
+ksp = "2.1.10-1.0.29"
 
 junit = "4.13.2"
 
-compose = "1.7.6"
-composeMaterial = "1.7.6"
-composeNavigationMaterial = "1.7.6"
-composeNavigation = "2.8.5"
+compose = "1.7.7"
+composeMaterial = "1.7.7"
+composeNavigationMaterial = "1.7.7"
+composeNavigation = "2.8.6"
 
-ktxSerialization = "1.7.3"
-mockk = "1.13.12"
+ktxSerialization = "1.8.0"
+mockk = "1.13.16"
 
 compileTesting = "1.6.0"
 composeWear = "1.3.1"
