@@ -1,26 +1,4 @@
-# ⚠️ WARNING - `1.11.3-alpha` / `2.1.0-beta02` and above (Compose 1.7)
-OR if you got this error `kotlinx.serialization.SerializationException: Serializer for class 'DirectionImpl' is not found.`
-
-
-## - **DO NOT call `NavController.navigate` function** anywhere
-With the introduction of type safe APIs on the official library, our `NavController` extension functions that received `Direction` are now shadowed by new member functions on `NavController`.  
-This means that the official member function would be called instead of our extension functions, and so we removed those extension functions.  
-Instead, always make sure to use `DestinationsNavigator`. You can get one of such navigators by:
-
-- If inside a specific screen:
-   - Simply receive a `DestinationsNavigator` instead of `NavController` in your annotated screens.
-- If navigating on top level (such as around `DestinationsNavHost`, bottom nav bar, etc)
-   - `navController.rememberDestinationsNavigator()` if in a Composable
-   - `navController.toDestinationsNavigator()` if not in a Composable
-
-Read more about these changes [here](https://github.com/raamcosta/compose-destinations/releases/tag/2.1.0-beta02).
-
-## - **DO NOT depend on jetpack compose navigation directly**
-Compose Destinations provides the correct version transitively.  
-So, if you have dependency on `androidx.navigation:navigation-compose`, please remove it! This has always been true, but more important now.
-
-#
-[![Maven metadata URL](https://img.shields.io/maven-metadata/v?versionPrefix=1.10&color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/io/github/raamcosta/compose-destinations/core/maven-metadata.xml&style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)
+[![Maven metadata URL](https://img.shields.io/maven-metadata/v?versionPrefix=1.11&color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/io/github/raamcosta/compose-destinations/core/maven-metadata.xml&style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/io.github.raamcosta.compose-destinations/core)
 [![License Apache 2.0](https://img.shields.io/github/license/raamcosta/compose-destinations.svg?style=for-the-badge&color=orange)](https://opensource.org/licenses/Apache-2.0)
 [![Android API](https://img.shields.io/badge/api-21%2B-brightgreen.svg?style=for-the-badge)](https://android-arsenal.com/api?level=21)
 [![kotlin](https://img.shields.io/github/languages/top/raamcosta/compose-destinations.svg?style=for-the-badge&color=blueviolet)](https://kotlinlang.org/)
@@ -226,6 +204,27 @@ implementation("io.github.raamcosta.compose-destinations:bottom-sheet:<version>"
 `implementation 'io.github.raamcosta.compose-destinations:wear-core:<version>'` </br>
 > this will use [Wear Compose Navigation](https://developer.android.com/training/wearables/compose/navigation) internally. </br>
 > Read more about the next steps to configure these features [here](https://composedestinations.rafaelcosta.xyz/wear-os)
+
+# ⚠️ WARNING - `1.11.3-alpha` / `2.1.0-beta02` and above (Compose 1.7)
+OR if you got this error `kotlinx.serialization.SerializationException: Serializer for class 'DirectionImpl' is not found.`
+
+
+## - **DO NOT call `NavController.navigate` function** anywhere
+With the introduction of type safe APIs on the official library, our `NavController` extension functions that received `Direction` are now shadowed by new member functions on `NavController`.  
+This means that the official member function would be called instead of our extension functions, and so we removed those extension functions.  
+Instead, always make sure to use `DestinationsNavigator`. You can get one of such navigators by:
+
+- If inside a specific screen:
+   - Simply receive a `DestinationsNavigator` instead of `NavController` in your annotated screens.
+- If navigating on top level (such as around `DestinationsNavHost`, bottom nav bar, etc)
+   - `navController.rememberDestinationsNavigator()` if in a Composable
+   - `navController.toDestinationsNavigator()` if not in a Composable
+
+Read more about these changes [here](https://github.com/raamcosta/compose-destinations/releases/tag/2.1.0-beta02).
+
+## - **DO NOT depend on jetpack compose navigation directly**
+Compose Destinations provides the correct version transitively.  
+So, if you have dependency on `androidx.navigation:navigation-compose`, please remove it! This has always been true, but more important now.
 
 ## Community 💬
 
