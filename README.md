@@ -37,7 +37,7 @@ For a deeper look into all the features, check our [documentation website](https
 ## Basic Usage 🧑‍💻
 
 > [!NOTE]  
-> This readme is about v2. If you're now starting to use Compose Destinations, I strongly recommend using v2. It is currently in beta stage, but we don't expect major issues with it, and soon it will reach stable!
+> This readme is about v2. If you're now starting to use Compose Destinations, I strongly recommend using v2.
 > If you really want to see basic v1 usage, [check it here](https://composedestinations.rafaelcosta.xyz/#basic-usage). 
 
 ### 1. Annotate your screen Composables with `@Destination<RootGraph>`:
