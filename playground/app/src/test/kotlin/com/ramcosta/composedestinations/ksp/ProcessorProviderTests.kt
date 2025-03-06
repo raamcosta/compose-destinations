@@ -16,7 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
-@Ignore("currently having some transitive dependency issues with kotlin compile testing")
+@Ignore("currently having some issues kotlin compile testing - seems like it doesn't support latest kotlin version")
 @OptIn(ExperimentalCompilerApi::class)
 class ProcessorProviderTests {
     @Rule
@@ -44,7 +44,7 @@ class ProcessorProviderTests {
         )
         val result = compilation.compile()
 
-        assertEquals(result.exitCode, KotlinCompilation.ExitCode.OK)
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         assertTrue(
             compilation.kspSourcesDir.walkTopDown()
                 .filter { it.nameWithoutExtension == "TestScreen1Destination" || it.nameWithoutExtension == "TestScreen2Destination" }
@@ -144,7 +144,7 @@ class ProcessorProviderTests {
 
         val result = compilation.compile()
 
-        assertEquals(result.exitCode, KotlinCompilation.ExitCode.OK)
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         assertTrue(
             compilation.kspSourcesDir.walkTopDown()
                 .filter { it.nameWithoutExtension == "TestScreen1Destination" || it.nameWithoutExtension == "TestScreen2Destination" }
@@ -224,7 +224,7 @@ class ProcessorProviderTests {
 
         val result = compilation.compile()
 
-        assertEquals(result.exitCode, KotlinCompilation.ExitCode.OK)
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         assertTrue(
             compilation.kspSourcesDir.walkTopDown()
                 .filter { it.nameWithoutExtension == "TestScreen1Destination" || it.nameWithoutExtension == "TestScreen2Destination" }
@@ -267,7 +267,7 @@ class ProcessorProviderTests {
 
         val result = compilation.compile()
 
-        assertEquals(result.exitCode, KotlinCompilation.ExitCode.OK)
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         assertTrue(
             compilation.kspSourcesDir.walkTopDown()
                 .filter { it.nameWithoutExtension == "TestScreen1Destination" || it.nameWithoutExtension == "TestScreen2Destination" }
@@ -305,7 +305,7 @@ class ProcessorProviderTests {
 
         val result = compilation.compile()
 
-        assertEquals(result.exitCode, KotlinCompilation.ExitCode.OK)
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         assertTrue(
             compilation.kspSourcesDir.walkTopDown()
                 .filter { it.nameWithoutExtension == "TestScreen1Destination" || it.nameWithoutExtension == "TestScreen2Destination" }
@@ -344,7 +344,7 @@ class ProcessorProviderTests {
 
         val result = compilation.compile()
 
-        assertEquals(result.exitCode, KotlinCompilation.ExitCode.OK)
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         assertTrue(
             compilation.kspSourcesDir.walkTopDown()
                 .filter { it.nameWithoutExtension == "TestScreen1Destination" || it.nameWithoutExtension == "TestScreen2Destination" }
@@ -377,7 +377,7 @@ class ProcessorProviderTests {
 
         val result = compilation.compile()
 
-        assertEquals(result.exitCode, KotlinCompilation.ExitCode.OK)
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         assertTrue(
             "Files wasn't generated",
             compilation.kspSourcesDir.walkTopDown()

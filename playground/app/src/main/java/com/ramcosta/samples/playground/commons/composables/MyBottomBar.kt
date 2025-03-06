@@ -23,7 +23,7 @@ enum class BottomBarDestination(
     val icon: ImageVector,
     @StringRes val label: Int
 ) {
-    Greeting(GreetingScreenDestination(defaultRootStartArgs), Icons.Default.Home, R.string.greeting_screen),
+    Greeting(GreetingScreenDestination(defaultRootStartArgs()), Icons.Default.Home, R.string.greeting_screen),
     Feed(FeedDestination, Icons.Default.Email, R.string.feed_screen),
 }
 

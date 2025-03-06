@@ -8,7 +8,6 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Modifier
 import com.ramcosta.composedestinations.codegen.CodeGenerator
@@ -216,7 +215,7 @@ class Processor(
 
     private fun Resolver.getNavHostDefaultStartArgsByGraphAnnotationType(): Map<Importable, List<Importable>> {
         return getSymbolsWithAnnotation(NAV_HOST_DEFAULT_START_ARGS_ANNOTATION_QUALIFIED)
-            .filterIsInstance<KSPropertyDeclaration>()
+            .filterIsInstance<KSFunctionDeclaration>()
             .mapTo(mutableListOf()) {
                 val navGraphKsDeclaration =
                     it.annotations.first { it.shortName.asString() == NAV_HOST_DEFAULT_START_ARGS }

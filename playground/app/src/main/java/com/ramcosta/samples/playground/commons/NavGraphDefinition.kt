@@ -44,7 +44,7 @@ import kotlinx.parcelize.Parcelize
 import kotlin.reflect.KClass
 
 @NavHostDefaultStartArgs<RootGraph>
-val defaultRootStartArgs = GreetingScreenNavArgs(
+fun defaultRootStartArgs() = GreetingScreenNavArgs(
     "qweqwe",
     79
 )

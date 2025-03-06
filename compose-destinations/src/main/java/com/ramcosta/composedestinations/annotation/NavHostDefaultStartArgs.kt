@@ -1,7 +1,7 @@
 package com.ramcosta.composedestinations.annotation
 
 /**
- * Annotation used on a public top level field to make it be used
+ * Annotation used on a public top level function to make it be used
  * as the start navigation arguments of a [NavHostGraph].
  * Useful when the start route of the [NavHostGraph] has mandatory
  * arguments and you don't want to make them non mandatory (because
@@ -11,7 +11,7 @@ package com.ramcosta.composedestinations.annotation
  * Example:
  * ```
  *  @NavHostDefaultStartArgs<RootGraph>
- *  val defaultRootGraphStartArgs = MyStartDestinationArgs(
+ *  fun defaultRootGraphStartArgs() = MyStartDestinationArgs(
  *      //fill default arg values here
  *  )
  *  ```
@@ -24,6 +24,6 @@ package com.ramcosta.composedestinations.annotation
  *  @param T annotation annotated with [NavHostGraph] to which you want
  *  to se the default nav arguments to.
  */
-@Target(AnnotationTarget.FIELD)
+@Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)
 annotation class NavHostDefaultStartArgs<T: Annotation>

@@ -31,7 +31,7 @@ object DefaultParameterValueReader {
             .joinToString("") { it.trim() }
             .removeMultilineComments()
 
-        Logger.instance.info("getDefaultValue | src code line = $auxText")
+        Logger.instance.info("getDefaultValue | argType=$argType, src code line = $auxText")
 
         val anchors = arrayOf(
             argName,
@@ -262,7 +262,7 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue {
         packageName = this.containingFile!!.packageName.asString(),
         imports = imports,
         argName = name!!.asString(),
-        argType = type.toString()
+        argType = type.toString().replace("INVARIANT ", "")
     ).also { Logger.instance.info("getDefaultValue | Result = $it") }
 }
 

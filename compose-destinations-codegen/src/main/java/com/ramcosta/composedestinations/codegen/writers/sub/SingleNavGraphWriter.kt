@@ -184,7 +184,7 @@ internal class SingleNavGraphWriter(
             """
             |
             |
-            |    override val defaultStartArgs: ${importableHelper.addAndGetPlaceholder(navGraph.startRouteArgs.type)} = ${importableHelper.addAndGetPlaceholder(navGraph.defaultStartArgs)}
+            |    override val defaultStartArgs: ${importableHelper.addAndGetPlaceholder(navGraph.startRouteArgs.type)} = ${importableHelper.addAndGetPlaceholder(navGraph.defaultStartArgs)}()
             |    
             |    override val defaultStartDirection: Direction = defaultStartDirection()
             """.trimMargin()
