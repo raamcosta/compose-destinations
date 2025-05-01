@@ -22,7 +22,7 @@ junit = "4.13.2"
 compose = "1.7.8"
 composeMaterial = "1.7.8"
 composeNavigationMaterial = "1.7.8"
-composeNavigation = "2.8.8"
+composeNavigation = "2.8.9"
 
 ktxSerialization = "1.8.0"
 pprint = "1.1.0"
