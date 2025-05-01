@@ -75,7 +75,7 @@ fun SharedTransitionScope.ProfileScreen(
                 },
                 modifier = Modifier
                     .sharedElement(
-                        state = rememberSharedContentState(key = "love-icon"),
+                        sharedContentState = rememberSharedContentState(key = "love-icon"),
                         animatedVisibilityScope = animatedVisibilityScope
                     )
                     .size(128.dp)

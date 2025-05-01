@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.ramcosta.destinations.sample"
-    compileSdk = libs.versions.compileSdk.get().toIntOrNull()
+    compileSdk = libs.versions.compileSdkSampleApps.get().toIntOrNull()
 
     defaultConfig {
         applicationId = "com.ramcosta.destinations.sample"

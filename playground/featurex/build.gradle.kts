@@ -9,7 +9,7 @@ plugins {
 android {
 
     namespace = "com.ramcosta.playground.featurex"
-    compileSdk = libs.versions.compileSdk.get().toIntOrNull()
+    compileSdk = libs.versions.compileSdkSampleApps.get().toIntOrNull()
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toIntOrNull()

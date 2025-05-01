@@ -3,30 +3,31 @@
 minSdk = "21"
 compileSdk = "34"
 targetSdk = "34"
+compileSdkSampleApps = "35"
 
-kotlin = "2.1.10"
+kotlin = "2.1.20"
 dependencyCheckPluginVersion = "0.52.0"
 agp = "8.7.3"
 mavenPublishPluginVersion = "0.31.0"
 
 composeViewModel = "2.8.7"
-activityCompose = "1.9.3"
+activityCompose = "1.10.1"
 
 material = "1.12.0"
 lifecycleRuntimeKtx = "2.8.7"
 
-ksp = "2.1.10-1.0.31"
+ksp = "2.1.20-2.0.1"
 
 junit = "4.13.2"
 
-compose = "1.7.8"
-composeMaterial = "1.7.8"
-composeNavigationMaterial = "1.7.8"
+compose = "1.8.0"
+composeMaterial = "1.8.0"
+composeNavigationMaterial = "1.8.0"
 composeNavigation = "2.8.9"
 
-ktxSerialization = "1.8.0"
+ktxSerialization = "1.8.1"
 pprint = "1.1.0"
-mockk = "1.13.17"
+mockk = "1.14.2"
 
 compileTesting = "1.6.0"
 composeWear = "1.3.1"
@@ -53,7 +54,7 @@ androidx-activityCompose = { module = "androidx.activity:activity-compose", vers
 # Compose
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "composeMaterial" }
-compose-material-icons = { module = "androidx.compose.material:material-icons-core-android", version.ref = "composeMaterial" }
+compose-material-icons = { module = "androidx.compose.material:material-icons-core-android", version = "1.7.8" }
 compose-material-navigation = { module = "androidx.compose.material:material-navigation", version.ref = "composeNavigationMaterial" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 compose-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "composeViewModel" }

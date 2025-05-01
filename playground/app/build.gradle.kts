@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.ramcosta.samples.playground"
-    compileSdk = libs.versions.compileSdk.get().toIntOrNull()
+    compileSdk = libs.versions.compileSdkSampleApps.get().toIntOrNull()
 
     defaultConfig {
         applicationId = "com.ramcosta.samples.playground"

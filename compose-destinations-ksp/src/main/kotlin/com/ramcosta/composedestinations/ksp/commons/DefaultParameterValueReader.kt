@@ -262,7 +262,7 @@ fun KSValueParameter.getDefaultValue(resolver: Resolver): DefaultValue {
         packageName = this.containingFile!!.packageName.asString(),
         imports = imports,
         argName = name!!.asString(),
-        argType = type.toString().replace("INVARIANT ", "")
+        argType = type.resolve().declaration.simpleName.asString()
     ).also { Logger.instance.info("getDefaultValue | Result = $it") }
 }
 
