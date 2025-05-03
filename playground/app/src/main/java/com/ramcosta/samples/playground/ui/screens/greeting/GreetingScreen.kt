@@ -159,7 +159,7 @@ private fun SharedTransitionScope.GreetingScreenContent(
                     onClick = { /*no op*/ },
                     modifier = Modifier
                         .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "love-icon"),
+                            rememberSharedContentState(key = "love-icon"),
                             animatedVisibilityScope = animatedVisibilityScope
                         )
                         .background(
