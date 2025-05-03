@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.Stable
+import com.ramcosta.composedestinations.result.OpenResultRecipient.DeliverResultOn
 import com.ramcosta.composedestinations.spec.DestinationSpec
 
 /**
@@ -46,4 +47,18 @@ interface ResultRecipient<D : DestinationSpec, R> : OpenResultRecipient<R> {
      */
     @Composable
     override fun onNavResult(listener: @DisallowComposableCalls (NavResult<R>) -> Unit)
+
+    /**
+     * Same as [onNavResult] but allows you to control when the result will be delivered.
+     * By default, with [onNavResult] it is delivered on first opportunity between ON_RESUME and ON_START,
+     * because in some scenarios, ON_RESUME or ON_START are not triggered.
+     *
+     * However, if in your specific use case, you find that one works better than the other, you can
+     * control it by passing specifically [DeliverResultOn.START] or [DeliverResultOn.RESUME]
+     */
+    @Composable
+    override fun onNavResult(
+        deliverResultOn: DeliverResultOn,
+        listener: @DisallowComposableCalls (NavResult<R>) -> Unit
+    )
 }

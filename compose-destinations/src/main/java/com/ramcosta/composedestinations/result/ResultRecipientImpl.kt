@@ -27,15 +27,37 @@ internal class ResultRecipientImpl<D : DestinationSpec, R>(
 
     @Composable
     override fun onNavResult(listener: (NavResult<R>) -> Unit) {
+        onNavResult(
+            deliverResultOn = OpenResultRecipient.DeliverResultOn.FIRST_OPPORTUNITY,
+            listener = listener
+        )
+    }
+
+    @Composable
+    override fun onNavResult(
+        deliverResultOn: OpenResultRecipient.DeliverResultOn,
+        listener: (NavResult<R>) -> Unit
+    ) {
         val currentListener by rememberUpdatedState(listener)
 
         DisposableEffect(navBackStackEntry) {
             val observer = object : LifecycleEventObserver {
                 override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                     when (event) {
-                        Lifecycle.Event.ON_START,
+                        Lifecycle.Event.ON_START -> {
+                            if (deliverResultOn == OpenResultRecipient.DeliverResultOn.START ||
+                                deliverResultOn == OpenResultRecipient.DeliverResultOn.FIRST_OPPORTUNITY
+                            ) {
+                                handleResultIfPresent(currentListener)
+                            }
+                        }
+
                         Lifecycle.Event.ON_RESUME -> {
-                            handleResultIfPresent(currentListener)
+                            if (deliverResultOn == OpenResultRecipient.DeliverResultOn.RESUME ||
+                                deliverResultOn == OpenResultRecipient.DeliverResultOn.FIRST_OPPORTUNITY
+                            ) {
+                                handleResultIfPresent(currentListener)
+                            }
                         }
 
                         Lifecycle.Event.ON_DESTROY -> {

@@ -14,4 +14,9 @@ class EmptyResultRecipient<D : DestinationSpec, R> : ResultRecipient<D, R> {
     @Composable
     override fun onNavResult(listener: (NavResult<R>) -> Unit) = Unit
 
+    @Composable
+    override fun onNavResult(
+        deliverResultOn: OpenResultRecipient.DeliverResultOn,
+        listener: (NavResult<R>) -> Unit
+    ) = Unit
 }

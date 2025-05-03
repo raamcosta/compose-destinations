@@ -40,6 +40,26 @@ interface OpenResultRecipient<R> {
      */
     @Composable
     fun onNavResult(listener: @DisallowComposableCalls (NavResult<R>) -> Unit)
+
+    /**
+     * Same as [onNavResult] but allows you to control when the result will be delivered.
+     * By default, with [onNavResult] it is delivered on first opportunity between ON_RESUME and ON_START,
+     * because in some scenarios, ON_RESUME or ON_START are not triggered.
+     *
+     * However, if in your specific use case, you find that one works better than the other, you can
+     * control it by passing specifically [DeliverResultOn.START] or [DeliverResultOn.RESUME]
+     */
+    @Composable
+    fun onNavResult(
+        deliverResultOn: DeliverResultOn,
+        listener: @DisallowComposableCalls (NavResult<R>) -> Unit
+    )
+
+    enum class DeliverResultOn {
+        START,
+        RESUME,
+        FIRST_OPPORTUNITY
+    }
 }
 
 /**
