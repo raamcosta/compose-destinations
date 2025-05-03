@@ -16,9 +16,7 @@ import androidx.compose.runtime.remember
  * [com.ramcosta.composedestinations.result.resultRecipient] with the correct type arguments.
  *
  * Type safety related limitations (compile time enforced):
- * - [R] must be one of String, Boolean, Float, Int, Long, Serializable, or Parcelable.
- * They can be nullable.
- * - [R] type cannot have type arguments itself (f.e you can't use Array<String> even though it is Serializable)
+ * - [R] must be a valid navigation argument type.
  *
  * @see [com.ramcosta.composedestinations.result.ResultBackNavigator]
  * @see [ResultRecipient]

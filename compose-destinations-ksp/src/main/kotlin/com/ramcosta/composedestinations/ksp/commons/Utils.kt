@@ -13,6 +13,7 @@ import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeAlias
 import com.google.devtools.ksp.symbol.KSTypeParameter
@@ -234,8 +235,8 @@ fun KSValueParameter.toParameter(
 ): Parameter {
     val resolvedType = type.resolve()
     val type = resolvedType.toType(location, resolver, navTypeSerializersByType)
-        ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of " +
-                "was not resolvable: please review it.")
+        ?: throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of '${fullLocationSinceRootParent()}'" +
+                " was not resolvable: please review it.")
 
     return Parameter(
         name = name!!.asString(),
@@ -245,7 +246,12 @@ fun KSValueParameter.toParameter(
             it.shortName.asString() == "NavHostParam" &&
                     it.annotationType.resolve().declaration.qualifiedName?.asString() == NAV_HOST_PARAM_ANNOTATION_QUALIFIED
         },
-        defaultValue = getDefaultValue(resolver)
+        defaultValue = kotlin.runCatching {
+            getDefaultValue(resolver)
+        }.getOrElse {
+            throw IllegalDestinationsSetup("Parameter \"${name!!.asString()}\" of '${fullLocationSinceRootParent()}'" +
+                    " was not resolvable: please review it.", it)
+        }
     )
 }
 
@@ -339,6 +345,19 @@ fun KSType.toNavGraphParentInfo(
             declaration.qualifiedName!!.asString()
         )
     )
+}
+
+private fun KSNode.fullLocationSinceRootParent(): String {
+    val node = this
+    val ancestors = mutableListOf<KSNode>()
+    var current: KSNode? = node
+
+    while (current != null) {
+        ancestors.add(current)
+        current = current.parent
+    }
+
+    return ancestors.asReversed().joinToString(" -> ")
 }
 
 private fun KSType.isNavGraphAnnotation(): Boolean {
