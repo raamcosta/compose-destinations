@@ -4,34 +4,34 @@ title: Root Navigation Graph
 %%{init: {'theme':'base', 'themeVariables': { 'primaryTextColor': '#fff' }}%%
 graph TD
 root(["RootGraph"]) -- "start" --- greeting_screen("GreetingScreen")
+root(["RootGraph"]) --- feed("Feed")
+root(["RootGraph"]) --- go_to_profile_confirmation("GoToProfileConfirmation")
+root(["RootGraph"]) --- root/profile_settings_screen("ProfileSettingsScreen")
+root(["RootGraph"]) --- root/stats_screen("StatsScreen")
 root(["RootGraph"]) --- test_screen("TestScreen")
 root(["RootGraph"]) --- test_screen2("TestScreen2")
 root(["RootGraph"]) --- test_screen3("TestScreen3")
-root(["RootGraph"]) --- go_to_profile_confirmation("GoToProfileConfirmation")
-root(["RootGraph"]) --- feed("Feed")
-root(["RootGraph"]) --- root/stats_screen("StatsScreen")
-root(["RootGraph"]) --- root/profile_settings_screen("ProfileSettingsScreen")
-root(["RootGraph"]) --- settings(["SettingsGraph"])
 root(["RootGraph"]) --- profile(["ProfileGraph"])
-settings(["SettingsGraph"]) -- "start" --- settings_screen("SettingsScreen")
-settings(["SettingsGraph"]) --- theme_settings("ThemeSettings")
-settings(["SettingsGraph"]) --- another_test_screen("AnotherTestScreen")
-settings(["SettingsGraph"]) --- settings/stats_screen("StatsScreen")
-settings(["SettingsGraph"]) --- other_activity("OtherActivity")
+root(["RootGraph"]) --- settings(["SettingsGraph"])
 profile(["ProfileGraph"]) -- "start" --- profile_settings(["ProfileSettingsGraph"])
 profile(["ProfileGraph"]) --- profile_screen("ProfileScreen")
 profile(["ProfileGraph"]) --- feature_z_home_destination("FeatureZHome 🧩")
-profile(["ProfileGraph"]) --- public_feature_z_side_screen_destination("PublicFeatureZSideScreen 🧩")
 profile(["ProfileGraph"]) --- feature_z_second_screen_destination("FeatureZSecondScreen 🧩")
 profile(["ProfileGraph"]) --- public_feature_y_side_screen_destination("PublicFeatureYSideScreen 🧩")
+profile(["ProfileGraph"]) --- public_feature_z_side_screen_destination("PublicFeatureZSideScreen 🧩")
 profile(["ProfileGraph"]) --- feature_x_nav_g(["FeatureXGraph 🧩"])
 profile(["ProfileGraph"]) --- feature_y_nav_g(["FeatureYGraph 🧩"])
 profile_settings(["ProfileSettingsGraph"]) -- "start" --- profile_settings/profile_settings_screen("ProfileSettingsScreen")
+settings(["SettingsGraph"]) -- "start" --- settings_screen("SettingsScreen")
+settings(["SettingsGraph"]) --- another_test_screen("AnotherTestScreen")
+settings(["SettingsGraph"]) --- other_activity("OtherActivity")
+settings(["SettingsGraph"]) --- settings/stats_screen("StatsScreen")
+settings(["SettingsGraph"]) --- theme_settings("ThemeSettings")
 
 click feature_x_nav_g "FeatureXNavGraph.mmd" "See FeatureXGraph details" _blank
 click feature_y_nav_g "FeatureYNavGraph.mmd" "See FeatureYGraph details" _blank
 
 classDef destination fill:#5383EC,stroke:#ffffff;
-class greeting_screen,test_screen,test_screen2,test_screen3,go_to_profile_confirmation,feed,root/stats_screen,root/profile_settings_screen,settings_screen,theme_settings,another_test_screen,settings/stats_screen,other_activity,profile_screen,feature_z_home_destination,public_feature_z_side_screen_destination,feature_z_second_screen_destination,public_feature_y_side_screen_destination,profile_settings/profile_settings_screen destination;
+class another_test_screen,feature_z_home_destination,feature_z_second_screen_destination,feed,go_to_profile_confirmation,greeting_screen,other_activity,profile_screen,profile_settings/profile_settings_screen,public_feature_y_side_screen_destination,public_feature_z_side_screen_destination,root/profile_settings_screen,root/stats_screen,settings/stats_screen,settings_screen,test_screen,test_screen2,test_screen3,theme_settings destination;
 classDef navgraph fill:#63BC76,stroke:#ffffff;
-class settings,profile,root,settings,profile_settings,profile,feature_x_nav_g,feature_y_nav_g,profile_settings navgraph;
+class feature_x_nav_g,feature_y_nav_g,profile,profile,profile_settings,profile_settings,root,settings,settings navgraph;

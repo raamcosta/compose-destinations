@@ -38,12 +38,12 @@ internal class MermaidGraphWriter(
             appendLine()
             append("@clicksPlaceholder@")
             appendLine()
-            val destinationIds = tree.destinationIds()
+            val destinationIds = tree.destinationIds().sorted()
             if (destinationIds.isNotEmpty()) {
                 appendLine("classDef destination fill:#5383EC,stroke:#ffffff;")
                 appendLine("class ${destinationIds.joinToString(",")} destination;")
             }
-            val navGraphIds = tree.navGraphIds()
+            val navGraphIds = tree.navGraphIds().sorted()
             if (navGraphIds.isNotEmpty()) {
                 appendLine("classDef navgraph fill:#63BC76,stroke:#ffffff;")
                 appendLine("class ${navGraphIds.joinToString(",")} navgraph;")
@@ -91,23 +91,23 @@ internal class MermaidGraphWriter(
 
         appendLine(graphNode.link(startRoute.startRouteNode(), true))
 
-        tree.destinations.removeStartRoute(startRoute).forEach { destination ->
-            appendLine(graphNode.link(destination.node()))
+        tree.destinations.removeStartRoute(startRoute).map { it.node() }.sorted().forEach { destinationNode ->
+            appendLine(graphNode.link(destinationNode))
         }
 
-        tree.externalDestinations.removeStartRoute(startRoute).forEach { externalDestination ->
-            appendLine(graphNode.link(externalDestination.node()))
+        tree.externalDestinations.removeStartRoute(startRoute).map { it.node() }.sorted().forEach { externalDestinationNode ->
+            appendLine(graphNode.link(externalDestinationNode))
         }
 
-        tree.nestedGraphs.removeStartRoute(startRoute).forEach { nestedGraph ->
-            appendLine(graphNode.link(nestedGraph.node()))
+        tree.nestedGraphs.removeStartRoute(startRoute).map { it.node() }.sorted().forEach { nestedGraphNode ->
+            appendLine(graphNode.link(nestedGraphNode))
         }
 
-        tree.externalNavGraphs.removeStartRoute(startRoute).forEach { externalNavGraph ->
-            appendLine(graphNode.link(externalNavGraph.node()))
+        tree.externalNavGraphs.removeStartRoute(startRoute).map { it.node() }.sorted().forEach { externalNavGraphNode ->
+            appendLine(graphNode.link(externalNavGraphNode))
         }
 
-        tree.nestedGraphs.forEach { nestedGraph ->
+        tree.nestedGraphs.sortedBy { it.name }.forEach { nestedGraph ->
             appendGraphTreeLinks(nestedGraph)
         }
     }
