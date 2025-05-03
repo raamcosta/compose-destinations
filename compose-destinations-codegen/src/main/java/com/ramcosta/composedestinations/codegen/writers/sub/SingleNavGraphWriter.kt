@@ -126,7 +126,10 @@ internal class SingleNavGraphWriter(
             )
             .replace(
                 NAV_GRAPH_DESTINATIONS,
-                navGraphDestinationsCode(navGraph.destinations, navGraph.externalDestinations)
+                navGraphDestinationsCode(
+                    navGraph.destinations.sortedBy { it.destinationImportable.simpleName},
+                    navGraph.externalDestinations.sortedBy { it.generatedType.preferredSimpleName }
+                )
             )
             .replace(
                 NAV_GRAPH_KDOC,
@@ -141,7 +144,10 @@ internal class SingleNavGraphWriter(
             )
             .replace(
                 NESTED_NAV_GRAPHS,
-                nestedNavGraphsCode(navGraph.nestedGraphs, navGraph.externalNavGraphs)
+                nestedNavGraphsCode(
+                    navGraph.nestedGraphs.sortedBy { it.name },
+                    navGraph.externalNavGraphs.sortedBy { it.generatedType.preferredSimpleName }
+                )
             )
             .replace(
                 NAV_GRAPH_DEFAULT_TRANSITIONS_TYPE,
