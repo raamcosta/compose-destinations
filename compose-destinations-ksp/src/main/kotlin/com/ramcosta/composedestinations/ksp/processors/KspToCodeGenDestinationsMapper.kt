@@ -10,6 +10,7 @@ import com.ramcosta.composedestinations.codegen.commons.ACTIVITY_DESTINATION_ANN
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_DEEP_LINKS_ARGUMENT
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.commons.DESTINATION_ANNOTATION_ROUTE_ARGUMENT
+import com.ramcosta.composedestinations.codegen.commons.DESTINATION_LABEL_NULL_PLACEHOLDER
 import com.ramcosta.composedestinations.codegen.commons.IllegalDestinationsSetup
 import com.ramcosta.composedestinations.codegen.commons.JAVA_ACTIVITY_DESTINATION_ANNOTATION
 import com.ramcosta.composedestinations.codegen.model.ActivityDestinationParams
@@ -85,6 +86,7 @@ internal class KspToCodeGenDestinationsMapper(
             composableReceiverType = function.extensionReceiver?.resolve()?.toType(function.extensionReceiver!!.location, resolver, navTypeSerializersByType),
             requireOptInAnnotationTypes = function.findAllRequireOptInAnnotations(),
             destinationNavArgsClass = navArgsDelegateTypeAndFile?.type,
+            label = annotations.findOverridingArgumentValue { findArgumentValue<String>("label").takeIf { it != DESTINATION_LABEL_NULL_PLACEHOLDER } }
         )
     }
 
@@ -145,7 +147,8 @@ internal class KspToCodeGenDestinationsMapper(
             composableWrappers = emptyList(),
             isParentStart = isStart,
             routeOverride = route.takeIf { it != DESTINATION_ANNOTATION_DEFAULT_ROUTE_PLACEHOLDER },
-            hasMultipleDestinations = false
+            hasMultipleDestinations = false,
+            label = activityDestinationAnnotations.findOverridingArgumentValue { findArgumentValue<String>("label").takeIf { it != DESTINATION_LABEL_NULL_PLACEHOLDER } }
         )
     }
 

@@ -34,7 +34,8 @@ import com.ramcosta.samples.playground.commons.ProfileGraph
         DeepLink(uriPattern = "https://destinationssample.com/$FULL_ROUTE_PLACEHOLDER")
     ],
     style = ProfileTransitions::class,
-    navArgs = ProfileScreenNavArgs::class
+    navArgs = ProfileScreenNavArgs::class,
+    label = "profile"
 )
 @Composable
 fun SharedTransitionScope.ProfileScreen(

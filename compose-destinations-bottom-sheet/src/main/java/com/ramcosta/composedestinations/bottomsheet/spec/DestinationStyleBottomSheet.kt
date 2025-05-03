@@ -1,12 +1,15 @@
 package com.ramcosta.composedestinations.bottomsheet.spec
 
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.material.navigation.bottomSheet
+import androidx.compose.material.navigation.BottomSheetNavigator
+import androidx.compose.material.navigation.BottomSheetNavigatorDestinationBuilder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.util.fastForEach
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.get
 import com.ramcosta.composedestinations.bottomsheet.scope.BottomSheetDestinationScopeImpl
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
@@ -45,19 +48,25 @@ object DestinationStyleBottomSheet : DestinationStyle() {
         @Suppress("UNCHECKED_CAST")
         val contentWrapper = manualComposableCalls[destination.route] as? DestinationLambda<T>?
 
-        bottomSheet(
-            route = destination.route,
-            arguments = destination.arguments,
-            deepLinks = destination.allDeepLinks(manualComposableCalls)
-        ) { navBackStackEntry ->
-            CallComposable(
-                destination,
-                navController,
-                navBackStackEntry,
-                dependenciesContainerBuilder,
-                contentWrapper
-            )
-        }
+        destination(
+            BottomSheetNavigatorDestinationBuilder(
+                navigator = provider[BottomSheetNavigator::class],
+                route = destination.route,
+                content = { navBackStackEntry ->
+                    CallComposable(
+                        destination,
+                        navController,
+                        navBackStackEntry,
+                        dependenciesContainerBuilder,
+                        contentWrapper
+                    )
+                }
+            ).apply {
+                label = destination.label
+                destination.arguments.fastForEach { (argumentName, argument) -> argument(argumentName, argument) }
+                destination.allDeepLinks(manualComposableCalls).fastForEach { deepLink -> deepLink(deepLink) }
+            }
+        )
     }
 }
 

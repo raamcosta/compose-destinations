@@ -12,8 +12,11 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.activity
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
+import androidx.navigation.compose.ComposeNavigator
+import androidx.navigation.compose.ComposeNavigatorDestinationBuilder
+import androidx.navigation.compose.DialogNavigator
+import androidx.navigation.compose.DialogNavigatorDestinationBuilder
+import androidx.navigation.get
 import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
 import com.ramcosta.composedestinations.manualcomposablecalls.DestinationLambda
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
@@ -54,19 +57,25 @@ abstract class DestinationStyle {
             @Suppress("UNCHECKED_CAST")
             val contentWrapper = manualComposableCalls[destination.route] as? DestinationLambda<T>?
 
-            composable(
-                route = destination.route,
-                arguments = destination.arguments,
-                deepLinks = destination.allDeepLinks(manualComposableCalls),
-            ) { navBackStackEntry ->
-                CallComposable(
-                    destination,
-                    navController,
-                    navBackStackEntry,
-                    dependenciesContainerBuilder,
-                    contentWrapper,
-                )
-            }
+            destination(
+                ComposeNavigatorDestinationBuilder(
+                    navigator = provider[ComposeNavigator::class],
+                    route = destination.route,
+                    content = { navBackStackEntry ->
+                        CallComposable(
+                            destination,
+                            navController,
+                            navBackStackEntry,
+                            dependenciesContainerBuilder,
+                            contentWrapper,
+                        )
+                    }
+                ).apply {
+                    label = destination.label
+                    destination.arguments.forEach { (argumentName, argument) -> argument(argumentName, argument) }
+                    destination.allDeepLinks(manualComposableCalls).forEach { deepLink -> deepLink(deepLink) }
+                }
+            )
         }
     }
 
@@ -106,27 +115,33 @@ abstract class DestinationStyle {
             dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
             manualComposableCalls: ManualComposableCalls
         ) {
-            composable(
-                route = destination.route,
-                arguments = destination.arguments,
-                deepLinks = destination.allDeepLinks(manualComposableCalls),
-                enterTransition = enterTransition,
-                exitTransition = exitTransition,
-                popEnterTransition = popEnterTransition,
-                popExitTransition = popExitTransition,
-                sizeTransform = sizeTransform
-            ) { navBackStackEntry ->
-                @Suppress("UNCHECKED_CAST")
-                val contentWrapper = manualComposableCalls[destination.route] as? DestinationLambda<T>?
+            destination(
+                ComposeNavigatorDestinationBuilder(
+                    navigator = provider[ComposeNavigator::class],
+                    route = destination.route,
+                    content = { navBackStackEntry ->
+                        @Suppress("UNCHECKED_CAST")
+                        val contentWrapper = manualComposableCalls[destination.route] as? DestinationLambda<T>?
 
-                CallComposable(
-                    destination,
-                    navController,
-                    navBackStackEntry,
-                    dependenciesContainerBuilder,
-                    contentWrapper,
-                )
-            }
+                        CallComposable(
+                            destination,
+                            navController,
+                            navBackStackEntry,
+                            dependenciesContainerBuilder,
+                            contentWrapper,
+                        )
+                    }
+                ).apply {
+                    label = destination.label
+                    destination.arguments.forEach { (argumentName, argument) -> argument(argumentName, argument) }
+                    destination.allDeepLinks(manualComposableCalls).forEach { deepLink -> deepLink(deepLink) }
+                    this.enterTransition = this@Animated.enterTransition
+                    this.exitTransition = this@Animated.exitTransition
+                    this.popEnterTransition = this@Animated.popEnterTransition
+                    this.popExitTransition = this@Animated.popExitTransition
+                    this.sizeTransform = this@Animated.sizeTransform
+                }
+            )
         }
     }
 
@@ -152,20 +167,26 @@ abstract class DestinationStyle {
             @Suppress("UNCHECKED_CAST")
             val contentLambda = manualComposableCalls[destination.route] as? DestinationLambda<T>?
 
-            dialog(
-                destination.route,
-                destination.arguments,
-                destination.allDeepLinks(manualComposableCalls),
-                properties
-            ) { navBackStackEntry ->
-                CallDialogComposable(
-                    destination,
-                    navController,
-                    navBackStackEntry,
-                    dependenciesContainerBuilder,
-                    contentLambda
-                )
-            }
+            destination(
+                DialogNavigatorDestinationBuilder(
+                    navigator = provider[DialogNavigator::class],
+                    route = destination.route,
+                    dialogProperties = properties,
+                    content = { navBackStackEntry ->
+                        CallDialogComposable(
+                            destination,
+                            navController,
+                            navBackStackEntry,
+                            dependenciesContainerBuilder,
+                            contentLambda
+                        )
+                    }
+                ).apply {
+                    destination.arguments.forEach { (argumentName, argument) -> argument(argumentName, argument) }
+                    destination.allDeepLinks(manualComposableCalls).forEach { deepLink -> deepLink(deepLink) }
+                    label = destination.label
+                }
+            )
         }
     }
 
@@ -192,6 +213,7 @@ abstract class DestinationStyle {
                 action = destination.action
                 data = destination.data
                 dataPattern = destination.dataPattern
+                label = destination.label
 
                 destination.allDeepLinks(manualComposableCalls).forEach { deepLink ->
                     deepLink {

@@ -30,6 +30,7 @@ import com.ramcosta.composedestinations.codegen.templates.BASE_ROUTE
 import com.ramcosta.composedestinations.codegen.templates.COMPOSED_ROUTE
 import com.ramcosta.composedestinations.codegen.templates.CONTENT_FUNCTION_CODE
 import com.ramcosta.composedestinations.codegen.templates.DEEP_LINKS
+import com.ramcosta.composedestinations.codegen.templates.DESTINATION_LABEL
 import com.ramcosta.composedestinations.codegen.templates.DESTINATION_NAME
 import com.ramcosta.composedestinations.codegen.templates.DESTINATION_STYLE
 import com.ramcosta.composedestinations.codegen.templates.DESTINATION_VISIBILITY_PLACEHOLDER
@@ -93,6 +94,7 @@ internal class SingleDestinationWriter(
                     navArgumentBridgeCodeBuilder.deepLinksDeclarationCode(destination.deepLinks)
                 )
                 .replace(DESTINATION_STYLE, destinationStyle())
+                .replace(DESTINATION_LABEL, destinationLabelCode())
                 .replace(CONTENT_FUNCTION_CODE, contentFunctionCode())
                 .replace(ARGS_TO_DIRECTION_METHOD, navArgumentBridgeCodeBuilder.invokeMethodsCode(navArgsDataClassName()))
                 .replace(
@@ -173,6 +175,14 @@ internal class SingleDestinationWriter(
         }
 
         return code.toString()
+    }
+
+    private fun destinationLabelCode(): String {
+        if (destination.label == null) {
+            return ""
+        }
+
+        return "\n\toverride val label: CharSequence? = \"${destination.label}\"\n"
     }
 
     private fun activityDestinationFields(): String = with(destination) {

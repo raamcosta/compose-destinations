@@ -36,6 +36,8 @@ import kotlin.reflect.KClass
  * Note that the order is relevant, as it is the same order the wrappers will be called in.
  * @param visibility [CodeGenVisibility] of the corresponding generated Destination object.
  * Useful to control what the current module exposes to other modules. By default, it is public.
+ * @param label label of the destination. By default, it is null.
+ * If set, will set [androidx.navigation.NavDestination.label] to its value.
  */
 @Repeatable
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.ANNOTATION_CLASS)
@@ -47,9 +49,11 @@ annotation class Destination<T: Annotation>(
     val deepLinks: Array<DeepLink> = [],
     val style: KClass<out DestinationStyle> = DestinationStyle.Default::class,
     val wrappers: Array<KClass<out DestinationWrapper>> = [],
-    val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
+    val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC,
+    val label: String = NULL_LABEL
 ) {
     companion object {
         const val COMPOSABLE_NAME = "@ramcosta.destinations.composable-name-route@"
+        const val NULL_LABEL = "@ramcosta.destinations.null-label@"
     }
 }

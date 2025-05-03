@@ -19,6 +19,7 @@ data class OtherActivityNavArgs(
 
 @ActivityDestination<SettingsGraph>(
     navArgs = OtherActivityNavArgs::class,
+    label = "other activity"
 )
 annotation class OtherActivityDestinantion
 

@@ -6,6 +6,7 @@ import com.ramcosta.composedestinations.codegen.commons.toValidClassName
 import com.ramcosta.composedestinations.codegen.moduleName
 
 interface DestinationGeneratingParams {
+    val label: String?
     val sourceIds: List<String>
     val name: String
     val annotatedName: String
@@ -41,6 +42,7 @@ data class RawDestinationGenParams(
     override val isParentStart: Boolean,
     override val name: String,
     override val baseRoute: String,
+    override val label: String?
 ) : DestinationGeneratingParams {
 
     companion object {
@@ -61,6 +63,7 @@ data class RawDestinationGenParams(
             isParentStart: Boolean,
             hasMultipleDestinations: Boolean,
             routeOverride: String?,
+            label: String?
         ): RawDestinationGenParams {
             class DestinationNames(val route: String, val destination: String)
             val names = if (routeOverride != null) {
@@ -103,6 +106,7 @@ data class RawDestinationGenParams(
                 isParentStart = isParentStart,
                 name = names.destination,
                 baseRoute = names.route,
+                label = label,
             )
         }
     }

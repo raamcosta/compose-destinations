@@ -30,6 +30,11 @@ interface TypedDestinationSpec<T> : TypedRoute<T> {
     val style: DestinationStyle get() = DestinationStyle.Default
 
     /**
+     * [androidx.navigation.NavDestination.label] proxy.
+     */
+    val label: CharSequence? get() = null
+
+    /**
      * [Composable] function that will be called to compose
      * the destination content in the screen, when the user
      * navigates to it.

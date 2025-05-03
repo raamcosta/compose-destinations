@@ -23,10 +23,13 @@ import kotlin.reflect.KClass
  * @param dataPattern see [androidx.navigation.ActivityNavigator.Destination.dataPattern]
  * @param visibility [CodeGenVisibility] of the corresponding generated Destination object.
  * Useful to control what the current module exposes to other modules. By default, it is public.
+ * @param label label of the destination. By default, it is null.
+ * If set, will set [androidx.navigation.NavDestination.label] to its value.
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
 annotation class ActivityDestination<T: Annotation>(
+    /* keep in sync with JavaActivityDestination fields */
     val route: String = Destination.COMPOSABLE_NAME,
     val start: Boolean = false,
     val navArgs: KClass<*> = Nothing::class,
@@ -36,7 +39,8 @@ annotation class ActivityDestination<T: Annotation>(
     val action: String = DEFAULT_NULL,
     val dataUri: String = DEFAULT_NULL,
     val dataPattern: String = DEFAULT_NULL,
-    val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
+    val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC,
+    val label: String = Destination.NULL_LABEL
 ) {
     companion object {
         const val DEFAULT_NULL = "@ramcosta.destinations.activity-null-default@"
@@ -63,5 +67,6 @@ annotation class JavaActivityDestination(
     val action: String = ActivityDestination.DEFAULT_NULL,
     val dataUri: String = ActivityDestination.DEFAULT_NULL,
     val dataPattern: String = ActivityDestination.DEFAULT_NULL,
-    val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC
+    val visibility: CodeGenVisibility = CodeGenVisibility.PUBLIC,
+    val label: String = Destination.NULL_LABEL
 )
