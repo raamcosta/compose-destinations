@@ -21,7 +21,8 @@ ksp = "2.1.20-2.0.1"
 junit = "4.13.2"
 
 compose = "1.8.0"
-composeMaterial = "1.8.0"
+composeMaterial = "1.8.1"
+composeMaterial3 = "1.0.0-alpha37"
 composeNavigationMaterial = "1.8.0"
 composeNavigation = "2.8.9"
 
@@ -78,4 +79,5 @@ test-kotlinCompileKsp = { module = "com.github.tschuchortdev:kotlin-compile-test
 wear-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "composeWear" }
 wear-compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "composeWear" }
 wear-compose-material = { module = "androidx.wear.compose:compose-material", version.ref = "composeWear" }
+wear-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
 wear-input = { module = "androidx.wear:wear-input", version = "1.1.0" }
