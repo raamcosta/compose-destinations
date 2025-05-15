@@ -30,7 +30,7 @@ pprint = "1.1.0"
 mockk = "1.14.2"
 
 compileTesting = "1.6.0"
-composeWear = "1.3.1"
+composeWear = "1.4.1"
 
 [plugins]
 dependencyCheckPlugin = { id = "com.github.ben-manes.versions", version.ref = "dependencyCheckPluginVersion" }
