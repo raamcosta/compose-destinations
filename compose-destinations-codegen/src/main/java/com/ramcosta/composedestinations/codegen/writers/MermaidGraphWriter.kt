@@ -32,7 +32,7 @@ internal class MermaidGraphWriter(
             appendLine("---")
             appendLine("title: $title")
             appendLine("---")
-            appendLine("%%{init: {'theme':'base', 'themeVariables': { 'primaryTextColor': '#fff' }}%%")
+            appendLine("%%{init: {'theme':'base', 'themeVariables': { 'primaryTextColor': '#fff' }}}%%")
             appendLine("graph TD")
             appendGraphTreeLinks(tree)
             appendLine()
