@@ -99,6 +99,82 @@ This call adds all annotated Composable functions as destinations of the Navigat
 That's it! No need to worry about routes, `NavType`, bundles and strings. All that redundant and
 error-prone code gets generated for you.
 
+## Runtime policy hooks (default engine)
+
+If you use the default engine (including Wear), you can customize runtime registration behavior
+without writing a custom `NavHostEngine` by using `enginePolicy`.
+
+```kotlin
+DestinationsNavHost(
+    navGraph = NavGraphs.root,
+    enginePolicy = object : DefaultEnginePolicy {}
+)
+```
+
+Resolution precedence:
+- Destination style: `enginePolicy.resolveDestinationStyle` -> manual `animateWith` override -> destination `style`
+- Graph transitions: `enginePolicy.resolveGraphTransitions` -> manual graph `animateWith` override -> graph default transitions
+- Deep links: baseline is manual + generated, then `enginePolicy.transformDeepLinks` may replace it (or return `null` to keep baseline)
+
+### Example: tablet dialog parity
+
+```kotlin
+DestinationsNavHost(
+    navGraph = NavGraphs.root,
+    enginePolicy = object : DefaultEnginePolicy {
+        override fun resolveDestinationStyle(ctx: DestinationStyleContext): DestinationStyle? {
+            return if (isTablet && ctx.baseRoute in tabletDialogRoutes) {
+                DestinationStyle.Dialog.Default
+            } else {
+                null
+            }
+        }
+    }
+)
+```
+
+### Example: reduced motion
+
+```kotlin
+DestinationsNavHost(
+    navGraph = NavGraphs.root,
+    enginePolicy = object : DefaultEnginePolicy {
+        override fun resolveDestinationStyle(ctx: DestinationStyleContext): DestinationStyle? {
+            return if (reduceMotion) DestinationStyle.Animated.None else null
+        }
+
+        override fun resolveGraphTransitions(ctx: GraphTransitionsContext): DestinationStyle.Animated? {
+            return if (reduceMotion) DestinationStyle.Animated.None else null
+        }
+    }
+)
+```
+
+### Example: feature-flag and deep-link policy
+
+```kotlin
+DestinationsNavHost(
+    navGraph = NavGraphs.root,
+    enginePolicy = object : DefaultEnginePolicy {
+        override fun resolveDestinationStyle(ctx: DestinationStyleContext): DestinationStyle? {
+            return if (newFlowEnabled && ctx.baseRoute == CheckoutDestination.baseRoute) {
+                DestinationStyle.Default
+            } else {
+                null
+            }
+        }
+
+        override fun transformDeepLinks(ctx: DeepLinksContext): List<NavDeepLink>? {
+            return if (isStaging) {
+                ctx.baselineDeepLinks.filterNot { it.uriPattern?.contains("prod-only") == true }
+            } else {
+                null
+            }
+        }
+    }
+)
+```
+
 ## Setup 🧩
 
 Compose destinations is available via maven central.

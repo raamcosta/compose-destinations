@@ -13,7 +13,10 @@ import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationSty
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.manualcomposablecalls.allDeepLinks
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.spec.ActivityDestinationSpec
+import com.ramcosta.composedestinations.spec.DefaultEnginePolicyCapable
 import com.ramcosta.composedestinations.spec.Direction
+import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.NavHostEngine
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
@@ -35,7 +38,7 @@ fun rememberNavHostEngine(
 
 internal class DefaultNavHostEngine(
     private val navHostContentAlignment: Alignment,
-) : NavHostEngine {
+) : NavHostEngine, DefaultEnginePolicyCapable {
 
     override val type = NavHostEngine.Type.DEFAULT
 
@@ -73,8 +76,7 @@ internal class DefaultNavHostEngine(
         manualComposableCalls: ManualComposableCalls,
         builder: NavGraphBuilder.() -> Unit
     ) {
-        val transitions = manualComposableCalls.manualAnimation(navGraph.route)
-            ?: navGraph.defaultTransitions
+        val transitions = manualComposableCalls.resolveGraphTransitions(navGraph)
 
         if (transitions != null) {
             with(transitions) {
@@ -107,7 +109,30 @@ internal class DefaultNavHostEngine(
         navController: NavHostController,
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
-    ) = with(manualComposableCalls.manualAnimation(destination.route) ?: destination.style) {
+    ) = with(manualComposableCalls.resolveDestinationStyle(destination)) {
+        validateDefaultEngineStyleCompatibility(destination, this)
         addComposable(destination, navController, dependenciesContainerBuilder, manualComposableCalls)
+    }
+}
+
+internal fun validateDefaultEngineStyleCompatibility(
+    destination: TypedDestinationSpec<*>,
+    destinationStyle: DestinationStyle,
+) {
+    val isActivityDestination = destination is ActivityDestinationSpec<*>
+    val isActivityStyle = destinationStyle is DestinationStyle.Activity
+
+    if (!isActivityDestination && isActivityStyle) {
+        error(
+            "Destination '${destination.route}' is not an ActivityDestinationSpec, but runtime style " +
+                "resolved to DestinationStyle.Activity."
+        )
+    }
+
+    if (isActivityDestination && !isActivityStyle) {
+        error(
+            "Destination '${destination.route}' is an ActivityDestinationSpec, but runtime style " +
+                "resolved to '${destinationStyle::class.qualifiedName}'. Activity destinations must use DestinationStyle.Activity."
+        )
     }
 }

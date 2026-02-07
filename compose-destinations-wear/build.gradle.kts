@@ -53,4 +53,6 @@ dependencies {
     api(project(mapOf("path" to ":compose-destinations")))
 
     api(libs.wear.compose.navigation)
+
+    testImplementation(libs.test.junit)
 }

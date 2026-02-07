@@ -53,4 +53,6 @@ kotlin {
 
 dependencies {
     api(libs.compose.navigation)
+
+    testImplementation(libs.test.junit)
 }

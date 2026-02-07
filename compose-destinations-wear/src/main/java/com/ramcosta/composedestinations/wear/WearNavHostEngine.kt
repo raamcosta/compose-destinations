@@ -22,6 +22,8 @@ import com.ramcosta.composedestinations.manualcomposablecalls.allDeepLinks
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.scope.DestinationScopeImpl
+import com.ramcosta.composedestinations.spec.ActivityDestinationSpec
+import com.ramcosta.composedestinations.spec.DefaultEnginePolicyCapable
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.NavGraphSpec
@@ -47,7 +49,7 @@ internal class WearNavHostEngine(
     private val userSwipeEnabled: Boolean,
     private val defaultNavHostEngine: NavHostEngine,
     private val state: SwipeDismissableNavHostState,
-) : NavHostEngine {
+) : NavHostEngine, DefaultEnginePolicyCapable {
 
     override val type = NavHostEngine.Type.WEAR
 
@@ -91,8 +93,13 @@ internal class WearNavHostEngine(
         dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit,
         manualComposableCalls: ManualComposableCalls,
     ) {
-        when (destination.style) {
-            is DestinationStyle.Default -> {
+        val destinationStyle = manualComposableCalls.resolveDestinationStyle(destination)
+        validateWearStyleCompatibility(destination, destinationStyle)
+        requireSupportedWearStyle(destinationStyle)
+
+        when (destinationStyle) {
+            is DestinationStyle.Default,
+            is DestinationStyle.Animated -> {
                 addComposable(
                     destination,
                     navController,
@@ -105,10 +112,6 @@ internal class WearNavHostEngine(
                 with(defaultNavHostEngine) {
                     composable(destination, navController, dependenciesContainerBuilder, manualComposableCalls)
                 }
-            }
-
-            is DestinationStyle.Dialog -> {
-                throw IllegalStateException("${destination.style.javaClass.name} cannot be used on Wear OS version of the core library!")
             }
         }
     }
@@ -167,5 +170,39 @@ internal class WearNavHostEngine(
         } else {
             contentWrapper(scope)
         }
+    }
+}
+
+internal fun requireSupportedWearStyle(destinationStyle: DestinationStyle) {
+    when (destinationStyle) {
+        is DestinationStyle.Default,
+        is DestinationStyle.Animated,
+        is DestinationStyle.Activity -> Unit
+
+        else -> throw IllegalStateException(
+            "${destinationStyle.javaClass.name} cannot be used on Wear OS version of the core library!"
+        )
+    }
+}
+
+internal fun validateWearStyleCompatibility(
+    destination: TypedDestinationSpec<*>,
+    destinationStyle: DestinationStyle,
+) {
+    val isActivityDestination = destination is ActivityDestinationSpec<*>
+    val isActivityStyle = destinationStyle is DestinationStyle.Activity
+
+    if (!isActivityDestination && isActivityStyle) {
+        error(
+            "Destination '${destination.route}' is not an ActivityDestinationSpec, but runtime style " +
+                "resolved to DestinationStyle.Activity."
+        )
+    }
+
+    if (isActivityDestination && !isActivityStyle) {
+        error(
+            "Destination '${destination.route}' is an ActivityDestinationSpec, but runtime style " +
+                "resolved to '${destinationStyle::class.qualifiedName}'. Activity destinations must use DestinationStyle.Activity."
+        )
     }
 }
