@@ -12,6 +12,7 @@ import androidx.navigation.navDeepLink
 import com.ramcosta.composedestinations.annotation.internal.InternalDestinationsApi
 import com.ramcosta.composedestinations.scope.AnimatedDestinationScope
 import com.ramcosta.composedestinations.scope.DestinationScope
+import com.ramcosta.composedestinations.spec.DefaultEnginePolicy
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import com.ramcosta.composedestinations.spec.NavGraphSpec
@@ -192,5 +193,14 @@ class ManualComposableCallsBuilder internal constructor(@InternalDestinationsApi
         map[destination.route] = lambda
     }
 
-    internal fun build() = ManualComposableCalls(map, animations, deepLinks)
+    internal fun build(
+        destinationParentRoutes: Map<String, String> = emptyMap(),
+        enginePolicy: DefaultEnginePolicy = DefaultEnginePolicy.None,
+    ) = ManualComposableCalls(
+        map = map,
+        animations = animations,
+        deepLinks = deepLinks,
+        destinationParentRoutes = destinationParentRoutes,
+        enginePolicy = enginePolicy,
+    )
 }

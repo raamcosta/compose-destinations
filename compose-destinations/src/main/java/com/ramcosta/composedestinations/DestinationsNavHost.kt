@@ -9,6 +9,8 @@ import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationSty
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCalls
 import com.ramcosta.composedestinations.manualcomposablecalls.ManualComposableCallsBuilder
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.spec.DefaultEnginePolicy
+import com.ramcosta.composedestinations.spec.DefaultEnginePolicyCapable
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.NavGraphSpec
@@ -61,6 +63,10 @@ import com.ramcosta.composedestinations.utils.NavGraphRegistry
  * that would not work (Compose runtime related classes f.e) or would be awkward with [dependenciesContainerBuilder].
  */
 @Composable
+@Deprecated(
+    "Kept for binary compatibility. Use overload with enginePolicy.",
+    level = DeprecationLevel.HIDDEN,
+)
 fun DestinationsNavHost(
     navGraph: NavHostGraphSpec,
     modifier: Modifier = Modifier,
@@ -71,7 +77,40 @@ fun DestinationsNavHost(
     dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit = {},
     manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit = {}
 ) {
+    DestinationsNavHost(
+        navGraph = navGraph,
+        modifier = modifier,
+        start = start,
+        defaultTransitions = defaultTransitions,
+        engine = engine,
+        navController = navController,
+        enginePolicy = DefaultEnginePolicy.None,
+        dependenciesContainerBuilder = dependenciesContainerBuilder,
+        manualComposableCallsBuilder = manualComposableCallsBuilder,
+    )
+}
+
+/**
+ * @param enginePolicy optional policy hooks used by default engines to customize:
+ * - destination style precedence: policy > manual override > destination style
+ * - graph transitions precedence: policy > manual override > graph default transitions
+ * - deep links transform: policy may replace merged (manual + generated) deep links
+ */
+@Composable
+fun DestinationsNavHost(
+    navGraph: NavHostGraphSpec,
+    modifier: Modifier = Modifier,
+    start: Direction = navGraph.defaultStartDirection,
+    defaultTransitions: NavHostAnimatedDestinationStyle = navGraph.defaultTransitions,
+    engine: NavHostEngine = rememberNavHostEngine(),
+    navController: NavHostController = engine.rememberNavController(),
+    enginePolicy: DefaultEnginePolicy = DefaultEnginePolicy.None,
+    dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<*>.() -> Unit = {},
+    manualComposableCallsBuilder: ManualComposableCallsBuilder.() -> Unit = {}
+) {
+    validateEnginePolicySupport(engine, enginePolicy)
     HandleNavGraphRegistry(navGraph, navController)
+    val destinationParentGraphRoutes = buildDestinationParentGraphRoutes(navGraph)
 
     engine.NavHost(
         modifier = modifier,
@@ -87,7 +126,10 @@ fun DestinationsNavHost(
             dependenciesContainerBuilder = dependenciesContainerBuilder,
             manualComposableCalls = ManualComposableCallsBuilder(engine.type)
                 .apply { manualComposableCallsBuilder() }
-                .build(),
+                .build(
+                    destinationParentRoutes = destinationParentGraphRoutes,
+                    enginePolicy = enginePolicy,
+                ),
         )
     }
 }
@@ -154,6 +196,33 @@ private fun NavGraphBuilder.addNestedNavGraphs(
             )
         }
     }
+}
+
+internal fun validateEnginePolicySupport(
+    engine: NavHostEngine,
+    enginePolicy: DefaultEnginePolicy,
+) {
+    if (enginePolicy !== DefaultEnginePolicy.None && engine !is DefaultEnginePolicyCapable) {
+        error(
+            "Engine '${engine::class.qualifiedName}' does not support DefaultEnginePolicy. " +
+                "Use DefaultEnginePolicy.None or pass a policy-capable engine."
+        )
+    }
+}
+
+private fun buildDestinationParentGraphRoutes(navGraph: NavGraphSpec): Map<String, String> {
+    val routes = mutableMapOf<String, String>()
+
+    fun collect(graph: NavGraphSpec) {
+        graph.destinations.forEach { destination ->
+            routes[destination.route] = graph.route
+        }
+
+        graph.nestedNavGraphs.forEach(::collect)
+    }
+
+    collect(navGraph)
+    return routes
 }
 
 //endregion
